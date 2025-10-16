@@ -1,0 +1,173 @@
+@use '@angular/material' as mat;
+
+// Define a custom typography configuration
+$custom-typography: mat.define-typography-config(
+  $font-family: '"Roboto", "Helvetica Neue", sans-serif',
+  $headline-1: mat.define-typography-level(32px, 48px, 300, $letter-spacing: -0.0223em),
+  $headline-2: mat.define-typography-level(28px, 32px, 300, $letter-spacing: -0.00833em),
+  $headline-3: mat.define-typography-level(24px, 32px, 400),
+  $headline-4: mat.define-typography-level(20px, 32px, 400, $letter-spacing: 0.0075em),
+  $headline-5: mat.define-typography-level(16px, 32px, 400),
+  $headline-6: mat.define-typography-level(14px, 32px, 500, $letter-spacing: 0.0075em),
+);
+
+// Define custom color palettes for medical/healthcare theme
+$custom-primary: (
+  50: #e8f4fd,
+  100: #c5e4fa,
+  200: #9dd2f6,
+  300: #74c0f2,
+  400: #56b2ef,
+  500: #37a4ec, // Primary blue for medical/trust
+  600: #319cea,
+  700: #2a92e7,
+  800: #2389e4,
+  900: #1678df,
+  A100: #ffffff,
+  A200: #d6ecff,
+  A400: #a3d5ff,
+  A700: #89cbff,
+  contrast: (
+    50: rgba(black, 0.87),
+    100: rgba(black, 0.87),
+    200: rgba(black, 0.87),
+    300: rgba(black, 0.87),
+    400: rgba(black, 0.87),
+    500: rgba(white, 0.87),
+    600: rgba(white, 0.87),
+    700: rgba(white, 0.87),
+    800: rgba(white, 0.87),
+    900: rgba(white, 0.87),
+    A100: rgba(black, 0.87),
+    A200: rgba(black, 0.87),
+    A400: rgba(black, 0.87),
+    A700: rgba(black, 0.87),
+  )
+);
+
+$custom-accent: (
+  50: #f3e5f5,
+  100: #e1bee7,
+  200: #ce93d8,
+  300: #ba68c8,
+  400: #ab47bc,
+  500: #9c27b0, // Purple accent for healthcare
+  600: #8e24aa,
+  700: #7b1fa2,
+  800: #6a1b9a,
+  900: #4a148c,
+  A100: #ea80fc,
+  A200: #e040fb,
+  A400: #d500f9,
+  A700: #aa00ff,
+  contrast: (
+    50: rgba(black, 0.87),
+    100: rgba(black, 0.87),
+    200: rgba(black, 0.87),
+    300: rgba(white, 0.87),
+    400: rgba(white, 0.87),
+    500: rgba(white, 0.87),
+    600: rgba(white, 0.87),
+    700: rgba(white, 0.87),
+    800: rgba(white, 0.87),
+    900: rgba(white, 0.87),
+    A100: rgba(black, 0.87),
+    A200: rgba(white, 0.87),
+    A400: rgba(white, 0.87),
+    A700: rgba(white, 0.87),
+  )
+);
+
+$custom-warn: (
+  50: #ffebee,
+  100: #ffcdd2,
+  200: #ef9a9a,
+  300: #e57373,
+  400: #ef5350,
+  500: #f44336, // Red for warnings/alerts
+  600: #e53935,
+  700: #d32f2f,
+  800: #c62828,
+  900: #b71c1c,
+  A100: #ff8a80,
+  A200: #ff5722,
+  A400: #ff1744,
+  A700: #d50000,
+  contrast: (
+    50: rgba(black, 0.87),
+    100: rgba(black, 0.87),
+    200: rgba(black, 0.87),
+    300: rgba(black, 0.87),
+    400: rgba(black, 0.87),
+    500: rgba(white, 0.87),
+    600: rgba(white, 0.87),
+    700: rgba(white, 0.87),
+    800: rgba(white, 0.87),
+    900: rgba(white, 0.87),
+    A100: rgba(black, 0.87),
+    A200: rgba(white, 0.87),
+    A400: rgba(white, 0.87),
+    A700: rgba(white, 0.87),
+  )
+);
+
+// Create the theme object
+$primary: mat.define-palette($custom-primary);
+$accent: mat.define-palette($custom-accent);
+$warn: mat.define-palette($custom-warn);
+
+$medical-theme: mat.define-light-theme((
+  color: (
+    primary: $primary,
+    accent: $accent,
+    warn: $warn,
+  ),
+  typography: $custom-typography,
+));
+
+// Include theme styles for core and each component used in your app
+@include mat.all-component-themes($medical-theme);
+
+// Custom CSS variables for consistent theming
+:root {
+  --primary-color: #37a4ec;
+  --primary-dark: #2a92e7;
+  --primary-light: #56b2ef;
+  --accent-color: #9c27b0;
+  --warn-color: #f44336;
+  --success-color: #4caf50;
+  --info-color: #2196f3;
+  --background-color: #fafafa;
+  --surface-color: #ffffff;
+  --text-primary: rgba(0, 0, 0, 0.87);
+  --text-secondary: rgba(0, 0, 0, 0.54);
+  --border-color: rgba(0, 0, 0, 0.12);
+  --divider-color: rgba(0, 0, 0, 0.12);
+  
+  // Medical store specific colors
+  --medicine-color: #2e7d32;
+  --emergency-color: #d32f2f;
+  --stock-low-color: #f57c00;
+  --stock-good-color: #388e3c;
+  --expired-color: #c62828;
+}
+
+// Custom utility classes
+.text-primary { color: var(--primary-color) !important; }
+.text-accent { color: var(--accent-color) !important; }
+.text-warn { color: var(--warn-color) !important; }
+.text-success { color: var(--success-color) !important; }
+.text-medicine { color: var(--medicine-color) !important; }
+.text-emergency { color: var(--emergency-color) !important; }
+
+.bg-primary { background-color: var(--primary-color) !important; color: white !important; }
+.bg-accent { background-color: var(--accent-color) !important; color: white !important; }
+.bg-success { background-color: var(--success-color) !important; color: white !important; }
+.bg-warn { background-color: var(--warn-color) !important; color: white !important; }
+
+// Medical store specific background colors
+.bg-medicine { background-color: var(--medicine-color) !important; color: white !important; }
+.bg-emergency { background-color: var(--emergency-color) !important; color: white !important; }
+.bg-stock-low { background-color: var(--stock-low-color) !important; color: white !important; }
+.bg-stock-good { background-color: var(--stock-good-color) !important; color: white !important; }
+.bg-expired { background-color: var(--expired-color) !important; color: white !important; }
