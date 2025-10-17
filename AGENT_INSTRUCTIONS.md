@@ -1,6 +1,29 @@
+<!--
+  File: AGENT_INSTRUCTIONS.md
+  Purpose: Primary instruction set for AI agents (GitHub Copilot, Claude, ChatGPT, etc.)
+  Priority: CRITICAL - Read this file FIRST before any development tasks
+  Last Updated: October 17, 2025
+  
+  This file contains:
+  - Terminal management rules
+  - Server startup procedures
+  - Auto-reload vs restart guidelines
+  - Common error resolutions
+  - Debugging workflows
+  - Agent decision trees
+  
+  Documentation Hierarchy:
+  1. AGENT_INSTRUCTIONS.md (this file) ← READ FIRST
+  2. .github/copilot-instructions.md   ← Quick reference
+  3. README.md                          ← Project overview
+  4. See .github/DOCUMENTATION_HIERARCHY.md for complete structure
+-->
+
 # AI Agent Instructions for Medical Store Management Project
 
 **Critical Rule:** Always check end-to-end integration for both frontend and backend. Do not prompt the user about frontend integration—assume it is required for every feature or change.
+
+**File Priority:** This is the PRIMARY instruction file. Read this FIRST before any development tasks.
 
 ---
 
