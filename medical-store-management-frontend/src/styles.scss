@@ -1,7 +1,13 @@
 /* You can add global styles to this file, and also import other style files */
 
-// Import custom medical theme
-@import './themes/medical-theme.scss';
+:root {
+  --background-color: #fafafa;
+  --surface-color: #ffffff;
+  --text-primary: rgba(0, 0, 0, 0.87);
+  --text-secondary: rgba(0, 0, 0, 0.54);
+  --border-color: rgba(0, 0, 0, 0.12);
+  --divider-color: rgba(0, 0, 0, 0.12);
+}
 
 html, body { 
   height: 100%; 
@@ -88,10 +94,10 @@ html, body {
   font-weight: 500;
   text-transform: uppercase;
   
-  &.in-stock { @extend .bg-stock-good; }
-  &.low-stock { @extend .bg-stock-low; }
-  &.out-of-stock { @extend .bg-warn; }
-  &.expired { @extend .bg-expired; }
+  &.in-stock { background-color: #388e3c; color: white; }
+  &.low-stock { background-color: #f57c00; color: white; }
+  &.out-of-stock { background-color: #f44336; color: white; }
+  &.expired { background-color: #c62828; color: white; }
 }
 
 .card-header {

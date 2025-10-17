@@ -1,0 +1,33 @@
+.dashboard-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #37a4ec 0%, #764ba2 100%);
+  padding: 2rem;
+}
+
+.welcome-card {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+  padding: 2.5rem;
+  max-width: 480px;
+  text-align: center;
+}
+
+h1 {
+  margin: 0 0 1rem 0;
+  color: #2a2a2a;
+}
+
+p {
+  margin: 0.5rem 0;
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.hint {
+  font-size: 0.9rem;
+  color: rgba(0, 0, 0, 0.6);
+  margin-top: 1.5rem;
+}
