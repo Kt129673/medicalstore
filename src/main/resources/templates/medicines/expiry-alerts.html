@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(title='Expiry Alerts', page='medicines', content=~{::#content})}">
+<body>
+<div id="content">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-calendar-x text-danger"></i> Medicine Expiry Alerts</h2>
+        <a href="/medicines" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Medicines
+        </a>
+    </div>
+
+    <!-- Expired Medicines Section -->
+    <div class="card border-danger mb-4">
+        <div class="card-header bg-danger text-white">
+            <h5 class="mb-0"><i class="bi bi-exclamation-octagon"></i> Expired Medicines (Remove Immediately)</h5>
+        </div>
+        <div class="card-body">
+            <div th:if="${expiredMedicines.isEmpty()}" class="text-center text-success py-3">
+                <i class="bi bi-check-circle" style="font-size: 2rem;"></i>
+                <p class="mt-2">No expired medicines found!</p>
+            </div>
+            <div th:unless="${expiredMedicines.isEmpty()}" class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Medicine Name</th>
+                            <th>Category</th>
+                            <th>Batch Number</th>
+                            <th>Expiry Date</th>
+                            <th>Days Expired</th>
+                            <th>Stock</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="medicine : ${expiredMedicines}" class="table-danger">
+                            <td><strong th:text="${medicine.name}">Medicine Name</strong></td>
+                            <td><span class="badge bg-secondary" th:text="${medicine.category}">Category</span></td>
+                            <td th:text="${medicine.batchNumber ?: 'N/A'}">Batch</td>
+                            <td th:text="${#temporals.format(medicine.expiryDate, 'dd-MM-yyyy')}">01-01-2025</td>
+                            <td>
+                                <span class="badge bg-danger" 
+                                      th:text="${#temporals.daysBetween(medicine.expiryDate, #temporals.createToday())} + ' days'">
+                                    10 days
+                                </span>
+                            </td>
+                            <td><span class="badge bg-dark" th:text="${medicine.quantity}">0</span></td>
+                            <td>
+                                <a th:href="@{/medicines/delete/{id}(id=${medicine.id})}" 
+                                   class="btn btn-sm btn-danger" 
+                                   onclick="return confirm('Remove this expired medicine?')">
+                                    <i class="bi bi-trash"></i> Remove
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Expiring Soon Section -->
+    <div class="card border-warning">
+        <div class="card-header bg-warning">
+            <h5 class="mb-0"><i class="bi bi-exclamation-triangle"></i> Expiring Within 30 Days</h5>
+        </div>
+        <div class="card-body">
+            <div th:if="${expiringSoonMedicines.isEmpty()}" class="text-center text-success py-3">
+                <i class="bi bi-check-circle" style="font-size: 2rem;"></i>
+                <p class="mt-2">No medicines expiring soon!</p>
+            </div>
+            <div th:unless="${expiringSoonMedicines.isEmpty()}" class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Medicine Name</th>
+                            <th>Category</th>
+                            <th>Manufacturer</th>
+                            <th>Batch Number</th>
+                            <th>Expiry Date</th>
+                            <th>Days Remaining</th>
+                            <th>Stock</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="medicine : ${expiringSoonMedicines}" class="table-warning">
+                            <td><strong th:text="${medicine.name}">Medicine Name</strong></td>
+                            <td><span class="badge bg-info" th:text="${medicine.category}">Category</span></td>
+                            <td th:text="${medicine.manufacturer ?: 'N/A'}">Manufacturer</td>
+                            <td th:text="${medicine.batchNumber ?: 'N/A'}">Batch</td>
+                            <td th:text="${#temporals.format(medicine.expiryDate, 'dd-MM-yyyy')}">01-01-2025</td>
+                            <td>
+                                <span class="badge bg-warning text-dark" 
+                                      th:text="${#temporals.daysBetween(#temporals.createToday(), medicine.expiryDate)} + ' days'">
+                                    20 days
+                                </span>
+                            </td>
+                            <td><span class="badge bg-primary" th:text="${medicine.quantity}">10</span></td>
+                            <td>
+                                <a th:href="@{/medicines/edit/{id}(id=${medicine.id})}" class="btn btn-sm btn-primary">
+                                    <i class="bi bi-pencil"></i> Update
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Summary Card -->
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card text-white bg-danger">
+                <div class="card-body text-center">
+                    <h2 th:text="${expiredMedicines.size()}">0</h2>
+                    <p class="mb-0">Expired Medicines</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card text-white bg-warning">
+                <div class="card-body text-center">
+                    <h2 th:text="${expiringSoonMedicines.size()}">0</h2>
+                    <p class="mb-0">Expiring Within 30 Days</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

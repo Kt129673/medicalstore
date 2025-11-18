@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(title='Customers', page='customers', content=~{::#content})}">
+<head>
+    <style>
+        .customer-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 16px;
+            margin-right: 12px;
+        }
+        
+        .customer-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .customer-details {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .customer-name {
+            font-weight: 600;
+            color: #212529;
+        }
+        
+        .customer-id {
+            font-size: 12px;
+            color: #6c757d;
+        }
+        
+        .contact-icon {
+            color: #667eea;
+            margin-right: 4px;
+        }
+        
+        .loyalty-badge {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            border: none;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+<div id="content">
+    <!-- Page Header -->
+    <div class="page-header mb-4">
+        <div>
+            <h2>
+                <i class="bi bi-people-fill text-primary"></i> Customers
+            </h2>
+            <p class="text-muted mb-0">Manage customer information and loyalty programs</p>
+        </div>
+        <a href="/customers/new" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Add New Customer
+        </a>
+    </div>
+
+    <!-- Search Bar -->
+    <form method="get" action="/customers" class="mb-4">
+        <div class="input-group" style="max-width: 500px;">
+            <span class="input-group-text bg-white">
+                <i class="bi bi-search"></i>
+            </span>
+            <input type="text" name="search" class="form-control" placeholder="Search by name, phone, or email..." th:value="${param.search}">
+            <button class="btn btn-primary" type="submit">Search</button>
+        </div>
+    </form>
+
+    <!-- Customers Table -->
+    <div class="card modern-card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">
+                <i class="bi bi-list-ul"></i> Customer Directory
+            </h5>
+            <span class="badge bg-primary" th:text="${customers.size()} + ' Total'">0 Total</span>
+        </div>
+        <div class="card-body">
+            <!-- Empty State -->
+            <div th:if="${customers.isEmpty()}" class="empty-state">
+                <i class="bi bi-people"></i>
+                <h5>No Customers Yet</h5>
+                <p>Start adding customers to build your database</p>
+                <a href="/customers/new" class="btn btn-primary mt-2">
+                    <i class="bi bi-plus-circle"></i> Add First Customer
+                </a>
+            </div>
+            
+            <!-- Table -->
+            <div th:unless="${customers.isEmpty()}" class="table-responsive">
+                <table class="modern-table table">
+                    <thead>
+                        <tr>
+                            <th><i class="bi bi-person"></i> Customer</th>
+                            <th><i class="bi bi-telephone"></i> Contact</th>
+                            <th><i class="bi bi-geo-alt"></i> Address</th>
+                            <th><i class="bi bi-star"></i> Loyalty Points</th>
+                            <th><i class="bi bi-calendar"></i> Member Since</th>
+                            <th class="text-end"><i class="bi bi-tools"></i> Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="customer : ${customers}">
+                            <td>
+                                <div class="customer-info">
+                                    <div class="customer-avatar" th:text="${customer.name.substring(0,1).toUpperCase()}">C</div>
+                                    <div class="customer-details">
+                                        <span class="customer-name" th:text="${customer.name}">Customer Name</span>
+                                        <span class="customer-id" th:text="'ID: #' + ${customer.id}">ID: #1</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div style="display: flex; flex-direction: column; gap: 4px;">
+                                    <span>
+                                        <i class="bi bi-telephone-fill contact-icon"></i>
+                                        <span th:text="${customer.phone}"></span>
+                                    </span>
+                                    <span th:if="${customer.email}">
+                                        <i class="bi bi-envelope-fill contact-icon"></i>
+                                        <span th:text="${customer.email}"></span>
+                                    </span>
+                                    <span th:unless="${customer.email}" class="text-muted small">
+                                        <i class="bi bi-envelope"></i> No email
+                                    </span>
+                                </div>
+                            </td>
+                            <td>
+                                <span th:if="${customer.address}" th:text="${#strings.abbreviate(customer.address, 40)}"></span>
+                                <span th:unless="${customer.address}" class="text-muted small">No address</span>
+                            </td>
+                            <td>
+                                <span class="badge loyalty-badge" th:text="${customer.loyaltyPoints} + ' Points'">0 Points</span>
+                            </td>
+                            <td th:text="${customer.registeredDate != null ? #temporals.format(customer.registeredDate, 'MMM dd, yyyy') : 'N/A'}">Jan 01, 2024</td>
+                            <td class="text-end">
+                                <div class="btn-group btn-group-sm">
+                                    <a th:href="@{/customers/edit/{id}(id=${customer.id})}" class="btn btn-outline-primary" title="Edit">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a th:href="@{/customers/delete/{id}(id=${customer.id})}" 
+                                       class="btn btn-outline-danger" 
+                                       onclick="return confirm('Are you sure you want to delete this customer?')"
+                                       title="Delete">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

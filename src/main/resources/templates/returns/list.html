@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(title='Returns', page='returns', content=~{::#content})}">
+<body>
+<div id="content">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-arrow-return-left"></i> Returns & Refunds</h2>
+        <a href="/returns/new" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Process Return
+        </a>
+    </div>
+
+    <!-- Returns Table -->
+    <div class="card">
+        <div class="card-body">
+            <div th:if="${returns.isEmpty()}" class="text-center text-muted py-4">
+                <i class="bi bi-inbox" style="font-size: 3rem;"></i>
+                <p class="mt-2">No returns processed yet</p>
+            </div>
+            <div th:unless="${returns.isEmpty()}" class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Return ID</th>
+                            <th>Date</th>
+                            <th>Invoice #</th>
+                            <th>Medicine</th>
+                            <th>Quantity</th>
+                            <th>Refund Amount</th>
+                            <th>Reason</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="returnItem : ${returns}">
+                            <td th:text="'RET-' + ${#strings.padLeft(returnItem.id.toString(), 5, '0')}">RET-00001</td>
+                            <td th:text="${#temporals.format(returnItem.returnDate, 'dd-MM-yyyy HH:mm')}">17-11-2025</td>
+                            <td th:text="'INV-' + ${#strings.padLeft(returnItem.sale.id.toString(), 6, '0')}">INV-000001</td>
+                            <td th:text="${returnItem.sale.medicine.name}">Medicine</td>
+                            <td><span class="badge bg-warning" th:text="${returnItem.returnQuantity}">1</span></td>
+                            <td class="fw-bold text-danger" th:text="'₹' + ${#numbers.formatDecimal(returnItem.refundAmount, 0, 2)}">₹100.00</td>
+                            <td th:text="${returnItem.reason}">Expired</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

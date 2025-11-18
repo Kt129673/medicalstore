@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(title='Sales', page='sales', content=~{::#content})}">
+<head>
+    <style>
+        .sale-amount {
+            font-weight: 700;
+            color: #28a745;
+            font-size: 16px;
+        }
+        
+        .payment-badge {
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 8px;
+        }
+        
+        .payment-cash {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            color: white;
+        }
+        
+        .payment-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .payment-upi {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+        
+        .transaction-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            margin-right: 12px;
+        }
+        
+        .customer-type {
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            background: #e9ecef;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+<div id="content">
+    <!-- Page Header -->
+    <div class="page-header mb-4">
+        <div>
+            <h2>
+                <i class="bi bi-receipt text-primary"></i> Sales History
+            </h2>
+            <p class="text-muted mb-0">View and manage all sales transactions</p>
+        </div>
+        <a href="/sales/new" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> New Sale
+        </a>
+    </div>
+
+    <!-- Sales Table -->
+    <div class="card modern-card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">
+                <i class="bi bi-list-ul"></i> All Transactions
+            </h5>
+            <span class="badge bg-primary" th:text="${sales.size()} + ' Sales'">0 Sales</span>
+        </div>
+        <div class="card-body">
+            <!-- Empty State -->
+            <div th:if="${sales.isEmpty()}" class="empty-state">
+                <i class="bi bi-cart-x"></i>
+                <h5>No Sales Yet</h5>
+                <p>Start recording sales to track your business</p>
+                <a href="/sales/new" class="btn btn-primary mt-2">
+                    <i class="bi bi-plus-circle"></i> Make First Sale
+                </a>
+            </div>
+            
+            <!-- Table -->
+            <div th:unless="${sales.isEmpty()}" class="table-responsive">
+                <table class="modern-table table">
+                    <thead>
+                        <tr>
+                            <th><i class="bi bi-calendar-event"></i> Date & Time</th>
+                            <th><i class="bi bi-capsule"></i> Medicine</th>
+                            <th><i class="bi bi-person"></i> Customer</th>
+                            <th><i class="bi bi-box"></i> Qty</th>
+                            <th><i class="bi bi-tag"></i> Unit Price</th>
+                            <th><i class="bi bi-currency-rupee"></i> Total</th>
+                            <th><i class="bi bi-credit-card"></i> Payment</th>
+                            <th class="text-end"><i class="bi bi-tools"></i> Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="sale : ${sales}">
+                            <td>
+                                <div style="display: flex; flex-direction: column;">
+                                    <span style="font-weight: 600;" th:text="${#temporals.format(sale.saleDate, 'dd MMM yyyy')}"></span>
+                                    <small class="text-muted" th:text="${#temporals.format(sale.saleDate, 'hh:mm a')}"></small>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="transaction-icon">
+                                        <i class="bi bi-capsule-pill"></i>
+                                    </div>
+                                    <span th:text="${sale.medicine.name}"></span>
+                                </div>
+                            </td>
+                            <td>
+                                <span th:if="${sale.customer != null}" th:text="${sale.customer.name}"></span>
+                                <span th:unless="${sale.customer != null}" class="customer-type">
+                                    <i class="bi bi-person-walking"></i> Walk-in
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge bg-secondary" th:text="${sale.quantity} + ' units'"></span>
+                            </td>
+                            <td th:text="'₹' + ${#numbers.formatDecimal(sale.unitPrice, 0, 2)}"></td>
+                            <td>
+                                <span class="sale-amount" th:text="'₹' + ${#numbers.formatDecimal(sale.totalAmount, 0, 2)}"></span>
+                            </td>
+                            <td>
+                                <span th:class="'payment-badge payment-' + ${sale.paymentMethod.toLowerCase()}" 
+                                      th:text="${sale.paymentMethod}">
+                                </span>
+                            </td>
+                            <td class="text-end">
+                                <a th:href="@{/sales/invoice/{id}(id=${sale.id})}" 
+                                   class="btn btn-sm btn-outline-primary" 
+                                   target="_blank"
+                                   title="Print Invoice">
+                                    <i class="bi bi-printer"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice - Medical Store</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        @media print {
+            .no-print { display: none; }
+            body { margin: 0; }
+        }
+        
+        .invoice-container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 30px;
+            border: 2px solid #333;
+        }
+        
+        .invoice-header {
+            text-align: center;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .invoice-header h1 {
+            color: #667eea;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .invoice-details {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+        
+        .invoice-table {
+            margin: 30px 0;
+        }
+        
+        .invoice-table th {
+            background-color: #667eea;
+            color: white;
+        }
+        
+        .invoice-footer {
+            margin-top: 50px;
+            text-align: center;
+            border-top: 2px solid #ddd;
+            padding-top: 20px;
+        }
+        
+        .total-section {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="invoice-container">
+        <!-- Header -->
+        <div class="invoice-header">
+            <h1><i class="bi bi-heart-pulse"></i> MEDICAL STORE</h1>
+            <p class="mb-0">123 Medical Street, Healthcare City</p>
+            <p class="mb-0">Phone: +91 9876543210 | Email: info@medicalstore.com</p>
+            <p class="mb-0"><strong>GSTIN: 29ABCDE1234F1Z5</strong></p>
+        </div>
+
+        <!-- Invoice Details -->
+        <div class="invoice-details">
+            <div>
+                <h5>BILL TO:</h5>
+                <p class="mb-1">
+                    <strong th:text="${sale.customer != null ? sale.customer.name : 'Walk-in Customer'}">Customer Name</strong>
+                </p>
+                <p class="mb-1" th:if="${sale.customer != null}" th:text="'Phone: ' + ${sale.customer.phone}">Phone</p>
+                <p class="mb-1" th:if="${sale.customer != null && sale.customer.address != null}" th:text="${sale.customer.address}">Address</p>
+            </div>
+            <div class="text-end">
+                <h5>INVOICE DETAILS:</h5>
+                <p class="mb-1"><strong>Invoice #:</strong> <span th:text="'INV-' + ${#strings.padLeft(sale.id.toString(), 6, '0')}">INV-000001</span></p>
+                <p class="mb-1"><strong>Date:</strong> <span th:text="${#temporals.format(sale.saleDate, 'dd-MM-yyyy')}">17-11-2025</span></p>
+                <p class="mb-1"><strong>Time:</strong> <span th:text="${#temporals.format(sale.saleDate, 'HH:mm:ss')}">10:30:00</span></p>
+            </div>
+        </div>
+
+        <!-- Items Table -->
+        <table class="table table-bordered invoice-table">
+            <thead>
+                <tr>
+                    <th>Sr. No.</th>
+                    <th>Medicine Name</th>
+                    <th>Batch No.</th>
+                    <th>Quantity</th>
+                    <th>Unit Price</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>
+                        <strong th:text="${sale.medicine.name}">Medicine Name</strong><br>
+                        <small class="text-muted" th:text="${sale.medicine.category}">Category</small>
+                    </td>
+                    <td th:text="${sale.medicine.batchNumber ?: 'N/A'}">BATCH123</td>
+                    <td th:text="${sale.quantity}">10</td>
+                    <td th:text="'₹' + ${#numbers.formatDecimal(sale.unitPrice, 0, 2)}">₹100.00</td>
+                    <td th:text="'₹' + ${#numbers.formatDecimal(sale.totalAmount, 0, 2)}">₹1000.00</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Total Section -->
+        <div class="total-section">
+            <div class="row">
+                <div class="col-8 text-end">
+                    <h5>Subtotal:</h5>
+                </div>
+                <div class="col-4 text-end">
+                    <h5 th:text="'₹' + ${#numbers.formatDecimal(sale.totalAmount, 0, 2)}">₹1000.00</h5>
+                </div>
+            </div>
+            <div class="row" th:if="${sale.discountPercentage != null && sale.discountPercentage > 0}">
+                <div class="col-8 text-end">
+                    <h5>Discount (<span th:text="${sale.discountPercentage}">0</span>%):</h5>
+                </div>
+                <div class="col-4 text-end">
+                    <h5 class="text-danger">- ₹<span th:text="${#numbers.formatDecimal(sale.discountAmount, 0, 2)}">0.00</span></h5>
+                </div>
+            </div>
+            <div class="row" th:if="${sale.gstPercentage != null && sale.gstPercentage > 0}">
+                <div class="col-8 text-end">
+                    <h5>GST (<span th:text="${sale.gstPercentage}">0</span>%):</h5>
+                </div>
+                <div class="col-4 text-end">
+                    <h5 class="text-success">+ ₹<span th:text="${#numbers.formatDecimal(sale.gstAmount, 0, 2)}">0.00</span></h5>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-8 text-end">
+                    <h4><strong>GRAND TOTAL:</strong></h4>
+                </div>
+                <div class="col-4 text-end">
+                    <h4><strong th:text="'₹' + ${#numbers.formatDecimal(sale.finalAmount != null ? sale.finalAmount : sale.totalAmount, 0, 2)}">₹1000.00</strong></h4>
+                </div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-12 text-end">
+                    <span class="badge bg-success" th:text="'Payment: ' + ${sale.paymentMethod}">Payment: Cash</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="invoice-footer">
+            <p class="mb-2"><strong>Terms & Conditions:</strong></p>
+            <p class="small mb-1">1. Goods once sold will not be taken back or exchanged</p>
+            <p class="small mb-1">2. All disputes subject to local jurisdiction only</p>
+            <p class="small mb-4">3. Please check the medicine expiry date before use</p>
+            
+            <p class="mb-0"><strong>Thank you for your business!</strong></p>
+            <p class="small text-muted">Generated on <span th:text="${#temporals.format(#temporals.createNow(), 'dd-MM-yyyy HH:mm')}"></span></p>
+        </div>
+
+        <!-- Print Button -->
+        <div class="text-center mt-4 no-print">
+            <button onclick="window.print()" class="btn btn-primary btn-lg">
+                <i class="bi bi-printer"></i> Print Invoice
+            </button>
+            <button th:if="${whatsappEnabled && sale.customer != null && sale.customer.phone != null}" 
+                    onclick="sendWhatsApp()" 
+                    class="btn btn-success btn-lg"
+                    id="whatsappBtn">
+                <i class="bi bi-whatsapp"></i> Send via WhatsApp
+            </button>
+            <button th:if="${!whatsappEnabled}" 
+                    class="btn btn-secondary btn-lg" 
+                    disabled
+                    title="WhatsApp not configured">
+                <i class="bi bi-whatsapp"></i> WhatsApp (Not Configured)
+            </button>
+            <a href="/sales" class="btn btn-secondary btn-lg">
+                <i class="bi bi-arrow-left"></i> Back to Sales
+            </a>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    
+    <script th:if="${whatsappEnabled}">
+        function sendWhatsApp() {
+            const btn = document.getElementById('whatsappBtn');
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Sending...';
+            
+            fetch('/sales/send-whatsapp/' + [[${sale.id}]], {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.text())
+            .then(data => {
+                alert(data);
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            })
+            .catch(error => {
+                alert('Error sending WhatsApp: ' + error);
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            });
+        }
+    </script>
+</body>
+</html>

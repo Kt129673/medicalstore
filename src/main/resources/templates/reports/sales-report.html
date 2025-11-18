@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(title='Sales Report', page='reports', content=~{::#content})}">
+<body>
+<div id="content">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-file-earmark-bar-graph"></i> <span th:text="${reportType}">Sales</span> Report</h2>
+        <a href="/reports" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Reports
+        </a>
+    </div>
+
+    <!-- Date Filter -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <!-- Daily Filter -->
+                <div th:if="${reportType == 'Daily'}" class="col-md-4">
+                    <label class="form-label">Select Date</label>
+                    <input type="date" name="date" class="form-control" 
+                           th:value="${reportDate}" 
+                           onchange="this.form.submit()">
+                </div>
+                
+                <!-- Monthly Filter -->
+                <div th:if="${reportType == 'Monthly'}" class="col-md-4">
+                    <label class="form-label">Select Month</label>
+                    <input type="month" name="month" class="form-control" 
+                           th:value="${reportMonth}" 
+                           onchange="this.form.submit()">
+                </div>
+                
+                <!-- Yearly Filter -->
+                <div th:if="${reportType == 'Yearly'}" class="col-md-4">
+                    <label class="form-label">Select Year</label>
+                    <select name="year" class="form-control" onchange="this.form.submit()">
+                        <option th:each="y : ${#numbers.sequence(2020, 2030)}" 
+                                th:value="${y}" 
+                                th:text="${y}"
+                                th:selected="${y == reportYear}">2025</option>
+                    </select>
+                </div>
+                
+                <div class="col-md-4">
+                    <label class="form-label">&nbsp;</label>
+                    <button type="button" onclick="window.print()" class="btn btn-primary w-100">
+                        <i class="bi bi-printer"></i> Print Report
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card text-white bg-primary">
+                <div class="card-body text-center">
+                    <h5>Total Sales</h5>
+                    <h2 th:text="${sales.size()}">0</h2>
+                    <p class="mb-0">Transactions</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-success">
+                <div class="card-body text-center">
+                    <h5>Total Revenue</h5>
+                    <h2 th:text="'₹' + ${#numbers.formatDecimal(totalSales, 0, 2)}">₹0.00</h2>
+                    <p class="mb-0">Earned</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-info">
+                <div class="card-body text-center">
+                    <h5>Average Sale</h5>
+                    <h2 th:text="'₹' + ${#numbers.formatDecimal(sales.size() > 0 ? totalSales / sales.size() : 0, 0, 2)}">₹0.00</h2>
+                    <p class="mb-0">Per Transaction</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sales Table -->
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">
+                <span th:text="${reportType}">Sales</span> Transactions
+                <span th:if="${reportDate != null}" th:text="' - ' + ${#temporals.format(reportDate, 'dd MMMM yyyy')}"></span>
+                <span th:if="${reportMonth != null}" th:text="' - ' + ${#temporals.format(reportMonth, 'MMMM yyyy')}"></span>
+                <span th:if="${reportYear != null}" th:text="' - ' + ${reportYear}"></span>
+            </h5>
+        </div>
+        <div class="card-body">
+            <div th:if="${sales.isEmpty()}" class="text-center text-muted py-4">
+                <i class="bi bi-inbox" style="font-size: 3rem;"></i>
+                <p class="mt-2">No sales found for this period</p>
+            </div>
+            <div th:unless="${sales.isEmpty()}" class="table-responsive">
+                <table class="table table-hover table-striped">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Sr. No.</th>
+                            <th>Date & Time</th>
+                            <th>Invoice #</th>
+                            <th>Medicine</th>
+                            <th>Customer</th>
+                            <th>Qty</th>
+                            <th>Unit Price</th>
+                            <th>Total</th>
+                            <th>Payment</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="sale, iterStat : ${sales}">
+                            <td th:text="${iterStat.count}">1</td>
+                            <td th:text="${#temporals.format(sale.saleDate, 'dd-MM-yyyy HH:mm')}">17-11-2025 10:30</td>
+                            <td th:text="'INV-' + ${#strings.padLeft(sale.id.toString(), 6, '0')}">INV-000001</td>
+                            <td th:text="${sale.medicine.name}">Medicine</td>
+                            <td th:text="${sale.customer != null ? sale.customer.name : 'Walk-in'}">Customer</td>
+                            <td th:text="${sale.quantity}">10</td>
+                            <td th:text="'₹' + ${#numbers.formatDecimal(sale.unitPrice, 0, 2)}">₹100.00</td>
+                            <td class="fw-bold" th:text="'₹' + ${#numbers.formatDecimal(sale.totalAmount, 0, 2)}">₹1000.00</td>
+                            <td><span class="badge bg-success" th:text="${sale.paymentMethod}">Cash</span></td>
+                        </tr>
+                    </tbody>
+                    <tfoot class="table-light">
+                        <tr>
+                            <th colspan="7" class="text-end">TOTAL:</th>
+                            <th colspan="2" th:text="'₹' + ${#numbers.formatDecimal(totalSales, 0, 2)}">₹0.00</th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
