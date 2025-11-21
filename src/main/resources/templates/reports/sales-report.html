@@ -115,7 +115,7 @@
                         <tr th:each="sale, iterStat : ${sales}">
                             <td th:text="${iterStat.count}">1</td>
                             <td th:text="${#temporals.format(sale.saleDate, 'dd-MM-yyyy HH:mm')}">17-11-2025 10:30</td>
-                            <td th:text="'INV-' + ${#strings.padLeft(sale.id.toString(), 6, '0')}">INV-000001</td>
+                            <td th:text="'INV-' + ${T(String).format('%06d', sale.id)}">INV-000001</td>
                             <td th:text="${sale.medicine.name}">Medicine</td>
                             <td th:text="${sale.customer != null ? sale.customer.name : 'Walk-in'}">Customer</td>
                             <td th:text="${sale.quantity}">10</td>

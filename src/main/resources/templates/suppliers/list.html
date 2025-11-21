@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(title='Suppliers', page='suppliers', content=~{::#content})}">
-<head>
+<body>
+<div id="content">
     <style>
         .supplier-icon {
             width: 40px;
@@ -14,6 +15,7 @@
             font-weight: 600;
             font-size: 16px;
             margin-right: 12px;
+            flex-shrink: 0;
         }
         
         .gst-badge {
@@ -24,9 +26,6 @@
             font-size: 12px;
         }
     </style>
-</head>
-<body>
-<div id="content">
     <!-- Page Header -->
     <div class="page-header mb-4">
         <div>
@@ -86,10 +85,7 @@
                     <tbody>
                         <tr th:each="supplier : ${suppliers}">
                             <td>
-                                <div class="d-flex align-items-center">
-                                    <div class="supplier-icon" th:text="${#strings.substring(supplier.name, 0, 1)}"></div>
-                                    <span style="font-weight: 600;" th:text="${supplier.name}">Company Name</span>
-                                </div>
+                                <span style="font-weight: 600;" th:text="${supplier.name}">Company Name</span>
                             </td>
                             <td th:text="${supplier.contactPerson}">Contact Person</td>
                             <td>

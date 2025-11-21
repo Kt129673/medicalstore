@@ -1,5 +1,8 @@
 package com.medicalstore.controller;
 
+import com.medicalstore.dto.DailyReportData;
+import com.medicalstore.dto.MonthlyReportData;
+import com.medicalstore.service.ReportService;
 import com.medicalstore.service.SaleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -16,6 +19,7 @@ import java.time.YearMonth;
 public class ReportController {
     
     private final SaleService saleService;
+    private final ReportService reportService;
     
     @GetMapping
     public String reportsHome(Model model) {
@@ -65,5 +69,38 @@ public class ReportController {
         model.addAttribute("reportType", "Yearly");
         
         return "reports/sales-report";
+    }
+    
+    @GetMapping("/daily-detailed")
+    public String dailyDetailedReport(@RequestParam(required = false) String date, Model model) {
+        LocalDate reportDate = date != null ? LocalDate.parse(date) : LocalDate.now();
+        
+        LocalDateTime startOfDay = reportDate.atStartOfDay();
+        LocalDateTime endOfDay = reportDate.atTime(23, 59, 59);
+        
+        DailyReportData reportData = reportService.generateDailyReport(startOfDay, endOfDay);
+        
+        model.addAttribute("reportDate", reportDate);
+        model.addAttribute("reportData", reportData);
+        model.addAttribute("sales", saleService.getSalesByDateRange(startOfDay, endOfDay));
+        model.addAttribute("reportGeneratedAt", LocalDateTime.now());
+        
+        return "reports/daily-detailed";
+    }
+    
+    @GetMapping("/monthly-detailed")
+    public String monthlyDetailedReport(@RequestParam(required = false) String month, Model model) {
+        YearMonth yearMonth = month != null ? YearMonth.parse(month) : YearMonth.now();
+        
+        LocalDateTime startOfMonth = yearMonth.atDay(1).atStartOfDay();
+        LocalDateTime endOfMonth = yearMonth.atEndOfMonth().atTime(23, 59, 59);
+        
+        MonthlyReportData reportData = reportService.generateMonthlyReport(startOfMonth, endOfMonth, yearMonth);
+        
+        model.addAttribute("reportMonth", yearMonth);
+        model.addAttribute("reportData", reportData);
+        model.addAttribute("reportGeneratedAt", LocalDateTime.now());
+        
+        return "reports/monthly-detailed";
     }
 }
