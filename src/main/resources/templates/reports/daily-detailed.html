@@ -45,6 +45,10 @@
                     <a href="/reports" class="btn btn-light">
                         <i class="bi bi-arrow-left"></i> Back
                     </a>
+                    <a th:href="@{/pdf/report/daily(date=${#temporals.format(reportDate, 'yyyy-MM-dd')})}" 
+                       class="btn btn-danger">
+                        <i class="bi bi-file-pdf"></i> PDF
+                    </a>
                     <button onclick="window.print()" class="btn btn-light">
                         <i class="bi bi-printer"></i> Print
                     </button>

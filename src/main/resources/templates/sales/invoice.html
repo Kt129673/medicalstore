@@ -169,9 +169,13 @@
             <p class="small text-muted">Generated on <span th:text="${#temporals.format(#temporals.createNow(), 'dd-MM-yyyy HH:mm')}"></span></p>
         </div>
 
-        <!-- Print Button -->
+        <!-- Action Buttons -->
         <div class="text-center mt-4 no-print">
-            <button onclick="window.print()" class="btn btn-primary btn-lg">
+            <a th:href="@{/sales/pdf/{id}(id=${sale.id})}" 
+               class="btn btn-danger btn-lg me-2">
+                <i class="bi bi-file-pdf"></i> Download PDF
+            </a>
+            <button onclick="window.print()" class="btn btn-primary btn-lg me-2">
                 <i class="bi bi-printer"></i> Print Invoice
             </button>
             <button th:if="${whatsappEnabled && sale.customer != null && sale.customer.phone != null}" 

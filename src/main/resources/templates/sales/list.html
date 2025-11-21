@@ -135,12 +135,19 @@
                                 </span>
                             </td>
                             <td class="text-end">
-                                <a th:href="@{/sales/invoice/{id}(id=${sale.id})}" 
-                                   class="btn btn-sm btn-outline-primary" 
-                                   target="_blank"
-                                   title="Print Invoice">
-                                    <i class="bi bi-printer"></i>
-                                </a>
+                                <div class="btn-group" role="group">
+                                    <a th:href="@{/sales/invoice/{id}(id=${sale.id})}" 
+                                       class="btn btn-sm btn-outline-primary" 
+                                       target="_blank"
+                                       title="View Invoice">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a th:href="@{/sales/pdf/{id}(id=${sale.id})}" 
+                                       class="btn btn-sm btn-outline-danger" 
+                                       title="Download PDF">
+                                        <i class="bi bi-file-pdf"></i>
+                                    </a>
+                                </div>
                             </td>
                         </tr>
                     </tbody>

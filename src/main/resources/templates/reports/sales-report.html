@@ -42,9 +42,15 @@
                 
                 <div class="col-md-4">
                     <label class="form-label">&nbsp;</label>
-                    <button type="button" onclick="window.print()" class="btn btn-primary w-100">
-                        <i class="bi bi-printer"></i> Print Report
-                    </button>
+                    <div class="btn-group w-100">
+                        <a th:href="@{/pdf/report/sales(type=${reportType},startDate=${reportDate})}" 
+                           class="btn btn-danger">
+                            <i class="bi bi-file-pdf"></i> Download PDF
+                        </a>
+                        <button type="button" onclick="window.print()" class="btn btn-primary">
+                            <i class="bi bi-printer"></i> Print
+                        </button>
+                    </div>
                 </div>
             </form>
         </div>
@@ -115,7 +121,7 @@
                         <tr th:each="sale, iterStat : ${sales}">
                             <td th:text="${iterStat.count}">1</td>
                             <td th:text="${#temporals.format(sale.saleDate, 'dd-MM-yyyy HH:mm')}">17-11-2025 10:30</td>
-                            <td th:text="'INV-' + ${T(String).format('%06d', sale.id)}">INV-000001</td>
+                            <td th:text="'INV-' + ${T(java.lang.String).format('%06d', sale.id)}">INV-000001</td>
                             <td th:text="${sale.medicine.name}">Medicine</td>
                             <td th:text="${sale.customer != null ? sale.customer.name : 'Walk-in'}">Customer</td>
                             <td th:text="${sale.quantity}">10</td>
