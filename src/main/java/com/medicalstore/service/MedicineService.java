@@ -24,6 +24,25 @@ public class MedicineService {
     }
     
     public Medicine saveMedicine(Medicine medicine) {
+        // Validate required fields
+        if (medicine.getName() == null || medicine.getName().trim().isEmpty()) {
+            throw new IllegalArgumentException("Medicine name is required");
+        }
+        if (medicine.getCategory() == null || medicine.getCategory().trim().isEmpty()) {
+            throw new IllegalArgumentException("Category is required");
+        }
+        if (medicine.getPrice() == null || medicine.getPrice() <= 0) {
+            throw new IllegalArgumentException("Valid price is required");
+        }
+        if (medicine.getQuantity() == null || medicine.getQuantity() < 0) {
+            throw new IllegalArgumentException("Valid quantity is required");
+        }
+        
+        // Set created date if new medicine
+        if (medicine.getId() == null && medicine.getCreatedDate() == null) {
+            medicine.setCreatedDate(LocalDate.now());
+        }
+        
         return medicineRepository.save(medicine);
     }
     

@@ -40,10 +40,20 @@ public class MedicineController {
     }
     
     @PostMapping("/save")
-    public String saveMedicine(@ModelAttribute Medicine medicine, RedirectAttributes redirectAttributes) {
-        medicineService.saveMedicine(medicine);
-        redirectAttributes.addFlashAttribute("success", "Medicine saved successfully!");
-        return "redirect:/medicines";
+    public String saveMedicine(@ModelAttribute Medicine medicine, RedirectAttributes redirectAttributes, Model model) {
+        try {
+            medicineService.saveMedicine(medicine);
+            redirectAttributes.addFlashAttribute("success", "Medicine saved successfully!");
+            return "redirect:/medicines";
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("medicine", medicine);
+            return "medicines/form";
+        } catch (Exception e) {
+            model.addAttribute("error", "Failed to save medicine: " + e.getMessage());
+            model.addAttribute("medicine", medicine);
+            return "medicines/form";
+        }
     }
     
     @GetMapping("/delete/{id}")
