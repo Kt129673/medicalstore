@@ -13,6 +13,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 
 @Controller
@@ -60,7 +62,10 @@ public class PdfController {
                     LocalDate.parse(date, DateTimeFormatter.ISO_DATE) : 
                     LocalDate.now();
 
-            Object reportData = reportService.generateDailyReport(reportDate);
+            LocalDateTime startOfDay = reportDate.atStartOfDay();
+            LocalDateTime endOfDay = reportDate.atTime(23, 59, 59);
+
+            Object reportData = reportService.generateDailyReport(startOfDay, endOfDay);
             String dateStr = reportDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
             
             byte[] pdfBytes = pdfService.generateDailyReportPdf(dateStr, reportData);
@@ -91,10 +96,13 @@ public class PdfController {
             int reportMonth = month != null ? month : now.getMonthValue();
             int reportYear = year != null ? year : now.getYear();
 
-            LocalDate reportDate = LocalDate.of(reportYear, reportMonth, 1);
-            Object reportData = reportService.generateMonthlyReport(reportYear, reportMonth);
+            YearMonth yearMonth = YearMonth.of(reportYear, reportMonth);
+            LocalDateTime startOfMonth = yearMonth.atDay(1).atStartOfDay();
+            LocalDateTime endOfMonth = yearMonth.atEndOfMonth().atTime(23, 59, 59);
+
+            Object reportData = reportService.generateMonthlyReport(startOfMonth, endOfMonth, yearMonth);
             
-            String monthName = reportDate.format(DateTimeFormatter.ofPattern("MMMM"));
+            String monthName = yearMonth.format(DateTimeFormatter.ofPattern("MMMM"));
             
             byte[] pdfBytes = pdfService.generateMonthlyReportPdf(monthName, String.valueOf(reportYear), reportData);
 
@@ -127,25 +135,31 @@ public class PdfController {
             
             switch (type.toLowerCase()) {
                 case "daily":
-                    LocalDate daily = startDate != null ? 
+                    LocalDate daily = (startDate != null && !startDate.trim().isEmpty()) ? 
                             LocalDate.parse(startDate) : LocalDate.now();
-                    reportData = reportService.generateDailyReport(daily);
+                    LocalDateTime dailyStart = daily.atStartOfDay();
+                    LocalDateTime dailyEnd = daily.atTime(23, 59, 59);
+                    reportData = saleService.getSalesByDateRange(dailyStart, dailyEnd);
                     start = end = daily.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
                     break;
                     
                 case "monthly":
-                    LocalDate monthly = startDate != null ? 
+                    LocalDate monthly = (startDate != null && !startDate.trim().isEmpty()) ? 
                             LocalDate.parse(startDate) : LocalDate.now();
-                    reportData = reportService.generateMonthlyReport(
-                            monthly.getYear(), monthly.getMonthValue());
+                    YearMonth ym = YearMonth.of(monthly.getYear(), monthly.getMonthValue());
+                    LocalDateTime monthStart = ym.atDay(1).atStartOfDay();
+                    LocalDateTime monthEnd = ym.atEndOfMonth().atTime(23, 59, 59);
+                    reportData = saleService.getSalesByDateRange(monthStart, monthEnd);
                     start = monthly.format(DateTimeFormatter.ofPattern("MMMM yyyy"));
                     end = start;
                     break;
                     
                 case "yearly":
-                    int year = startDate != null ? 
+                    int year = (startDate != null && !startDate.trim().isEmpty()) ? 
                             Integer.parseInt(startDate.substring(0, 4)) : LocalDate.now().getYear();
-                    reportData = saleService.getAllSales(); // Implement yearly report if needed
+                    LocalDateTime yearStart = LocalDate.of(year, 1, 1).atStartOfDay();
+                    LocalDateTime yearEnd = LocalDate.of(year, 12, 31).atTime(23, 59, 59);
+                    reportData = saleService.getSalesByDateRange(yearStart, yearEnd);
                     start = "January " + year;
                     end = "December " + year;
                     break;

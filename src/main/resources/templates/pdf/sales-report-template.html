@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title th:text="${reportType + ' Sales Report'}">Sales Report</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            font-size: 10pt;
+            line-height: 1.4;
+            color: #333;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .header h1 {
+            color: #667eea;
+            font-size: 22pt;
+            margin-bottom: 5px;
+        }
+        
+        .header p {
+            font-size: 9pt;
+            color: #666;
+        }
+        
+        .report-info {
+            background-color: #f8f9fa;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .report-info h3 {
+            color: #667eea;
+            font-size: 14pt;
+            margin-bottom: 5px;
+        }
+        
+        .report-info p {
+            font-size: 9pt;
+            margin: 3px 0;
+        }
+        
+        .summary-table {
+            width: 100%;
+            margin: 20px 0;
+            border-collapse: collapse;
+        }
+        
+        .summary-table th {
+            background-color: #667eea;
+            color: white;
+            padding: 8px;
+            text-align: left;
+            font-size: 9pt;
+        }
+        
+        .summary-table td {
+            padding: 6px 8px;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 9pt;
+        }
+        
+        .summary-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        .text-right {
+            text-align: right;
+        }
+        
+        .text-center {
+            text-align: center;
+        }
+        
+        .total-row {
+            background-color: #667eea !important;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .footer {
+            margin-top: 30px;
+            padding-top: 10px;
+            border-top: 2px solid #e0e0e0;
+            text-align: center;
+            font-size: 8pt;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1 th:text="${companyName}">MEDICAL STORE</h1>
+        <p th:text="${reportType + ' Sales Report'}">Sales Report</p>
+    </div>
+
+    <div class="report-info">
+        <h3>Report Details</h3>
+        <p><strong>Report Type:</strong> <span th:text="${reportType}">Daily</span></p>
+        <p><strong>Period:</strong> <span th:text="${startDate}">Start</span> 
+           <span th:if="${!startDate.equals(endDate)}"> to <span th:text="${endDate}">End</span></span>
+        </p>
+        <p><strong>Generated:</strong> <span th:text="${#temporals.format(#temporals.createNow(), 'dd-MM-yyyy HH:mm:ss')}">Date</span></p>
+    </div>
+
+    <table class="summary-table" th:if="${reportData != null}">
+        <thead>
+            <tr>
+                <th>Sr.</th>
+                <th>Date</th>
+                <th>Invoice</th>
+                <th>Medicine</th>
+                <th>Customer</th>
+                <th>Qty</th>
+                <th class="text-right">Amount</th>
+                <th>Payment</th>
+            </tr>
+        </thead>
+        <tbody th:if="${reportData != null}">
+            <tr th:each="sale, iterStat : ${reportData}">
+                <td th:text="${iterStat.count}">1</td>
+                <td th:text="${#temporals.format(sale.saleDate, 'dd-MM-yyyy')}">Date</td>
+                <td th:text="'INV-' + ${T(java.lang.String).format('%06d', sale.id)}">INV-000001</td>
+                <td th:text="${sale.medicine.name}">Medicine</td>
+                <td th:text="${sale.customer != null ? sale.customer.name : 'Walk-in'}">Customer</td>
+                <td class="text-center" th:text="${sale.quantity}">10</td>
+                <td class="text-right">₹<span th:text="${#numbers.formatDecimal(sale.totalAmount, 1, 2)}">500.00</span></td>
+                <td th:text="${sale.paymentMethod}">Cash</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="footer">
+        <p><strong th:text="${companyName}">MEDICAL STORE</strong></p>
+        <p>This is a computer-generated report</p>
+    </div>
+</body>
+</html>
