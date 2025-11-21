@@ -87,7 +87,7 @@
                         <tr th:each="supplier : ${suppliers}">
                             <td>
                                 <div class="d-flex align-items-center">
-                                    <div class="supplier-icon" th:text="${supplier.name.substring(0,1).toUpperCase()}">S</div>
+                                    <div class="supplier-icon" th:text="${#strings.substring(supplier.name, 0, 1)}"></div>
                                     <span style="font-weight: 600;" th:text="${supplier.name}">Company Name</span>
                                 </div>
                             </td>
