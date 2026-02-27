@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" 
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      th:fragment="layout (title, page, content)">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+    th:fragment="layout (title, page, content)">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -22,18 +22,19 @@
             --bg-secondary: #f9fafb;
             --hover-bg: #f3f4f6;
         }
-        
+
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
-        
-        html, body {
+
+        html,
+        body {
             height: 100%;
             overflow: hidden;
         }
-        
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
             background: var(--bg-secondary);
@@ -41,7 +42,7 @@
             line-height: 1.5;
             color: var(--text-primary);
         }
-        
+
         /* Enterprise Layout Container */
         .app-container {
             display: flex;
@@ -49,7 +50,7 @@
             width: 100vw;
             overflow: hidden;
         }
-        
+
         /* Sidebar */
         .sidebar {
             width: var(--sidebar-width);
@@ -61,7 +62,7 @@
             overflow: hidden;
             flex-shrink: 0;
         }
-        
+
         .sidebar-brand {
             height: var(--header-height);
             padding: 0 20px;
@@ -70,7 +71,7 @@
             align-items: center;
             flex-shrink: 0;
         }
-        
+
         .sidebar-brand h4 {
             font-size: 18px;
             font-weight: 700;
@@ -80,30 +81,30 @@
             align-items: center;
             gap: 10px;
         }
-        
+
         .sidebar-brand h4 i {
             font-size: 24px;
         }
-        
+
         .sidebar-nav {
             flex: 1;
             overflow-y: auto;
             padding: 12px 0;
         }
-        
+
         .sidebar-nav::-webkit-scrollbar {
             width: 4px;
         }
-        
+
         .sidebar-nav::-webkit-scrollbar-track {
             background: transparent;
         }
-        
+
         .sidebar-nav::-webkit-scrollbar-thumb {
             background: var(--border-color);
             border-radius: 4px;
         }
-        
+
         .nav-link {
             color: var(--text-secondary);
             text-decoration: none;
@@ -115,39 +116,39 @@
             transition: all 0.2s ease;
             border-left: 3px solid transparent;
         }
-        
+
         .nav-link i {
             margin-right: 12px;
             font-size: 18px;
             width: 20px;
             text-align: center;
         }
-        
+
         .nav-link:hover {
             background: var(--hover-bg);
             color: var(--text-primary);
         }
-        
+
         .nav-link.active {
             color: var(--primary-color);
             background: #eff6ff;
             border-left-color: var(--primary-color);
             font-weight: 600;
         }
-        
+
         .user-profile {
             padding: 16px 20px;
             border-top: 1px solid var(--border-color);
             flex-shrink: 0;
         }
-        
+
         .user-info {
             display: flex;
             align-items: center;
             gap: 12px;
             margin-bottom: 12px;
         }
-        
+
         .user-avatar {
             width: 40px;
             height: 40px;
@@ -161,19 +162,19 @@
             font-weight: 600;
             flex-shrink: 0;
         }
-        
+
         .user-details h6 {
             font-size: 13px;
             font-weight: 600;
             color: var(--text-primary);
             margin: 0 0 2px 0;
         }
-        
+
         .user-details small {
             font-size: 11px;
             color: var(--text-secondary);
         }
-        
+
         .logout-btn {
             background: var(--bg-secondary);
             border: 1px solid var(--border-color);
@@ -186,13 +187,13 @@
             cursor: pointer;
             transition: all 0.2s;
         }
-        
+
         .logout-btn:hover {
             background: #fee2e2;
             border-color: #fecaca;
             color: #dc2626;
         }
-        
+
         /* Main Content */
         .main-content {
             flex: 1;
@@ -201,7 +202,7 @@
             height: 100vh;
             overflow: hidden;
         }
-        
+
         .main-header {
             height: var(--header-height);
             background: var(--bg-primary);
@@ -212,14 +213,14 @@
             padding: 0 24px;
             flex-shrink: 0;
         }
-        
+
         .page-title {
             font-size: 18px;
             font-weight: 600;
             color: var(--text-primary);
             margin: 0;
         }
-        
+
         .main-body {
             flex: 1;
             overflow-y: auto;
@@ -227,24 +228,24 @@
             padding: 20px 24px;
             background: var(--bg-secondary);
         }
-        
+
         .main-body::-webkit-scrollbar {
             width: 8px;
         }
-        
+
         .main-body::-webkit-scrollbar-track {
             background: transparent;
         }
-        
+
         .main-body::-webkit-scrollbar-thumb {
             background: #cbd5e1;
             border-radius: 4px;
         }
-        
+
         .main-body::-webkit-scrollbar-thumb:hover {
             background: #94a3b8;
         }
-        
+
         /* Cards */
         .card {
             border: 1px solid var(--border-color);
@@ -252,7 +253,7 @@
             background: var(--bg-primary);
             box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
         }
-        
+
         .card-header {
             background: var(--bg-primary);
             border-bottom: 1px solid var(--border-color);
@@ -260,11 +261,11 @@
             font-weight: 600;
             font-size: 14px;
         }
-        
+
         .card-body {
             padding: 16px;
         }
-        
+
         /* Buttons */
         .btn {
             border-radius: 6px;
@@ -273,36 +274,36 @@
             padding: 8px 16px;
             transition: all 0.2s;
         }
-        
+
         .btn-primary {
             background: var(--primary-color);
             border-color: var(--primary-color);
         }
-        
+
         .btn-primary:hover {
             background: var(--primary-dark);
             border-color: var(--primary-dark);
         }
-        
+
         .btn-sm {
             padding: 6px 12px;
             font-size: 13px;
         }
-        
+
         /* Stat Cards */
         .stat-card {
             background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
             border-radius: 8px;
             padding: 20px;
             color: white;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             transition: transform 0.2s;
         }
-        
+
         .stat-card:hover {
             transform: translateY(-2px);
         }
-        
+
         .stat-label {
             font-size: 12px;
             font-weight: 600;
@@ -311,18 +312,18 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
-        
+
         .stat-value {
             font-size: 32px;
             font-weight: 700;
             line-height: 1;
         }
-        
+
         /* Tables */
         .table {
             font-size: 13px;
         }
-        
+
         .table thead th {
             background: var(--bg-secondary);
             font-weight: 600;
@@ -333,16 +334,16 @@
             border-bottom: 2px solid var(--border-color);
             padding: 12px;
         }
-        
+
         .table tbody td {
             padding: 12px;
             vertical-align: middle;
         }
-        
+
         .table-hover tbody tr:hover {
             background: var(--hover-bg);
         }
-        
+
         /* Badges */
         .badge {
             padding: 4px 10px;
@@ -350,7 +351,7 @@
             font-size: 11px;
             font-weight: 600;
         }
-        
+
         /* Alerts */
         .alert {
             border-radius: 6px;
@@ -358,27 +359,108 @@
             font-size: 13px;
             margin-bottom: 16px;
         }
-        
+
         /* Form Controls */
-        .form-control, .form-select {
+        .form-control,
+        .form-select {
             border-radius: 6px;
             border: 1px solid var(--border-color);
             padding: 8px 12px;
             font-size: 14px;
         }
-        
-        .form-control:focus, .form-select:focus {
+
+        .form-control:focus,
+        .form-select:focus {
             border-color: var(--primary-color);
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
         }
-        
+
         .form-label {
             font-weight: 600;
             font-size: 13px;
             color: var(--text-primary);
             margin-bottom: 6px;
         }
-        
+
+        /* Page Header */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 16px;
+        }
+
+        .page-header h2 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .page-header p {
+            font-size: 13px;
+        }
+
+        /* Modern Card */
+        .modern-card {
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            background: var(--bg-primary);
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+            overflow: hidden;
+        }
+
+        /* Modern Table */
+        .modern-table {
+            margin-bottom: 0;
+        }
+
+        .modern-table thead th {
+            background: var(--bg-secondary);
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+            border-bottom: 2px solid var(--border-color);
+            padding: 12px;
+            white-space: nowrap;
+        }
+
+        .modern-table tbody td {
+            padding: 12px;
+            vertical-align: middle;
+            font-size: 13px;
+        }
+
+        .modern-table tbody tr:hover {
+            background: var(--hover-bg);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 48px 24px;
+            color: var(--text-secondary);
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            opacity: 0.3;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .empty-state h5 {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .empty-state p {
+            font-size: 13px;
+            margin-bottom: 0;
+        }
+
         /* Responsive */
         @media (max-width: 992px) {
             .sidebar {
@@ -390,26 +472,26 @@
                 transform: translateX(-100%);
                 transition: transform 0.3s ease;
             }
-            
+
             .sidebar.active {
                 transform: translateX(0);
             }
-            
+
             .sidebar-overlay {
                 position: fixed;
                 top: 0;
                 left: 0;
                 right: 0;
                 bottom: 0;
-                background: rgba(0,0,0,0.5);
+                background: rgba(0, 0, 0, 0.5);
                 z-index: 999;
                 display: none;
             }
-            
+
             .sidebar-overlay.active {
                 display: block;
             }
-            
+
             .mobile-toggle {
                 display: block;
                 position: fixed;
@@ -423,30 +505,113 @@
                 width: 40px;
                 height: 40px;
                 font-size: 20px;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            }
+
+            .main-header {
+                padding-left: 60px;
             }
         }
-        
+
         @media (min-width: 993px) {
             .mobile-toggle {
                 display: none;
             }
-            
+
             .sidebar-overlay {
                 display: none !important;
             }
         }
+
+        @media (max-width: 768px) {
+            .page-header {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .page-header .btn {
+                align-self: flex-start;
+            }
+
+            .stat-value {
+                font-size: 24px;
+            }
+
+            .stat-label {
+                font-size: 11px;
+            }
+
+            .stat-card {
+                padding: 16px;
+            }
+
+            .main-body {
+                padding: 16px;
+            }
+
+            .card-body {
+                padding: 12px;
+            }
+
+            .card-header {
+                padding: 10px 12px;
+                font-size: 13px;
+            }
+
+            .btn {
+                font-size: 13px;
+                padding: 6px 12px;
+            }
+
+            .btn-lg {
+                font-size: 14px;
+                padding: 8px 16px;
+            }
+
+            .page-title {
+                font-size: 16px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .main-body {
+                padding: 12px;
+            }
+
+            .page-header h2 {
+                font-size: 18px;
+            }
+
+            .stat-value {
+                font-size: 20px;
+            }
+
+            .d-flex.gap-2.justify-content-between {
+                flex-direction: column;
+                gap: 12px !important;
+            }
+
+            .d-flex.gap-2.justify-content-between .d-flex.gap-2 {
+                flex-direction: row;
+                width: 100%;
+            }
+
+            .d-flex.gap-2.justify-content-between .d-flex.gap-2 .btn {
+                flex: 1;
+            }
+        }
     </style>
 </head>
+
 <body>
     <!-- Mobile Toggle Button -->
     <button class="mobile-toggle" id="mobileToggle">
         <i class="bi bi-list"></i>
     </button>
-    
+
     <!-- Sidebar Overlay -->
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
-    
+
     <div class="app-container">
         <!-- Sidebar -->
         <aside class="sidebar" id="sidebar">
@@ -454,7 +619,7 @@
             <div class="sidebar-brand">
                 <h4><i class="bi bi-heart-pulse-fill"></i> MediStore</h4>
             </div>
-            
+
             <!-- Navigation -->
             <nav class="sidebar-nav">
                 <a class="nav-link" th:classappend="${page == 'home'} ? 'active' : ''" href="/">
@@ -486,7 +651,7 @@
                     <span>Reports</span>
                 </a>
             </nav>
-            
+
             <!-- User Profile -->
             <div class="user-profile">
                 <div class="user-info">
@@ -513,7 +678,7 @@
                 <h1 class="page-title" th:text="${title}">Page Title</h1>
                 <div>
                     <span class="badge bg-success">
-                        <i class="bi bi-calendar-check"></i> 
+                        <i class="bi bi-calendar-check"></i>
                         <span th:text="${#temporals.format(#temporals.createNow(), 'dd MMM yyyy')}"></span>
                     </span>
                 </div>
@@ -543,25 +708,25 @@
         const mobileToggle = document.getElementById('mobileToggle');
         const sidebar = document.getElementById('sidebar');
         const sidebarOverlay = document.getElementById('sidebarOverlay');
-        
+
         function toggleSidebar() {
             sidebar.classList.toggle('active');
             sidebarOverlay.classList.toggle('active');
         }
-        
+
         function closeSidebar() {
             sidebar.classList.remove('active');
             sidebarOverlay.classList.remove('active');
         }
-        
+
         if (mobileToggle) {
             mobileToggle.addEventListener('click', toggleSidebar);
         }
-        
+
         if (sidebarOverlay) {
             sidebarOverlay.addEventListener('click', closeSidebar);
         }
-        
+
         // Close sidebar when clicking nav link on mobile
         const navLinks = document.querySelectorAll('.sidebar .nav-link');
         navLinks.forEach(link => {
@@ -573,4 +738,5 @@
         });
     </script>
 </body>
+
 </html>
