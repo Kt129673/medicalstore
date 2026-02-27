@@ -2,82 +2,258 @@
 <html xmlns:th="http://www.thymeleaf.org"
     th:replace="~{layout :: layout(title='New Sale', page='sales', content=~{::#content}, pageIcon='bi bi-cart-check-fill')}">
 
-<head>
-    <style>
-        .calculation-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-radius: 16px;
-            padding: 24px;
-            position: sticky;
-            top: 20px;
-        }
-
-        @media (max-width: 768px) {
-            .calculation-card {
-                position: static;
-                padding: 20px;
-                border-radius: 12px;
-            }
-        }
-
-        .calc-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 12px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .calc-row:last-child {
-            border-bottom: none;
-            padding-top: 16px;
-            margin-top: 8px;
-            border-top: 2px solid rgba(255, 255, 255, 0.4);
-        }
-
-        .calc-label {
-            opacity: 0.9;
-            font-size: 14px;
-        }
-
-        .calc-value {
-            font-weight: 600;
-            font-size: 16px;
-        }
-
-        .calc-final {
-            font-size: 32px !important;
-            font-weight: 700 !important;
-        }
-
-        .form-section {
-            background: #f8f9fa;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-
-        .section-title {
-            color: #667eea;
-            font-weight: 600;
-            font-size: 14px;
-            text-transform: uppercase;
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-    </style>
-</head>
-
 <body>
     <div id="content">
+
+        <style>
+            /* ═══════════════════════════════════════════════════════ */
+            /*  POS BILLING STYLES                                   */
+            /* ═══════════════════════════════════════════════════════ */
+            .pos-layout {
+                display: grid;
+                grid-template-columns: 1fr 360px;
+                gap: 20px;
+            }
+
+            /* Left Panel — Product + Pricing */
+            .pos-form-card {
+                background: #fff;
+                border-radius: 16px;
+                box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+                border: 1px solid rgba(0, 0, 0, 0.05);
+                overflow: hidden;
+            }
+
+            .pos-form-header {
+                padding: 16px 24px;
+                border-bottom: 1px solid #f1f5f9;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+
+            .pos-form-header h6 {
+                font-weight: 700;
+                font-size: 0.95rem;
+                color: #1e293b;
+                margin: 0;
+            }
+
+            .pos-form-body {
+                padding: 24px;
+            }
+
+            .pos-section {
+                background: #f8fafc;
+                border-radius: 12px;
+                padding: 20px;
+                margin-bottom: 20px;
+            }
+
+            .pos-section:last-child {
+                margin-bottom: 0;
+            }
+
+            .pos-section-title {
+                color: #667eea;
+                font-weight: 700;
+                font-size: 0.75rem;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                margin-bottom: 14px;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+            }
+
+            /* Medicine search with typeahead */
+            .med-search-wrap {
+                position: relative;
+            }
+
+            .med-search-wrap .form-control {
+                border-radius: 10px;
+                padding: 10px 14px 10px 38px;
+                font-size: 0.9rem;
+            }
+
+            .med-search-wrap .search-icon {
+                position: absolute;
+                left: 12px;
+                top: 50%;
+                transform: translateY(-50%);
+                color: #94a3b8;
+                font-size: 0.9rem;
+            }
+
+            .med-info-card {
+                margin-top: 12px;
+                padding: 12px 16px;
+                border-radius: 10px;
+                background: #ede9fe;
+                border: 1px solid #c4b5fd;
+                display: none;
+            }
+
+            .med-info-card.show {
+                display: block;
+            }
+
+            .med-info-card .med-name {
+                font-weight: 700;
+                color: #7c3aed;
+                font-size: 0.9rem;
+            }
+
+            .med-info-card .med-detail {
+                font-size: 0.75rem;
+                color: #64748b;
+            }
+
+            /* Payment method buttons */
+            .payment-options {
+                display: flex;
+                gap: 8px;
+            }
+
+            .payment-btn {
+                flex: 1;
+                padding: 12px;
+                border-radius: 12px;
+                border: 2px solid #e2e8f0;
+                background: #fff;
+                cursor: pointer;
+                text-align: center;
+                transition: all 0.2s;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 4px;
+            }
+
+            .payment-btn:hover {
+                border-color: #667eea;
+                background: #f8f7ff;
+            }
+
+            .payment-btn.selected {
+                border-color: #667eea;
+                background: #ede9fe;
+            }
+
+            .payment-btn i {
+                font-size: 1.3rem;
+            }
+
+            .payment-btn span {
+                font-size: 0.75rem;
+                font-weight: 600;
+            }
+
+            /* Right Panel — Bill Summary */
+            .bill-card {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                border-radius: 16px;
+                padding: 24px;
+                color: #fff;
+                position: sticky;
+                top: 80px;
+            }
+
+            .bill-card h5 {
+                font-weight: 700;
+                margin-bottom: 20px;
+            }
+
+            .bill-row {
+                display: flex;
+                justify-content: space-between;
+                padding: 10px 0;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+            }
+
+            .bill-row:last-child {
+                border-bottom: none;
+                padding-top: 14px;
+                margin-top: 6px;
+                border-top: 2px solid rgba(255, 255, 255, 0.3);
+            }
+
+            .bill-label {
+                opacity: 0.85;
+                font-size: 0.85rem;
+            }
+
+            .bill-value {
+                font-weight: 600;
+                font-size: 0.95rem;
+            }
+
+            .bill-total {
+                font-size: 2rem !important;
+                font-weight: 800 !important;
+            }
+
+            /* Keyboard shortcuts bar */
+            .shortcuts-bar {
+                margin-top: 16px;
+                padding: 12px 16px;
+                border-radius: 10px;
+                background: rgba(255, 255, 255, 0.1);
+                font-size: 0.7rem;
+                color: rgba(255, 255, 255, 0.7);
+            }
+
+            .shortcuts-bar kbd {
+                display: inline-block;
+                padding: 2px 6px;
+                border-radius: 4px;
+                background: rgba(255, 255, 255, 0.2);
+                font-size: 0.65rem;
+                margin: 0 2px;
+            }
+
+            /* Tips card */
+            .tips-card {
+                background: #fff;
+                border-radius: 12px;
+                padding: 16px;
+                margin-top: 16px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+                border: 1px solid rgba(0, 0, 0, 0.05);
+            }
+
+            .tips-card h6 {
+                font-size: 0.8rem;
+                font-weight: 700;
+                margin-bottom: 10px;
+                color: #1e293b;
+            }
+
+            .tips-card .tip-item {
+                font-size: 0.75rem;
+                color: #64748b;
+                margin-bottom: 6px;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+            }
+
+            @media (max-width: 992px) {
+                .pos-layout {
+                    grid-template-columns: 1fr;
+                }
+
+                .bill-card {
+                    position: static;
+                }
+            }
+        </style>
+
         <!-- Page Header -->
         <div class="page-header mb-4">
             <div>
-                <h2>
-                    <i class="bi bi-cart-plus-fill text-primary"></i> New Sale
-                </h2>
+                <h2><i class="bi bi-cart-plus-fill text-primary"></i> New Sale</h2>
                 <p class="text-muted mb-0">Create a new sales transaction</p>
             </div>
             <a href="/sales" class="btn btn-outline-secondary">
@@ -85,274 +261,276 @@
             </a>
         </div>
 
-        <div class="row">
-            <!-- Main Form -->
-            <div class="col-md-8">
-                <div class="card modern-card">
-                    <div class="card-header">
-                        <h5 class="mb-0">
-                            <i class="bi bi-file-earmark-text"></i> Transaction Details
-                        </h5>
+        <form th:action="@{/sales/save}" th:object="${sale}" method="post" id="saleForm">
+            <div class="pos-layout">
+                <!-- ═══ LEFT: Transaction Form ═══ -->
+                <div class="pos-form-card">
+                    <div class="pos-form-header">
+                        <h6><i class="bi bi-file-earmark-text me-2"></i>Transaction Details</h6>
                     </div>
-                    <div class="card-body">
-                        <form th:action="@{/sales/save}" th:object="${sale}" method="post" id="saleForm">
-                            <!-- Product Selection -->
-                            <div class="form-section">
-                                <div class="section-title">
-                                    <i class="bi bi-box-seam"></i>
-                                    <span>Product Selection</span>
+                    <div class="pos-form-body">
+                        <!-- Product Selection -->
+                        <div class="pos-section">
+                            <div class="pos-section-title"><i class="bi bi-box-seam"></i> Product</div>
+                            <div class="row g-3">
+                                <div class="col-md-7">
+                                    <label class="form-label fw-semibold" style="font-size:0.8rem;">Select Medicine
+                                        *</label>
+                                    <select class="form-control" th:field="*{medicine.id}" id="medicineSelect" required
+                                        onchange="updatePrice()" style="border-radius:10px;padding:10px 14px;">
+                                        <option value="">Search or scan barcode...</option>
+                                        <option th:each="medicine : ${medicines}" th:value="${medicine.id}"
+                                            th:text="${medicine.name + ' (Stock: ' + medicine.quantity + ')'}"
+                                            th:attr="data-price=${medicine.price},data-stock=${medicine.quantity},data-cat=${medicine.category}">
+                                        </option>
+                                    </select>
+                                    <!-- Selected medicine info -->
+                                    <div class="med-info-card" id="medInfoCard">
+                                        <div class="med-name" id="medInfoName">—</div>
+                                        <div class="med-detail">
+                                            <span id="medInfoCat">—</span> • Stock: <strong id="medInfoStock">—</strong>
+                                            • Price: <strong id="medInfoPrice">—</strong>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="row">
-                                    <div class="col-md-6 mb-3">
-                                        <label class="form-label">Select Medicine *</label>
-                                        <select class="form-control" th:field="*{medicine.id}" id="medicineSelect"
-                                            required onchange="updatePrice()">
-                                            <option value="">Choose Medicine</option>
-                                            <option th:each="medicine : ${medicines}" th:value="${medicine.id}"
-                                                th:text="${medicine.name + ' (Stock: ' + medicine.quantity + ')'}"
-                                                th:attr="data-price=${medicine.price},data-stock=${medicine.quantity}">
-                                            </option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-6 mb-3">
-                                        <label class="form-label">Customer</label>
-                                        <select class="form-control" th:field="*{customer.id}">
-                                            <option value="">Walk-in Customer</option>
-                                            <option th:each="customer : ${customers}" th:value="${customer.id}"
-                                                th:text="${customer.name + ' (' + customer.phone + ')'}">
-                                            </option>
-                                        </select>
-                                        <small class="text-muted">Optional - Select for loyalty points</small>
-                                    </div>
+                                <div class="col-md-5">
+                                    <label class="form-label fw-semibold" style="font-size:0.8rem;">Customer</label>
+                                    <select class="form-control" th:field="*{customer.id}"
+                                        style="border-radius:10px;padding:10px 14px;">
+                                        <option value="">Walk-in Customer</option>
+                                        <option th:each="customer : ${customers}" th:value="${customer.id}"
+                                            th:text="${customer.name + ' (' + customer.phone + ')'}">
+                                        </option>
+                                    </select>
+                                    <small class="text-muted" style="font-size:0.7rem;">Optional — for loyalty</small>
                                 </div>
                             </div>
+                        </div>
 
-                            <!-- Pricing Details -->
-                            <div class="form-section">
-                                <div class="section-title">
-                                    <i class="bi bi-calculator"></i>
-                                    <span>Pricing Details</span>
+                        <!-- Pricing -->
+                        <div class="pos-section">
+                            <div class="pos-section-title"><i class="bi bi-calculator"></i> Pricing</div>
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label class="form-label fw-semibold" style="font-size:0.8rem;">Qty *</label>
+                                    <div class="input-group">
+                                        <button type="button" class="btn btn-outline-secondary"
+                                            onclick="adjustQty(-1)">−</button>
+                                        <input type="number" class="form-control text-center" th:field="*{quantity}"
+                                            id="quantity" required min="1" oninput="calculateTotal()"
+                                            style="border-radius:0;font-weight:700;font-size:1.1rem;">
+                                        <button type="button" class="btn btn-outline-secondary"
+                                            onclick="adjustQty(1)">+</button>
+                                    </div>
                                 </div>
-                                <div class="row">
-                                    <div class="col-md-4 mb-3">
-                                        <label class="form-label">Quantity *</label>
-                                        <div class="input-group">
-                                            <span class="input-group-text"><i class="bi bi-box"></i></span>
-                                            <input type="number" class="form-control" th:field="*{quantity}"
-                                                id="quantity" required min="1" onchange="calculateTotal()">
-                                            <span class="input-group-text">units</span>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4 mb-3">
-                                        <label class="form-label">Unit Price (₹) *</label>
-                                        <div class="input-group">
-                                            <span class="input-group-text">₹</span>
-                                            <input type="number" step="0.01" class="form-control"
-                                                th:field="*{unitPrice}" id="unitPrice" required readonly>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4 mb-3">
-                                        <label class="form-label">Subtotal (₹)</label>
-                                        <div class="input-group">
-                                            <span class="input-group-text">₹</span>
-                                            <input type="number" step="0.01" class="form-control" id="subtotal" readonly
-                                                style="background: #e9ecef; font-weight: 600;">
-                                        </div>
-                                    </div>
+                                <div class="col-md-4">
+                                    <label class="form-label fw-semibold" style="font-size:0.8rem;">Unit Price ₹</label>
+                                    <input type="number" step="0.01" class="form-control" th:field="*{unitPrice}"
+                                        id="unitPrice" required readonly
+                                        style="border-radius:10px;padding:10px 14px;background:#e9ecef;font-weight:600;">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label fw-semibold" style="font-size:0.8rem;">Subtotal ₹</label>
+                                    <input type="text" class="form-control" id="subtotal" readonly
+                                        style="border-radius:10px;padding:10px 14px;background:#e9ecef;font-weight:700;color:#059669;">
                                 </div>
                             </div>
+                        </div>
 
-                            <!-- Discounts & Taxes -->
-                            <div class="form-section">
-                                <div class="section-title">
-                                    <i class="bi bi-percent"></i>
-                                    <span>Discounts & Taxes</span>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-6 mb-3">
-                                        <label class="form-label">Discount (%)</label>
-                                        <div class="input-group">
-                                            <span class="input-group-text"><i class="bi bi-tag"></i></span>
-                                            <input type="number" step="0.01" class="form-control"
-                                                th:field="*{discountPercentage}" id="discountPercentage" value="0"
-                                                min="0" max="100" onchange="calculateTotal()">
-                                            <span class="input-group-text">%</span>
-                                        </div>
-                                        <small class="text-muted">Discount Amount: <strong>₹<span
-                                                    id="discountAmountDisplay">0.00</span></strong></small>
+                        <!-- Discounts & Taxes -->
+                        <div class="pos-section">
+                            <div class="pos-section-title"><i class="bi bi-percent"></i> Discount & GST</div>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold" style="font-size:0.8rem;">Discount %</label>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <input type="number" step="0.01" class="form-control"
+                                            th:field="*{discountPercentage}" id="discountPercentage" min="0" max="100"
+                                            oninput="calculateTotal()" style="border-radius:10px;padding:10px 14px;">
+                                        <span class="text-muted" style="font-size:0.75rem;white-space:nowrap;">
+                                            = ₹<span id="discountAmountDisplay">0.00</span>
+                                        </span>
                                     </div>
-                                    <div class="col-md-6 mb-3">
-                                        <label class="form-label">GST Rate (%)</label>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold" style="font-size:0.8rem;">GST Rate</label>
+                                    <div class="d-flex align-items-center gap-2">
                                         <select class="form-control" th:field="*{gstPercentage}" id="gstPercentage"
-                                            onchange="calculateTotal()">
-                                            <option value="0">No GST (0%)</option>
-                                            <option value="5">GST 5%</option>
-                                            <option value="12">GST 12%</option>
-                                            <option value="18">GST 18%</option>
-                                            <option value="28">GST 28%</option>
+                                            onchange="calculateTotal()" style="border-radius:10px;padding:10px 14px;">
+                                            <option value="0">0%</option>
+                                            <option value="5">5%</option>
+                                            <option value="12">12%</option>
+                                            <option value="18">18%</option>
+                                            <option value="28">28%</option>
                                         </select>
-                                        <small class="text-muted">GST Amount: <strong>₹<span
-                                                    id="gstAmountDisplay">0.00</span></strong></small>
+                                        <span class="text-muted" style="font-size:0.75rem;white-space:nowrap;">
+                                            = ₹<span id="gstAmountDisplay">0.00</span>
+                                        </span>
                                     </div>
                                 </div>
                             </div>
+                        </div>
 
-                            <!-- Payment Method -->
-                            <div class="form-section">
-                                <div class="section-title">
-                                    <i class="bi bi-credit-card"></i>
-                                    <span>Payment Method</span>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-12 mb-3">
-                                        <label class="form-label">Payment Mode *</label>
-                                        <div class="d-flex gap-3">
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="radio" name="paymentMethod"
-                                                    id="paymentCash" value="Cash" th:field="*{paymentMethod}" required>
-                                                <label class="form-check-label" for="paymentCash">
-                                                    <i class="bi bi-cash-stack text-success"></i> Cash
-                                                </label>
-                                            </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="radio" name="paymentMethod"
-                                                    id="paymentCard" value="Card" th:field="*{paymentMethod}">
-                                                <label class="form-check-label" for="paymentCard">
-                                                    <i class="bi bi-credit-card text-primary"></i> Card
-                                                </label>
-                                            </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="radio" name="paymentMethod"
-                                                    id="paymentUPI" value="UPI" th:field="*{paymentMethod}">
-                                                <label class="form-check-label" for="paymentUPI">
-                                                    <i class="bi bi-phone text-danger"></i> UPI
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                        <!-- Payment Method -->
+                        <div class="pos-section">
+                            <div class="pos-section-title"><i class="bi bi-credit-card"></i> Payment</div>
+                            <div class="payment-options">
+                                <label class="payment-btn" id="btnCash" onclick="selectPayment('Cash')">
+                                    <input type="radio" name="paymentMethod" value="Cash" th:field="*{paymentMethod}"
+                                        required style="display:none;">
+                                    <i class="bi bi-cash-stack text-success"></i>
+                                    <span>Cash</span>
+                                </label>
+                                <label class="payment-btn" id="btnCard" onclick="selectPayment('Card')">
+                                    <input type="radio" name="paymentMethod" value="Card" th:field="*{paymentMethod}"
+                                        style="display:none;">
+                                    <i class="bi bi-credit-card-2-front text-primary"></i>
+                                    <span>Card</span>
+                                </label>
+                                <label class="payment-btn" id="btnUPI" onclick="selectPayment('UPI')">
+                                    <input type="radio" name="paymentMethod" value="UPI" th:field="*{paymentMethod}"
+                                        style="display:none;">
+                                    <i class="bi bi-phone text-danger"></i>
+                                    <span>UPI</span>
+                                </label>
                             </div>
+                        </div>
 
-                            <!-- Hidden Fields -->
-                            <input type="hidden" th:field="*{discountAmount}" id="discountAmount">
-                            <input type="hidden" th:field="*{gstAmount}" id="gstAmount">
-                            <input type="hidden" th:field="*{finalAmount}" id="finalAmountHidden">
+                        <!-- Hidden Fields -->
+                        <input type="hidden" th:field="*{discountAmount}" id="discountAmount">
+                        <input type="hidden" th:field="*{gstAmount}" id="gstAmount">
+                        <input type="hidden" th:field="*{finalAmount}" id="finalAmountHidden">
 
-                            <!-- Form Actions -->
-                            <div class="d-flex gap-2 justify-content-between align-items-center pt-3 border-top">
-                                <small class="text-muted">
-                                    <i class="bi bi-info-circle"></i> All fields marked with * are required
-                                </small>
-                                <div class="d-flex gap-2">
-                                    <a href="/sales" class="btn btn-outline-secondary">
-                                        <i class="bi bi-x-circle"></i> Cancel
-                                    </a>
-                                    <button type="submit" class="btn btn-success btn-lg">
-                                        <i class="bi bi-check-circle"></i> Complete Sale
-                                    </button>
-                                </div>
+                        <!-- Actions -->
+                        <div class="d-flex gap-2 justify-content-between align-items-center pt-3 border-top">
+                            <small class="text-muted"><i class="bi bi-info-circle"></i> * Required</small>
+                            <div class="d-flex gap-2">
+                                <a href="/sales" class="btn btn-outline-secondary">
+                                    <i class="bi bi-x-circle"></i> Cancel
+                                </a>
+                                <button type="submit" class="btn btn-success btn-lg" id="submitBtn">
+                                    <i class="bi bi-check-circle"></i> Complete Sale
+                                </button>
                             </div>
-                        </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ═══ RIGHT: Bill Summary ═══ -->
+                <div>
+                    <div class="bill-card">
+                        <h5><i class="bi bi-receipt me-2"></i>Bill Summary</h5>
+
+                        <div class="bill-row">
+                            <span class="bill-label">Subtotal</span>
+                            <span class="bill-value">₹<span id="displaySubtotal">0.00</span></span>
+                        </div>
+                        <div class="bill-row">
+                            <span class="bill-label">Discount</span>
+                            <span class="bill-value" style="color:#fbbf24;">−₹<span
+                                    id="displayDiscount">0.00</span></span>
+                        </div>
+                        <div class="bill-row">
+                            <span class="bill-label">GST</span>
+                            <span class="bill-value" style="color:#34d399;">+₹<span id="displayGST">0.00</span></span>
+                        </div>
+                        <div class="bill-row">
+                            <span class="bill-label">TOTAL</span>
+                            <span class="bill-value bill-total">₹<span id="displayFinal">0.00</span></span>
+                        </div>
+
+                        <div class="shortcuts-bar">
+                            <kbd>F2</kbd> Search • <kbd>F5</kbd> Save • <kbd>Esc</kbd> Cancel
+                        </div>
+                    </div>
+
+                    <div class="tips-card">
+                        <h6><i class="bi bi-lightbulb me-1"></i> Quick Tips</h6>
+                        <div class="tip-item"><i class="bi bi-check-circle text-success"></i> Stock auto-reduces on sale
+                        </div>
+                        <div class="tip-item"><i class="bi bi-check-circle text-success"></i> Invoice generated
+                            automatically</div>
+                        <div class="tip-item"><i class="bi bi-check-circle text-success"></i> Send invoice via WhatsApp
+                        </div>
                     </div>
                 </div>
             </div>
-
-            <!-- Calculation Summary -->
-            <div class="col-md-4">
-                <div class="calculation-card">
-                    <h5 class="mb-4">
-                        <i class="bi bi-receipt"></i> Bill Summary
-                    </h5>
-
-                    <div class="calc-row">
-                        <span class="calc-label">Subtotal</span>
-                        <span class="calc-value">₹<span id="displaySubtotal">0.00</span></span>
-                    </div>
-
-                    <div class="calc-row">
-                        <span class="calc-label">Discount</span>
-                        <span class="calc-value text-warning">- ₹<span id="displayDiscount">0.00</span></span>
-                    </div>
-
-                    <div class="calc-row">
-                        <span class="calc-label">GST</span>
-                        <span class="calc-value text-success">+ ₹<span id="displayGST">0.00</span></span>
-                    </div>
-
-                    <div class="calc-row">
-                        <span class="calc-label">TOTAL AMOUNT</span>
-                        <span class="calc-value calc-final">₹<span id="displayFinal">0.00</span></span>
-                    </div>
-                </div>
-
-                <div class="card modern-card mt-3">
-                    <div class="card-header">
-                        <h5 class="mb-0">
-                            <i class="bi bi-info-circle"></i> Quick Tips
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <small>
-                            <div class="mb-2">
-                                <i class="bi bi-check-circle text-success"></i> Medicine stock will be automatically
-                                reduced
-                            </div>
-                            <div class="mb-2">
-                                <i class="bi bi-check-circle text-success"></i> Customer will earn loyalty points
-                            </div>
-                            <div>
-                                <i class="bi bi-check-circle text-success"></i> Invoice will be generated automatically
-                            </div>
-                        </small>
-                    </div>
-                </div>
-            </div>
-        </div>
+        </form>
 
         <script>
             function updatePrice() {
-                const select = document.getElementById('medicineSelect');
-                const option = select.options[select.selectedIndex];
-                const price = option.getAttribute('data-price');
+                const sel = document.getElementById('medicineSelect');
+                const opt = sel.options[sel.selectedIndex];
+                const price = opt.getAttribute('data-price');
+                const stock = opt.getAttribute('data-stock');
+                const cat = opt.getAttribute('data-cat');
+                const card = document.getElementById('medInfoCard');
 
-                if (price) {
+                if (price && sel.value) {
                     document.getElementById('unitPrice').value = price;
+                    document.getElementById('medInfoName').textContent = opt.textContent.split(' (Stock')[0];
+                    document.getElementById('medInfoCat').textContent = cat || '—';
+                    document.getElementById('medInfoStock').textContent = stock + ' units';
+                    document.getElementById('medInfoPrice').textContent = '₹' + parseFloat(price).toFixed(2);
+                    card.classList.add('show');
                     calculateTotal();
+                } else {
+                    card.classList.remove('show');
                 }
+            }
+
+            function adjustQty(delta) {
+                const qty = document.getElementById('quantity');
+                const val = Math.max(1, (parseInt(qty.value) || 0) + delta);
+                qty.value = val;
+                calculateTotal();
             }
 
             function calculateTotal() {
                 const quantity = parseFloat(document.getElementById('quantity').value) || 0;
                 const unitPrice = parseFloat(document.getElementById('unitPrice').value) || 0;
-                const discountPercentage = parseFloat(document.getElementById('discountPercentage').value) || 0;
-                const gstPercentage = parseFloat(document.getElementById('gstPercentage').value) || 0;
+                const discPct = parseFloat(document.getElementById('discountPercentage').value) || 0;
+                const gstPct = parseFloat(document.getElementById('gstPercentage').value) || 0;
 
-                // Calculate subtotal
                 const subtotal = quantity * unitPrice;
-                document.getElementById('subtotal').value = subtotal.toFixed(2);
+                document.getElementById('subtotal').value = '₹' + subtotal.toFixed(2);
                 document.getElementById('displaySubtotal').textContent = subtotal.toFixed(2);
 
-                // Calculate discount
-                const discountAmount = (subtotal * discountPercentage) / 100;
-                document.getElementById('discountAmountDisplay').textContent = discountAmount.toFixed(2);
-                document.getElementById('discountAmount').value = discountAmount.toFixed(2);
-                document.getElementById('displayDiscount').textContent = discountAmount.toFixed(2);
+                const discAmt = (subtotal * discPct) / 100;
+                document.getElementById('discountAmountDisplay').textContent = discAmt.toFixed(2);
+                document.getElementById('discountAmount').value = discAmt.toFixed(2);
+                document.getElementById('displayDiscount').textContent = discAmt.toFixed(2);
 
-                // Amount after discount
-                const amountAfterDiscount = subtotal - discountAmount;
+                const afterDisc = subtotal - discAmt;
+                const gstAmt = (afterDisc * gstPct) / 100;
+                document.getElementById('gstAmountDisplay').textContent = gstAmt.toFixed(2);
+                document.getElementById('gstAmount').value = gstAmt.toFixed(2);
+                document.getElementById('displayGST').textContent = gstAmt.toFixed(2);
 
-                // Calculate GST
-                const gstAmount = (amountAfterDiscount * gstPercentage) / 100;
-                document.getElementById('gstAmountDisplay').textContent = gstAmount.toFixed(2);
-                document.getElementById('gstAmount').value = gstAmount.toFixed(2);
-                document.getElementById('displayGST').textContent = gstAmount.toFixed(2);
-
-                // Final amount
-                const finalAmount = amountAfterDiscount + gstAmount;
-                document.getElementById('finalAmountHidden').value = finalAmount.toFixed(2);
-                document.getElementById('displayFinal').textContent = finalAmount.toFixed(2);
+                const finalAmt = afterDisc + gstAmt;
+                document.getElementById('finalAmountHidden').value = finalAmt.toFixed(2);
+                document.getElementById('displayFinal').textContent = finalAmt.toFixed(2);
             }
+
+            function selectPayment(method) {
+                document.querySelectorAll('.payment-btn').forEach(b => b.classList.remove('selected'));
+                document.getElementById('btn' + method).classList.add('selected');
+            }
+
+            // Set initial payment button state
+            document.addEventListener('DOMContentLoaded', () => {
+                const checked = document.querySelector('input[name="paymentMethod"]:checked');
+                if (checked) selectPayment(checked.value);
+            });
+
+            // Keyboard shortcuts
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'F2') { e.preventDefault(); document.getElementById('medicineSelect').focus(); }
+                if (e.key === 'F5') { e.preventDefault(); document.getElementById('saleForm').submit(); }
+                if (e.key === 'Escape') { window.location = '/sales'; }
+            });
         </script>
+
     </div>
 </body>
 

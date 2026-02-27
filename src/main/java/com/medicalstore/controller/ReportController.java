@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/reports")
@@ -119,5 +120,55 @@ public class ReportController {
         model.addAttribute("reportGeneratedAt", LocalDateTime.now());
 
         return "reports/gst-report";
+    }
+
+    @GetMapping("/expiry")
+    public String expiryReport(Model model) {
+        model.addAttribute("expired", reportService.getExpiredMedicines());
+        model.addAttribute("expiring30", reportService.getExpiringMedicines(30));
+        model.addAttribute("expiring60", reportService.getExpiringMedicines(60));
+        model.addAttribute("expiring90", reportService.getExpiringMedicines(90));
+        model.addAttribute("expiredValue", reportService.calculateStockValue(reportService.getExpiredMedicines()));
+        model.addAttribute("expiring30Value",
+                reportService.calculateStockValue(reportService.getExpiringMedicines(30)));
+        model.addAttribute("expiring60Value",
+                reportService.calculateStockValue(reportService.getExpiringMedicines(60)));
+        model.addAttribute("expiring90Value",
+                reportService.calculateStockValue(reportService.getExpiringMedicines(90)));
+        return "reports/expiry-report";
+    }
+
+    @GetMapping("/profit-loss")
+    public String profitLossReport(@RequestParam(required = false) String month, Model model) {
+        YearMonth yearMonth = month != null ? YearMonth.parse(month) : YearMonth.now();
+
+        LocalDateTime start = yearMonth.atDay(1).atStartOfDay();
+        LocalDateTime end = yearMonth.atEndOfMonth().atTime(23, 59, 59);
+
+        Map<String, Object> plData = reportService.generateProfitLossReport(start, end);
+        model.addAttribute("plData", plData);
+        model.addAttribute("reportMonth", yearMonth);
+
+        // Last 6 months trend data for chart
+        model.addAttribute("trendData", reportService.getMonthlyPLTrend(6));
+
+        return "reports/profit-loss";
+    }
+
+    @GetMapping("/export/excel")
+    public void exportSalesExcel(@RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate,
+            jakarta.servlet.http.HttpServletResponse response) throws Exception {
+        LocalDateTime start = startDate != null ? LocalDate.parse(startDate).atStartOfDay()
+                : LocalDate.now().withDayOfMonth(1).atStartOfDay();
+        LocalDateTime end = endDate != null ? LocalDate.parse(endDate).atTime(23, 59, 59)
+                : LocalDate.now().atTime(23, 59, 59);
+
+        byte[] excelBytes = reportService.exportSalesExcel(start, end);
+
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setHeader("Content-Disposition", "attachment; filename=sales-report.xlsx");
+        response.getOutputStream().write(excelBytes);
+        response.getOutputStream().flush();
     }
 }

@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+    th:replace="~{layout :: layout(title='Expiry Report', page='reports', content=~{::#content}, pageIcon='bi bi-exclamation-triangle-fill')}">
+
+<body>
+    <div id="content">
+        <!-- Page Header -->
+        <div class="page-header mb-4">
+            <div>
+                <h2><i class="bi bi-exclamation-triangle-fill text-danger"></i> Expiry Report</h2>
+                <p class="text-muted mb-0">Track expired and soon-to-expire medicines with value at risk</p>
+            </div>
+            <a href="/reports" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Back to Reports
+            </a>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <div class="stat-card" style="background:linear-gradient(135deg,#dc2626,#ef4444);">
+                    <div class="stat-label">Expired</div>
+                    <div class="stat-value" th:text="${#lists.size(expired)}">0</div>
+                    <div style="font-size:12px;margin-top:6px;opacity:0.9;">
+                        Value: ₹<span th:text="${#numbers.formatDecimal(expiredValue, 1, 2)}">0.00</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card" style="background:linear-gradient(135deg,#f59e0b,#fbbf24);">
+                    <div class="stat-label">Expiring in 30 Days</div>
+                    <div class="stat-value" th:text="${#lists.size(expiring30)}">0</div>
+                    <div style="font-size:12px;margin-top:6px;opacity:0.9;">
+                        Value: ₹<span th:text="${#numbers.formatDecimal(expiring30Value, 1, 2)}">0.00</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card" style="background:linear-gradient(135deg,#6366f1,#818cf8);">
+                    <div class="stat-label">Expiring in 60 Days</div>
+                    <div class="stat-value" th:text="${#lists.size(expiring60)}">0</div>
+                    <div style="font-size:12px;margin-top:6px;opacity:0.9;">
+                        Value: ₹<span th:text="${#numbers.formatDecimal(expiring60Value, 1, 2)}">0.00</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card" style="background:linear-gradient(135deg,#0ea5e9,#38bdf8);">
+                    <div class="stat-label">Expiring in 90 Days</div>
+                    <div class="stat-value" th:text="${#lists.size(expiring90)}">0</div>
+                    <div style="font-size:12px;margin-top:6px;opacity:0.9;">
+                        Value: ₹<span th:text="${#numbers.formatDecimal(expiring90Value, 1, 2)}">0.00</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="modern-card">
+            <ul class="nav nav-tabs px-3 pt-3" role="tablist">
+                <li class="nav-item">
+                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#expired" type="button">
+                        <i class="bi bi-x-circle text-danger me-1"></i>Expired
+                        <span class="badge bg-danger ms-1" th:text="${#lists.size(expired)}">0</span>
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#exp30" type="button">
+                        <i class="bi bi-clock text-warning me-1"></i>30 Days
+                        <span class="badge bg-warning text-dark ms-1" th:text="${#lists.size(expiring30)}">0</span>
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#exp60" type="button">
+                        <i class="bi bi-clock-history text-info me-1"></i>60 Days
+                        <span class="badge bg-info ms-1" th:text="${#lists.size(expiring60)}">0</span>
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#exp90" type="button">
+                        <i class="bi bi-hourglass text-primary me-1"></i>90 Days
+                        <span class="badge bg-primary ms-1" th:text="${#lists.size(expiring90)}">0</span>
+                    </button>
+                </li>
+            </ul>
+
+            <div class="tab-content">
+                <!-- Expired Tab -->
+                <div class="tab-pane fade show active" id="expired">
+                    <div th:if="${#lists.isEmpty(expired)}" class="empty-state py-4">
+                        <i class="bi bi-check-circle text-success"></i>
+                        <h5>No Expired Medicines</h5>
+                        <p>Great! All medicines are within their expiry date.</p>
+                    </div>
+                    <div class="table-responsive" th:if="${!#lists.isEmpty(expired)}">
+                        <table class="table modern-table mb-0">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Medicine</th>
+                                    <th>Category</th>
+                                    <th>Batch</th>
+                                    <th>Expiry Date</th>
+                                    <th>Stock</th>
+                                    <th>Value at Risk</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="m,stat : ${expired}">
+                                    <td th:text="${stat.index + 1}">1</td>
+                                    <td class="fw-bold" th:text="${m.name}">Medicine</td>
+                                    <td><span class="badge bg-light text-dark" th:text="${m.category}">Cat</span></td>
+                                    <td th:text="${m.batchNumber ?: '—'}">Batch</td>
+                                    <td><span class="badge bg-danger" th:text="${m.expiryDate}">Date</span></td>
+                                    <td th:text="${m.quantity}">0</td>
+                                    <td class="fw-bold text-danger"
+                                        th:text="'₹' + ${#numbers.formatDecimal(m.price * m.quantity, 1, 2)}">₹0</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 30-Day Tab -->
+                <div class="tab-pane fade" id="exp30">
+                    <div th:if="${#lists.isEmpty(expiring30)}" class="empty-state py-4">
+                        <i class="bi bi-check-circle text-success"></i>
+                        <h5>No Medicines Expiring in 30 Days</h5>
+                    </div>
+                    <div class="table-responsive" th:if="${!#lists.isEmpty(expiring30)}">
+                        <table class="table modern-table mb-0">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Medicine</th>
+                                    <th>Category</th>
+                                    <th>Batch</th>
+                                    <th>Expiry Date</th>
+                                    <th>Days Left</th>
+                                    <th>Stock</th>
+                                    <th>Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="m,stat : ${expiring30}">
+                                    <td th:text="${stat.index + 1}">1</td>
+                                    <td class="fw-bold" th:text="${m.name}">Medicine</td>
+                                    <td><span class="badge bg-light text-dark" th:text="${m.category}">Cat</span></td>
+                                    <td th:text="${m.batchNumber ?: '—'}">Batch</td>
+                                    <td><span class="badge bg-warning text-dark" th:text="${m.expiryDate}">Date</span>
+                                    </td>
+                                    <td
+                                        th:text="${T(java.time.temporal.ChronoUnit).DAYS.between(T(java.time.LocalDate).now(), m.expiryDate)}">
+                                        0</td>
+                                    <td th:text="${m.quantity}">0</td>
+                                    <td class="fw-bold"
+                                        th:text="'₹' + ${#numbers.formatDecimal(m.price * m.quantity, 1, 2)}">₹0</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 60-Day Tab -->
+                <div class="tab-pane fade" id="exp60">
+                    <div th:if="${#lists.isEmpty(expiring60)}" class="empty-state py-4">
+                        <i class="bi bi-check-circle text-success"></i>
+                        <h5>No Medicines Expiring in 60 Days</h5>
+                    </div>
+                    <div class="table-responsive" th:if="${!#lists.isEmpty(expiring60)}">
+                        <table class="table modern-table mb-0">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Medicine</th>
+                                    <th>Category</th>
+                                    <th>Batch</th>
+                                    <th>Expiry Date</th>
+                                    <th>Days Left</th>
+                                    <th>Stock</th>
+                                    <th>Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="m,stat : ${expiring60}">
+                                    <td th:text="${stat.index + 1}">1</td>
+                                    <td class="fw-bold" th:text="${m.name}">Medicine</td>
+                                    <td><span class="badge bg-light text-dark" th:text="${m.category}">Cat</span></td>
+                                    <td th:text="${m.batchNumber ?: '—'}">Batch</td>
+                                    <td><span class="badge bg-info" th:text="${m.expiryDate}">Date</span></td>
+                                    <td
+                                        th:text="${T(java.time.temporal.ChronoUnit).DAYS.between(T(java.time.LocalDate).now(), m.expiryDate)}">
+                                        0</td>
+                                    <td th:text="${m.quantity}">0</td>
+                                    <td class="fw-bold"
+                                        th:text="'₹' + ${#numbers.formatDecimal(m.price * m.quantity, 1, 2)}">₹0</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 90-Day Tab -->
+                <div class="tab-pane fade" id="exp90">
+                    <div th:if="${#lists.isEmpty(expiring90)}" class="empty-state py-4">
+                        <i class="bi bi-check-circle text-success"></i>
+                        <h5>No Medicines Expiring in 90 Days</h5>
+                    </div>
+                    <div class="table-responsive" th:if="${!#lists.isEmpty(expiring90)}">
+                        <table class="table modern-table mb-0">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Medicine</th>
+                                    <th>Category</th>
+                                    <th>Batch</th>
+                                    <th>Expiry Date</th>
+                                    <th>Days Left</th>
+                                    <th>Stock</th>
+                                    <th>Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="m,stat : ${expiring90}">
+                                    <td th:text="${stat.index + 1}">1</td>
+                                    <td class="fw-bold" th:text="${m.name}">Medicine</td>
+                                    <td><span class="badge bg-light text-dark" th:text="${m.category}">Cat</span></td>
+                                    <td th:text="${m.batchNumber ?: '—'}">Batch</td>
+                                    <td><span class="badge bg-primary" th:text="${m.expiryDate}">Date</span></td>
+                                    <td
+                                        th:text="${T(java.time.temporal.ChronoUnit).DAYS.between(T(java.time.LocalDate).now(), m.expiryDate)}">
+                                        0</td>
+                                    <td th:text="${m.quantity}">0</td>
+                                    <td class="fw-bold"
+                                        th:text="'₹' + ${#numbers.formatDecimal(m.price * m.quantity, 1, 2)}">₹0</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

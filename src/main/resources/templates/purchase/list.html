@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+    th:replace="~{layout :: layout(title='Purchase Orders', page='purchases', content=~{::#content}, pageIcon='bi bi-bag-check-fill')}">
+
+<body>
+    <div id="content">
+        <!-- Page Header -->
+        <div class="page-header mb-4">
+            <div>
+                <h2><i class="bi bi-bag-check-fill text-primary"></i> Purchase Orders</h2>
+                <p class="text-muted mb-0">Manage purchase orders and goods receipts</p>
+            </div>
+            <a href="/purchases/new" class="btn btn-primary">
+                <i class="bi bi-plus-lg"></i> New Purchase Order
+            </a>
+        </div>
+
+        <!-- Stats Row -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <div class="stat-card" style="background:linear-gradient(135deg,#2563eb,#3b82f6);">
+                    <div class="stat-label">Total Orders</div>
+                    <div class="stat-value" th:text="${#lists.size(orders)}">0</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card" style="background:linear-gradient(135deg,#f59e0b,#fbbf24);">
+                    <div class="stat-label">Draft</div>
+                    <div class="stat-value" id="draftCount">0</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card" style="background:linear-gradient(135deg,#8b5cf6,#a78bfa);">
+                    <div class="stat-label">Ordered</div>
+                    <div class="stat-value" id="orderedCount">0</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card" style="background:linear-gradient(135deg,#10b981,#34d399);">
+                    <div class="stat-label">Received</div>
+                    <div class="stat-value" id="receivedCount">0</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Orders Table -->
+        <div class="modern-card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-list-ul me-2"></i>All Purchase Orders</span>
+                <div class="d-flex gap-2">
+                    <select class="form-control form-control-sm" id="statusFilter" style="width:auto;">
+                        <option value="">All Status</option>
+                        <option value="DRAFT">Draft</option>
+                        <option value="ORDERED">Ordered</option>
+                        <option value="RECEIVED">Received</option>
+                        <option value="CANCELLED">Cancelled</option>
+                    </select>
+                </div>
+            </div>
+
+            <div th:if="${#lists.isEmpty(orders)}">
+                <div class="empty-state">
+                    <i class="bi bi-bag-x"></i>
+                    <h5>No Purchase Orders</h5>
+                    <p>Create your first purchase order to start tracking inventory purchases.</p>
+                    <a href="/purchases/new" class="btn btn-primary mt-3">
+                        <i class="bi bi-plus-lg"></i> Create Purchase Order
+                    </a>
+                </div>
+            </div>
+
+            <div class="table-responsive" th:if="${!#lists.isEmpty(orders)}">
+                <table class="table modern-table mb-0" id="ordersTable">
+                    <thead>
+                        <tr>
+                            <th>Order #</th>
+                            <th>Date</th>
+                            <th>Supplier</th>
+                            <th>Items</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="order : ${orders}" th:data-status="${order.status}">
+                            <td>
+                                <a th:href="@{'/purchases/' + ${order.id}}" class="fw-bold text-decoration-none"
+                                    th:text="${order.orderNumber}">PO-001</a>
+                            </td>
+                            <td th:text="${order.orderDate}">2024-01-01</td>
+                            <td th:text="${order.supplier.name}">Supplier</td>
+                            <td>
+                                <span class="badge bg-light text-dark"
+                                    th:text="${#lists.size(order.items)} + ' items'">0 items</span>
+                            </td>
+                            <td class="fw-bold" th:text="'₹' + ${#numbers.formatDecimal(order.totalAmount, 1, 2)}">
+                                ₹0.00</td>
+                            <td>
+                                <span class="badge" th:classappend="${order.status == 'DRAFT'} ? 'bg-warning text-dark' :
+                                        (${order.status == 'ORDERED'} ? 'bg-primary' :
+                                        (${order.status == 'RECEIVED'} ? 'bg-success' : 'bg-secondary'))"
+                                    th:text="${order.status}">DRAFT</span>
+                            </td>
+                            <td>
+                                <div class="d-flex gap-1">
+                                    <a th:href="@{'/purchases/' + ${order.id}}" class="btn btn-sm btn-outline-primary"
+                                        title="View">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a th:if="${order.status == 'DRAFT'}" th:href="@{'/purchases/edit/' + ${order.id}}"
+                                        class="btn btn-sm btn-outline-secondary" title="Edit">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a th:if="${order.status == 'DRAFT'}"
+                                        th:href="@{'/purchases/delete/' + ${order.id}}"
+                                        class="btn btn-sm btn-outline-danger" title="Delete"
+                                        onclick="return confirm('Delete this order?');">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <script>
+            // Count statuses
+            document.addEventListener('DOMContentLoaded', function () {
+                const rows = document.querySelectorAll('#ordersTable tbody tr');
+                let d = 0, o = 0, r = 0;
+                rows.forEach(row => {
+                    const s = row.dataset.status;
+                    if (s === 'DRAFT') d++;
+                    else if (s === 'ORDERED') o++;
+                    else if (s === 'RECEIVED') r++;
+                });
+                document.getElementById('draftCount').textContent = d;
+                document.getElementById('orderedCount').textContent = o;
+                document.getElementById('receivedCount').textContent = r;
+
+                // Filter
+                document.getElementById('statusFilter').addEventListener('change', function () {
+                    const val = this.value;
+                    rows.forEach(row => {
+                        row.style.display = (!val || row.dataset.status === val) ? '' : 'none';
+                    });
+                });
+            });
+        </script>
+    </div>
+</body>
+
+</html>

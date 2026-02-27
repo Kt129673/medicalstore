@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+    th:replace="~{layout :: layout(title='New Purchase Order', page='purchases', content=~{::#content}, pageIcon='bi bi-bag-plus-fill')}">
+
+<body>
+    <div id="content">
+        <!-- Page Header -->
+        <div class="page-header mb-4">
+            <div>
+                <h2 th:text="${order.id != null ? 'Edit Purchase Order' : 'New Purchase Order'}">
+                    New Purchase Order
+                </h2>
+                <p class="text-muted mb-0">Fill in order details and add line items</p>
+            </div>
+            <a href="/purchases" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Back to Orders
+            </a>
+        </div>
+
+        <form action="/purchases/save" method="post" id="poForm">
+            <input type="hidden" name="orderId" th:value="${order.id}">
+
+            <!-- Order Details -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="bi bi-info-circle text-primary me-2"></i>Order Details
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Supplier *</label>
+                            <select class="form-control" name="supplierId" required id="supplierSelect">
+                                <option value="">Select Supplier</option>
+                                <option th:each="s : ${suppliers}" th:value="${s.id}" th:text="${s.name}"
+                                    th:selected="${order.supplier != null && order.supplier.id == s.id}">
+                                </option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Order Date *</label>
+                            <input type="date" class="form-control" name="orderDate" required
+                                th:value="${order.orderDate != null ? order.orderDate : #temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}">
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Status</label>
+                            <select class="form-control" name="status">
+                                <option value="DRAFT" th:selected="${order.status == 'DRAFT' || order.status == null}">
+                                    Draft</option>
+                                <option value="ORDERED" th:selected="${order.status == 'ORDERED'}">Ordered</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label">Notes</label>
+                            <textarea class="form-control" rows="2" name="notes" th:text="${order.notes}"
+                                placeholder="Optional notes for this order..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Line Items -->
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span><i class="bi bi-list-check text-info me-2"></i>Line Items</span>
+                    <button type="button" class="btn btn-sm btn-primary" id="addItemBtn">
+                        <i class="bi bi-plus-lg"></i> Add Item
+                    </button>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table modern-table mb-0">
+                            <thead>
+                                <tr>
+                                    <th style="width:40%;">Medicine</th>
+                                    <th style="width:15%;">Qty</th>
+                                    <th style="width:20%;">Unit Price (₹)</th>
+                                    <th style="width:20%;">Total (₹)</th>
+                                    <th style="width:5%;"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="itemsBody">
+                                <!-- Existing items (edit mode) -->
+                                <tr th:each="item,stat : ${order.items}" class="item-row">
+                                    <td>
+                                        <select class="form-control form-control-sm medicine-select" name="medicineId"
+                                            required>
+                                            <option value="">Select Medicine</option>
+                                            <option th:each="m : ${medicines}" th:value="${m.id}" th:text="${m.name}"
+                                                th:selected="${item.medicine != null && item.medicine.id == m.id}">
+                                            </option>
+                                        </select>
+                                    </td>
+                                    <td><input type="number" class="form-control form-control-sm item-qty"
+                                            name="itemQty" min="1" required th:value="${item.quantity}"></td>
+                                    <td><input type="number" class="form-control form-control-sm item-price"
+                                            name="itemPrice" step="0.01" min="0" required th:value="${item.unitPrice}">
+                                    </td>
+                                    <td class="item-total fw-bold"
+                                        th:text="${'₹' + #numbers.formatDecimal(item.totalPrice, 1, 2)}">₹0.00</td>
+                                    <td>
+                                        <button type="button" class="btn btn-sm btn-outline-danger remove-item">
+                                            <i class="bi bi-x"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr style="background:var(--bg-secondary);">
+                                    <td colspan="3" class="text-end fw-bold">Grand Total:</td>
+                                    <td class="fw-bold text-primary" id="grandTotal">₹0.00</td>
+                                    <td></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+                    <!-- Empty state -->
+                    <div class="empty-state py-4" id="emptyItems">
+                        <i class="bi bi-inbox"></i>
+                        <p>No items added yet. Click "Add Item" above.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="d-flex gap-2 mb-4">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="bi bi-save"></i> Save Order
+                </button>
+                <a href="/purchases" class="btn btn-secondary btn-lg">
+                    <i class="bi bi-x-circle"></i> Cancel
+                </a>
+            </div>
+        </form>
+
+        <script th:inline="javascript">
+            const medicines = /*[[${medicines}]]*/[];
+        </script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const itemsBody = document.getElementById('itemsBody');
+                const grandTotal = document.getElementById('grandTotal');
+                const emptyItems = document.getElementById('emptyItems');
+                const addBtn = document.getElementById('addItemBtn');
+
+                // Build medicine options HTML
+                let medOptions = '<option value="">Select Medicine</option>';
+                if (typeof medicines !== 'undefined' && medicines.length) {
+                    medicines.forEach(m => {
+                        medOptions += `<option value="${m.id}">${m.name} (₹${m.price})</option>`;
+                    });
+                }
+
+                function addRow() {
+                    const tr = document.createElement('tr');
+                    tr.className = 'item-row';
+                    tr.innerHTML = `
+                        <td><select class="form-control form-control-sm medicine-select" name="medicineId" required>${medOptions}</select></td>
+                        <td><input type="number" class="form-control form-control-sm item-qty" name="itemQty" min="1" value="1" required></td>
+                        <td><input type="number" class="form-control form-control-sm item-price" name="itemPrice" step="0.01" min="0" value="0" required></td>
+                        <td class="item-total fw-bold">₹0.00</td>
+                        <td><button type="button" class="btn btn-sm btn-outline-danger remove-item"><i class="bi bi-x"></i></button></td>
+                    `;
+                    itemsBody.appendChild(tr);
+                    bindRow(tr);
+                    updateView();
+
+                    // Auto-fill price when medicine is selected
+                    const select = tr.querySelector('.medicine-select');
+                    select.addEventListener('change', function () {
+                        const mid = parseInt(this.value);
+                        const med = medicines.find(m => m.id === mid);
+                        if (med) {
+                            tr.querySelector('.item-price').value = med.purchasePrice || med.price;
+                            calcRowTotal(tr);
+                        }
+                    });
+                }
+
+                function bindRow(tr) {
+                    tr.querySelector('.item-qty').addEventListener('input', () => calcRowTotal(tr));
+                    tr.querySelector('.item-price').addEventListener('input', () => calcRowTotal(tr));
+                    tr.querySelector('.remove-item').addEventListener('click', () => {
+                        tr.remove();
+                        updateView();
+                    });
+                }
+
+                function calcRowTotal(tr) {
+                    const qty = parseFloat(tr.querySelector('.item-qty').value) || 0;
+                    const price = parseFloat(tr.querySelector('.item-price').value) || 0;
+                    const total = qty * price;
+                    tr.querySelector('.item-total').textContent = '₹' + total.toFixed(2);
+                    updateGrandTotal();
+                }
+
+                function updateGrandTotal() {
+                    let sum = 0;
+                    document.querySelectorAll('.item-total').forEach(el => {
+                        sum += parseFloat(el.textContent.replace('₹', '').replace(',', '')) || 0;
+                    });
+                    grandTotal.textContent = '₹' + sum.toFixed(2);
+                }
+
+                function updateView() {
+                    const rows = itemsBody.querySelectorAll('.item-row');
+                    emptyItems.style.display = rows.length === 0 ? 'block' : 'none';
+                    updateGrandTotal();
+                }
+
+                addBtn.addEventListener('click', addRow);
+
+                // Bind existing rows (edit mode)
+                itemsBody.querySelectorAll('.item-row').forEach(tr => bindRow(tr));
+                updateView();
+            });
+        </script>
+    </div>
+</body>
+
+</html>
