@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-    th:fragment="layout (title, page, content)">
+    th:fragment="layout (title, page, content, pageIcon)">
 
 <head>
     <meta charset="UTF-8">
@@ -139,6 +139,23 @@
             font-weight: 600;
         }
 
+        /* Sidebar section labels and dividers */
+        .nav-section-label {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+            padding: 12px 20px 4px;
+            opacity: 0.7;
+        }
+
+        .nav-divider {
+            height: 1px;
+            background: var(--border-color);
+            margin: 8px 16px;
+        }
+
         .user-profile {
             padding: 16px 20px;
             border-top: 1px solid var(--border-color);
@@ -208,20 +225,83 @@
 
         .main-header {
             height: var(--header-height);
-            background: var(--bg-primary);
+            background: #fff;
             border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 1px 8px 0 rgba(37, 99, 235, 0.07);
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 0 24px;
             flex-shrink: 0;
+            gap: 12px;
         }
 
         .page-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: var(--text-primary);
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--primary-color);
             margin: 0;
+            letter-spacing: -0.3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Header right side: clock + role badge */
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        .header-clock {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            line-height: 1.2;
+        }
+
+        .header-clock .clock-time {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-primary);
+            font-variant-numeric: tabular-nums;
+            letter-spacing: -0.5px;
+        }
+
+        .header-clock .clock-date {
+            font-size: 11px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .header-role-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .role-admin {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .role-owner {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .role-shopkeeper {
+            background: #d1fae5;
+            color: #065f46;
         }
 
         .main-body {
@@ -549,7 +629,7 @@
             }
 
             .main-header {
-                padding-left: 50px;
+                padding-left: 60px;
             }
         }
 
@@ -640,6 +720,21 @@
 
             .main-header {
                 padding-left: 62px;
+                /* ensure right side never goes under toggle btn */
+                padding-right: 12px;
+                /* on very small screens, hide role badge */
+            }
+
+            .main-header .header-role-badge {
+                display: none;
+            }
+
+            .header-clock .clock-time {
+                font-size: 13px;
+            }
+
+            .header-clock .clock-date {
+                display: none;
             }
         }
 
@@ -834,14 +929,33 @@
 
         <!-- Main Content -->
         <main class="main-content">
-            <!-- Header -->
+            <!-- Premium Header -->
             <header class="main-header">
-                <h1 class="page-title" th:text="${title}">Page Title</h1>
-                <div>
-                    <span class="badge bg-success">
-                        <i class="bi bi-calendar-check"></i>
-                        <span th:text="${#temporals.format(#temporals.createNow(), 'dd MMM yyyy')}"></span>
+                <!-- Left: page title -->
+                <h1 class="page-title">
+                    <i th:if="${pageIcon}" th:class="${pageIcon}" style="margin-right: 8px;"></i>
+                    <span th:text="${title}">Page</span>
+                </h1>
+
+                <!-- Right: live clock + role badge -->
+                <div class="header-right">
+
+                    <!-- Role badge -->
+                    <span class="header-role-badge role-admin" sec:authorize="hasRole('ADMIN')">
+                        <i class="bi bi-shield-fill"></i> Admin
                     </span>
+                    <span class="header-role-badge role-owner" sec:authorize="hasRole('OWNER')">
+                        <i class="bi bi-person-badge-fill"></i> Owner
+                    </span>
+                    <span class="header-role-badge role-shopkeeper" sec:authorize="hasRole('SHOPKEEPER')">
+                        <i class="bi bi-shop"></i> Shopkeeper
+                    </span>
+
+                    <!-- Live clock -->
+                    <div class="header-clock">
+                        <span class="clock-time" id="liveClock">--:--:--</span>
+                        <span class="clock-date" id="liveDate">-- --- ----</span>
+                    </div>
                 </div>
             </header>
 
@@ -931,6 +1045,22 @@
         window.addEventListener('resize', () => {
             if (!isMobile()) closeSidebarMobile();
         });
+
+        /* ---- Live clock ---- */
+        function updateClock() {
+            const now = new Date();
+            const hh = String(now.getHours()).padStart(2, '0');
+            const mm = String(now.getMinutes()).padStart(2, '0');
+            const ss = String(now.getSeconds()).padStart(2, '0');
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            const timeEl = document.getElementById('liveClock');
+            const dateEl = document.getElementById('liveDate');
+            if (timeEl) timeEl.textContent = hh + ':' + mm + ':' + ss;
+            if (dateEl) dateEl.textContent = days[now.getDay()] + ', ' + now.getDate() + ' ' + months[now.getMonth()] + ' ' + now.getFullYear();
+        }
+        updateClock();
+        setInterval(updateClock, 1000);
     </script>
 </body>
 

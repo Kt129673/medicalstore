@@ -1,10 +1,21 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-    th:replace="~{layout :: layout(title='Medicine Form', page='medicines', content=~{::#content})}">
+    th:replace="~{layout :: layout(title='Medicine Form', page='medicines', content=~{::#content}, pageIcon='bi bi-capsule-pill')}">
 
 <body>
     <div id="content">
-        <h2 class="mb-4" th:text="${medicine.id != null ? 'Edit Medicine' : 'Add New Medicine'}">Add Medicine</h2>
+        <!-- Page Header -->
+        <div class="page-header mb-4">
+            <div>
+                <h2 th:text="${medicine.id != null ? 'Edit Medicine' : 'Add New Medicine'}">
+                    <i class="bi bi-capsule-pill text-primary"></i> Add Medicine
+                </h2>
+                <p class="text-muted mb-0">Enter medicine details including pricing and stock information</p>
+            </div>
+            <a href="/medicines" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Back to List
+            </a>
+        </div>
 
 
         <div class="card">
