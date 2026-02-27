@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(title='New Sale', page='sales', content=~{::#content})}">
+<html xmlns:th="http://www.thymeleaf.org"
+    th:replace="~{layout :: layout(title='New Sale', page='sales', content=~{::#content})}">
+
 <head>
     <style>
         .calculation-card {
@@ -10,43 +12,51 @@
             position: sticky;
             top: 20px;
         }
-        
+
+        @media (max-width: 768px) {
+            .calculation-card {
+                position: static;
+                padding: 20px;
+                border-radius: 12px;
+            }
+        }
+
         .calc-row {
             display: flex;
             justify-content: space-between;
             padding: 12px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.2);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
         }
-        
+
         .calc-row:last-child {
             border-bottom: none;
             padding-top: 16px;
             margin-top: 8px;
-            border-top: 2px solid rgba(255,255,255,0.4);
+            border-top: 2px solid rgba(255, 255, 255, 0.4);
         }
-        
+
         .calc-label {
             opacity: 0.9;
             font-size: 14px;
         }
-        
+
         .calc-value {
             font-weight: 600;
             font-size: 16px;
         }
-        
+
         .calc-final {
             font-size: 32px !important;
             font-weight: 700 !important;
         }
-        
+
         .form-section {
             background: #f8f9fa;
             border-radius: 12px;
             padding: 20px;
             margin-bottom: 20px;
         }
-        
+
         .section-title {
             color: #667eea;
             font-weight: 600;
@@ -59,278 +69,291 @@
         }
     </style>
 </head>
-<body>
-<div id="content">
-    <!-- Page Header -->
-    <div class="page-header mb-4">
-        <div>
-            <h2>
-                <i class="bi bi-cart-plus-fill text-primary"></i> New Sale
-            </h2>
-            <p class="text-muted mb-0">Create a new sales transaction</p>
-        </div>
-        <a href="/sales" class="btn btn-outline-secondary">
-            <i class="bi bi-arrow-left"></i> Back to Sales
-        </a>
-    </div>
 
-    <div class="row">
-        <!-- Main Form -->
-        <div class="col-md-8">
-            <div class="card modern-card">
-                <div class="card-header">
-                    <h5 class="mb-0">
-                        <i class="bi bi-file-earmark-text"></i> Transaction Details
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <form th:action="@{/sales/save}" th:object="${sale}" method="post" id="saleForm">
-                        <!-- Product Selection -->
-                        <div class="form-section">
-                            <div class="section-title">
-                                <i class="bi bi-box-seam"></i>
-                                <span>Product Selection</span>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Select Medicine *</label>
-                                    <select class="form-control" th:field="*{medicine.id}" id="medicineSelect" required onchange="updatePrice()">
-                                        <option value="">Choose Medicine</option>
-                                        <option th:each="medicine : ${medicines}" 
-                                                th:value="${medicine.id}" 
+<body>
+    <div id="content">
+        <!-- Page Header -->
+        <div class="page-header mb-4">
+            <div>
+                <h2>
+                    <i class="bi bi-cart-plus-fill text-primary"></i> New Sale
+                </h2>
+                <p class="text-muted mb-0">Create a new sales transaction</p>
+            </div>
+            <a href="/sales" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Back to Sales
+            </a>
+        </div>
+
+        <div class="row">
+            <!-- Main Form -->
+            <div class="col-md-8">
+                <div class="card modern-card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="bi bi-file-earmark-text"></i> Transaction Details
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/sales/save}" th:object="${sale}" method="post" id="saleForm">
+                            <!-- Product Selection -->
+                            <div class="form-section">
+                                <div class="section-title">
+                                    <i class="bi bi-box-seam"></i>
+                                    <span>Product Selection</span>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Select Medicine *</label>
+                                        <select class="form-control" th:field="*{medicine.id}" id="medicineSelect"
+                                            required onchange="updatePrice()">
+                                            <option value="">Choose Medicine</option>
+                                            <option th:each="medicine : ${medicines}" th:value="${medicine.id}"
                                                 th:text="${medicine.name + ' (Stock: ' + medicine.quantity + ')'}"
                                                 th:attr="data-price=${medicine.price},data-stock=${medicine.quantity}">
-                                        </option>
-                                    </select>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Customer</label>
-                                    <select class="form-control" th:field="*{customer.id}">
-                                        <option value="">Walk-in Customer</option>
-                                        <option th:each="customer : ${customers}" 
-                                                th:value="${customer.id}" 
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Customer</label>
+                                        <select class="form-control" th:field="*{customer.id}">
+                                            <option value="">Walk-in Customer</option>
+                                            <option th:each="customer : ${customers}" th:value="${customer.id}"
                                                 th:text="${customer.name + ' (' + customer.phone + ')'}">
-                                        </option>
-                                    </select>
-                                    <small class="text-muted">Optional - Select for loyalty points</small>
+                                            </option>
+                                        </select>
+                                        <small class="text-muted">Optional - Select for loyalty points</small>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <!-- Pricing Details -->
-                        <div class="form-section">
-                            <div class="section-title">
-                                <i class="bi bi-calculator"></i>
-                                <span>Pricing Details</span>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-4 mb-3">
-                                    <label class="form-label">Quantity *</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text"><i class="bi bi-box"></i></span>
-                                        <input type="number" class="form-control" th:field="*{quantity}" id="quantity" required min="1" onchange="calculateTotal()">
-                                        <span class="input-group-text">units</span>
-                                    </div>
+                            <!-- Pricing Details -->
+                            <div class="form-section">
+                                <div class="section-title">
+                                    <i class="bi bi-calculator"></i>
+                                    <span>Pricing Details</span>
                                 </div>
-                                <div class="col-md-4 mb-3">
-                                    <label class="form-label">Unit Price (₹) *</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text">₹</span>
-                                        <input type="number" step="0.01" class="form-control" th:field="*{unitPrice}" id="unitPrice" required readonly>
-                                    </div>
-                                </div>
-                                <div class="col-md-4 mb-3">
-                                    <label class="form-label">Subtotal (₹)</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text">₹</span>
-                                        <input type="number" step="0.01" class="form-control" id="subtotal" readonly style="background: #e9ecef; font-weight: 600;">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Discounts & Taxes -->
-                        <div class="form-section">
-                            <div class="section-title">
-                                <i class="bi bi-percent"></i>
-                                <span>Discounts & Taxes</span>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Discount (%)</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text"><i class="bi bi-tag"></i></span>
-                                        <input type="number" step="0.01" class="form-control" th:field="*{discountPercentage}" id="discountPercentage" value="0" min="0" max="100" onchange="calculateTotal()">
-                                        <span class="input-group-text">%</span>
-                                    </div>
-                                    <small class="text-muted">Discount Amount: <strong>₹<span id="discountAmountDisplay">0.00</span></strong></small>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">GST Rate (%)</label>
-                                    <select class="form-control" th:field="*{gstPercentage}" id="gstPercentage" onchange="calculateTotal()">
-                                        <option value="0">No GST (0%)</option>
-                                        <option value="5">GST 5%</option>
-                                        <option value="12">GST 12%</option>
-                                        <option value="18">GST 18%</option>
-                                        <option value="28">GST 28%</option>
-                                    </select>
-                                    <small class="text-muted">GST Amount: <strong>₹<span id="gstAmountDisplay">0.00</span></strong></small>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Payment Method -->
-                        <div class="form-section">
-                            <div class="section-title">
-                                <i class="bi bi-credit-card"></i>
-                                <span>Payment Method</span>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-12 mb-3">
-                                    <label class="form-label">Payment Mode *</label>
-                                    <div class="d-flex gap-3">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="paymentMethod" id="paymentCash" value="Cash" th:field="*{paymentMethod}" required>
-                                            <label class="form-check-label" for="paymentCash">
-                                                <i class="bi bi-cash-stack text-success"></i> Cash
-                                            </label>
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label">Quantity *</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-box"></i></span>
+                                            <input type="number" class="form-control" th:field="*{quantity}"
+                                                id="quantity" required min="1" onchange="calculateTotal()">
+                                            <span class="input-group-text">units</span>
                                         </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="paymentMethod" id="paymentCard" value="Card" th:field="*{paymentMethod}">
-                                            <label class="form-check-label" for="paymentCard">
-                                                <i class="bi bi-credit-card text-primary"></i> Card
-                                            </label>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label">Unit Price (₹) *</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">₹</span>
+                                            <input type="number" step="0.01" class="form-control"
+                                                th:field="*{unitPrice}" id="unitPrice" required readonly>
                                         </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="paymentMethod" id="paymentUPI" value="UPI" th:field="*{paymentMethod}">
-                                            <label class="form-check-label" for="paymentUPI">
-                                                <i class="bi bi-phone text-danger"></i> UPI
-                                            </label>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label">Subtotal (₹)</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">₹</span>
+                                            <input type="number" step="0.01" class="form-control" id="subtotal" readonly
+                                                style="background: #e9ecef; font-weight: 600;">
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <!-- Hidden Fields -->
-                        <input type="hidden" th:field="*{discountAmount}" id="discountAmount">
-                        <input type="hidden" th:field="*{gstAmount}" id="gstAmount">
-                        <input type="hidden" th:field="*{finalAmount}" id="finalAmountHidden">
-
-                        <!-- Form Actions -->
-                        <div class="d-flex gap-2 justify-content-between align-items-center pt-3 border-top">
-                            <small class="text-muted">
-                                <i class="bi bi-info-circle"></i> All fields marked with * are required
-                            </small>
-                            <div class="d-flex gap-2">
-                                <a href="/sales" class="btn btn-outline-secondary">
-                                    <i class="bi bi-x-circle"></i> Cancel
-                                </a>
-                                <button type="submit" class="btn btn-success btn-lg">
-                                    <i class="bi bi-check-circle"></i> Complete Sale
-                                </button>
+                            <!-- Discounts & Taxes -->
+                            <div class="form-section">
+                                <div class="section-title">
+                                    <i class="bi bi-percent"></i>
+                                    <span>Discounts & Taxes</span>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Discount (%)</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-tag"></i></span>
+                                            <input type="number" step="0.01" class="form-control"
+                                                th:field="*{discountPercentage}" id="discountPercentage" value="0"
+                                                min="0" max="100" onchange="calculateTotal()">
+                                            <span class="input-group-text">%</span>
+                                        </div>
+                                        <small class="text-muted">Discount Amount: <strong>₹<span
+                                                    id="discountAmountDisplay">0.00</span></strong></small>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">GST Rate (%)</label>
+                                        <select class="form-control" th:field="*{gstPercentage}" id="gstPercentage"
+                                            onchange="calculateTotal()">
+                                            <option value="0">No GST (0%)</option>
+                                            <option value="5">GST 5%</option>
+                                            <option value="12">GST 12%</option>
+                                            <option value="18">GST 18%</option>
+                                            <option value="28">GST 28%</option>
+                                        </select>
+                                        <small class="text-muted">GST Amount: <strong>₹<span
+                                                    id="gstAmountDisplay">0.00</span></strong></small>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </form>
+
+                            <!-- Payment Method -->
+                            <div class="form-section">
+                                <div class="section-title">
+                                    <i class="bi bi-credit-card"></i>
+                                    <span>Payment Method</span>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12 mb-3">
+                                        <label class="form-label">Payment Mode *</label>
+                                        <div class="d-flex gap-3">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="paymentMethod"
+                                                    id="paymentCash" value="Cash" th:field="*{paymentMethod}" required>
+                                                <label class="form-check-label" for="paymentCash">
+                                                    <i class="bi bi-cash-stack text-success"></i> Cash
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="paymentMethod"
+                                                    id="paymentCard" value="Card" th:field="*{paymentMethod}">
+                                                <label class="form-check-label" for="paymentCard">
+                                                    <i class="bi bi-credit-card text-primary"></i> Card
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="paymentMethod"
+                                                    id="paymentUPI" value="UPI" th:field="*{paymentMethod}">
+                                                <label class="form-check-label" for="paymentUPI">
+                                                    <i class="bi bi-phone text-danger"></i> UPI
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Hidden Fields -->
+                            <input type="hidden" th:field="*{discountAmount}" id="discountAmount">
+                            <input type="hidden" th:field="*{gstAmount}" id="gstAmount">
+                            <input type="hidden" th:field="*{finalAmount}" id="finalAmountHidden">
+
+                            <!-- Form Actions -->
+                            <div class="d-flex gap-2 justify-content-between align-items-center pt-3 border-top">
+                                <small class="text-muted">
+                                    <i class="bi bi-info-circle"></i> All fields marked with * are required
+                                </small>
+                                <div class="d-flex gap-2">
+                                    <a href="/sales" class="btn btn-outline-secondary">
+                                        <i class="bi bi-x-circle"></i> Cancel
+                                    </a>
+                                    <button type="submit" class="btn btn-success btn-lg">
+                                        <i class="bi bi-check-circle"></i> Complete Sale
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Calculation Summary -->
-        <div class="col-md-4">
-            <div class="calculation-card">
-                <h5 class="mb-4">
-                    <i class="bi bi-receipt"></i> Bill Summary
-                </h5>
-                
-                <div class="calc-row">
-                    <span class="calc-label">Subtotal</span>
-                    <span class="calc-value">₹<span id="displaySubtotal">0.00</span></span>
-                </div>
-                
-                <div class="calc-row">
-                    <span class="calc-label">Discount</span>
-                    <span class="calc-value text-warning">- ₹<span id="displayDiscount">0.00</span></span>
-                </div>
-                
-                <div class="calc-row">
-                    <span class="calc-label">GST</span>
-                    <span class="calc-value text-success">+ ₹<span id="displayGST">0.00</span></span>
-                </div>
-                
-                <div class="calc-row">
-                    <span class="calc-label">TOTAL AMOUNT</span>
-                    <span class="calc-value calc-final">₹<span id="displayFinal">0.00</span></span>
-                </div>
-            </div>
-            
-            <div class="card modern-card mt-3">
-                <div class="card-header">
-                    <h5 class="mb-0">
-                        <i class="bi bi-info-circle"></i> Quick Tips
+            <!-- Calculation Summary -->
+            <div class="col-md-4">
+                <div class="calculation-card">
+                    <h5 class="mb-4">
+                        <i class="bi bi-receipt"></i> Bill Summary
                     </h5>
+
+                    <div class="calc-row">
+                        <span class="calc-label">Subtotal</span>
+                        <span class="calc-value">₹<span id="displaySubtotal">0.00</span></span>
+                    </div>
+
+                    <div class="calc-row">
+                        <span class="calc-label">Discount</span>
+                        <span class="calc-value text-warning">- ₹<span id="displayDiscount">0.00</span></span>
+                    </div>
+
+                    <div class="calc-row">
+                        <span class="calc-label">GST</span>
+                        <span class="calc-value text-success">+ ₹<span id="displayGST">0.00</span></span>
+                    </div>
+
+                    <div class="calc-row">
+                        <span class="calc-label">TOTAL AMOUNT</span>
+                        <span class="calc-value calc-final">₹<span id="displayFinal">0.00</span></span>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <small>
-                        <div class="mb-2">
-                            <i class="bi bi-check-circle text-success"></i> Medicine stock will be automatically reduced
-                        </div>
-                        <div class="mb-2">
-                            <i class="bi bi-check-circle text-success"></i> Customer will earn loyalty points
-                        </div>
-                        <div>
-                            <i class="bi bi-check-circle text-success"></i> Invoice will be generated automatically
-                        </div>
-                    </small>
+
+                <div class="card modern-card mt-3">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="bi bi-info-circle"></i> Quick Tips
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <small>
+                            <div class="mb-2">
+                                <i class="bi bi-check-circle text-success"></i> Medicine stock will be automatically
+                                reduced
+                            </div>
+                            <div class="mb-2">
+                                <i class="bi bi-check-circle text-success"></i> Customer will earn loyalty points
+                            </div>
+                            <div>
+                                <i class="bi bi-check-circle text-success"></i> Invoice will be generated automatically
+                            </div>
+                        </small>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <script>
-        function updatePrice() {
-            const select = document.getElementById('medicineSelect');
-            const option = select.options[select.selectedIndex];
-            const price = option.getAttribute('data-price');
-            
-            if (price) {
-                document.getElementById('unitPrice').value = price;
-                calculateTotal();
+        <script>
+            function updatePrice() {
+                const select = document.getElementById('medicineSelect');
+                const option = select.options[select.selectedIndex];
+                const price = option.getAttribute('data-price');
+
+                if (price) {
+                    document.getElementById('unitPrice').value = price;
+                    calculateTotal();
+                }
             }
-        }
 
-        function calculateTotal() {
-            const quantity = parseFloat(document.getElementById('quantity').value) || 0;
-            const unitPrice = parseFloat(document.getElementById('unitPrice').value) || 0;
-            const discountPercentage = parseFloat(document.getElementById('discountPercentage').value) || 0;
-            const gstPercentage = parseFloat(document.getElementById('gstPercentage').value) || 0;
-            
-            // Calculate subtotal
-            const subtotal = quantity * unitPrice;
-            document.getElementById('subtotal').value = subtotal.toFixed(2);
-            document.getElementById('displaySubtotal').textContent = subtotal.toFixed(2);
-            
-            // Calculate discount
-            const discountAmount = (subtotal * discountPercentage) / 100;
-            document.getElementById('discountAmountDisplay').textContent = discountAmount.toFixed(2);
-            document.getElementById('discountAmount').value = discountAmount.toFixed(2);
-            document.getElementById('displayDiscount').textContent = discountAmount.toFixed(2);
-            
-            // Amount after discount
-            const amountAfterDiscount = subtotal - discountAmount;
-            
-            // Calculate GST
-            const gstAmount = (amountAfterDiscount * gstPercentage) / 100;
-            document.getElementById('gstAmountDisplay').textContent = gstAmount.toFixed(2);
-            document.getElementById('gstAmount').value = gstAmount.toFixed(2);
-            document.getElementById('displayGST').textContent = gstAmount.toFixed(2);
-            
-            // Final amount
-            const finalAmount = amountAfterDiscount + gstAmount;
-            document.getElementById('finalAmountHidden').value = finalAmount.toFixed(2);
-            document.getElementById('displayFinal').textContent = finalAmount.toFixed(2);
-        }
-    </script>
-</div>
+            function calculateTotal() {
+                const quantity = parseFloat(document.getElementById('quantity').value) || 0;
+                const unitPrice = parseFloat(document.getElementById('unitPrice').value) || 0;
+                const discountPercentage = parseFloat(document.getElementById('discountPercentage').value) || 0;
+                const gstPercentage = parseFloat(document.getElementById('gstPercentage').value) || 0;
+
+                // Calculate subtotal
+                const subtotal = quantity * unitPrice;
+                document.getElementById('subtotal').value = subtotal.toFixed(2);
+                document.getElementById('displaySubtotal').textContent = subtotal.toFixed(2);
+
+                // Calculate discount
+                const discountAmount = (subtotal * discountPercentage) / 100;
+                document.getElementById('discountAmountDisplay').textContent = discountAmount.toFixed(2);
+                document.getElementById('discountAmount').value = discountAmount.toFixed(2);
+                document.getElementById('displayDiscount').textContent = discountAmount.toFixed(2);
+
+                // Amount after discount
+                const amountAfterDiscount = subtotal - discountAmount;
+
+                // Calculate GST
+                const gstAmount = (amountAfterDiscount * gstPercentage) / 100;
+                document.getElementById('gstAmountDisplay').textContent = gstAmount.toFixed(2);
+                document.getElementById('gstAmount').value = gstAmount.toFixed(2);
+                document.getElementById('displayGST').textContent = gstAmount.toFixed(2);
+
+                // Final amount
+                const finalAmount = amountAfterDiscount + gstAmount;
+                document.getElementById('finalAmountHidden').value = finalAmount.toFixed(2);
+                document.getElementById('displayFinal').textContent = finalAmount.toFixed(2);
+            }
+        </script>
+    </div>
 </body>
+
 </html>

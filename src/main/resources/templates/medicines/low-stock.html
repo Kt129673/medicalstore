@@ -1,46 +1,50 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(title='Low Stock', page='medicines', content=~{::#content})}">
-<body>
-<div id="content">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2><i class="bi bi-exclamation-triangle text-warning"></i> Low Stock Medicines</h2>
-        <a href="/medicines" class="btn btn-secondary">
-            <i class="bi bi-arrow-left"></i> Back
-        </a>
-    </div>
+<html xmlns:th="http://www.thymeleaf.org"
+    th:replace="~{layout :: layout(title='Low Stock', page='medicines', content=~{::#content})}">
 
-    <div class="card">
-        <div class="card-body">
-            <div th:if="${medicines.isEmpty()}" class="text-center text-success py-4">
-                <i class="bi bi-check-circle" style="font-size: 3rem;"></i>
-                <p class="mt-2">All medicines are well stocked!</p>
-            </div>
-            <div th:unless="${medicines.isEmpty()}" class="table-responsive">
-                <table class="table table-hover">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Category</th>
-                            <th>Stock</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="medicine : ${medicines}">
-                            <td th:text="${medicine.name}"></td>
-                            <td><span class="badge bg-info" th:text="${medicine.category}"></span></td>
-                            <td><span class="badge bg-danger" th:text="${medicine.quantity}"></span></td>
-                            <td>
-                                <a th:href="@{/medicines/edit/{id}(id=${medicine.id})}" class="btn btn-sm btn-primary">
-                                    <i class="bi bi-plus-circle"></i> Restock
-                                </a>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+<body>
+    <div id="content">
+        <div class="page-header mb-4">
+            <h2><i class="bi bi-exclamation-triangle text-warning"></i> Low Stock Medicines</h2>
+            <a href="/medicines" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Back
+            </a>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <div th:if="${medicines.isEmpty()}" class="text-center text-success py-4">
+                    <i class="bi bi-check-circle" style="font-size: 3rem;"></i>
+                    <p class="mt-2">All medicines are well stocked!</p>
+                </div>
+                <div th:unless="${medicines.isEmpty()}" class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Category</th>
+                                <th>Stock</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="medicine : ${medicines}">
+                                <td th:text="${medicine.name}"></td>
+                                <td><span class="badge bg-info" th:text="${medicine.category}"></span></td>
+                                <td><span class="badge bg-danger" th:text="${medicine.quantity}"></span></td>
+                                <td>
+                                    <a th:href="@{/medicines/edit/{id}(id=${medicine.id})}"
+                                        class="btn btn-sm btn-primary">
+                                        <i class="bi bi-plus-circle"></i> Restock
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
-</div>
 </body>
+
 </html>
