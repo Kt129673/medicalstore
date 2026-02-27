@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+    th:replace="~{layout :: layout(title='Branch Detail', page='owner', content=~{::main})}">
+<main>
+    <div class="container-fluid py-4">
+
+        <!-- Back + Header -->
+        <div class="d-flex align-items-center gap-3 mb-4">
+            <a href="/owner" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-arrow-left me-1"></i>Back
+            </a>
+            <div>
+                <h2 class="fw-bold mb-0" th:text="${branch.name}">Branch</h2>
+                <p class="text-muted mb-0" th:text="${branch.address}"></p>
+            </div>
+            <span th:if="${branch.isActive}" class="badge bg-success ms-auto fs-6">Active</span>
+            <span th:unless="${branch.isActive}" class="badge bg-secondary ms-auto fs-6">Inactive</span>
+        </div>
+
+        <!-- Branch Info Cards -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="small text-muted fw-semibold text-uppercase mb-1">Phone</div>
+                        <div class="fw-semibold" th:text="${branch.phone ?: '—'}"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="small text-muted fw-semibold text-uppercase mb-1">GST Number</div>
+                        <div class="fw-semibold" th:text="${branch.gstNumber ?: '—'}"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="small text-muted fw-semibold text-uppercase mb-1">Licence Number</div>
+                        <div class="fw-semibold" th:text="${branch.licenceNumber ?: '—'}"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="small text-muted fw-semibold text-uppercase mb-1">Since</div>
+                        <div class="fw-semibold" th:text="${branch.createdDate}"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- Medicines -->
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center py-3">
+                        <h5 class="fw-bold mb-0"><i class="bi bi-capsule-pill me-2 text-primary"></i>Medicines</h5>
+                        <span class="badge bg-primary" th:text="${#lists.size(medicines)} + ' items'"></span>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive" style="max-height:300px; overflow-y:auto;">
+                            <table class="table table-sm table-hover align-middle mb-0">
+                                <thead class="table-light sticky-top">
+                                    <tr>
+                                        <th>Medicine</th>
+                                        <th>Category</th>
+                                        <th>Stock</th>
+                                        <th>Price</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="m : ${medicines}">
+                                        <td th:text="${m.name}"></td>
+                                        <td><span class="badge bg-light text-dark" th:text="${m.category}"></span></td>
+                                        <td>
+                                            <span th:if="${m.quantity <= 10}" class="text-danger fw-bold"
+                                                th:text="${m.quantity}"></span>
+                                            <span th:unless="${m.quantity <= 10}" th:text="${m.quantity}"></span>
+                                        </td>
+                                        <td>₹<span
+                                                th:text="${#numbers.formatDecimal(m.price, 0, 'COMMA', 2, 'POINT')}"></span>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(medicines)}">
+                                        <td colspan="4" class="text-center text-muted py-3">No medicines yet.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Shopkeepers -->
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center py-3">
+                        <h5 class="fw-bold mb-0"><i class="bi bi-person-gear me-2 text-success"></i>Shopkeepers</h5>
+                        <span class="badge bg-success" th:text="${#lists.size(shopkeepers)} + ' staff'"></span>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Username</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="sk : ${shopkeepers}">
+                                        <td th:text="${sk.fullName}"></td>
+                                        <td><code th:text="${sk.username}"></code></td>
+                                        <td>
+                                            <span th:if="${sk.enabled}" class="badge bg-success">Active</span>
+                                            <span th:unless="${sk.enabled}" class="badge bg-danger">Inactive</span>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(shopkeepers)}">
+                                        <td colspan="3" class="text-center text-muted py-3">No shopkeepers assigned.
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Sales -->
+        <div class="card border-0 shadow-sm mt-4">
+            <div class="card-header bg-white border-0 py-3">
+                <h5 class="fw-bold mb-0"><i class="bi bi-receipt me-2"></i>Recent Sales</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Invoice</th>
+                                <th>Medicine</th>
+                                <th>Customer</th>
+                                <th>Amount</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="sale : ${recentSales}">
+                                <td><code th:text="'#INV-' + ${sale.id}"></code></td>
+                                <td th:text="${sale.medicine?.name}">—</td>
+                                <td th:text="${sale.customer?.name ?: 'Walk-in'}">—</td>
+                                <td class="fw-semibold text-success">
+                                    ₹<span
+                                        th:text="${#numbers.formatDecimal(sale.finalAmount ?: sale.totalAmount, 0, 'COMMA', 2, 'POINT')}"></span>
+                                </td>
+                                <td th:text="${#temporals.format(sale.saleDate, 'dd MMM HH:mm')}"></td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(recentSales)}">
+                                <td colspan="5" class="text-center text-muted py-3">No sales yet for this branch.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</main>
+
+</html>

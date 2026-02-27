@@ -15,8 +15,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Set;
 
 /**
@@ -41,8 +39,6 @@ public class OwnerController {
     @GetMapping
     public String dashboard(Model model) {
         Long ownerId = securityUtils.getCurrentUserId();
-        LocalDateTime startOfDay = LocalDate.now().atStartOfDay();
-        LocalDateTime endOfDay = LocalDate.now().atTime(23, 59, 59);
 
         model.addAttribute("title", "Owner Dashboard");
         model.addAttribute("page", "owner");
