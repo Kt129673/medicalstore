@@ -404,7 +404,7 @@
                 const query = this.value.trim();
                 dropdown.style.display = 'none';
 
-                if (query.length < 2) return;
+                if (query.length < 1) return;
                 clearTimeout(debounceTimer);
 
                 // Check in-browser cache first
@@ -421,7 +421,7 @@
                             renderDropdown(data);
                         })
                         .catch(err => console.error("Search failed", err));
-                }, 300);
+                }, 150);
             });
 
             function renderDropdown(medicines) {

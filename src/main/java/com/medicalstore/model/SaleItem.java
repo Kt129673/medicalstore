@@ -21,6 +21,7 @@ public class SaleItem {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sale_id", nullable = false)
+    @com.fasterxml.jackson.annotation.JsonBackReference
     private Sale sale;
 
     @ManyToOne(fetch = FetchType.LAZY)
