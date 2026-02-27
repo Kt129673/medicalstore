@@ -69,6 +69,10 @@ public class DashboardService {
         List<Sale> recent = saleRepository.findTop10WithDetails();
         data.put("recentSales", recent.stream().limit(10).collect(Collectors.toList()));
 
+        // Activity History
+        data.put("recentMedicines", medicineRepository.findTop5ByOrderByCreatedDateDesc());
+        data.put("recentCustomers", customerRepository.findTop5ByOrderByRegisteredDateDesc());
+
         return data;
     }
 
@@ -107,6 +111,10 @@ public class DashboardService {
 
         List<Sale> recent = saleRepository.findTop10WithDetailsByBranch(branchId);
         data.put("recentSales", recent.stream().limit(10).collect(Collectors.toList()));
+
+        // Activity History
+        data.put("recentMedicines", medicineRepository.findTop5ByBranchIdOrderByCreatedDateDesc(branchId));
+        data.put("recentCustomers", customerRepository.findTop5ByBranchIdOrderByRegisteredDateDesc(branchId));
 
         return data;
     }

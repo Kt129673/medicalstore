@@ -369,11 +369,22 @@
             .skeleton {
                 background: linear-gradient(90deg, rgba(255, 255, 255, 0.1) 25%, rgba(255, 255, 255, 0.3) 50%, rgba(255, 255, 255, 0.1) 75%);
                 background-size: 200% 100%;
-                animation: skeleton-loading 1.5s infinite;
                 border-radius: 4px;
                 display: inline-block;
                 min-width: 60px;
                 min-height: 24px;
+                opacity: 0;
+                animation: skeleton-fade-in 0.3s 0.15s ease-in forwards, skeleton-loading 1.5s infinite;
+            }
+
+            @keyframes skeleton-fade-in {
+                from {
+                    opacity: 0;
+                }
+
+                to {
+                    opacity: 1;
+                }
             }
 
             @keyframes skeleton-loading {
@@ -519,37 +530,57 @@
             </div>
         </div>
 
-        <!-- ═══════════ RECENT TRANSACTIONS ═══════════ -->
-        <div class="txn-card">
-            <div class="txn-header">
-                <h6><i class="bi bi-clock-history me-2"></i>Recent Transactions</h6>
-                <a href="/sales" class="btn btn-sm btn-outline-primary">View All Sales</a>
+        <!-- ═══════════ RECENT TRANSACTIONS & ACTIVITY ═══════════ -->
+        <div class="row g-4 mb-4">
+            <!-- Recent Transactions -->
+            <div class="col-lg-7">
+                <div class="txn-card h-100">
+                    <div class="txn-header">
+                        <h6><i class="bi bi-clock-history me-2"></i>Recent Transactions</h6>
+                        <a href="/sales" class="btn btn-sm btn-outline-primary">View All Sales</a>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="txn-table">
+                            <thead>
+                                <tr>
+                                    <th>Invoice</th>
+                                    <th>Medicine</th>
+                                    <th>Customer</th>
+                                    <th>Qty</th>
+                                    <th>Amount</th>
+                                    <th>Payment</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recentTransactionsBody">
+                                <tr>
+                                    <td colspan="7"><span class="skeleton" style="width:100%"></span></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="7"><span class="skeleton" style="width:100%"></span></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="7"><span class="skeleton" style="width:100%"></span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
-            <div class="table-responsive">
-                <table class="txn-table">
-                    <thead>
-                        <tr>
-                            <th>Invoice</th>
-                            <th>Medicine</th>
-                            <th>Customer</th>
-                            <th>Qty</th>
-                            <th>Amount</th>
-                            <th>Payment</th>
-                            <th>Date</th>
-                        </tr>
-                    </thead>
-                    <tbody id="recentTransactionsBody">
-                        <tr>
-                            <td colspan="7"><span class="skeleton" style="width:100%"></span></td>
-                        </tr>
-                        <tr>
-                            <td colspan="7"><span class="skeleton" style="width:100%"></span></td>
-                        </tr>
-                        <tr>
-                            <td colspan="7"><span class="skeleton" style="width:100%"></span></td>
-                        </tr>
-                    </tbody>
-                </table>
+
+            <!-- Activity History -->
+            <div class="col-lg-5">
+                <div class="txn-card h-100">
+                    <div class="txn-header">
+                        <h6><i class="bi bi-journal-text text-primary me-2"></i>Activity History</h6>
+                    </div>
+                    <div class="card-body p-0" id="activityHistoryContainer">
+                        <!-- Skeletons -->
+                        <div class="p-3 border-bottom"><span class="skeleton" style="width: 100%;"></span></div>
+                        <div class="p-3 border-bottom"><span class="skeleton" style="width: 100%;"></span></div>
+                        <div class="p-3 border-bottom"><span class="skeleton" style="width: 100%;"></span></div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -557,7 +588,7 @@
         <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
         <script>
             document.addEventListener('DOMContentLoaded', function () {
-                
+
                 // Fetch KPI Data
                 fetch('/api/v1/dashboard/kpis')
                     .then(res => res.json())
@@ -572,13 +603,13 @@
                         document.getElementById('txtExpiring30Grid').textContent = data.expiringIn30 || 0;
                         document.getElementById('txtExpiring60').textContent = data.expiringIn60 || 0;
                         document.getElementById('txtExpiring90').textContent = data.expiringIn90 || 0;
-                        
+
                         // Conditionals
                         if (data.todayTransactions !== undefined) {
                             document.getElementById('kpiTransactionsCard').style.display = 'flex';
                             document.getElementById('txtTodayTransactions').textContent = data.todayTransactions;
                         }
-                        
+
                         if (data.expiredCount) {
                             document.getElementById('cardExpired').style.display = 'block';
                             document.getElementById('txtExpiredCount').textContent = data.expiredCount;
@@ -625,11 +656,11 @@
                             txnBody.innerHTML = '';
                             data.recentSales.forEach(sale => {
                                 const amt = (sale.finalAmount || sale.totalAmount || 0).toFixed(2);
-                                
+
                                 let pmBadge = '';
-                                if(sale.paymentMethod === 'Cash') pmBadge = '<span class="payment-badge payment-cash">Cash</span>';
-                                else if(sale.paymentMethod === 'Card') pmBadge = '<span class="payment-badge payment-card">Card</span>';
-                                else if(sale.paymentMethod === 'UPI') pmBadge = '<span class="payment-badge payment-upi">UPI</span>';
+                                if (sale.paymentMethod === 'Cash') pmBadge = '<span class="payment-badge payment-cash">Cash</span>';
+                                else if (sale.paymentMethod === 'Card') pmBadge = '<span class="payment-badge payment-card">Card</span>';
+                                else if (sale.paymentMethod === 'UPI') pmBadge = '<span class="payment-badge payment-upi">UPI</span>';
                                 else pmBadge = `<span class="payment-badge" style="background:#f1f5f9;color:#64748b;">${sale.paymentMethod || '—'}</span>`;
 
                                 // format date
@@ -646,6 +677,67 @@
                                         <td>${pmBadge}</td>
                                         <td class="text-muted">${dateStr}</td>
                                     </tr>
+                                `;
+                            });
+                        }
+
+                        // Populate Activity History
+                        const actContainer = document.getElementById('activityHistoryContainer');
+                        let activities = [];
+
+                        if (data.recentMedicines) {
+                            data.recentMedicines.forEach(m => {
+                                activities.push({
+                                    title: `Medicine Added: ${m.name}`,
+                                    sub: m.category || 'Medicine',
+                                    date: m.createdDate,
+                                    icon: 'bi-capsule-pill text-primary',
+                                    bg: 'bg-primary bg-opacity-10'
+                                });
+                            });
+                        }
+
+                        if (data.recentCustomers) {
+                            data.recentCustomers.forEach(c => {
+                                activities.push({
+                                    title: `Customer Registered: ${c.name}`,
+                                    sub: c.phone || 'Customer',
+                                    date: c.registeredDate,
+                                    icon: 'bi-person-plus-fill text-success',
+                                    bg: 'bg-success bg-opacity-10'
+                                });
+                            });
+                        }
+
+                        // Sort by date descending (rough sort since it's just LocalDate)
+                        activities.sort((a, b) => {
+                            if (!a.date) return 1;
+                            if (!b.date) return -1;
+                            return new Date(b.date) - new Date(a.date);
+                        });
+
+                        // Take top 5
+                        activities = activities.slice(0, 5);
+
+                        if (activities.length === 0) {
+                            actContainer.innerHTML = `<div class="p-4 text-center text-muted"><i class="bi bi-clock-history fs-3 d-block mb-2"></i>No recent activity</div>`;
+                        } else {
+                            actContainer.innerHTML = '';
+                            activities.forEach(act => {
+                                const dStr = act.date ? new Date(act.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }) : 'Recently';
+                                actContainer.innerHTML += `
+                                    <div class="d-flex align-items-center p-3 border-bottom list-item-hover" style="transition: background 0.15s; background: #fff;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#fff'">
+                                        <div class="flex-shrink-0 align-self-start ${act.bg} rounded p-2 me-3 d-flex align-items-center justify-content-center" style="width:40px;height:40px;">
+                                            <i class="bi ${act.icon}"></i>
+                                        </div>
+                                        <div class="flex-grow-1 min-width-0">
+                                            <h6 class="mb-0 text-truncate" style="font-size:0.85rem; font-weight:700; color:#334155;">${act.title}</h6>
+                                            <div class="text-muted small">${act.sub}</div>
+                                        </div>
+                                        <div class="flex-shrink-0 text-muted" style="font-size:0.75rem; font-weight:600;">
+                                            ${dStr}
+                                        </div>
+                                    </div>
                                 `;
                             });
                         }

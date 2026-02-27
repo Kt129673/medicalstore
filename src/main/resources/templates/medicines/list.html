@@ -556,6 +556,10 @@
                             </td>
                             <td class="text-center">
                                 <div class="d-flex gap-1 justify-content-center">
+                                    <button type="button" class="action-btn text-info" title="View Details"
+                                        th:onclick="viewMedicine([[${medicine.name}]], [[${medicine.category}]], [[${medicine.manufacturer}]], [[${medicine.price}]], [[${medicine.quantity}]], [[${medicine.expiryDate}]], [[${medicine.batchNumber}]], [[${medicine.barcode}]])">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
                                     <a th:href="@{/medicines/edit/{id}(id=${medicine.id})}" class="action-btn"
                                         title="Edit">
                                         <i class="bi bi-pencil"></i>
@@ -603,8 +607,87 @@
             </div>
         </div>
 
+        <!-- Medicine Details Modal -->
+        <div class="modal fade" id="viewMedicineModal" tabindex="-1" aria-labelledby="viewMedicineModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-0 shadow">
+                    <div class="modal-header border-bottom-0 pb-0">
+                        <h5 class="modal-title fw-bold" id="viewMedicineModalLabel"><i
+                                class="bi bi-info-circle text-primary me-2"></i>Medicine Details</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="text-center mb-4">
+                            <div class="d-inline-flex align-items-center justify-content-center bg-primary bg-opacity-10 text-primary rounded-circle mb-3"
+                                style="width: 80px; height: 80px;">
+                                <i class="bi bi-capsule-pill fs-1"></i>
+                            </div>
+                            <h4 class="fw-bold mb-1" id="m_name">Medicine Name</h4>
+                            <span class="badge bg-secondary" id="m_category">Category</span>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-sm-6">
+                                <div class="p-3 bg-light rounded h-100">
+                                    <small class="text-muted d-block mb-1">Manufacturer</small>
+                                    <span class="fw-semibold" id="m_mfg">Pharma Inc</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="p-3 bg-light rounded h-100">
+                                    <small class="text-muted d-block mb-1">Price</small>
+                                    <span class="fw-semibold text-primary" id="m_price">₹0.00</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="p-3 bg-light rounded h-100">
+                                    <small class="text-muted d-block mb-1">Stock Quantity</small>
+                                    <span class="fw-semibold" id="m_stock">0</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="p-3 bg-light rounded h-100">
+                                    <small class="text-muted d-block mb-1">Expiry Date</small>
+                                    <span class="fw-semibold" id="m_expiry">N/A</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="p-3 bg-light rounded h-100">
+                                    <small class="text-muted d-block mb-1">Batch No.</small>
+                                    <span class="fw-semibold" id="m_batch">N/A</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="p-3 bg-light rounded h-100">
+                                    <small class="text-muted d-block mb-1">Barcode</small>
+                                    <span class="fw-semibold" id="m_barcode">N/A</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-top-0 pt-0">
+                        <button type="button" class="btn btn-secondary w-100" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Client-side Interactivity -->
         <script>
+            function viewMedicine(name, category, mfg, price, stock, expiry, batch, barcode) {
+                document.getElementById('m_name').textContent = name || 'N/A';
+                document.getElementById('m_category').textContent = category || 'N/A';
+                document.getElementById('m_mfg').textContent = mfg || 'N/A';
+                document.getElementById('m_price').textContent = price ? '₹' + parseFloat(price).toFixed(2) : 'N/A';
+                document.getElementById('m_stock').textContent = stock || '0';
+                document.getElementById('m_expiry').textContent = expiry || 'N/A';
+                document.getElementById('m_batch').textContent = batch || 'N/A';
+                document.getElementById('m_barcode').textContent = barcode || 'N/A';
+
+                new bootstrap.Modal(document.getElementById('viewMedicineModal')).show();
+            }
+
             let allRows = [];
 
             document.addEventListener('DOMContentLoaded', () => {

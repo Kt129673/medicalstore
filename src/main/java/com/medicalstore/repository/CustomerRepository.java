@@ -31,4 +31,9 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
     @Query("SELECT COUNT(c) FROM Customer c WHERE c.branch.owner.id = :ownerId")
     long countByOwnerId(Long ownerId);
+
+    // --- Recent Activity ---
+    List<Customer> findTop5ByOrderByRegisteredDateDesc();
+
+    List<Customer> findTop5ByBranchIdOrderByRegisteredDateDesc(Long branchId);
 }

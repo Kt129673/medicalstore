@@ -129,4 +129,9 @@ public interface MedicineRepository extends JpaRepository<Medicine, Long>, JpaSp
 
         /** All medicines with stock > 0 (fallback when no sales exist) */
         List<Medicine> findByQuantityGreaterThan(int minQty);
+
+        // --- Recent Activity ---
+        List<Medicine> findTop5ByOrderByCreatedDateDesc();
+
+        List<Medicine> findTop5ByBranchIdOrderByCreatedDateDesc(Long branchId);
 }
