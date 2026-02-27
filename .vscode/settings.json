@@ -1,4 +1,5 @@
 {
     "java.dependency.syncWithFolderExplorer": false,
-    "java.dependency.packagePresentation": "hierarchical"
+    "java.dependency.packagePresentation": "hierarchical",
+    "git.ignoreLimitWarning": true
 }
