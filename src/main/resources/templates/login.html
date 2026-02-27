@@ -17,7 +17,9 @@
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f8fafc;
-            overflow-x: hidden;
+            overflow: hidden;
+            height: 100vh;
+            margin: 0;
         }
 
         /* Left Panel - Branding */
@@ -132,14 +134,15 @@
         /* Right Panel - Login */
         .right-panel {
             background-color: #ffffff;
-            padding: 2rem;
+            padding: 1.5rem 2rem;
+            overflow-y: auto;
         }
 
         .login-container {
             max-width: 420px;
             width: 100%;
             margin: 0 auto;
-            animation: slideIn 0.5s ease-out;
+            animation: slideIn 0.4s ease-out;
         }
 
         @keyframes slideIn {
@@ -160,7 +163,7 @@
             font-size: 12px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             margin-left: 4px;
         }
 
@@ -168,7 +171,7 @@
             background-color: #f1f5f9;
             border: 2px solid transparent;
             border-radius: 14px;
-            padding: 16px 20px 16px 52px;
+            padding: 12px 18px 12px 48px;
             font-size: 15px;
             font-weight: 500;
             color: var(--text-dark);
@@ -205,7 +208,7 @@
             background: var(--primary-gradient);
             border: none;
             border-radius: 14px;
-            padding: 16px;
+            padding: 12px;
             font-size: 16px;
             font-weight: 600;
             letter-spacing: 0.5px;
@@ -279,18 +282,17 @@
 
         /* Dev Quick Login */
         .dev-quick-login {
-            margin-top: 32px;
-            padding: 20px;
-            background: #f8fafc;
-            border-radius: 14px;
-            border: 1px dashed #cbd5e1;
+            margin-top: 24px;
+            padding: 16px;
+            background: #f1f5f9;
+            border-radius: 16px;
             text-align: center;
         }
 
         .dev-quick-login p {
-            font-size: 12px;
+            font-size: 11px;
             color: #64748b;
-            margin-bottom: 14px;
+            margin-bottom: 10px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             font-weight: 700;
@@ -326,12 +328,15 @@
         @media (max-width: 991px) {
             .right-panel {
                 min-height: 100vh;
+                max-height: 100vh;
+                overflow-y: auto;
                 align-items: center;
             }
 
             .mobile-header i {
                 background: var(--primary-gradient);
                 -webkit-background-clip: text;
+                background-clip: text;
                 -webkit-text-fill-color: transparent;
             }
         }
@@ -391,15 +396,17 @@
                 <div class="login-container">
 
                     <!-- Mobile only header (visible when left panel is hidden) -->
-                    <div class="d-lg-none mobile-header text-center mb-5">
-                        <i class="bi bi-shield-lock-fill" style="font-size: 48px;"></i>
-                        <h3 class="mt-2 fw-bold text-dark">Medical Store</h3>
+                    <div class="d-lg-none mobile-header text-center mb-3">
+                        <i class="bi bi-shield-lock-fill" style="font-size: 40px;"></i>
+                        <h3 class="mt-1 fw-bold text-dark" style="font-size: 20px;">Medical Store</h3>
                     </div>
 
-                    <div class="login-header-text mb-5">
-                        <h1 class="fw-bold mb-2" style="letter-spacing: -1px; color: var(--text-dark);">Welcome Back! 👋
+                    <div class="login-header-text mb-3">
+                        <h1 class="fw-bold mb-1"
+                            style="letter-spacing: -1px; color: var(--text-dark); font-size: 28px;">Welcome Back! 👋
                         </h1>
-                        <p class="text-muted fw-medium fs-6">Please sign in to your account to continue.</p>
+                        <p class="text-muted fw-medium" style="font-size: 14px;">Please sign in to your account to
+                            continue.</p>
                     </div>
 
                     <!-- Error Alert -->
@@ -417,7 +424,7 @@
                     <!-- Login Form -->
                     <form th:action="@{/login}" method="post" id="loginForm">
                         <!-- Username -->
-                        <div class="mb-4">
+                        <div class="mb-3">
                             <label for="username" class="form-label">Username</label>
                             <div class="input-group">
                                 <i class="bi bi-person-fill input-group-icon"></i>
@@ -427,7 +434,7 @@
                         </div>
 
                         <!-- Password -->
-                        <div class="mb-4">
+                        <div class="mb-3">
                             <label for="password" class="form-label">Password</label>
                             <div class="input-group">
                                 <i class="bi bi-lock-fill input-group-icon"></i>
@@ -437,7 +444,7 @@
                         </div>
 
                         <!-- Remember Me -->
-                        <div class="form-check mb-4">
+                        <div class="form-check mb-3">
                             <input class="form-check-input" type="checkbox" id="remember" name="remember-me">
                             <label class="form-check-label text-muted fw-medium" for="remember">
                                 Remember me
