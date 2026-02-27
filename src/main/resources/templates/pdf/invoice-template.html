@@ -266,15 +266,15 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td class="text-center">1</td>
-                    <td th:text="${sale.medicine.name}">Medicine Name</td>
-                    <td th:text="${sale.medicine.batchNumber}">BATCH123</td>
-                    <td class="text-center" th:text="${sale.quantity}">10</td>
-                    <td class="text-right">₹<span th:text="${#numbers.formatDecimal(sale.unitPrice, 1, 2)}">50.00</span>
+                <tr th:each="item, stat : ${sale.items}">
+                    <td class="text-center" th:text="${stat.count}">1</td>
+                    <td th:text="${item.medicine.name}">Medicine Name</td>
+                    <td th:text="${item.medicine.batchNumber}">BATCH123</td>
+                    <td class="text-center" th:text="${item.quantity}">10</td>
+                    <td class="text-right">₹<span th:text="${#numbers.formatDecimal(item.unitPrice, 1, 2)}">50.00</span>
                     </td>
                     <td class="text-right">₹<span
-                            th:text="${#numbers.formatDecimal(sale.totalAmount, 1, 2)}">500.00</span></td>
+                            th:text="${#numbers.formatDecimal(item.totalPrice, 1, 2)}">500.00</span></td>
                 </tr>
             </tbody>
         </table>
@@ -287,19 +287,22 @@
                     <td class="value">₹<span th:text="${#numbers.formatDecimal(sale.totalAmount, 1, 2)}">500.00</span>
                     </td>
                 </tr>
-                <tr th:if="${sale.discount != null and sale.discount gt 0}">
-                    <td class="label">Discount:</td>
-                    <td class="value">- ₹<span th:text="${#numbers.formatDecimal(sale.discount, 1, 2)}">0.00</span></td>
+                <tr th:if="${sale.discountPercentage != null && sale.discountPercentage > 0}">
+                    <td class="label">Discount (<span th:text="${sale.discountPercentage}">0</span>%):</td>
+                    <td class="value">- ₹<span
+                            th:text="${#numbers.formatDecimal(sale.discountAmount != null ? sale.discountAmount : 0, 1, 2)}">0.00</span>
+                    </td>
                 </tr>
-                <tr>
-                    <td class="label">GST (18%):</td>
-                    <td class="value">₹<span
-                            th:text="${#numbers.formatDecimal(sale.totalAmount * 0.18, 1, 2)}">90.00</span></td>
+                <tr th:if="${sale.gstPercentage != null && sale.gstPercentage > 0}">
+                    <td class="label">GST (<span th:text="${sale.gstPercentage}">0</span>%):</td>
+                    <td class="value">+ ₹<span
+                            th:text="${#numbers.formatDecimal(sale.gstAmount != null ? sale.gstAmount : 0, 1, 2)}">90.00</span>
+                    </td>
                 </tr>
                 <tr class="total-row">
                     <td class="label">Grand Total:</td>
                     <td class="value">₹<span
-                            th:text="${#numbers.formatDecimal(sale.totalAmount * 1.18 - (sale.discount != null ? sale.discount : 0), 1, 2)}">590.00</span>
+                            th:text="${#numbers.formatDecimal(sale.finalAmount != null ? sale.finalAmount : sale.totalAmount, 1, 2)}">590.00</span>
                     </td>
                 </tr>
             </table>

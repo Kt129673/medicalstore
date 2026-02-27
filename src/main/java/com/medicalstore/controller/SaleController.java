@@ -27,8 +27,12 @@ public class SaleController {
     private final PdfService pdfService;
 
     @GetMapping
-    public String listSales(Model model) {
-        model.addAttribute("sales", saleService.getAllSales());
+    public String listSales(@RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "15") int size,
+            Model model) {
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, size);
+        org.springframework.data.domain.Page<Sale> salePage = saleService.getSalesPaginated(pageable);
+        model.addAttribute("salePage", salePage);
         return "sales/list";
     }
 
@@ -40,24 +44,47 @@ public class SaleController {
     }
 
     @PostMapping("/save")
-    public String saveSale(@ModelAttribute Sale sale, RedirectAttributes redirectAttributes) {
+    @ResponseBody
+    public ResponseEntity<?> saveSale(@RequestBody com.medicalstore.dto.SaleRequestDTO saleDto) {
         try {
-            // Handle optional customer - if customer ID is null/0, set customer to null
-            if (sale.getCustomer() != null && sale.getCustomer().getId() == null) {
-                sale.setCustomer(null);
-            } else if (sale.getCustomer() != null && sale.getCustomer().getId() != null) {
-                // Fetch full customer object
-                Customer customer = customerService.getCustomerById(sale.getCustomer().getId())
-                        .orElse(null);
+            Sale sale = new Sale();
+
+            // Map Customer
+            if (saleDto.getCustomerId() != null) {
+                Customer customer = customerService.getCustomerById(saleDto.getCustomerId()).orElse(null);
                 sale.setCustomer(customer);
             }
 
-            saleService.createSale(sale);
-            redirectAttributes.addFlashAttribute("success", "Sale completed successfully!");
+            sale.setPaymentMethod(saleDto.getPaymentMethod());
+            sale.setDiscountPercentage(saleDto.getDiscountPercentage());
+            sale.setGstPercentage(saleDto.getGstPercentage());
+
+            // Map Items
+            if (saleDto.getItems() != null) {
+                for (com.medicalstore.dto.SaleRequestDTO.SaleItemDTO itemDto : saleDto.getItems()) {
+                    com.medicalstore.model.SaleItem item = new com.medicalstore.model.SaleItem();
+
+                    com.medicalstore.model.Medicine medicine = new com.medicalstore.model.Medicine();
+                    medicine.setId(itemDto.getMedicineId());
+                    item.setMedicine(medicine);
+
+                    item.setQuantity(itemDto.getQuantity());
+                    item.setUnitPrice(itemDto.getUnitPrice());
+
+                    sale.addItem(item);
+                }
+            }
+
+            Sale createdSale = saleService.createSale(sale);
+            return ResponseEntity.ok(java.util.Map.of(
+                    "success", true,
+                    "message", "Sale completed successfully!",
+                    "saleId", createdSale.getId()));
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(java.util.Map.of(
+                    "success", false,
+                    "message", e.getMessage()));
         }
-        return "redirect:/sales";
     }
 
     @GetMapping("/invoice/{id}")

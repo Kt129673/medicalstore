@@ -9,99 +9,114 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+
 @Repository
-public interface MedicineRepository extends JpaRepository<Medicine, Long> {
+public interface MedicineRepository extends JpaRepository<Medicine, Long>, JpaSpecificationExecutor<Medicine> {
 
-    // --- existing ---
-    Optional<Medicine> findByName(String name);
+        // --- existing ---
+        Optional<Medicine> findByName(String name);
 
-    List<Medicine> findByCategory(String category);
+        @Query("SELECT DISTINCT m.category FROM Medicine m WHERE m.category IS NOT NULL ORDER BY m.category")
+        List<String> findAllDistinctCategories();
 
-    List<Medicine> findByQuantityLessThan(Integer quantity);
+        List<Medicine> findByCategory(String category);
 
-    List<Medicine> findByExpiryDateBefore(LocalDate date);
+        List<Medicine> findByQuantityLessThan(Integer quantity);
 
-    List<Medicine> findByExpiryDateBetween(LocalDate startDate, LocalDate endDate);
+        @Query("SELECT DISTINCT m.category FROM Medicine m WHERE m.category IS NOT NULL AND m.category != '' ORDER BY m.category")
+        List<String> findDistinctCategories();
 
-    Optional<Medicine> findByBarcode(String barcode);
+        List<Medicine> findByExpiryDateBefore(LocalDate date);
 
-    List<Medicine> findByNameContainingIgnoreCase(String name);
+        List<Medicine> findByExpiryDateBetween(LocalDate startDate, LocalDate endDate);
 
-    long countByQuantityLessThan(Integer quantity);
+        Optional<Medicine> findByBarcode(String barcode);
 
-    // --- branch-scoped (SHOPKEEPER) ---
-    List<Medicine> findByBranchId(Long branchId);
+        List<Medicine> findByNameContainingIgnoreCase(String name);
 
-    List<Medicine> findByBranchIdAndQuantityLessThan(Long branchId, Integer quantity);
+        long countByQuantityLessThan(Integer quantity);
 
-    List<Medicine> findByBranchIdAndExpiryDateBefore(Long branchId, LocalDate date);
+        // --- branch-scoped (SHOPKEEPER) ---
+        List<Medicine> findByBranchId(Long branchId);
 
-    List<Medicine> findByBranchIdAndExpiryDateBetween(Long branchId, LocalDate start, LocalDate end);
+        @Query("SELECT DISTINCT m.category FROM Medicine m WHERE m.branch.id = ?1 AND m.category IS NOT NULL ORDER BY m.category")
+        List<String> findDistinctCategoriesByBranch(Long branchId);
 
-    List<Medicine> findByBranchIdAndNameContainingIgnoreCase(Long branchId, String name);
+        List<Medicine> findByBranchIdAndQuantityLessThan(Long branchId, Integer quantity);
 
-    long countByBranchId(Long branchId);
+        List<Medicine> findByBranchIdAndExpiryDateBefore(Long branchId, LocalDate date);
 
-    long countByBranchIdAndQuantityLessThan(Long branchId, Integer quantity);
+        List<Medicine> findByBranchIdAndExpiryDateBetween(Long branchId, LocalDate start, LocalDate end);
 
-    // --- performance optimized (DTO & Caching) ---
-    @Query("SELECT new com.medicalstore.dto.MedicineDTO(m.id, m.name, m.category, m.price, m.quantity, m.batchNumber, m.gstPercentage) "
-            +
-            "FROM Medicine m WHERE m.branch.id = :branchId AND (LOWER(m.name) LIKE LOWER(CONCAT('%', :query, '%')) " +
-            "OR LOWER(m.barcode) = LOWER(:query) OR LOWER(m.batchNumber) LIKE LOWER(CONCAT('%', :query, '%')))")
-    List<com.medicalstore.dto.MedicineDTO> searchMedicinesDtoByBranch(Long branchId, String query,
-            org.springframework.data.domain.Pageable pageable);
+        List<Medicine> findByBranchIdAndNameContainingIgnoreCase(Long branchId, String name);
 
-    @Query("SELECT new com.medicalstore.dto.MedicineDTO(m.id, m.name, m.category, m.price, m.quantity, m.batchNumber, m.gstPercentage) "
-            +
-            "FROM Medicine m WHERE (LOWER(m.name) LIKE LOWER(CONCAT('%', :query, '%')) " +
-            "OR LOWER(m.barcode) = LOWER(:query) OR LOWER(m.batchNumber) LIKE LOWER(CONCAT('%', :query, '%')))")
-    List<com.medicalstore.dto.MedicineDTO> searchMedicinesDtoGlobal(String query,
-            org.springframework.data.domain.Pageable pageable);
+        long countByBranchId(Long branchId);
 
-    // --- owner-scoped (OWNER sees all their branches) ---
-    @Query("SELECT m FROM Medicine m WHERE m.branch.owner.id = :ownerId")
-    List<Medicine> findByOwnerId(Long ownerId);
+        long countByBranchIdAndQuantityLessThan(Long branchId, Integer quantity);
 
-    @Query("SELECT m FROM Medicine m WHERE m.branch.owner.id = :ownerId AND m.quantity < :qty")
-    List<Medicine> findLowStockByOwnerId(Long ownerId, Integer qty);
+        // --- performance optimized (DTO & Caching) ---
+        @Query("SELECT new com.medicalstore.dto.MedicineDTO(m.id, m.name, m.category, m.price, m.quantity, m.batchNumber, m.gstPercentage) "
+                        +
+                        "FROM Medicine m WHERE m.branch.id = :branchId AND (LOWER(m.name) LIKE LOWER(CONCAT('%', :query, '%')) "
+                        +
+                        "OR LOWER(m.barcode) = LOWER(:query) OR LOWER(m.batchNumber) LIKE LOWER(CONCAT('%', :query, '%')))")
+        List<com.medicalstore.dto.MedicineDTO> searchMedicinesDtoByBranch(Long branchId, String query,
+                        org.springframework.data.domain.Pageable pageable);
 
-    @Query("SELECT COUNT(m) FROM Medicine m WHERE m.branch.owner.id = :ownerId")
-    long countByOwnerId(Long ownerId);
+        @Query("SELECT new com.medicalstore.dto.MedicineDTO(m.id, m.name, m.category, m.price, m.quantity, m.batchNumber, m.gstPercentage) "
+                        +
+                        "FROM Medicine m WHERE (LOWER(m.name) LIKE LOWER(CONCAT('%', :query, '%')) " +
+                        "OR LOWER(m.barcode) = LOWER(:query) OR LOWER(m.batchNumber) LIKE LOWER(CONCAT('%', :query, '%')))")
+        List<com.medicalstore.dto.MedicineDTO> searchMedicinesDtoGlobal(String query,
+                        org.springframework.data.domain.Pageable pageable);
 
-    @Query("SELECT COUNT(m) FROM Medicine m WHERE m.branch.owner.id = :ownerId AND m.quantity < :qty")
-    long countLowStockByOwnerId(Long ownerId, Integer qty);
+        // --- owner-scoped (OWNER sees all their branches) ---
+        @Query("SELECT m FROM Medicine m WHERE m.branch.owner.id = :ownerId")
+        List<Medicine> findByOwnerId(Long ownerId);
 
-    // --- global counts ---
-    long count();
+        @Query("SELECT DISTINCT m.category FROM Medicine m WHERE m.branch.owner.id = ?1 AND m.category IS NOT NULL ORDER BY m.category")
+        List<String> findDistinctCategoriesByOwner(Long ownerId);
 
-    // --- dashboard analytics (global / ADMIN) ---
-    long countByExpiryDateBetween(LocalDate start, LocalDate end);
+        @Query("SELECT m FROM Medicine m WHERE m.branch.owner.id = :ownerId AND m.quantity < :qty")
+        List<Medicine> findLowStockByOwnerId(Long ownerId, Integer qty);
 
-    List<Medicine> findTop5ByQuantityGreaterThanOrderByQuantityAsc(int minQty);
+        @Query("SELECT COUNT(m) FROM Medicine m WHERE m.branch.owner.id = :ownerId")
+        long countByOwnerId(Long ownerId);
 
-    @Query("SELECT m FROM Medicine m WHERE m.quantity <= ?1 AND m.quantity > 0 ORDER BY m.quantity ASC")
-    List<Medicine> findCriticalLowStock(int threshold);
+        @Query("SELECT COUNT(m) FROM Medicine m WHERE m.branch.owner.id = :ownerId AND m.quantity < :qty")
+        long countLowStockByOwnerId(Long ownerId, Integer qty);
 
-    // --- dashboard analytics (branch-scoped) ---
-    long countByBranchIdAndExpiryDateBetween(Long branchId, LocalDate start, LocalDate end);
+        // --- global counts ---
+        long count();
 
-    @Query("SELECT m FROM Medicine m WHERE m.branch.id = ?1 AND m.quantity <= ?2 AND m.quantity > 0 ORDER BY m.quantity ASC")
-    List<Medicine> findCriticalLowStockByBranch(Long branchId, int threshold);
+        // --- dashboard analytics (global / ADMIN) ---
+        long countByExpiryDateBetween(LocalDate start, LocalDate end);
 
-    // --- dashboard analytics (owner-scoped) ---
-    @Query("SELECT COUNT(m) FROM Medicine m WHERE m.branch.owner.id = :ownerId AND m.expiryDate BETWEEN :start AND :end")
-    long countExpiringByOwner(Long ownerId, LocalDate start, LocalDate end);
+        List<Medicine> findTop5ByQuantityGreaterThanOrderByQuantityAsc(int minQty);
 
-    @Query("SELECT m FROM Medicine m WHERE m.branch.owner.id = ?1 AND m.quantity <= ?2 AND m.quantity > 0 ORDER BY m.quantity ASC")
-    List<Medicine> findCriticalLowStockByOwner(Long ownerId, int threshold);
+        @Query("SELECT m FROM Medicine m WHERE m.quantity <= ?1 AND m.quantity > 0 ORDER BY m.quantity ASC")
+        List<Medicine> findCriticalLowStock(int threshold);
 
-    // --- Advanced Analytics: Dead Stock ---
+        // --- dashboard analytics (branch-scoped) ---
+        long countByBranchIdAndExpiryDateBetween(Long branchId, LocalDate start, LocalDate end);
 
-    /** Medicines NOT in given ID list and with stock > 0 (dead stock) */
-    @Query("SELECT m FROM Medicine m WHERE m.id NOT IN :excludeIds AND m.quantity > 0 ORDER BY m.quantity DESC")
-    List<Medicine> findDeadStock(List<Long> excludeIds);
+        @Query("SELECT m FROM Medicine m WHERE m.branch.id = ?1 AND m.quantity <= ?2 AND m.quantity > 0 ORDER BY m.quantity ASC")
+        List<Medicine> findCriticalLowStockByBranch(Long branchId, int threshold);
 
-    /** All medicines with stock > 0 (fallback when no sales exist) */
-    List<Medicine> findByQuantityGreaterThan(int minQty);
+        // --- dashboard analytics (owner-scoped) ---
+        @Query("SELECT COUNT(m) FROM Medicine m WHERE m.branch.owner.id = :ownerId AND m.expiryDate BETWEEN :start AND :end")
+        long countExpiringByOwner(Long ownerId, LocalDate start, LocalDate end);
+
+        @Query("SELECT m FROM Medicine m WHERE m.branch.owner.id = ?1 AND m.quantity <= ?2 AND m.quantity > 0 ORDER BY m.quantity ASC")
+        List<Medicine> findCriticalLowStockByOwner(Long ownerId, int threshold);
+
+        // --- Advanced Analytics: Dead Stock ---
+
+        /** Medicines NOT in given ID list and with stock > 0 (dead stock) */
+        @Query("SELECT m FROM Medicine m WHERE m.id NOT IN :excludeIds AND m.quantity > 0 ORDER BY m.quantity DESC")
+        List<Medicine> findDeadStock(List<Long> excludeIds);
+
+        /** All medicines with stock > 0 (fallback when no sales exist) */
+        List<Medicine> findByQuantityGreaterThan(int minQty);
 }

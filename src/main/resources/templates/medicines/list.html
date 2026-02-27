@@ -145,6 +145,11 @@
                 background: #f8fafc;
             }
 
+            .inv-table-wrapper {
+                max-height: calc(100vh - 320px);
+                overflow-y: auto;
+            }
+
             /* Stock badges */
             .stock-pill {
                 display: inline-flex;
@@ -396,42 +401,36 @@
                     <div class="filter-group" style="flex:2;">
                         <label><i class="bi bi-search"></i> Search</label>
                         <input type="text" name="search" class="form-control" placeholder="Medicine name, barcode..."
-                            th:value="${param.search}" id="searchInput">
+                            th:value="${currentSearch}" id="searchInput">
                     </div>
                     <div class="filter-group">
                         <label><i class="bi bi-tag"></i> Category</label>
-                        <select name="category" class="form-select" id="categoryFilter" onchange="filterTable()">
+                        <select name="category" class="form-select" id="categoryFilter"
+                            onchange="document.getElementById('filterForm').submit()">
                             <option value="">All Categories</option>
-                            <option value="Tablet">Tablet</option>
-                            <option value="Syrup">Syrup</option>
-                            <option value="Injection">Injection</option>
-                            <option value="Supplement">Supplement</option>
-                            <option value="Pain Relief">Pain Relief</option>
-                            <option value="Antibiotic">Antibiotic</option>
-                            <option value="Cold & Cough">Cold & Cough</option>
-                            <option value="Skin Care">Skin Care</option>
-                            <option value="Allergy">Allergy</option>
-                            <option value="Antacid">Antacid</option>
-                            <option value="Diabetes">Diabetes</option>
-                            <option value="Blood Thinner">Blood Thinner</option>
+                            <option th:each="cat : ${categories}" th:value="${cat}" th:text="${cat}"
+                                th:selected="${cat == currentCategory}"></option>
                         </select>
                     </div>
                     <div class="filter-group">
                         <label><i class="bi bi-box"></i> Stock Level</label>
-                        <select name="stockLevel" class="form-select" id="stockFilter" onchange="filterTable()">
+                        <select name="stockLevel" class="form-select" id="stockFilter"
+                            onchange="document.getElementById('filterForm').submit()">
                             <option value="">All Levels</option>
-                            <option value="critical">Critical (≤ 5)</option>
-                            <option value="low">Low (≤ 10)</option>
-                            <option value="ok">OK (> 10)</option>
+                            <option value="critical" th:selected="${currentStockLevel == 'critical'}">Critical (≤ 5)
+                            </option>
+                            <option value="low" th:selected="${currentStockLevel == 'low'}">Low (≤ 10)</option>
+                            <option value="ok" th:selected="${currentStockLevel == 'ok'}">OK (> 10)</option>
                         </select>
                     </div>
                     <div class="filter-group">
                         <label><i class="bi bi-calendar"></i> Expiry</label>
-                        <select name="expiryRange" class="form-select" id="expiryFilter" onchange="filterTable()">
+                        <select name="expiryRange" class="form-select" id="expiryFilter"
+                            onchange="document.getElementById('filterForm').submit()">
                             <option value="">All</option>
-                            <option value="expired">Expired</option>
-                            <option value="30">Within 30 days</option>
-                            <option value="90">Within 90 days</option>
+                            <option value="expired" th:selected="${currentExpiryRange == 'expired'}">Expired</option>
+                            <option value="30" th:selected="${currentExpiryRange == '30'}">Within 30 days</option>
+                            <option value="90" th:selected="${currentExpiryRange == '90'}">Within 90 days</option>
                         </select>
                     </div>
                     <div class="filter-actions">
@@ -448,7 +447,8 @@
             <div class="inv-table-header">
                 <div class="d-flex align-items-center gap-2">
                     <h6><i class="bi bi-table me-1"></i> Medicine List</h6>
-                    <span class="inv-count-badge" th:text="${medicines.size()} + ' items'" id="itemCount">0 items</span>
+                    <span class="inv-count-badge" th:text="${medicinePage.totalElements} + ' items'" id="itemCount">0
+                        items</span>
                 </div>
                 <div class="inv-toolbar">
                     <button class="btn btn-outline-success" onclick="exportCSV()" title="Export CSV">
@@ -471,7 +471,7 @@
             </div>
 
             <!-- Table -->
-            <div th:if="${medicines.isEmpty()}" class="inv-empty">
+            <div th:if="${medicinePage.isEmpty()}" class="inv-empty">
                 <i class="bi bi-inbox"></i>
                 <h5>No Medicines Found</h5>
                 <p>Start by adding your first medicine to the inventory</p>
@@ -479,7 +479,7 @@
                     <i class="bi bi-plus-circle"></i> Add First Medicine
                 </a>
             </div>
-            <div th:unless="${medicines.isEmpty()}" class="table-responsive">
+            <div th:unless="${medicinePage.isEmpty()}" class="table-responsive inv-table-wrapper">
                 <table class="inv-table" id="inventoryTable">
                     <thead>
                         <tr>
@@ -499,8 +499,9 @@
                         </tr>
                     </thead>
                     <tbody id="tableBody">
-                        <tr th:each="medicine : ${medicines}" class="inv-row" th:data-category="${medicine.category}"
-                            th:data-stock="${medicine.quantity}" th:data-expiry="${medicine.expiryDate}">
+                        <tr th:each="medicine : ${medicinePage.content}" class="inv-row"
+                            th:data-category="${medicine.category}" th:data-stock="${medicine.quantity}"
+                            th:data-expiry="${medicine.expiryDate}">
                             <td>
                                 <input type="checkbox" class="row-check" th:value="${medicine.id}"
                                     onchange="updateBulkBar()">
@@ -571,97 +572,48 @@
                 </table>
             </div>
 
-            <!-- Pagination (client-side) -->
-            <div class="inv-pagination" id="paginationBar">
+            <!-- Pagination (Server-side) -->
+            <div class="inv-pagination" id="paginationBar" th:if="${medicinePage.totalPages > 1}">
                 <div class="d-flex align-items-center gap-3">
                     <span class="page-info">Show:</span>
-                    <select id="pageSize" class="form-select form-select-sm" style="width:70px;border-radius:8px;"
-                        onchange="paginate()">
-                        <option value="15">15</option>
-                        <option value="25">25</option>
-                        <option value="50">50</option>
-                        <option value="100">100</option>
+                    <select class="form-select form-select-sm" style="width:70px;border-radius:8px;" name="size"
+                        form="filterForm" onchange="document.getElementById('filterForm').submit()">
+                        <option value="15" th:selected="${currentPageSize == 15}">15</option>
+                        <option value="25" th:selected="${currentPageSize == 25}">25</option>
+                        <option value="50" th:selected="${currentPageSize == 50}">50</option>
+                        <option value="100" th:selected="${currentPageSize == 100}">100</option>
                     </select>
-                    <span class="page-info" id="pageInfoText">Showing 1-15 of 31</span>
+                    <span class="page-info"
+                        th:text="'Showing ' + (${medicinePage.number * medicinePage.size + 1}) + '–' + (${(medicinePage.number + 1) * medicinePage.size < medicinePage.totalElements ? (medicinePage.number + 1) * medicinePage.size : medicinePage.totalElements}) + ' of ' + ${medicinePage.totalElements}">Showing
+                        1-15 of 31</span>
                 </div>
-                <div class="page-btns" id="pageButtons"></div>
+                <div class="page-btns">
+                    <a th:if="${!medicinePage.first}" class="page-btn"
+                        th:href="@{/medicines(page=${medicinePage.number - 1}, size=${medicinePage.size}, search=${currentSearch}, category=${currentCategory}, stockLevel=${currentStockLevel}, expiryRange=${currentExpiryRange})}"><i
+                            class="bi bi-chevron-left"></i></a>
+                    <a th:each="i : ${#numbers.sequence(0, medicinePage.totalPages - 1)}"
+                        th:if="${i >= medicinePage.number - 2 and i <= medicinePage.number + 2}"
+                        th:class="'page-btn ' + (${medicinePage.number == i} ? 'active' : '')"
+                        th:href="@{/medicines(page=${i}, size=${medicinePage.size}, search=${currentSearch}, category=${currentCategory}, stockLevel=${currentStockLevel}, expiryRange=${currentExpiryRange})}"
+                        th:text="${i + 1}">1</a>
+                    <a th:if="${!medicinePage.last}" class="page-btn"
+                        th:href="@{/medicines(page=${medicinePage.number + 1}, size=${medicinePage.size}, search=${currentSearch}, category=${currentCategory}, stockLevel=${currentStockLevel}, expiryRange=${currentExpiryRange})}"><i
+                            class="bi bi-chevron-right"></i></a>
+                </div>
             </div>
         </div>
 
         <!-- Client-side Interactivity -->
         <script>
-            let currentPage = 1;
             let allRows = [];
 
             document.addEventListener('DOMContentLoaded', () => {
                 allRows = Array.from(document.querySelectorAll('#tableBody .inv-row'));
-                paginate();
             });
 
-            /* ── Client-side filtering ──────────────────────────────── */
-            function filterTable() {
-                const cat = document.getElementById('categoryFilter').value.toLowerCase();
-                const stock = document.getElementById('stockFilter').value;
-                const expiry = document.getElementById('expiryFilter').value;
-                const search = document.getElementById('searchInput').value.toLowerCase();
-                const now = new Date();
+            /* ── Discarded JS Filtering & Pagination (Moved to Server) ── */
 
-                allRows.forEach(row => {
-                    let show = true;
-                    const rowCat = (row.dataset.category || '').toLowerCase();
-                    const rowStock = parseInt(row.dataset.stock || '0');
-                    const rowExpiry = row.dataset.expiry ? new Date(row.dataset.expiry) : null;
-                    const rowText = row.textContent.toLowerCase();
-
-                    if (search && !rowText.includes(search)) show = false;
-                    if (cat && rowCat !== cat) show = false;
-                    if (stock === 'critical' && rowStock > 5) show = false;
-                    if (stock === 'low' && rowStock > 10) show = false;
-                    if (stock === 'ok' && rowStock <= 10) show = false;
-                    if (expiry === 'expired' && (!rowExpiry || rowExpiry >= now)) show = false;
-                    if (expiry === '30') {
-                        const t = new Date(); t.setDate(t.getDate() + 30);
-                        if (!rowExpiry || rowExpiry < now || rowExpiry > t) show = false;
-                    }
-                    if (expiry === '90') {
-                        const t = new Date(); t.setDate(t.getDate() + 90);
-                        if (!rowExpiry || rowExpiry < now || rowExpiry > t) show = false;
-                    }
-                    row.dataset.filtered = show ? '1' : '0';
-                });
-                currentPage = 1;
-                paginate();
-            }
-
-            /* ── Pagination ─────────────────────────────────────────── */
-            function paginate() {
-                const size = parseInt(document.getElementById('pageSize').value);
-                const rows = allRows.filter(r => r.dataset.filtered !== '0');
-                const total = rows.length;
-                const pages = Math.ceil(total / size) || 1;
-                if (currentPage > pages) currentPage = pages;
-
-                allRows.forEach(r => r.style.display = 'none');
-                const start = (currentPage - 1) * size;
-                rows.slice(start, start + size).forEach(r => r.style.display = '');
-
-                document.getElementById('pageInfoText').textContent =
-                    `Showing ${start + 1}–${Math.min(start + size, total)} of ${total}`;
-                document.getElementById('itemCount').textContent = total + ' items';
-
-                const btnContainer = document.getElementById('pageButtons');
-                btnContainer.innerHTML = '';
-                for (let i = 1; i <= pages; i++) {
-                    const btn = document.createElement('a');
-                    btn.className = 'page-btn' + (i === currentPage ? ' active' : '');
-                    btn.textContent = i;
-                    btn.href = '#';
-                    btn.onclick = (e) => { e.preventDefault(); currentPage = i; paginate(); };
-                    btnContainer.appendChild(btn);
-                }
-            }
-
-            /* ── Sorting ────────────────────────────────────────────── */
+            /* ── Sorting (Client-side for Current Page) ─────────────── */
             let sortDir = {};
             function sortTable(col) {
                 sortDir[col] = !(sortDir[col]);
@@ -676,7 +628,6 @@
                 });
                 const tbody = document.getElementById('tableBody');
                 allRows.forEach(r => tbody.appendChild(r));
-                paginate();
             }
 
             /* ── Bulk selection ──────────────────────────────────────── */
@@ -701,7 +652,18 @@
                     confirmAction('Delete Medicines?', `Delete ${ids.length} medicines? This cannot be undone.`, 'Delete')
                         .then((result) => {
                             if (result.isConfirmed) {
-                                ids.forEach(id => { window.location = '/medicines/delete/' + id; });
+                                const form = document.createElement('form');
+                                form.method = 'POST';
+                                form.action = '/medicines/bulk-delete';
+                                ids.forEach(id => {
+                                    const input = document.createElement('input');
+                                    input.type = 'hidden';
+                                    input.name = 'ids';
+                                    input.value = id;
+                                    form.appendChild(input);
+                                });
+                                document.body.appendChild(form);
+                                form.submit();
                             }
                         });
                 }

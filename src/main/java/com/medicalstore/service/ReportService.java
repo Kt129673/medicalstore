@@ -60,7 +60,9 @@ public class ReportService {
                 double netRevenue = amountAfterDiscount + totalGST;
 
                 // Calculate item metrics
-                int totalItemsSold = sales.stream().mapToInt(Sale::getQuantity).sum();
+                int totalItemsSold = sales.stream()
+                                .flatMap(s -> s.getItems().stream())
+                                .mapToInt(com.medicalstore.model.SaleItem::getQuantity).sum();
                 double avgTransactionValue = netRevenue / totalTransactions;
                 double avgItemsPerTransaction = (double) totalItemsSold / totalTransactions;
 
@@ -146,7 +148,9 @@ public class ReportService {
                                 .count();
 
                 // Item metrics
-                int totalItemsSold = sales.stream().mapToInt(Sale::getQuantity).sum();
+                int totalItemsSold = sales.stream()
+                                .flatMap(s -> s.getItems().stream())
+                                .mapToInt(com.medicalstore.model.SaleItem::getQuantity).sum();
                 double avgTransactionValue = totalRevenue / totalTransactions;
                 double avgItemsPerTransaction = (double) totalItemsSold / totalTransactions;
 
@@ -372,21 +376,21 @@ public class ReportService {
         }
 
         private List<TopMedicine> calculateTopMedicines(List<Sale> sales, int limit) {
-                Map<String, List<Sale>> groupedByMedicine = sales.stream()
-                                .collect(Collectors.groupingBy(s -> s.getMedicine().getName()));
+                Map<String, List<com.medicalstore.model.SaleItem>> groupedByMedicine = sales.stream()
+                                .flatMap(s -> s.getItems().stream())
+                                .collect(Collectors.groupingBy(i -> i.getMedicine().getName()));
 
                 return groupedByMedicine.entrySet().stream()
                                 .map(entry -> {
-                                        List<Sale> medicineSales = entry.getValue();
+                                        List<com.medicalstore.model.SaleItem> items = entry.getValue();
                                         return new TopMedicine(
                                                         entry.getKey(),
-                                                        medicineSales.get(0).getMedicine().getCategory(),
-                                                        medicineSales.stream().mapToInt(Sale::getQuantity).sum(),
-                                                        medicineSales.stream()
-                                                                        .mapToDouble(
-                                                                                        s -> s.getFinalAmount() != null
-                                                                                                        ? s.getFinalAmount()
-                                                                                                        : s.getTotalAmount())
+                                                        items.get(0).getMedicine().getCategory(),
+                                                        items.stream().mapToInt(
+                                                                        com.medicalstore.model.SaleItem::getQuantity)
+                                                                        .sum(),
+                                                        items.stream().mapToDouble(
+                                                                        com.medicalstore.model.SaleItem::getTotalPrice)
                                                                         .sum());
                                 })
                                 .sorted(Comparator.comparing(TopMedicine::getRevenue).reversed())
@@ -584,9 +588,10 @@ public class ReportService {
                                 .sum();
 
                 double totalCost = sales.stream()
-                                .mapToDouble(s -> {
-                                        Double pp = s.getMedicine().getPurchasePrice();
-                                        return (pp != null ? pp : 0) * s.getQuantity();
+                                .flatMap(s -> s.getItems().stream())
+                                .mapToDouble(i -> {
+                                        Double pp = i.getMedicine().getPurchasePrice();
+                                        return (pp != null ? pp : 0) * i.getQuantity();
                                 })
                                 .sum();
 
@@ -608,7 +613,9 @@ public class ReportService {
                 data.put("totalGst", totalGst);
                 data.put("netProfit", grossProfit - totalDiscount);
                 data.put("totalTransactions", sales.size());
-                data.put("totalItemsSold", sales.stream().mapToInt(Sale::getQuantity).sum());
+                data.put("totalItemsSold", sales.stream()
+                                .flatMap(s -> s.getItems().stream())
+                                .mapToInt(com.medicalstore.model.SaleItem::getQuantity).sum());
 
                 return data;
         }
@@ -629,9 +636,10 @@ public class ReportService {
                                                         : s.getTotalAmount())
                                         .sum();
                         double cost = sales.stream()
-                                        .mapToDouble(s -> {
-                                                Double pp = s.getMedicine().getPurchasePrice();
-                                                return (pp != null ? pp : 0) * s.getQuantity();
+                                        .flatMap(s -> s.getItems().stream())
+                                        .mapToDouble(item -> {
+                                                Double pp = item.getMedicine().getPurchasePrice();
+                                                return (pp != null ? pp : 0) * item.getQuantity();
                                         })
                                         .sum();
 
@@ -670,24 +678,35 @@ public class ReportService {
                         // Data rows
                         int rowNum = 1;
                         for (Sale sale : sales) {
-                                Row row = sheet.createRow(rowNum++);
-                                row.createCell(0).setCellValue(rowNum - 1);
-                                row.createCell(1).setCellValue(sale.getSaleDate()
-                                                .format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")));
-                                row.createCell(2).setCellValue(sale.getMedicine().getName());
-                                row.createCell(3).setCellValue(sale.getMedicine().getCategory());
-                                row.createCell(4).setCellValue(sale.getQuantity());
-                                row.createCell(5).setCellValue(sale.getUnitPrice());
-                                row.createCell(6).setCellValue(sale.getTotalAmount());
-                                row.createCell(7).setCellValue(
-                                                sale.getDiscountAmount() != null ? sale.getDiscountAmount() : 0);
-                                row.createCell(8).setCellValue(sale.getGstAmount() != null ? sale.getGstAmount() : 0);
-                                row.createCell(9).setCellValue(sale.getFinalAmount() != null ? sale.getFinalAmount()
-                                                : sale.getTotalAmount());
-                                row.createCell(10).setCellValue(
-                                                sale.getPaymentMethod() != null ? sale.getPaymentMethod() : "Cash");
-                                row.createCell(11).setCellValue(
-                                                sale.getCustomer() != null ? sale.getCustomer().getName() : "Walk-in");
+                                for (com.medicalstore.model.SaleItem item : sale.getItems()) {
+                                        Row row = sheet.createRow(rowNum++);
+                                        row.createCell(0).setCellValue(sale.getId());
+                                        row.createCell(1).setCellValue(sale.getSaleDate()
+                                                        .format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")));
+                                        row.createCell(2).setCellValue(item.getMedicine().getName());
+                                        row.createCell(3).setCellValue(item.getMedicine().getCategory());
+                                        row.createCell(4).setCellValue(item.getQuantity());
+                                        row.createCell(5).setCellValue(item.getUnitPrice());
+                                        row.createCell(6).setCellValue(item.getTotalPrice());
+
+                                        // Headers are total per SALE, putting it on each row might inflate sums,
+                                        // but it's okay for a flat export format
+                                        row.createCell(7).setCellValue(
+                                                        sale.getDiscountAmount() != null ? sale.getDiscountAmount()
+                                                                        : 0);
+                                        row.createCell(8).setCellValue(
+                                                        sale.getGstAmount() != null ? sale.getGstAmount() : 0);
+                                        row.createCell(9)
+                                                        .setCellValue(sale.getFinalAmount() != null
+                                                                        ? sale.getFinalAmount()
+                                                                        : sale.getTotalAmount());
+                                        row.createCell(10).setCellValue(
+                                                        sale.getPaymentMethod() != null ? sale.getPaymentMethod()
+                                                                        : "Cash");
+                                        row.createCell(11).setCellValue(
+                                                        sale.getCustomer() != null ? sale.getCustomer().getName()
+                                                                        : "Walk-in");
+                                }
                         }
 
                         // Auto-size columns

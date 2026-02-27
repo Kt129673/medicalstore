@@ -10,11 +10,9 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "sales", indexes = {
         @Index(name = "idx_sale_date", columnList = "sale_date"),
-        @Index(name = "idx_sale_medicine", columnList = "medicine_id"),
         @Index(name = "idx_sale_customer", columnList = "customer_id"),
         @Index(name = "idx_sale_branch", columnList = "branch_id"),
-        @Index(name = "idx_sale_payment", columnList = "paymentMethod"),
-        @Index(name = "idx_sale_date_medicine", columnList = "sale_date, medicine_id")
+        @Index(name = "idx_sale_payment", columnList = "paymentMethod")
 })
 @Data
 @NoArgsConstructor
@@ -25,22 +23,12 @@ public class Sale {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "medicine_id", nullable = false)
-    private Medicine medicine;
+    @OneToMany(mappedBy = "sale", cascade = CascadeType.ALL, orphanRemoval = true)
+    private java.util.List<SaleItem> items = new java.util.ArrayList<>();
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "customer_id")
-    private Customer customer;
-
+    // Keep denormalized totals at the header level for fast querying
     @Column(nullable = false)
-    private Integer quantity;
-
-    @Column(nullable = false)
-    private Double unitPrice;
-
-    @Column(nullable = false)
-    private Double totalAmount;
+    private Double totalAmount = 0.0;
 
     @Column(name = "discount_percentage")
     private Double discountPercentage = 0.0;
@@ -62,17 +50,32 @@ public class Sale {
 
     private String paymentMethod; // Cash, Card, UPI
 
+    /** The customer who made the purchase (Optional) */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "customer_id")
+    private Customer customer;
+
     /** Branch this sale belongs to */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "branch_id")
     private Branch branch;
 
+    public void addItem(SaleItem item) {
+        items.add(item);
+        item.setSale(this);
+    }
+
+    public void removeItem(SaleItem item) {
+        items.remove(item);
+        item.setSale(null);
+    }
+
     @PrePersist
     protected void onCreate() {
         saleDate = LocalDateTime.now();
 
-        // Calculate base total
-        totalAmount = quantity * unitPrice;
+        // Calculate base total from items
+        this.totalAmount = items.stream().mapToDouble(i -> i.getQuantity() * i.getUnitPrice()).sum();
 
         // Calculate discount
         if (discountPercentage != null && discountPercentage > 0) {

@@ -18,6 +18,71 @@ public class MedicineService {
     private final MedicineRepository medicineRepository;
 
     // ── Context-Aware Lookups ───────────────────────────────────────────────
+    public java.util.List<String> getAllCategories() {
+        Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
+        Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
+        if (tenantId != null)
+            return medicineRepository.findDistinctCategoriesByBranch(tenantId);
+        if (ownerId != null)
+            return medicineRepository.findDistinctCategoriesByOwner(ownerId);
+        return medicineRepository.findAllDistinctCategories();
+    }
+
+    public org.springframework.data.domain.Page<Medicine> filterMedicines(
+            String search, String category, String stockLevel, String expiryRange,
+            org.springframework.data.domain.Pageable pageable) {
+
+        Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
+        Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
+
+        org.springframework.data.jpa.domain.Specification<Medicine> spec = (root, query, cb) -> {
+            java.util.List<jakarta.persistence.criteria.Predicate> predicates = new java.util.ArrayList<>();
+
+            if (tenantId != null) {
+                predicates.add(cb.equal(root.get("branch").get("id"), tenantId));
+            } else if (ownerId != null) {
+                predicates.add(cb.equal(root.get("branch").get("owner").get("id"), ownerId));
+            }
+
+            if (search != null && !search.trim().isEmpty()) {
+                String likePattern = "%" + search.toLowerCase() + "%";
+                predicates.add(cb.or(
+                        cb.like(cb.lower(root.get("name")), likePattern),
+                        cb.like(cb.lower(root.get("barcode")), likePattern),
+                        cb.like(cb.lower(root.get("manufacturer")), likePattern)));
+            }
+
+            if (category != null && !category.trim().isEmpty()) {
+                predicates.add(cb.equal(root.get("category"), category));
+            }
+
+            if (stockLevel != null && !stockLevel.trim().isEmpty()) {
+                if ("critical".equals(stockLevel)) {
+                    predicates.add(cb.le(root.get("quantity"), 5));
+                } else if ("low".equals(stockLevel)) {
+                    predicates.add(cb.between(root.get("quantity"), 6, 10));
+                } else if ("ok".equals(stockLevel)) {
+                    predicates.add(cb.gt(root.get("quantity"), 10));
+                }
+            }
+
+            if (expiryRange != null && !expiryRange.trim().isEmpty()) {
+                java.time.LocalDate now = java.time.LocalDate.now();
+                if ("expired".equals(expiryRange)) {
+                    predicates.add(cb.lessThan(root.get("expiryDate"), now));
+                } else if ("30".equals(expiryRange)) {
+                    predicates.add(cb.between(root.get("expiryDate"), now, now.plusDays(30)));
+                } else if ("90".equals(expiryRange)) {
+                    predicates.add(cb.between(root.get("expiryDate"), now, now.plusDays(90)));
+                }
+            }
+
+            return cb.and(predicates.toArray(new jakarta.persistence.criteria.Predicate[0]));
+        };
+
+        return medicineRepository.findAll(spec, pageable);
+    }
+
     public List<Medicine> getAllMedicines() {
         Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
         Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();

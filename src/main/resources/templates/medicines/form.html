@@ -36,15 +36,11 @@
                         </div>
                         <div class="col-md-3 mb-3">
                             <label class="form-label">Category *</label>
-                            <select class="form-control" th:field="*{category}" required>
-                                <option value="">Select Category</option>
-                                <option value="Tablet">Tablet</option>
-                                <option value="Syrup">Syrup</option>
-                                <option value="Injection">Injection</option>
-                                <option value="Capsule">Capsule</option>
-                                <option value="Ointment">Ointment</option>
-                                <option value="Drops">Drops</option>
-                            </select>
+                            <input type="text" list="categoryOptions" class="form-control" th:field="*{category}"
+                                required placeholder="Select or type category">
+                            <datalist id="categoryOptions">
+                                <option th:each="cat : ${categories}" th:value="${cat}"></option>
+                            </datalist>
                         </div>
                         <div class="col-md-3 mb-3">
                             <label class="form-label">Schedule Type</label>

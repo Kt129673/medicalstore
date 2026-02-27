@@ -42,21 +42,46 @@ public class SaleService {
         return saleRepository.findAll();
     }
 
+    @Transactional(readOnly = true)
+    public org.springframework.data.domain.Page<Sale> getSalesPaginated(
+            org.springframework.data.domain.Pageable pageable) {
+        Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
+        Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
+
+        if (tenantId != null)
+            return saleRepository.findByBranchIdOrderBySaleDateDesc(tenantId, pageable);
+        if (ownerId != null)
+            return saleRepository.findByBranchOwnerIdOrderBySaleDateDesc(ownerId, pageable);
+        return saleRepository.findAllByOrderBySaleDateDesc(pageable);
+    }
+
     @Transactional
     public Sale createSale(Sale sale) {
-        // Fetch the full medicine object from database
-        Medicine medicine = medicineRepository.findById(sale.getMedicine().getId())
-                .orElseThrow(() -> new RuntimeException("Medicine not found"));
-
-        if (medicine.getQuantity() < sale.getQuantity()) {
-            throw new RuntimeException("Insufficient stock for medicine: " + medicine.getName());
+        if (sale.getItems() == null || sale.getItems().isEmpty()) {
+            throw new RuntimeException("Sale must have at least one item.");
         }
 
-        medicine.setQuantity(medicine.getQuantity() - sale.getQuantity());
-        medicineRepository.save(medicine);
+        double calculatedTotalAmt = 0.0;
 
-        // Set the full medicine object to sale
-        sale.setMedicine(medicine);
+        for (com.medicalstore.model.SaleItem item : sale.getItems()) {
+            Medicine medicine = medicineRepository.findById(item.getMedicine().getId())
+                    .orElseThrow(() -> new RuntimeException("Medicine not found"));
+
+            if (medicine.getQuantity() < item.getQuantity()) {
+                throw new RuntimeException("Insufficient stock for medicine: " + medicine.getName());
+            }
+
+            // Deduct stock
+            medicine.setQuantity(medicine.getQuantity() - item.getQuantity());
+            medicineRepository.save(medicine);
+
+            // Re-assign accurate entity
+            item.setMedicine(medicine);
+            item.calculateTotal();
+            calculatedTotalAmt += item.getTotalPrice();
+        }
+
+        sale.setTotalAmount(calculatedTotalAmt);
 
         // Auto-assign branch if tenant is set (Shopkeeper)
         Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
@@ -70,8 +95,22 @@ public class SaleService {
         if (sale.getCustomer() != null && sale.getCustomer().getId() != null) {
             Customer customer = customerRepository.findById(sale.getCustomer().getId()).orElse(null);
             if (customer != null) {
-                Double finalAmount = sale.getFinalAmount() != null ? sale.getFinalAmount() : sale.getTotalAmount();
-                int pointsToAdd = (int) (finalAmount / 100);
+                // To accurately reward points, we calculate discount and final amount first
+                double discountAmt = 0.0;
+                if (sale.getDiscountPercentage() != null && sale.getDiscountPercentage() > 0) {
+                    discountAmt = (calculatedTotalAmt * sale.getDiscountPercentage()) / 100;
+                }
+                sale.setDiscountAmount(discountAmt);
+                double amtAfterDiscount = calculatedTotalAmt - discountAmt;
+
+                double gstAmt = 0.0;
+                if (sale.getGstPercentage() != null && sale.getGstPercentage() > 0) {
+                    gstAmt = (amtAfterDiscount * sale.getGstPercentage()) / 100;
+                }
+                sale.setGstAmount(gstAmt);
+                sale.setFinalAmount(amtAfterDiscount + gstAmt);
+
+                int pointsToAdd = (int) (sale.getFinalAmount() / 100);
                 customer.setLoyaltyPoints(customer.getLoyaltyPoints() + pointsToAdd);
                 customerRepository.save(customer);
                 sale.setCustomer(customer);

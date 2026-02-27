@@ -25,6 +25,10 @@ public class Return {
     @JoinColumn(name = "sale_id", nullable = false)
     private Sale sale;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sale_item_id", nullable = false)
+    private SaleItem saleItem;
+
     @Column(nullable = false)
     private Integer returnQuantity;
 

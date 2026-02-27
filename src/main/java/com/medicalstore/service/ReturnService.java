@@ -16,35 +16,44 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class ReturnService {
-    
+
     private final ReturnRepository returnRepository;
     private final SaleRepository saleRepository;
     private final MedicineRepository medicineRepository;
-    
+
     public List<Return> getAllReturns() {
         return returnRepository.findAll();
     }
-    
+
     public Optional<Return> getReturnById(Long id) {
         return returnRepository.findById(id);
     }
-    
+
     @Transactional
     public Return createReturn(Return returnItem) {
-        // Validate return quantity
-        Sale sale = returnItem.getSale();
-        if (returnItem.getReturnQuantity() > sale.getQuantity()) {
-            throw new RuntimeException("Return quantity cannot exceed sold quantity");
+        if (returnItem.getSaleItem() == null || returnItem.getSaleItem().getId() == null) {
+            throw new IllegalArgumentException("A specific Sale Item must be selected for return.");
         }
-        
+
+        Sale sale = returnItem.getSale();
+        com.medicalstore.model.SaleItem item = sale.getItems().stream()
+                .filter(i -> i.getId().equals(returnItem.getSaleItem().getId()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Invalid Sale Item selected."));
+
+        if (returnItem.getReturnQuantity() > item.getQuantity()) {
+            throw new IllegalArgumentException(
+                    "Return quantity cannot exceed sold quantity (" + item.getQuantity() + ")");
+        }
+
         // Restore medicine stock
-        Medicine medicine = sale.getMedicine();
+        Medicine medicine = item.getMedicine();
         medicine.setQuantity(medicine.getQuantity() + returnItem.getReturnQuantity());
         medicineRepository.save(medicine);
-        
+
         return returnRepository.save(returnItem);
     }
-    
+
     public List<Return> getReturnsBySale(Long saleId) {
         return returnRepository.findBySaleId(saleId);
     }

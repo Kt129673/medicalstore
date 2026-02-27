@@ -24,42 +24,60 @@ public interface SaleRepository extends JpaRepository<Sale, Long> {
 
         long countBySaleDateBetween(LocalDateTime start, LocalDateTime end);
 
-        @Query("SELECT s FROM Sale s LEFT JOIN FETCH s.medicine LEFT JOIN FETCH s.customer WHERE s.id = ?1")
+        @Query("SELECT s FROM Sale s LEFT JOIN FETCH s.customer WHERE s.id = ?1")
         Optional<Sale> findByIdWithDetails(Long id);
 
-        @Query("SELECT s FROM Sale s LEFT JOIN FETCH s.medicine LEFT JOIN FETCH s.customer " +
+        @Query("SELECT s FROM Sale s LEFT JOIN FETCH s.customer " +
                         "WHERE s.saleDate BETWEEN ?1 AND ?2 ORDER BY s.saleDate DESC")
         List<Sale> findBySaleDateBetweenWithDetails(LocalDateTime start, LocalDateTime end);
 
         // --- branch-scoped (SHOPKEEPER) ---
+        @Query("SELECT s FROM Sale s LEFT JOIN FETCH s.customer " +
+                        "WHERE s.branch.id = ?1 ORDER BY s.saleDate DESC")
         List<Sale> findByBranchId(Long branchId);
 
+        @Query("SELECT s FROM Sale s LEFT JOIN FETCH s.customer " +
+                        "WHERE s.branch.id = ?1 ORDER BY s.saleDate DESC")
         List<Sale> findTop5ByBranchIdOrderBySaleDateDesc(Long branchId);
 
+        @Query("SELECT s FROM Sale s LEFT JOIN FETCH s.customer " +
+                        "WHERE s.branch.id = ?1 AND s.saleDate BETWEEN ?2 AND ?3 ORDER BY s.saleDate DESC")
         List<Sale> findByBranchIdAndSaleDateBetween(Long branchId, LocalDateTime start, LocalDateTime end);
 
         @Query("SELECT SUM(s.totalAmount) FROM Sale s WHERE s.branch.id = ?1 AND s.saleDate BETWEEN ?2 AND ?3")
         Double getTotalSalesByBranchBetween(Long branchId, LocalDateTime start, LocalDateTime end);
 
-        @Query("SELECT s FROM Sale s LEFT JOIN FETCH s.medicine LEFT JOIN FETCH s.customer " +
+        @Query("SELECT s FROM Sale s LEFT JOIN FETCH s.customer " +
                         "WHERE s.branch.id = ?1 AND s.saleDate BETWEEN ?2 AND ?3 ORDER BY s.saleDate DESC")
         List<Sale> findByBranchBetweenWithDetails(Long branchId, LocalDateTime start, LocalDateTime end);
 
         long countByBranchId(Long branchId);
 
-        // --- owner-scoped (OWNER) ---
-        @Query("SELECT s FROM Sale s WHERE s.branch.owner.id = ?1 ORDER BY s.saleDate DESC")
+        // --- owner-scoped (OWNER sees all branches belonging to them) ---
+        @Query("SELECT s FROM Sale s LEFT JOIN FETCH s.customer " +
+                        "WHERE s.branch.owner.id = ?1 ORDER BY s.saleDate DESC")
         List<Sale> findByOwnerId(Long ownerId);
 
-        @Query("SELECT s FROM Sale s WHERE s.branch.owner.id = ?1 AND s.saleDate BETWEEN ?2 AND ?3 ORDER BY s.saleDate DESC")
+        @Query("SELECT s FROM Sale s LEFT JOIN FETCH s.customer " +
+                        "WHERE s.branch.owner.id = ?1 AND s.saleDate BETWEEN ?2 AND ?3 ORDER BY s.saleDate DESC")
         List<Sale> findByOwnerIdBetween(Long ownerId, LocalDateTime start, LocalDateTime end);
 
         @Query("SELECT SUM(s.totalAmount) FROM Sale s WHERE s.branch.owner.id = ?1 AND s.saleDate BETWEEN ?2 AND ?3")
         Double getTotalSalesByOwnerBetween(Long ownerId, LocalDateTime start, LocalDateTime end);
 
-        @Query("SELECT s FROM Sale s LEFT JOIN FETCH s.medicine LEFT JOIN FETCH s.customer " +
+        @Query("SELECT s FROM Sale s LEFT JOIN FETCH s.customer " +
                         "WHERE s.branch.owner.id = ?1 ORDER BY s.saleDate DESC")
         List<Sale> findTop5ByOwnerIdOrderBySaleDateDesc(Long ownerId);
+
+        // --- pagination methods ---
+        org.springframework.data.domain.Page<Sale> findAllByOrderBySaleDateDesc(
+                        org.springframework.data.domain.Pageable pageable);
+
+        org.springframework.data.domain.Page<Sale> findByBranchIdOrderBySaleDateDesc(Long branchId,
+                        org.springframework.data.domain.Pageable pageable);
+
+        org.springframework.data.domain.Page<Sale> findByBranchOwnerIdOrderBySaleDateDesc(Long ownerId,
+                        org.springframework.data.domain.Pageable pageable);
 
         // --- dashboard analytics (global / ADMIN) ---
         @Query("SELECT CAST(s.saleDate AS LocalDate), COALESCE(SUM(s.finalAmount), SUM(s.totalAmount)) " +
@@ -70,7 +88,7 @@ public interface SaleRepository extends JpaRepository<Sale, Long> {
                         "FROM Sale s WHERE s.saleDate BETWEEN ?1 AND ?2 GROUP BY s.medicine.category ORDER BY COALESCE(SUM(s.finalAmount), SUM(s.totalAmount)) DESC")
         List<Object[]> getSalesByCategory(LocalDateTime start, LocalDateTime end);
 
-        @Query("SELECT s FROM Sale s LEFT JOIN FETCH s.medicine LEFT JOIN FETCH s.customer ORDER BY s.saleDate DESC")
+        @Query("SELECT s FROM Sale s LEFT JOIN FETCH s.customer ORDER BY s.saleDate DESC")
         List<Sale> findTop10WithDetails();
 
         @Query("SELECT COUNT(s) FROM Sale s WHERE s.saleDate BETWEEN ?1 AND ?2")
@@ -88,7 +106,7 @@ public interface SaleRepository extends JpaRepository<Sale, Long> {
                         "FROM Sale s WHERE s.branch.id = ?1 AND s.saleDate BETWEEN ?2 AND ?3 GROUP BY s.medicine.category ORDER BY COALESCE(SUM(s.finalAmount), SUM(s.totalAmount)) DESC")
         List<Object[]> getSalesByCategoryByBranch(Long branchId, LocalDateTime start, LocalDateTime end);
 
-        @Query("SELECT s FROM Sale s LEFT JOIN FETCH s.medicine LEFT JOIN FETCH s.customer " +
+        @Query("SELECT s FROM Sale s LEFT JOIN FETCH s.customer " +
                         "WHERE s.branch.id = ?1 ORDER BY s.saleDate DESC")
         List<Sale> findTop10WithDetailsByBranch(Long branchId);
 
@@ -108,10 +126,6 @@ public interface SaleRepository extends JpaRepository<Sale, Long> {
          * totalProfit, qtySold]
          */
         @Query("SELECT m.id, m.name, m.category, " +
-                        "SUM(COALESCE(s.finalAmount, s.totalAmount)), " +
-                        "SUM(COALESCE(m.purchasePrice, 0.0) * s.quantity), " +
-                        "SUM(COALESCE(s.finalAmount, s.totalAmount) - COALESCE(m.purchasePrice, 0.0) * s.quantity), " +
-                        "SUM(s.quantity) " +
                         "FROM Sale s JOIN s.medicine m WHERE s.saleDate BETWEEN ?1 AND ?2 " +
                         "GROUP BY m.id, m.name, m.category " +
                         "ORDER BY SUM(COALESCE(s.finalAmount, s.totalAmount) - COALESCE(m.purchasePrice, 0.0) * s.quantity) DESC")

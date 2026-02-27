@@ -24,15 +24,18 @@
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label class="form-label">Select Sale/Invoice *</label>
-                            <select class="form-control" th:field="*{sale.id}" id="saleSelect" required
+                            <label class="form-label">Select Sold Item *</label>
+                            <select class="form-control" th:field="*{saleItem.id}" id="saleSelect" required
                                 onchange="updateSaleDetails()">
-                                <option value="">Choose Invoice</option>
-                                <option th:each="sale : ${sales}" th:value="${sale.id}"
-                                    th:text="'INV-' + ${#strings.padLeft(sale.id.toString(), 6, '0')} + ' - ' + ${sale.medicine.name} + ' (Qty: ' + ${sale.quantity} + ')'"
-                                    th:attr="data-medicine=${sale.medicine.name},data-quantity=${sale.quantity},data-unitprice=${sale.unitPrice}">
-                                </option>
+                                <option value="">Choose Sold Item</option>
+                                <th:block th:each="sale : ${sales}">
+                                    <option th:each="item : ${sale.items}" th:value="${item.id}"
+                                        th:text="'INV-' + ${#strings.padLeft(sale.id.toString(), 6, '0')} + ' - ' + ${item.medicine.name} + ' (Qty: ' + ${item.quantity} + ')'"
+                                        th:attr="data-saleid=${sale.id},data-medicine=${item.medicine.name},data-quantity=${item.quantity},data-unitprice=${item.unitPrice}">
+                                    </option>
+                                </th:block>
                             </select>
+                            <input type="hidden" th:field="*{sale.id}" id="saleIdHidden">
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Medicine</label>
@@ -106,6 +109,7 @@
                 const option = select.options[select.selectedIndex];
 
                 if (option.value) {
+                    document.getElementById('saleIdHidden').value = option.getAttribute('data-saleid');
                     document.getElementById('medicineName').value = option.getAttribute('data-medicine');
                     document.getElementById('soldQuantity').value = option.getAttribute('data-quantity');
                     document.getElementById('unitPrice').value = option.getAttribute('data-unitprice');
