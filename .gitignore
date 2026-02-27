@@ -46,3 +46,4 @@ yarn-error.log*
 medical-store-management-backend/target/
 
 *.pem
+seeder_log5.txt
