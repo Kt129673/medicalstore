@@ -44,6 +44,21 @@ public interface MedicineRepository extends JpaRepository<Medicine, Long> {
 
     long countByBranchIdAndQuantityLessThan(Long branchId, Integer quantity);
 
+    // --- performance optimized (DTO & Caching) ---
+    @Query("SELECT new com.medicalstore.dto.MedicineDTO(m.id, m.name, m.category, m.price, m.quantity, m.batchNumber, m.gstPercentage) "
+            +
+            "FROM Medicine m WHERE m.branch.id = :branchId AND (LOWER(m.name) LIKE LOWER(CONCAT('%', :query, '%')) " +
+            "OR LOWER(m.barcode) = LOWER(:query) OR LOWER(m.batchNumber) LIKE LOWER(CONCAT('%', :query, '%')))")
+    List<com.medicalstore.dto.MedicineDTO> searchMedicinesDtoByBranch(Long branchId, String query,
+            org.springframework.data.domain.Pageable pageable);
+
+    @Query("SELECT new com.medicalstore.dto.MedicineDTO(m.id, m.name, m.category, m.price, m.quantity, m.batchNumber, m.gstPercentage) "
+            +
+            "FROM Medicine m WHERE (LOWER(m.name) LIKE LOWER(CONCAT('%', :query, '%')) " +
+            "OR LOWER(m.barcode) = LOWER(:query) OR LOWER(m.batchNumber) LIKE LOWER(CONCAT('%', :query, '%')))")
+    List<com.medicalstore.dto.MedicineDTO> searchMedicinesDtoGlobal(String query,
+            org.springframework.data.domain.Pageable pageable);
+
     // --- owner-scoped (OWNER sees all their branches) ---
     @Query("SELECT m FROM Medicine m WHERE m.branch.owner.id = :ownerId")
     List<Medicine> findByOwnerId(Long ownerId);

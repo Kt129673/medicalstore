@@ -274,16 +274,19 @@
                             <div class="pos-section-title"><i class="bi bi-box-seam"></i> Product</div>
                             <div class="row g-3">
                                 <div class="col-md-7">
-                                    <label class="form-label fw-semibold" style="font-size:0.8rem;">Select Medicine
+                                    <label class="form-label fw-semibold" style="font-size:0.8rem;">Search Medicine
                                         *</label>
-                                    <select class="form-control" th:field="*{medicine.id}" id="medicineSelect" required
-                                        onchange="updatePrice()" style="border-radius:10px;padding:10px 14px;">
-                                        <option value="">Search or scan barcode...</option>
-                                        <option th:each="medicine : ${medicines}" th:value="${medicine.id}"
-                                            th:text="${medicine.name + ' (Stock: ' + medicine.quantity + ')'}"
-                                            th:attr="data-price=${medicine.price},data-stock=${medicine.quantity},data-cat=${medicine.category}">
-                                        </option>
-                                    </select>
+                                    <div class="med-search-wrap">
+                                        <i class="bi bi-search search-icon"></i>
+                                        <input type="text" class="form-control" id="medicineSearchInput"
+                                            placeholder="Search name, barcode, or batch..." autocomplete="off"
+                                            style="border-radius:10px;padding:10px 14px 10px 38px;">
+                                        <input type="hidden" th:field="*{medicine.id}" id="medicineIdHidden" required>
+                                        <!-- Typeahead dropdown wrapper -->
+                                        <div id="typeaheadDropdown" class="list-group position-absolute w-100 shadow-sm"
+                                            style="display:none; z-index:1000; max-height: 250px; overflow-y: auto;">
+                                        </div>
+                                    </div>
                                     <!-- Selected medicine info -->
                                     <div class="med-info-card" id="medInfoCard">
                                         <div class="med-name" id="medInfoName">—</div>
@@ -458,26 +461,95 @@
         </form>
 
         <script>
-            function updatePrice() {
-                const sel = document.getElementById('medicineSelect');
-                const opt = sel.options[sel.selectedIndex];
-                const price = opt.getAttribute('data-price');
-                const stock = opt.getAttribute('data-stock');
-                const cat = opt.getAttribute('data-cat');
-                const card = document.getElementById('medInfoCard');
+            // Typeahead & Debounce Cache
+            const searchInput = document.getElementById('medicineSearchInput');
+            const dropdown = document.getElementById('typeaheadDropdown');
+            const medIdHidden = document.getElementById('medicineIdHidden');
+            const medInfoCard = document.getElementById('medInfoCard');
 
-                if (price && sel.value) {
-                    document.getElementById('unitPrice').value = price;
-                    document.getElementById('medInfoName').textContent = opt.textContent.split(' (Stock')[0];
-                    document.getElementById('medInfoCat').textContent = cat || '—';
-                    document.getElementById('medInfoStock').textContent = stock + ' units';
-                    document.getElementById('medInfoPrice').textContent = '₹' + parseFloat(price).toFixed(2);
-                    card.classList.add('show');
-                    calculateTotal();
-                } else {
-                    card.classList.remove('show');
+            let debounceTimer;
+            const selectCache = new Map(); // Client-side cache for instant subsequent searches
+
+            searchInput.addEventListener('input', function () {
+                const query = this.value.trim();
+                dropdown.style.display = 'none';
+
+                if (query.length < 2) {
+                    return;
                 }
+
+                clearTimeout(debounceTimer);
+
+                // Check in-browser cache first
+                if (selectCache.has(query)) {
+                    renderDropdown(selectCache.get(query));
+                    return;
+                }
+
+                // Debounce network call by 300ms
+                debounceTimer = setTimeout(() => {
+                    fetch('/api/v1/medicines/search?q=' + encodeURIComponent(query))
+                        .then(res => res.json())
+                        .then(data => {
+                            selectCache.set(query, data); // Cache results
+                            renderDropdown(data);
+                        })
+                        .catch(err => console.error("Search failed", err));
+                }, 300);
+            });
+
+            function renderDropdown(medicines) {
+                dropdown.innerHTML = '';
+                if (medicines.length === 0) {
+                    dropdown.innerHTML = '<div class="list-group-item text-muted small">No medicines found</div>';
+                } else {
+                    medicines.forEach(med => {
+                        const item = document.createElement('a');
+                        item.href = '#';
+                        item.className = 'list-group-item list-group-item-action d-flex justify-content-between align-items-center';
+                        item.innerHTML = `
+                            <div>
+                                <div class="fw-bold" style="font-size:0.85rem;">${med.name}</div>
+                                <small class="text-muted" style="font-size:0.7rem;">Batch: ${med.batchNumber || 'N/A'}</small>
+                            </div>
+                            <div class="text-end">
+                                <strong class="${med.quantity < 5 ? 'text-danger' : 'text-success'}" style="font-size:0.8rem;">Qty: ${med.quantity}</strong><br>
+                                <span class="badge bg-light text-dark border">₹${med.price}</span>
+                            </div>
+                        `;
+                        item.onclick = (e) => {
+                            e.preventDefault();
+                            selectMedicine(med);
+                        };
+                        dropdown.appendChild(item);
+                    });
+                }
+                dropdown.style.display = 'block';
             }
+
+            function selectMedicine(med) {
+                searchInput.value = med.name;
+                medIdHidden.value = med.id;
+                dropdown.style.display = 'none';
+
+                // Update UI Prices
+                document.getElementById('unitPrice').value = med.price;
+                document.getElementById('medInfoName').textContent = med.name;
+                document.getElementById('medInfoCat').textContent = med.category || '—';
+                document.getElementById('medInfoStock').textContent = med.quantity + ' units';
+                document.getElementById('medInfoPrice').textContent = '₹' + parseFloat(med.price).toFixed(2);
+                document.getElementById('gstPercentage').value = med.gstPercentage || 0;
+
+                medInfoCard.classList.add('show');
+                calculateTotal();
+            }
+
+            // Close dropdown if clicked outside
+            document.addEventListener('click', function (e) {
+                if (!searchInput.contains(e.target) && !dropdown.contains(e.target)) {
+                    dropdown.style.display = 'none';
+                }
+            });
 
             function adjustQty(delta) {
                 const qty = document.getElementById('quantity');

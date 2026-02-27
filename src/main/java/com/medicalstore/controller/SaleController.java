@@ -3,7 +3,6 @@ package com.medicalstore.controller;
 import com.medicalstore.model.Sale;
 import com.medicalstore.model.Customer;
 import com.medicalstore.service.SaleService;
-import com.medicalstore.service.MedicineService;
 import com.medicalstore.service.CustomerService;
 import com.medicalstore.service.WhatsAppService;
 import com.medicalstore.service.PdfService;
@@ -21,27 +20,25 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequestMapping("/sales")
 @RequiredArgsConstructor
 public class SaleController {
-    
+
     private final SaleService saleService;
-    private final MedicineService medicineService;
     private final CustomerService customerService;
     private final WhatsAppService whatsAppService;
     private final PdfService pdfService;
-    
+
     @GetMapping
     public String listSales(Model model) {
         model.addAttribute("sales", saleService.getAllSales());
         return "sales/list";
     }
-    
+
     @GetMapping("/new")
     public String showAddForm(Model model) {
         model.addAttribute("sale", new Sale());
-        model.addAttribute("medicines", medicineService.getAllMedicines());
         model.addAttribute("customers", customerService.getAllCustomers());
         return "sales/form";
     }
-    
+
     @PostMapping("/save")
     public String saveSale(@ModelAttribute Sale sale, RedirectAttributes redirectAttributes) {
         try {
@@ -54,7 +51,7 @@ public class SaleController {
                         .orElse(null);
                 sale.setCustomer(customer);
             }
-            
+
             saleService.createSale(sale);
             redirectAttributes.addFlashAttribute("success", "Sale completed successfully!");
         } catch (Exception e) {
@@ -62,7 +59,7 @@ public class SaleController {
         }
         return "redirect:/sales";
     }
-    
+
     @GetMapping("/invoice/{id}")
     public String viewInvoice(@PathVariable Long id, Model model) {
         Sale sale = saleService.getSaleById(id)
@@ -71,22 +68,22 @@ public class SaleController {
         model.addAttribute("whatsappEnabled", whatsAppService.isConfigured());
         return "sales/invoice";
     }
-    
+
     @PostMapping("/send-whatsapp/{id}")
     @ResponseBody
     public String sendWhatsApp(@PathVariable Long id) {
         try {
             Sale sale = saleService.getSaleById(id)
                     .orElseThrow(() -> new RuntimeException("Sale not found"));
-            
+
             if (!whatsAppService.isConfigured()) {
                 return "WhatsApp is not configured. Please set up Twilio credentials.";
             }
-            
+
             if (sale.getCustomer() == null || sale.getCustomer().getPhone() == null) {
                 return "Customer phone number is required to send WhatsApp message.";
             }
-            
+
             boolean sent = whatsAppService.sendInvoice(sale);
             if (sent) {
                 return "Invoice sent successfully via WhatsApp!";
@@ -97,23 +94,23 @@ public class SaleController {
             return "Error: " + e.getMessage();
         }
     }
-    
+
     @GetMapping("/pdf/{id}")
     public ResponseEntity<byte[]> downloadInvoicePdf(@PathVariable Long id) {
         try {
             Sale sale = saleService.getSaleById(id)
                     .orElseThrow(() -> new RuntimeException("Sale not found"));
-            
+
             byte[] pdfBytes = pdfService.generateInvoicePdf(sale);
-            
+
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_PDF);
-            headers.setContentDispositionFormData("attachment", 
+            headers.setContentDispositionFormData("attachment",
                     String.format("Invoice_INV-%06d.pdf", sale.getId()));
             headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
-            
+
             return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
-            
+
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }

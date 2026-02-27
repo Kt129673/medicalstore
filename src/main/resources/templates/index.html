@@ -365,6 +365,27 @@
                 color: var(--primary-color, #2563eb);
             }
 
+            /* Skeletons for async loading */
+            .skeleton {
+                background: linear-gradient(90deg, rgba(255, 255, 255, 0.1) 25%, rgba(255, 255, 255, 0.3) 50%, rgba(255, 255, 255, 0.1) 75%);
+                background-size: 200% 100%;
+                animation: skeleton-loading 1.5s infinite;
+                border-radius: 4px;
+                display: inline-block;
+                min-width: 60px;
+                min-height: 24px;
+            }
+
+            @keyframes skeleton-loading {
+                0% {
+                    background-position: 200% 0;
+                }
+
+                100% {
+                    background-position: -200% 0;
+                }
+            }
+
             /* Responsive */
             @media (max-width: 768px) {
                 .kpi-grid {
@@ -386,45 +407,43 @@
             <div class="kpi-card kpi-sales">
                 <i class="bi bi-cart-check-fill kpi-icon"></i>
                 <div class="kpi-label">Today's Sales</div>
-                <div class="kpi-value">₹<span
-                        th:text="${#numbers.formatDecimal(todaySales, 0, 'COMMA', 0, 'POINT')}">0</span></div>
+                <div class="kpi-value">₹<span id="txtTodaySales" class="skeleton"></span></div>
                 <div class="kpi-sub">Revenue generated today</div>
             </div>
             <div class="kpi-card kpi-revenue">
                 <i class="bi bi-graph-up-arrow kpi-icon"></i>
                 <div class="kpi-label">Monthly Revenue</div>
-                <div class="kpi-value">₹<span
-                        th:text="${#numbers.formatDecimal(monthlyRevenue, 0, 'COMMA', 0, 'POINT')}">0</span></div>
+                <div class="kpi-value">₹<span id="txtMonthlyRevenue" class="skeleton"></span></div>
                 <div class="kpi-sub">This month so far</div>
             </div>
             <div class="kpi-card kpi-customers">
                 <i class="bi bi-people-fill kpi-icon"></i>
                 <div class="kpi-label">Total Customers</div>
-                <div class="kpi-value" th:text="${totalCustomers}">0</div>
+                <div class="kpi-value"><span id="txtTotalCustomers" class="skeleton"></span></div>
                 <div class="kpi-sub">Registered customers</div>
             </div>
             <div class="kpi-card kpi-medicines">
                 <i class="bi bi-capsule-pill kpi-icon"></i>
                 <div class="kpi-label">Total Medicines</div>
-                <div class="kpi-value" th:text="${totalMedicines}">0</div>
+                <div class="kpi-value"><span id="txtTotalMedicines" class="skeleton"></span></div>
                 <div class="kpi-sub">In inventory</div>
             </div>
             <div class="kpi-card kpi-lowstock">
                 <i class="bi bi-exclamation-triangle-fill kpi-icon"></i>
                 <div class="kpi-label">Low Stock</div>
-                <div class="kpi-value" th:text="${lowStockCount}">0</div>
+                <div class="kpi-value"><span id="txtLowStock" class="skeleton"></span></div>
                 <div class="kpi-sub">Items below threshold</div>
             </div>
-            <div class="kpi-card kpi-expiry">
+            <div class="kpi-card kpi-expiry" id="expiryCardMain">
                 <i class="bi bi-calendar-x-fill kpi-icon"></i>
                 <div class="kpi-label">Expiring (30 days)</div>
-                <div class="kpi-value" th:text="${expiringIn30}">0</div>
+                <div class="kpi-value"><span id="txtExpiring30" class="skeleton"></span></div>
                 <div class="kpi-sub">Medicines expiring soon</div>
             </div>
-            <div class="kpi-card kpi-transactions" th:if="${todayTransactions != null}">
+            <div class="kpi-card kpi-transactions" id="kpiTransactionsCard" style="display:none;">
                 <i class="bi bi-receipt kpi-icon"></i>
                 <div class="kpi-label">Today's Transactions</div>
-                <div class="kpi-value" th:text="${todayTransactions}">0</div>
+                <div class="kpi-value"><span id="txtTodayTransactions" class="skeleton"></span></div>
                 <div class="kpi-sub">Sales transactions today</div>
             </div>
         </div>
@@ -463,21 +482,21 @@
             <!-- Expiry Alerts -->
             <div class="col-lg-5">
                 <div class="section-heading"><i class="bi bi-clock-history"></i> Expiry Alerts</div>
-                <div class="expiry-grid">
-                    <div class="expiry-card expiry-expired" th:if="${expiredCount != null}">
-                        <div class="expiry-count" th:text="${expiredCount}">0</div>
+                <div class="expiry-grid" id="expiryGridContainer">
+                    <div class="expiry-card expiry-expired" id="cardExpired" style="display:none;">
+                        <div class="expiry-count"><span id="txtExpiredCount" class="skeleton"></span></div>
                         <div class="expiry-label">Expired</div>
                     </div>
                     <div class="expiry-card expiry-30">
-                        <div class="expiry-count" th:text="${expiringIn30}">0</div>
+                        <div class="expiry-count"><span id="txtExpiring30Grid" class="skeleton"></span></div>
                         <div class="expiry-label">30 Days</div>
                     </div>
                     <div class="expiry-card expiry-60">
-                        <div class="expiry-count" th:text="${expiringIn60}">0</div>
+                        <div class="expiry-count"><span id="txtExpiring60" class="skeleton"></span></div>
                         <div class="expiry-label">60 Days</div>
                     </div>
                     <div class="expiry-card expiry-90">
-                        <div class="expiry-count" th:text="${expiringIn90}">0</div>
+                        <div class="expiry-count"><span id="txtExpiring90" class="skeleton"></span></div>
                         <div class="expiry-label">90 Days</div>
                     </div>
                 </div>
@@ -490,22 +509,11 @@
                         <h6><i class="bi bi-exclamation-diamond-fill text-danger me-2"></i>Critical Stock Alerts</h6>
                         <a href="/medicines/low-stock" class="btn btn-sm btn-outline-danger">View All</a>
                     </div>
-                    <div th:if="${criticalStockItems != null && !criticalStockItems.isEmpty()}">
-                        <div class="stock-item" th:each="med : ${criticalStockItems}">
-                            <div style="flex:1;">
-                                <div class="fw-semibold" th:text="${med.name}">Medicine</div>
-                                <div class="small text-muted" th:text="${med.category}">Category</div>
-                            </div>
-                            <span class="stock-badge stock-critical" th:if="${med.quantity <= 5}"
-                                th:text="${med.quantity} + ' units'">0</span>
-                            <span class="stock-badge stock-warning" th:if="${med.quantity > 5 && med.quantity <= 10}"
-                                th:text="${med.quantity} + ' units'">0</span>
-                        </div>
-                    </div>
-                    <div th:if="${criticalStockItems == null || criticalStockItems.isEmpty()}"
-                        class="text-center text-muted py-4">
-                        <i class="bi bi-check-circle-fill text-success fs-2 d-block mb-2"></i>
-                        All stock levels are healthy!
+                    <div id="criticalStockContainer">
+                        <!-- Skeletons -->
+                        <div class="stock-item"><span class="skeleton" style="width: 100%;"></span></div>
+                        <div class="stock-item"><span class="skeleton" style="width: 100%;"></span></div>
+                        <div class="stock-item"><span class="skeleton" style="width: 100%;"></span></div>
                     </div>
                 </div>
             </div>
@@ -530,41 +538,15 @@
                             <th>Date</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr th:each="sale : ${recentSales}">
-                            <td>
-                                <a th:href="@{/sales/invoice/{id}(id=${sale.id})}"
-                                    class="fw-semibold text-decoration-none">
-                                    <code th:text="'#INV-' + ${sale.id}">#INV-1</code>
-                                </a>
-                            </td>
-                            <td th:text="${sale.medicine?.name ?: '—'}">Medicine</td>
-                            <td th:text="${sale.customer?.name ?: 'Walk-in'}">Customer</td>
-                            <td th:text="${sale.quantity}">0</td>
-                            <td class="fw-semibold" style="color:#059669;">
-                                ₹<span
-                                    th:text="${#numbers.formatDecimal(sale.finalAmount ?: sale.totalAmount, 0, 'COMMA', 2, 'POINT')}">0.00</span>
-                            </td>
-                            <td>
-                                <span th:if="${sale.paymentMethod == 'Cash'}"
-                                    class="payment-badge payment-cash">Cash</span>
-                                <span th:if="${sale.paymentMethod == 'Card'}"
-                                    class="payment-badge payment-card">Card</span>
-                                <span th:if="${sale.paymentMethod == 'UPI'}"
-                                    class="payment-badge payment-upi">UPI</span>
-                                <span
-                                    th:if="${sale.paymentMethod != 'Cash' && sale.paymentMethod != 'Card' && sale.paymentMethod != 'UPI'}"
-                                    class="payment-badge" style="background:#f1f5f9;color:#64748b;"
-                                    th:text="${sale.paymentMethod ?: '—'}">—</span>
-                            </td>
-                            <td class="text-muted" th:text="${#temporals.format(sale.saleDate, 'dd MMM, HH:mm')}">01 Jan
-                            </td>
+                    <tbody id="recentTransactionsBody">
+                        <tr>
+                            <td colspan="7"><span class="skeleton" style="width:100%"></span></td>
                         </tr>
-                        <tr th:if="${recentSales == null || recentSales.isEmpty()}">
-                            <td colspan="7" class="text-center text-muted py-4">
-                                <i class="bi bi-inbox fs-2 d-block mb-2"></i>
-                                No transactions yet today
-                            </td>
+                        <tr>
+                            <td colspan="7"><span class="skeleton" style="width:100%"></span></td>
+                        </tr>
+                        <tr>
+                            <td colspan="7"><span class="skeleton" style="width:100%"></span></td>
                         </tr>
                     </tbody>
                 </table>
@@ -573,11 +555,108 @@
 
         <!-- Chart.js CDN + Dashboard Charts -->
         <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-        <script th:inline="javascript">
+        <script>
             document.addEventListener('DOMContentLoaded', function () {
-                const salesTrendRaw = /*[[${salesTrendJson}]]*/ '{"labels":[],"data":[]}';
-                const categoryRaw = /*[[${categoryJson}]]*/ '{"labels":[],"data":[]}';
+                
+                // Fetch KPI Data
+                fetch('/api/v1/dashboard/kpis')
+                    .then(res => res.json())
+                    .then(data => {
+                        // Populate Simple KPIs
+                        document.getElementById('txtTodaySales').textContent = Number(data.todaySales || 0).toLocaleString('en-IN');
+                        document.getElementById('txtMonthlyRevenue').textContent = Number(data.monthlyRevenue || 0).toLocaleString('en-IN');
+                        document.getElementById('txtTotalCustomers').textContent = data.totalCustomers || 0;
+                        document.getElementById('txtTotalMedicines').textContent = data.totalMedicines || 0;
+                        document.getElementById('txtLowStock').textContent = data.lowStockCount || 0;
+                        document.getElementById('txtExpiring30').textContent = data.expiringIn30 || 0;
+                        document.getElementById('txtExpiring30Grid').textContent = data.expiringIn30 || 0;
+                        document.getElementById('txtExpiring60').textContent = data.expiringIn60 || 0;
+                        document.getElementById('txtExpiring90').textContent = data.expiringIn90 || 0;
+                        
+                        // Conditionals
+                        if (data.todayTransactions !== undefined) {
+                            document.getElementById('kpiTransactionsCard').style.display = 'flex';
+                            document.getElementById('txtTodayTransactions').textContent = data.todayTransactions;
+                        }
+                        
+                        if (data.expiredCount) {
+                            document.getElementById('cardExpired').style.display = 'block';
+                            document.getElementById('txtExpiredCount').textContent = data.expiredCount;
+                        }
 
+                        // Remove skeleton classes from simple KPIs
+                        document.querySelectorAll('.kpi-value .skeleton, .expiry-count .skeleton').forEach(el => el.classList.remove('skeleton'));
+
+                        // Populate Critical Stock
+                        const stockContainer = document.getElementById('criticalStockContainer');
+                        if (!data.criticalStockItems || data.criticalStockItems.length === 0) {
+                            stockContainer.innerHTML = `
+                                <div class="text-center text-muted py-4">
+                                    <i class="bi bi-check-circle-fill text-success fs-2 d-block mb-2"></i>
+                                    All stock levels are healthy!
+                                </div>`;
+                        } else {
+                            stockContainer.innerHTML = '';
+                            data.criticalStockItems.forEach(med => {
+                                const badgeClass = med.quantity <= 5 ? 'stock-critical' : 'stock-warning';
+                                stockContainer.innerHTML += `
+                                    <div class="stock-item">
+                                        <div style="flex:1;">
+                                            <div class="fw-semibold">${med.name}</div>
+                                            <div class="small text-muted">${med.category || 'N/A'}</div>
+                                        </div>
+                                        <span class="stock-badge ${badgeClass}">${med.quantity} units</span>
+                                    </div>
+                                `;
+                            });
+                        }
+
+                        // Populate Recent Transactions
+                        const txnBody = document.getElementById('recentTransactionsBody');
+                        if (!data.recentSales || data.recentSales.length === 0) {
+                            txnBody.innerHTML = `
+                                <tr>
+                                    <td colspan="7" class="text-center text-muted py-4">
+                                        <i class="bi bi-inbox fs-2 d-block mb-2"></i>
+                                        No transactions yet today
+                                    </td>
+                                </tr>`;
+                        } else {
+                            txnBody.innerHTML = '';
+                            data.recentSales.forEach(sale => {
+                                const amt = (sale.finalAmount || sale.totalAmount || 0).toFixed(2);
+                                
+                                let pmBadge = '';
+                                if(sale.paymentMethod === 'Cash') pmBadge = '<span class="payment-badge payment-cash">Cash</span>';
+                                else if(sale.paymentMethod === 'Card') pmBadge = '<span class="payment-badge payment-card">Card</span>';
+                                else if(sale.paymentMethod === 'UPI') pmBadge = '<span class="payment-badge payment-upi">UPI</span>';
+                                else pmBadge = `<span class="payment-badge" style="background:#f1f5f9;color:#64748b;">${sale.paymentMethod || '—'}</span>`;
+
+                                // format date
+                                const d = new Date(sale.saleDate);
+                                const dateStr = d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }) + ', ' + d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+
+                                txnBody.innerHTML += `
+                                    <tr>
+                                        <td><a href="/sales/invoice/${sale.id}" class="fw-semibold text-decoration-none"><code>#INV-${sale.id}</code></a></td>
+                                        <td>${sale.medicine ? sale.medicine.name : '—'}</td>
+                                        <td>${sale.customer ? sale.customer.name : 'Walk-in'}</td>
+                                        <td>${sale.quantity}</td>
+                                        <td class="fw-semibold" style="color:#059669;">₹${amt}</td>
+                                        <td>${pmBadge}</td>
+                                        <td class="text-muted">${dateStr}</td>
+                                    </tr>
+                                `;
+                            });
+                        }
+
+                        // Render Charts
+                        renderCharts(data.salesTrendJson, data.categoryJson);
+                    })
+                    .catch(err => console.error("Failed to load dashboard KPIs", err));
+            });
+
+            function renderCharts(salesTrendRaw, categoryRaw) {
                 const salesTrend = typeof salesTrendRaw === 'string' ? JSON.parse(salesTrendRaw) : salesTrendRaw;
                 const categoryData = typeof categoryRaw === 'string' ? JSON.parse(categoryRaw) : categoryRaw;
 
@@ -684,7 +763,7 @@
                         }
                     });
                 }
-            });
+            }
         </script>
 
     </div>

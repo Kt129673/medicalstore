@@ -76,6 +76,17 @@ public class MedicineService {
         return medicineRepository.findByNameContainingIgnoreCase(name);
     }
 
+    // --- Performance optimized search for POS ---
+    @org.springframework.cache.annotation.Cacheable(value = "medicines_search", key = "#query + '-' + T(com.medicalstore.config.TenantContext).getTenantId()")
+    public List<com.medicalstore.dto.MedicineDTO> searchMedicinesForPos(String query) {
+        org.springframework.data.domain.Pageable top20 = org.springframework.data.domain.PageRequest.of(0, 20);
+        Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
+        if (tenantId != null) {
+            return medicineRepository.searchMedicinesDtoByBranch(tenantId, query, top20);
+        }
+        return medicineRepository.searchMedicinesDtoGlobal(query, top20);
+    }
+
     public List<Medicine> getLowStockMedicines(Integer threshold) {
         Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
         Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();

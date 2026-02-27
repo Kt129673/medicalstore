@@ -14,7 +14,9 @@ import java.time.LocalDate;
         @Index(name = "idx_medicine_expiry", columnList = "expiry_date"),
         @Index(name = "idx_medicine_quantity", columnList = "quantity"),
         @Index(name = "idx_medicine_branch", columnList = "branch_id"),
-        @Index(name = "idx_medicine_qty_expiry", columnList = "quantity, expiry_date")
+        @Index(name = "idx_medicine_qty_expiry", columnList = "quantity, expiry_date"),
+        @Index(name = "idx_medicine_barcode", columnList = "barcode"),
+        @Index(name = "idx_medicine_batch", columnList = "batch_number")
 })
 @Data
 @NoArgsConstructor
