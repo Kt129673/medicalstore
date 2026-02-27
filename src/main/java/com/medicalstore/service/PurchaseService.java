@@ -24,6 +24,12 @@ public class PurchaseService {
     private final MedicineRepository medicineRepository;
 
     public List<PurchaseOrder> getAllOrders() {
+        Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
+        Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
+        if (tenantId != null)
+            return purchaseOrderRepository.findByBranchIdOrderByOrderDateDesc(tenantId);
+        if (ownerId != null)
+            return purchaseOrderRepository.findByOwnerId(ownerId);
         return purchaseOrderRepository.findAllByOrderByOrderDateDesc();
     }
 
@@ -36,7 +42,18 @@ public class PurchaseService {
     }
 
     public Optional<PurchaseOrder> getOrderById(Long id) {
-        return purchaseOrderRepository.findById(id);
+        Optional<PurchaseOrder> order = purchaseOrderRepository.findById(id);
+        if (order.isPresent()) {
+            Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
+            if (tenantId != null && !tenantId.equals(order.get().getBranch().getId())) {
+                return Optional.empty(); // Not authorized
+            }
+            Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
+            if (ownerId != null && !ownerId.equals(order.get().getBranch().getOwner().getId())) {
+                return Optional.empty(); // Not authorized
+            }
+        }
+        return order;
     }
 
     @Transactional

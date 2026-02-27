@@ -80,4 +80,13 @@ public interface MedicineRepository extends JpaRepository<Medicine, Long> {
 
     @Query("SELECT m FROM Medicine m WHERE m.branch.owner.id = ?1 AND m.quantity <= ?2 AND m.quantity > 0 ORDER BY m.quantity ASC")
     List<Medicine> findCriticalLowStockByOwner(Long ownerId, int threshold);
+
+    // --- Advanced Analytics: Dead Stock ---
+
+    /** Medicines NOT in given ID list and with stock > 0 (dead stock) */
+    @Query("SELECT m FROM Medicine m WHERE m.id NOT IN :excludeIds AND m.quantity > 0 ORDER BY m.quantity DESC")
+    List<Medicine> findDeadStock(List<Long> excludeIds);
+
+    /** All medicines with stock > 0 (fallback when no sales exist) */
+    List<Medicine> findByQuantityGreaterThan(int minQty);
 }

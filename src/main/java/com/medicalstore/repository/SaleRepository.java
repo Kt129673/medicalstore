@@ -12,92 +12,138 @@ import java.util.Optional;
 @Repository
 public interface SaleRepository extends JpaRepository<Sale, Long> {
 
-    // --- existing ---
-    List<Sale> findByCustomerId(Long customerId);
+        // --- existing ---
+        List<Sale> findByCustomerId(Long customerId);
 
-    List<Sale> findBySaleDateBetween(LocalDateTime start, LocalDateTime end);
+        List<Sale> findBySaleDateBetween(LocalDateTime start, LocalDateTime end);
 
-    @Query("SELECT SUM(s.totalAmount) FROM Sale s WHERE s.saleDate BETWEEN ?1 AND ?2")
-    Double getTotalSalesBetween(LocalDateTime start, LocalDateTime end);
+        @Query("SELECT SUM(s.totalAmount) FROM Sale s WHERE s.saleDate BETWEEN ?1 AND ?2")
+        Double getTotalSalesBetween(LocalDateTime start, LocalDateTime end);
 
-    List<Sale> findTop5ByOrderBySaleDateDesc();
+        List<Sale> findTop5ByOrderBySaleDateDesc();
 
-    long countBySaleDateBetween(LocalDateTime start, LocalDateTime end);
+        long countBySaleDateBetween(LocalDateTime start, LocalDateTime end);
 
-    @Query("SELECT s FROM Sale s LEFT JOIN FETCH s.medicine LEFT JOIN FETCH s.customer WHERE s.id = ?1")
-    Optional<Sale> findByIdWithDetails(Long id);
+        @Query("SELECT s FROM Sale s LEFT JOIN FETCH s.medicine LEFT JOIN FETCH s.customer WHERE s.id = ?1")
+        Optional<Sale> findByIdWithDetails(Long id);
 
-    @Query("SELECT s FROM Sale s LEFT JOIN FETCH s.medicine LEFT JOIN FETCH s.customer " +
-            "WHERE s.saleDate BETWEEN ?1 AND ?2 ORDER BY s.saleDate DESC")
-    List<Sale> findBySaleDateBetweenWithDetails(LocalDateTime start, LocalDateTime end);
+        @Query("SELECT s FROM Sale s LEFT JOIN FETCH s.medicine LEFT JOIN FETCH s.customer " +
+                        "WHERE s.saleDate BETWEEN ?1 AND ?2 ORDER BY s.saleDate DESC")
+        List<Sale> findBySaleDateBetweenWithDetails(LocalDateTime start, LocalDateTime end);
 
-    // --- branch-scoped (SHOPKEEPER) ---
-    List<Sale> findByBranchId(Long branchId);
+        // --- branch-scoped (SHOPKEEPER) ---
+        List<Sale> findByBranchId(Long branchId);
 
-    List<Sale> findTop5ByBranchIdOrderBySaleDateDesc(Long branchId);
+        List<Sale> findTop5ByBranchIdOrderBySaleDateDesc(Long branchId);
 
-    List<Sale> findByBranchIdAndSaleDateBetween(Long branchId, LocalDateTime start, LocalDateTime end);
+        List<Sale> findByBranchIdAndSaleDateBetween(Long branchId, LocalDateTime start, LocalDateTime end);
 
-    @Query("SELECT SUM(s.totalAmount) FROM Sale s WHERE s.branch.id = ?1 AND s.saleDate BETWEEN ?2 AND ?3")
-    Double getTotalSalesByBranchBetween(Long branchId, LocalDateTime start, LocalDateTime end);
+        @Query("SELECT SUM(s.totalAmount) FROM Sale s WHERE s.branch.id = ?1 AND s.saleDate BETWEEN ?2 AND ?3")
+        Double getTotalSalesByBranchBetween(Long branchId, LocalDateTime start, LocalDateTime end);
 
-    @Query("SELECT s FROM Sale s LEFT JOIN FETCH s.medicine LEFT JOIN FETCH s.customer " +
-            "WHERE s.branch.id = ?1 AND s.saleDate BETWEEN ?2 AND ?3 ORDER BY s.saleDate DESC")
-    List<Sale> findByBranchBetweenWithDetails(Long branchId, LocalDateTime start, LocalDateTime end);
+        @Query("SELECT s FROM Sale s LEFT JOIN FETCH s.medicine LEFT JOIN FETCH s.customer " +
+                        "WHERE s.branch.id = ?1 AND s.saleDate BETWEEN ?2 AND ?3 ORDER BY s.saleDate DESC")
+        List<Sale> findByBranchBetweenWithDetails(Long branchId, LocalDateTime start, LocalDateTime end);
 
-    long countByBranchId(Long branchId);
+        long countByBranchId(Long branchId);
 
-    // --- owner-scoped (OWNER) ---
-    @Query("SELECT s FROM Sale s WHERE s.branch.owner.id = ?1 ORDER BY s.saleDate DESC")
-    List<Sale> findByOwnerId(Long ownerId);
+        // --- owner-scoped (OWNER) ---
+        @Query("SELECT s FROM Sale s WHERE s.branch.owner.id = ?1 ORDER BY s.saleDate DESC")
+        List<Sale> findByOwnerId(Long ownerId);
 
-    @Query("SELECT s FROM Sale s WHERE s.branch.owner.id = ?1 AND s.saleDate BETWEEN ?2 AND ?3 ORDER BY s.saleDate DESC")
-    List<Sale> findByOwnerIdBetween(Long ownerId, LocalDateTime start, LocalDateTime end);
+        @Query("SELECT s FROM Sale s WHERE s.branch.owner.id = ?1 AND s.saleDate BETWEEN ?2 AND ?3 ORDER BY s.saleDate DESC")
+        List<Sale> findByOwnerIdBetween(Long ownerId, LocalDateTime start, LocalDateTime end);
 
-    @Query("SELECT SUM(s.totalAmount) FROM Sale s WHERE s.branch.owner.id = ?1 AND s.saleDate BETWEEN ?2 AND ?3")
-    Double getTotalSalesByOwnerBetween(Long ownerId, LocalDateTime start, LocalDateTime end);
+        @Query("SELECT SUM(s.totalAmount) FROM Sale s WHERE s.branch.owner.id = ?1 AND s.saleDate BETWEEN ?2 AND ?3")
+        Double getTotalSalesByOwnerBetween(Long ownerId, LocalDateTime start, LocalDateTime end);
 
-    @Query("SELECT s FROM Sale s LEFT JOIN FETCH s.medicine LEFT JOIN FETCH s.customer " +
-            "WHERE s.branch.owner.id = ?1 ORDER BY s.saleDate DESC")
-    List<Sale> findTop5ByOwnerIdOrderBySaleDateDesc(Long ownerId);
+        @Query("SELECT s FROM Sale s LEFT JOIN FETCH s.medicine LEFT JOIN FETCH s.customer " +
+                        "WHERE s.branch.owner.id = ?1 ORDER BY s.saleDate DESC")
+        List<Sale> findTop5ByOwnerIdOrderBySaleDateDesc(Long ownerId);
 
-    // --- dashboard analytics (global / ADMIN) ---
-    @Query("SELECT CAST(s.saleDate AS LocalDate), COALESCE(SUM(s.finalAmount), SUM(s.totalAmount)) " +
-            "FROM Sale s WHERE s.saleDate >= ?1 GROUP BY CAST(s.saleDate AS LocalDate) ORDER BY CAST(s.saleDate AS LocalDate)")
-    List<Object[]> getDailySalesTotals(LocalDateTime since);
+        // --- dashboard analytics (global / ADMIN) ---
+        @Query("SELECT CAST(s.saleDate AS LocalDate), COALESCE(SUM(s.finalAmount), SUM(s.totalAmount)) " +
+                        "FROM Sale s WHERE s.saleDate >= ?1 GROUP BY CAST(s.saleDate AS LocalDate) ORDER BY CAST(s.saleDate AS LocalDate)")
+        List<Object[]> getDailySalesTotals(LocalDateTime since);
 
-    @Query("SELECT s.medicine.category, COALESCE(SUM(s.finalAmount), SUM(s.totalAmount)) " +
-            "FROM Sale s WHERE s.saleDate BETWEEN ?1 AND ?2 GROUP BY s.medicine.category ORDER BY COALESCE(SUM(s.finalAmount), SUM(s.totalAmount)) DESC")
-    List<Object[]> getSalesByCategory(LocalDateTime start, LocalDateTime end);
+        @Query("SELECT s.medicine.category, COALESCE(SUM(s.finalAmount), SUM(s.totalAmount)) " +
+                        "FROM Sale s WHERE s.saleDate BETWEEN ?1 AND ?2 GROUP BY s.medicine.category ORDER BY COALESCE(SUM(s.finalAmount), SUM(s.totalAmount)) DESC")
+        List<Object[]> getSalesByCategory(LocalDateTime start, LocalDateTime end);
 
-    @Query("SELECT s FROM Sale s LEFT JOIN FETCH s.medicine LEFT JOIN FETCH s.customer ORDER BY s.saleDate DESC")
-    List<Sale> findTop10WithDetails();
+        @Query("SELECT s FROM Sale s LEFT JOIN FETCH s.medicine LEFT JOIN FETCH s.customer ORDER BY s.saleDate DESC")
+        List<Sale> findTop10WithDetails();
 
-    @Query("SELECT COUNT(s) FROM Sale s WHERE s.saleDate BETWEEN ?1 AND ?2")
-    long countSalesBetween(LocalDateTime start, LocalDateTime end);
+        @Query("SELECT COUNT(s) FROM Sale s WHERE s.saleDate BETWEEN ?1 AND ?2")
+        long countSalesBetween(LocalDateTime start, LocalDateTime end);
 
-    @Query("SELECT COALESCE(SUM(s.finalAmount), SUM(s.totalAmount)) FROM Sale s WHERE s.saleDate BETWEEN ?1 AND ?2")
-    Double getRevenueBetween(LocalDateTime start, LocalDateTime end);
+        @Query("SELECT COALESCE(SUM(s.finalAmount), SUM(s.totalAmount)) FROM Sale s WHERE s.saleDate BETWEEN ?1 AND ?2")
+        Double getRevenueBetween(LocalDateTime start, LocalDateTime end);
 
-    // --- dashboard analytics (branch-scoped / SHOPKEEPER) ---
-    @Query("SELECT CAST(s.saleDate AS LocalDate), COALESCE(SUM(s.finalAmount), SUM(s.totalAmount)) " +
-            "FROM Sale s WHERE s.branch.id = ?1 AND s.saleDate >= ?2 GROUP BY CAST(s.saleDate AS LocalDate) ORDER BY CAST(s.saleDate AS LocalDate)")
-    List<Object[]> getDailySalesTotalsByBranch(Long branchId, LocalDateTime since);
+        // --- dashboard analytics (branch-scoped / SHOPKEEPER) ---
+        @Query("SELECT CAST(s.saleDate AS LocalDate), COALESCE(SUM(s.finalAmount), SUM(s.totalAmount)) " +
+                        "FROM Sale s WHERE s.branch.id = ?1 AND s.saleDate >= ?2 GROUP BY CAST(s.saleDate AS LocalDate) ORDER BY CAST(s.saleDate AS LocalDate)")
+        List<Object[]> getDailySalesTotalsByBranch(Long branchId, LocalDateTime since);
 
-    @Query("SELECT s.medicine.category, COALESCE(SUM(s.finalAmount), SUM(s.totalAmount)) " +
-            "FROM Sale s WHERE s.branch.id = ?1 AND s.saleDate BETWEEN ?2 AND ?3 GROUP BY s.medicine.category ORDER BY COALESCE(SUM(s.finalAmount), SUM(s.totalAmount)) DESC")
-    List<Object[]> getSalesByCategoryByBranch(Long branchId, LocalDateTime start, LocalDateTime end);
+        @Query("SELECT s.medicine.category, COALESCE(SUM(s.finalAmount), SUM(s.totalAmount)) " +
+                        "FROM Sale s WHERE s.branch.id = ?1 AND s.saleDate BETWEEN ?2 AND ?3 GROUP BY s.medicine.category ORDER BY COALESCE(SUM(s.finalAmount), SUM(s.totalAmount)) DESC")
+        List<Object[]> getSalesByCategoryByBranch(Long branchId, LocalDateTime start, LocalDateTime end);
 
-    @Query("SELECT s FROM Sale s LEFT JOIN FETCH s.medicine LEFT JOIN FETCH s.customer " +
-            "WHERE s.branch.id = ?1 ORDER BY s.saleDate DESC")
-    List<Sale> findTop10WithDetailsByBranch(Long branchId);
+        @Query("SELECT s FROM Sale s LEFT JOIN FETCH s.medicine LEFT JOIN FETCH s.customer " +
+                        "WHERE s.branch.id = ?1 ORDER BY s.saleDate DESC")
+        List<Sale> findTop10WithDetailsByBranch(Long branchId);
 
-    // --- dashboard analytics (owner-scoped / OWNER) ---
-    @Query("SELECT CAST(s.saleDate AS LocalDate), COALESCE(SUM(s.finalAmount), SUM(s.totalAmount)) " +
-            "FROM Sale s WHERE s.branch.owner.id = ?1 AND s.saleDate >= ?2 GROUP BY CAST(s.saleDate AS LocalDate) ORDER BY CAST(s.saleDate AS LocalDate)")
-    List<Object[]> getDailySalesTotalsByOwner(Long ownerId, LocalDateTime since);
+        // --- dashboard analytics (owner-scoped / OWNER) ---
+        @Query("SELECT CAST(s.saleDate AS LocalDate), COALESCE(SUM(s.finalAmount), SUM(s.totalAmount)) " +
+                        "FROM Sale s WHERE s.branch.owner.id = ?1 AND s.saleDate >= ?2 GROUP BY CAST(s.saleDate AS LocalDate) ORDER BY CAST(s.saleDate AS LocalDate)")
+        List<Object[]> getDailySalesTotalsByOwner(Long ownerId, LocalDateTime since);
 
-    @Query("SELECT s.medicine.category, COALESCE(SUM(s.finalAmount), SUM(s.totalAmount)) " +
-            "FROM Sale s WHERE s.branch.owner.id = ?1 AND s.saleDate BETWEEN ?2 AND ?3 GROUP BY s.medicine.category ORDER BY COALESCE(SUM(s.finalAmount), SUM(s.totalAmount)) DESC")
-    List<Object[]> getSalesByCategoryByOwner(Long ownerId, LocalDateTime start, LocalDateTime end);
+        @Query("SELECT s.medicine.category, COALESCE(SUM(s.finalAmount), SUM(s.totalAmount)) " +
+                        "FROM Sale s WHERE s.branch.owner.id = ?1 AND s.saleDate BETWEEN ?2 AND ?3 GROUP BY s.medicine.category ORDER BY COALESCE(SUM(s.finalAmount), SUM(s.totalAmount)) DESC")
+        List<Object[]> getSalesByCategoryByOwner(Long ownerId, LocalDateTime start, LocalDateTime end);
+
+        // --- Advanced Analytics queries ---
+
+        /**
+         * Profit per medicine: [medicineId, name, category, totalRevenue, totalCost,
+         * totalProfit, qtySold]
+         */
+        @Query("SELECT m.id, m.name, m.category, " +
+                        "SUM(COALESCE(s.finalAmount, s.totalAmount)), " +
+                        "SUM(COALESCE(m.purchasePrice, 0.0) * s.quantity), " +
+                        "SUM(COALESCE(s.finalAmount, s.totalAmount) - COALESCE(m.purchasePrice, 0.0) * s.quantity), " +
+                        "SUM(s.quantity) " +
+                        "FROM Sale s JOIN s.medicine m WHERE s.saleDate BETWEEN ?1 AND ?2 " +
+                        "GROUP BY m.id, m.name, m.category " +
+                        "ORDER BY SUM(COALESCE(s.finalAmount, s.totalAmount) - COALESCE(m.purchasePrice, 0.0) * s.quantity) DESC")
+        List<Object[]> getProfitPerMedicine(LocalDateTime start, LocalDateTime end);
+
+        /**
+         * Fast-moving Top N: [medicineId, name, category, totalQtySold, totalRevenue]
+         */
+        @Query("SELECT m.id, m.name, m.category, SUM(s.quantity), SUM(COALESCE(s.finalAmount, s.totalAmount)) " +
+                        "FROM Sale s JOIN s.medicine m WHERE s.saleDate BETWEEN ?1 AND ?2 " +
+                        "GROUP BY m.id, m.name, m.category ORDER BY SUM(s.quantity) DESC")
+        List<Object[]> getTopSellingMedicines(LocalDateTime start, LocalDateTime end);
+
+        /**
+         * Medicine IDs with at least one sale since given date (for dead-stock
+         * exclusion)
+         */
+        @Query("SELECT DISTINCT s.medicine.id FROM Sale s WHERE s.saleDate >= ?1")
+        List<Long> getMedicineIdsWithSalesSince(LocalDateTime since);
+
+        /**
+         * Monthly GST breakdown: [yearMonth (string), totalTaxable, totalCGST,
+         * totalSGST, totalGST, transactionCount]
+         */
+        @Query("SELECT FUNCTION('DATE_FORMAT', s.saleDate, '%Y-%m'), " +
+                        "SUM(s.totalAmount - COALESCE(s.discountAmount, 0.0)), " +
+                        "SUM(COALESCE(s.gstAmount, 0.0)) / 2, " +
+                        "SUM(COALESCE(s.gstAmount, 0.0)) / 2, " +
+                        "SUM(COALESCE(s.gstAmount, 0.0)), " +
+                        "COUNT(s) " +
+                        "FROM Sale s WHERE s.saleDate BETWEEN ?1 AND ?2 " +
+                        "GROUP BY FUNCTION('DATE_FORMAT', s.saleDate, '%Y-%m') " +
+                        "ORDER BY FUNCTION('DATE_FORMAT', s.saleDate, '%Y-%m')")
+        List<Object[]> getMonthlyGstSummary(LocalDateTime start, LocalDateTime end);
 }

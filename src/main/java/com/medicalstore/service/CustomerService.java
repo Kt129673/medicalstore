@@ -16,48 +16,63 @@ public class CustomerService {
 
     private final CustomerRepository customerRepository;
 
-    // ── Global (ADMIN) ──────────────────────────────────────────────────────
+    // ── Context-Aware Lookups ───────────────────────────────────────────────
     public List<Customer> getAllCustomers() {
+        Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
+        Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
+        if (tenantId != null)
+            return customerRepository.findByBranchId(tenantId);
+        if (ownerId != null)
+            return customerRepository.findByOwnerId(ownerId);
         return customerRepository.findAll();
     }
 
     public long countAllCustomers() {
+        Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
+        Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
+        if (tenantId != null)
+            return customerRepository.countByBranchId(tenantId);
+        if (ownerId != null)
+            return customerRepository.countByOwnerId(ownerId);
         return customerRepository.count();
     }
 
     public Optional<Customer> getCustomerById(Long id) {
-        return customerRepository.findById(id);
+        Optional<Customer> customer = customerRepository.findById(id);
+        if (customer.isPresent()) {
+            Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
+            if (tenantId != null && !tenantId.equals(customer.get().getBranch().getId())) {
+                return Optional.empty(); // Not authorized
+            }
+            Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
+            if (ownerId != null && !ownerId.equals(customer.get().getBranch().getOwner().getId())) {
+                return Optional.empty(); // Not authorized
+            }
+        }
+        return customer;
     }
 
     public Optional<Customer> getCustomerByPhone(String ph) {
-        return customerRepository.findByPhone(ph);
+        // Technically phone uniqueness might be per-branch or global. Assuming global
+        // or best-effort context filter.
+        Optional<Customer> c = customerRepository.findByPhone(ph);
+        if (c.isPresent()) {
+            Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
+            if (tenantId != null && !tenantId.equals(c.get().getBranch().getId()))
+                return Optional.empty();
+        }
+        return c;
     }
 
     public List<Customer> searchCustomers(String name) {
+        Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
+        if (tenantId != null)
+            return customerRepository.findByBranchIdAndNameContainingIgnoreCase(tenantId, name);
+        // Owner global search not explicitly defined, fallback to global
         return customerRepository.findByNameContainingIgnoreCase(name);
     }
 
-    // ── Branch-scoped (SHOPKEEPER) ──────────────────────────────────────────
-    public List<Customer> getCustomersByBranch(Long branchId) {
-        return customerRepository.findByBranchId(branchId);
-    }
-
-    public long countByBranch(Long branchId) {
-        return customerRepository.countByBranchId(branchId);
-    }
-
-    public List<Customer> searchCustomersByBranch(Long branchId, String n) {
-        return customerRepository.findByBranchIdAndNameContainingIgnoreCase(branchId, n);
-    }
-
-    // ── Owner-scoped (OWNER) ────────────────────────────────────────────────
-    public List<Customer> getCustomersByOwner(Long ownerId) {
-        return customerRepository.findByOwnerId(ownerId);
-    }
-
-    public long countByOwner(Long ownerId) {
-        return customerRepository.countByOwnerId(ownerId);
-    }
+    // ── Legacy Scoped (Kept for explicit calls if needed) ─────────────────────
 
     // ── Writes ───────────────────────────────────────────────────────────────
     @Transactional

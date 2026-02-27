@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+    th:replace="~{layout :: layout(title='Dead Stock Analysis', page='analytics', content=~{::#content}, pageIcon='bi bi-box-seam-fill')}">
+
+<body>
+    <div id="content">
+        <div class="page-header mb-4">
+            <div>
+                <h2><i class="bi bi-box-seam-fill text-danger"></i> Dead Stock</h2>
+                <p class="text-muted mb-0">Items with zero sales in the specified period</p>
+            </div>
+            <div class="d-flex gap-2">
+                <a th:href="@{/analytics/export/excel(report='dead-stock',days=${days})}"
+                    class="btn btn-outline-success">
+                    <i class="bi bi-file-earmark-excel"></i> Export Excel
+                </a>
+                <a href="/analytics" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Back</a>
+            </div>
+        </div>
+
+        <!-- Filter Form -->
+        <div class="card mb-4 modern-card">
+            <div class="card-body">
+                <form action="/analytics/dead-stock" method="get" class="row g-3 align-items-end">
+                    <div class="col-md-4">
+                        <label class="form-label">Inactivity Period</label>
+                        <select name="days" class="form-select">
+                            <option value="30" th:selected="${days == 30}">> 30 Days No Sale</option>
+                            <option value="60" th:selected="${days == 60}">> 60 Days No Sale</option>
+                            <option value="90" th:selected="${days == 90}">> 90 Days No Sale</option>
+                            <option value="180" th:selected="${days == 180}">> 180 Days No Sale</option>
+                            <option value="365" th:selected="${days == 365}">> 1 Year No Sale</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <button type="submit" class="btn btn-danger w-100"><i class="bi bi-search"></i> Analyze
+                            Stock</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Summary Widget -->
+        <div class="row g-4 mb-4" th:if="${itemCount > 0}">
+            <div class="col-md-6">
+                <div class="card stat-card h-100" style="background: linear-gradient(135deg, #ef4444, #f87171);">
+                    <div class="stat-label">Capital Locked in Dead Stock</div>
+                    <div class="stat-value"
+                        th:text="'₹' + ${#numbers.formatDecimal(totalStockValue, 1, 'COMMA', 2, 'POINT')}"></div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card stat-card h-100" style="background: linear-gradient(135deg, #64748b, #94a3b8);">
+                    <div class="stat-label">Total Unsold Items</div>
+                    <div class="stat-value" th:text="${itemCount} + ' products'"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- Table -->
+            <div class="col-12">
+                <div class="card modern-card border-danger border-opacity-25">
+                    <div class="table-responsive">
+                        <table class="table modern-table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Medicine</th>
+                                    <th>Category</th>
+                                    <th>Batch / Expiry</th>
+                                    <th class="text-end">Current Stock</th>
+                                    <th class="text-end">Purchase P.</th>
+                                    <th class="text-end">Selling P.</th>
+                                    <th class="text-end">Total Capital Locked</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="item : ${data}">
+                                    <td class="fw-bold">
+                                        <i class="bi bi-exclamation-circle text-danger me-1"></i>
+                                        <span th:text="${item.name}"></span>
+                                    </td>
+                                    <td><span class="badge bg-secondary bg-opacity-10 text-secondary"
+                                            th:text="${item.category}"></span></td>
+                                    <td>
+                                        <div th:text="${item.batchNumber}"></div>
+                                        <small class="text-muted" th:text="'Exp: ' + ${item.expiryDate}"></small>
+                                    </td>
+                                    <td class="text-end fw-bold" th:text="${item.quantity}"></td>
+                                    <td class="text-end"
+                                        th:text="'₹' + ${#numbers.formatDecimal(item.purchasePrice, 1, 'COMMA', 2, 'POINT')}">
+                                    </td>
+                                    <td class="text-end"
+                                        th:text="'₹' + ${#numbers.formatDecimal(item.sellingPrice, 1, 'COMMA', 2, 'POINT')}">
+                                    </td>
+                                    <td class="text-end fw-bold text-danger bg-danger bg-opacity-10"
+                                        th:text="'₹' + ${#numbers.formatDecimal(item.stockValue, 1, 'COMMA', 2, 'POINT')}">
+                                    </td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(data)}">
+                                    <td colspan="7" class="text-center py-4">
+                                        <div class="empty-state">
+                                            <i class="bi bi-check-circle-fill text-success"
+                                                style="font-size: 3rem; opacity: 1;"></i>
+                                            <h5>Great news!</h5>
+                                            <p>No dead stock found for the selected period.</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

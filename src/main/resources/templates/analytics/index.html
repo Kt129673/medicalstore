@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+    th:replace="~{layout :: layout(title='Advanced Analytics', page='analytics', content=~{::#content}, pageIcon='bi bi-bar-chart-fill')}">
+
+<body>
+    <div id="content">
+        <div class="page-header mb-4">
+            <div>
+                <h2><i class="bi bi-bar-chart-fill text-primary"></i> Advanced Analytics</h2>
+                <p class="text-muted mb-0">Deep insights into business performance</p>
+            </div>
+            <div>
+                <a href="/reports" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Back to Standard
+                    Reports</a>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- Profit Per Medicine -->
+            <div class="col-md-6 col-xl-3">
+                <div class="card h-100 modern-card" style="border-top: 4px solid var(--primary-color);">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="icon-box bg-primary bg-opacity-10 text-primary p-3 rounded-3 me-3">
+                                <i class="bi bi-currency-dollar fs-3"></i>
+                            </div>
+                            <div>
+                                <h5 class="mb-1 fw-bold">Profit margins</h5>
+                                <div class="text-muted small">Per Medicine</div>
+                            </div>
+                        </div>
+                        <p class="text-muted small mb-4">Analyze gross profit margins for every item sold to identify
+                            most lucrative products.</p>
+                        <a href="/analytics/profit-per-medicine" class="btn btn-primary w-100">View Report</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fast-Moving Items -->
+            <div class="col-md-6 col-xl-3">
+                <div class="card h-100 modern-card" style="border-top: 4px solid #10b981;">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="icon-box text-success p-3 rounded-3 me-3" style="background:#d1fae5;">
+                                <i class="bi bi-lightning-charge-fill fs-3"></i>
+                            </div>
+                            <div>
+                                <h5 class="mb-1 fw-bold">Fast-Moving</h5>
+                                <div class="text-muted small">Top Items</div>
+                            </div>
+                        </div>
+                        <p class="text-muted small mb-4">Identify your top 20 best-selling items by quantity to ensure
+                            they never run out of stock.</p>
+                        <a href="/analytics/fast-moving" class="btn w-100 text-white" style="background:#10b981;">View
+                            Report</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dead Stock -->
+            <div class="col-md-6 col-xl-3">
+                <div class="card h-100 modern-card" style="border-top: 4px solid #ef4444;">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="icon-box text-danger p-3 rounded-3 me-3" style="background:#fee2e2;">
+                                <i class="bi bi-box-seam-fill fs-3"></i>
+                            </div>
+                            <div>
+                                <h5 class="mb-1 fw-bold">Dead Stock</h5>
+                                <div class="text-muted small">Slow Movers</div>
+                            </div>
+                        </div>
+                        <p class="text-muted small mb-4">Find medicines with zero sales in the last 90 days tying up
+                            your working capital.</p>
+                        <a href="/analytics/dead-stock" class="btn btn-danger w-100">View Report</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GST Summary -->
+            <div class="col-md-6 col-xl-3">
+                <div class="card h-100 modern-card" style="border-top: 4px solid #8b5cf6;">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="icon-box text-purple p-3 rounded-3 me-3"
+                                style="background:#ede9fe;color:#8b5cf6;">
+                                <i class="bi bi-file-earmark-ruled fs-3"></i>
+                            </div>
+                            <div>
+                                <h5 class="mb-1 fw-bold">GST Summary</h5>
+                                <div class="text-muted small">Tax Filing</div>
+                            </div>
+                        </div>
+                        <p class="text-muted small mb-4">Monthly breakdown of Taxable Amount, CGST, and SGST for your
+                            easy GST return filing.</p>
+                        <a href="/analytics/gst-summary" class="btn text-white w-100" style="background:#8b5cf6;">View
+                            Report</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

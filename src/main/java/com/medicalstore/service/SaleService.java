@@ -32,6 +32,13 @@ public class SaleService {
 
     @Transactional(readOnly = true)
     public List<Sale> getAllSales() {
+        Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
+        Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
+
+        if (tenantId != null)
+            return saleRepository.findByBranchId(tenantId);
+        if (ownerId != null)
+            return saleRepository.findByOwnerId(ownerId);
         return saleRepository.findAll();
     }
 
@@ -51,8 +58,16 @@ public class SaleService {
         // Set the full medicine object to sale
         sale.setMedicine(medicine);
 
+        // Auto-assign branch if tenant is set (Shopkeeper)
+        Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
+        if (tenantId != null && sale.getBranch() == null) {
+            com.medicalstore.model.Branch b = new com.medicalstore.model.Branch();
+            b.setId(tenantId);
+            sale.setBranch(b);
+        }
+
         // Award loyalty points (1 point for every ₹100 spent)
-        if (sale.getCustomer() != null) {
+        if (sale.getCustomer() != null && sale.getCustomer().getId() != null) {
             Customer customer = customerRepository.findById(sale.getCustomer().getId()).orElse(null);
             if (customer != null) {
                 Double finalAmount = sale.getFinalAmount() != null ? sale.getFinalAmount() : sale.getTotalAmount();
@@ -67,58 +82,62 @@ public class SaleService {
     }
 
     public List<Sale> getSalesByCustomer(Long customerId) {
+        // Assuming customer data is global or handled by branch. If strictly isolated,
+        // filter it.
         return saleRepository.findByCustomerId(customerId);
     }
 
     public List<Sale> getSalesByDateRange(LocalDateTime start, LocalDateTime end) {
+        Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
+        Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
+
+        if (tenantId != null)
+            return saleRepository.findByBranchIdAndSaleDateBetween(tenantId, start, end);
+        if (ownerId != null)
+            return saleRepository.findByOwnerIdBetween(ownerId, start, end);
         return saleRepository.findBySaleDateBetween(start, end);
     }
 
     public Double getTodaySales() {
         LocalDateTime startOfDay = LocalDate.now().atStartOfDay();
         LocalDateTime endOfDay = LocalDate.now().atTime(23, 59, 59);
-        Double total = saleRepository.getTotalSalesBetween(startOfDay, endOfDay);
+        Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
+        Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
+
+        Double total;
+        if (tenantId != null)
+            total = saleRepository.getTotalSalesByBranchBetween(tenantId, startOfDay, endOfDay);
+        else if (ownerId != null)
+            total = saleRepository.getTotalSalesByOwnerBetween(ownerId, startOfDay, endOfDay);
+        else
+            total = saleRepository.getTotalSalesBetween(startOfDay, endOfDay);
+
         return total != null ? total : 0.0;
     }
 
     public Double getTotalSalesBetween(LocalDateTime start, LocalDateTime end) {
-        Double total = saleRepository.getTotalSalesBetween(start, end);
+        Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
+        Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
+
+        Double total;
+        if (tenantId != null)
+            total = saleRepository.getTotalSalesByBranchBetween(tenantId, start, end);
+        else if (ownerId != null)
+            total = saleRepository.getTotalSalesByOwnerBetween(ownerId, start, end);
+        else
+            total = saleRepository.getTotalSalesBetween(start, end);
+
         return total != null ? total : 0.0;
     }
 
     public List<Sale> getRecentSales() {
+        Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
+        Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
+
+        if (tenantId != null)
+            return saleRepository.findTop5ByBranchIdOrderBySaleDateDesc(tenantId);
+        if (ownerId != null)
+            return saleRepository.findTop5ByOwnerIdOrderBySaleDateDesc(ownerId);
         return saleRepository.findTop5ByOrderBySaleDateDesc();
-    }
-
-    // ── Branch-scoped (SHOPKEEPER) ──────────────────────────────────────────
-    public List<Sale> getAllSalesByBranch(Long branchId) {
-        return saleRepository.findByBranchId(branchId);
-    }
-
-    public List<Sale> getRecentSalesByBranch(Long branchId) {
-        return saleRepository.findTop5ByBranchIdOrderBySaleDateDesc(branchId);
-    }
-
-    public Double getTodaySalesByBranch(Long branchId) {
-        LocalDateTime start = LocalDate.now().atStartOfDay();
-        LocalDateTime end = LocalDate.now().atTime(23, 59, 59);
-        Double total = saleRepository.getTotalSalesByBranchBetween(branchId, start, end);
-        return total != null ? total : 0.0;
-    }
-
-    // ── Owner-scoped (OWNER) ────────────────────────────────────────────────
-    public List<Sale> getAllSalesByOwner(Long ownerId) {
-        return saleRepository.findByOwnerId(ownerId);
-    }
-
-    public List<Sale> getRecentSalesByOwner(Long ownerId) {
-        return saleRepository.findTop5ByOwnerIdOrderBySaleDateDesc(ownerId);
-    }
-
-    public Double getTodaySalesByOwner(Long ownerId) {
-        LocalDateTime start = LocalDate.now().atStartOfDay();
-        LocalDateTime end = LocalDate.now().atTime(23, 59, 59);
-        Double total = saleRepository.getTotalSalesByOwnerBetween(ownerId, start, end);
-        return total != null ? total : 0.0;
     }
 }

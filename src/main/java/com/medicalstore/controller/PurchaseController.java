@@ -30,15 +30,7 @@ public class PurchaseController {
 
     @GetMapping
     public String listOrders(Model model) {
-        List<PurchaseOrder> orders;
-        if (securityUtils.isAdmin()) {
-            orders = purchaseService.getAllOrders();
-        } else if (securityUtils.isOwner()) {
-            orders = purchaseService.getOrdersByOwner(securityUtils.getCurrentUserId());
-        } else {
-            orders = purchaseService.getOrdersByBranch(securityUtils.getCurrentBranchId());
-        }
-        model.addAttribute("orders", orders);
+        model.addAttribute("orders", purchaseService.getAllOrders());
         return "purchase/list";
     }
 
@@ -152,16 +144,7 @@ public class PurchaseController {
     }
 
     private void populateFormModel(Model model) {
-        if (securityUtils.isAdmin()) {
-            model.addAttribute("suppliers", supplierService.getAllSuppliers());
-            model.addAttribute("medicines", medicineService.getAllMedicines());
-        } else if (securityUtils.isShopkeeper()) {
-            Long branchId = securityUtils.getCurrentBranchId();
-            model.addAttribute("suppliers", supplierService.getAllSuppliers());
-            model.addAttribute("medicines", medicineService.getMedicinesByBranch(branchId));
-        } else {
-            model.addAttribute("suppliers", supplierService.getAllSuppliers());
-            model.addAttribute("medicines", medicineService.getMedicinesByOwner(securityUtils.getCurrentUserId()));
-        }
+        model.addAttribute("suppliers", supplierService.getAllSuppliers());
+        model.addAttribute("medicines", medicineService.getAllMedicines());
     }
 }

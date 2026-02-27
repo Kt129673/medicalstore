@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+    th:replace="~{layout :: layout(title='Profit Per Medicine', page='analytics', content=~{::#content}, pageIcon='bi bi-currency-dollar')}">
+
+<body>
+    <div id="content">
+        <div class="page-header mb-4">
+            <div>
+                <h2><i class="bi bi-currency-dollar text-primary"></i> Profit Per Medicine</h2>
+                <p class="text-muted mb-0">Detailed margin analysis for each product</p>
+            </div>
+            <div class="d-flex gap-2">
+                <a th:href="@{/analytics/export/excel(report='profit',startDate=${startDate},endDate=${endDate})}"
+                    class="btn btn-outline-success">
+                    <i class="bi bi-file-earmark-excel"></i> Export Excel
+                </a>
+                <a href="/analytics" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Back</a>
+            </div>
+        </div>
+
+        <!-- Filter Form -->
+        <div class="card mb-4 modern-card">
+            <div class="card-body">
+                <form action="/analytics/profit-per-medicine" method="get" class="row g-3 align-items-end">
+                    <div class="col-md-4">
+                        <label class="form-label">Start Date</label>
+                        <input type="date" name="startDate" class="form-control" th:value="${startDate}">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">End Date</label>
+                        <input type="date" name="endDate" class="form-control" th:value="${endDate}">
+                    </div>
+                    <div class="col-md-4">
+                        <button type="submit" class="btn btn-primary w-100"><i class="bi bi-funnel"></i> Apply
+                            Filter</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- Chart -->
+            <div class="col-12" th:if="${not #lists.isEmpty(data)}">
+                <div class="card modern-card">
+                    <div class="card-header bg-white">
+                        <i class="bi bi-bar-chart-fill me-2 text-primary"></i> <strong>Top 15 Most Profitable
+                            Medicines</strong>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="profitChart" height="100"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="col-12">
+                <div class="card modern-card">
+                    <div class="table-responsive">
+                        <table class="table modern-table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Medicine</th>
+                                    <th>Category</th>
+                                    <th class="text-end">Qty Sold</th>
+                                    <th class="text-end">Revenue</th>
+                                    <th class="text-end">Cost</th>
+                                    <th class="text-end text-success">Gross Profit</th>
+                                    <th class="text-end">Margin %</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="item, stat : ${data}">
+                                    <td th:text="${stat.count}"></td>
+                                    <td class="fw-bold" th:text="${item.name}"></td>
+                                    <td><span class="badge bg-secondary bg-opacity-10 text-secondary"
+                                            th:text="${item.category}"></span></td>
+                                    <td class="text-end" th:text="${item.qtySold}"></td>
+                                    <td class="text-end fw-medium"
+                                        th:text="'₹' + ${#numbers.formatDecimal(item.revenue, 1, 'COMMA', 2, 'POINT')}">
+                                    </td>
+                                    <td class="text-end text-muted"
+                                        th:text="'₹' + ${#numbers.formatDecimal(item.cost, 1, 'COMMA', 2, 'POINT')}">
+                                    </td>
+                                    <td class="text-end fw-bold text-success"
+                                        th:text="'₹' + ${#numbers.formatDecimal(item.profit, 1, 'COMMA', 2, 'POINT')}">
+                                    </td>
+                                    <td class="text-end fw-medium"
+                                        th:classappend="${item.margin > 30 ? 'text-success' : (item.margin < 10 ? 'text-danger' : '')}"
+                                        th:text="${#numbers.formatDecimal(item.margin, 1, 1)} + '%'"></td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(data)}">
+                                    <td colspan="8" class="text-center py-4 text-muted">No sales data found for the
+                                        selected period.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script th:inline="javascript">
+            const chartData = /*[[${chartJson}]]*/ '{}';
+            if (chartData && chartData !== '{}') {
+                const parsed = JSON.parse(chartData);
+                const ctx = document.getElementById('profitChart');
+                if (ctx) {
+                    new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: parsed.labels,
+                            datasets: [{
+                                label: 'Gross Profit (₹)',
+                                data: parsed.profit,
+                                backgroundColor: 'rgba(16, 185, 129, 0.8)',
+                                borderRadius: 4
+                            }, {
+                                label: 'Cost (₹)',
+                                data: parsed.cost,
+                                backgroundColor: 'rgba(203, 213, 225, 0.8)',
+                                borderRadius: 4
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            scales: {
+                                x: { stacked: true },
+                                y: { stacked: true }
+                            },
+                            plugins: {
+                                tooltip: { mode: 'index', intersect: false }
+                            }
+                        }
+                    });
+                }
+            }
+        </script>
+    </div>
+</body>
+
+</html>

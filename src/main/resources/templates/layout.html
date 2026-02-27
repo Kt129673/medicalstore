@@ -260,6 +260,32 @@
             transition: background 0.3s, border-color 0.3s;
         }
 
+        .subscription-banner {
+            background-color: #fef08a;
+            /* Tailwind yellow-200 */
+            color: #854d0e;
+            /* Tailwind yellow-800 */
+            padding: 8px 16px;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 600;
+            border-bottom: 1px solid #fde047;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+            z-index: 50;
+        }
+
+        .subscription-banner.expired {
+            background-color: #fecaca;
+            /* Tailwind red-200 */
+            color: #991b1b;
+            /* Tailwind red-800 */
+            border-bottom-color: #fca5a5;
+        }
+
         .page-title {
             font-size: 17px;
             font-weight: 700;
@@ -948,7 +974,11 @@
                 <div class="nav-divider"></div>
                 <div class="nav-section-label">Reports</div>
                 <a class="nav-link" th:classappend="${page == 'reports'} ? 'active' : ''" href="/reports">
-                    <i class="bi bi-graph-up-arrow"></i><span>Reports</span>
+                    <i class="bi bi-graph-up-arrow"></i><span>Standard Reports</span>
+                </a>
+                <a class="nav-link" th:classappend="${page == 'analytics'} ? 'active' : ''" href="/analytics">
+                    <i class="bi bi-bar-chart-fill"></i><span
+                        style="font-weight:700; color:var(--primary-color);">Advanced Analytics</span>
                 </a>
                 <a class="nav-link" th:classappend="${page == 'gst'} ? 'active' : ''" href="/reports/gst">
                     <i class="bi bi-file-earmark-ruled"></i><span>GST / Tax</span>
@@ -977,39 +1007,46 @@
 
         <!-- Main Content -->
         <main class="main-content">
-            <!-- Premium Header -->
+            <!-- Subscription Warning Banner -->
+            <div th:if="${subscriptionWarning != null}" class="subscription-banner"
+                th:classappend="${#strings.contains(subscriptionWarning, 'expired')} ? 'expired' : ''">
+                <i class="bi bi-exclamation-circle-fill"></i>
+                <span th:text="${subscriptionWarning}"></span>
+            </div>
+
             <header class="main-header">
-                <!-- Left: page title -->
-                <h1 class="page-title">
-                    <i th:if="${pageIcon}" th:class="${pageIcon}" style="margin-right: 8px;"></i>
-                    <span th:text="${title}">Page</span>
-                </h1>
+                <div class="d-flex align-items-center gap-3">
+                    <!-- Left: page title -->
+                    <h1 class="page-title">
+                        <i th:if="${pageIcon}" th:class="${pageIcon}" style="margin-right: 8px;"></i>
+                        <span th:text="${title}">Page</span>
+                    </h1>
 
-                <!-- Right: live clock + role badge -->
-                <div class="header-right">
+                    <!-- Right: live clock + role badge -->
+                    <div class="header-right">
 
-                    <!-- Role badge -->
-                    <span class="header-role-badge role-admin" sec:authorize="hasRole('ADMIN')">
-                        <i class="bi bi-shield-fill"></i> Admin
-                    </span>
-                    <span class="header-role-badge role-owner" sec:authorize="hasRole('OWNER')">
-                        <i class="bi bi-person-badge-fill"></i> Owner
-                    </span>
-                    <span class="header-role-badge role-shopkeeper" sec:authorize="hasRole('SHOPKEEPER')">
-                        <i class="bi bi-shop"></i> Shopkeeper
-                    </span>
+                        <!-- Role badge -->
+                        <span class="header-role-badge role-admin" sec:authorize="hasRole('ADMIN')">
+                            <i class="bi bi-shield-fill"></i> Admin
+                        </span>
+                        <span class="header-role-badge role-owner" sec:authorize="hasRole('OWNER')">
+                            <i class="bi bi-person-badge-fill"></i> Owner
+                        </span>
+                        <span class="header-role-badge role-shopkeeper" sec:authorize="hasRole('SHOPKEEPER')">
+                            <i class="bi bi-shop"></i> Shopkeeper
+                        </span>
 
-                    <!-- Theme Toggle -->
-                    <button class="theme-toggle-btn" id="themeToggleBtn" title="Toggle Dark/Light Mode">
-                        <i class="bi bi-moon-stars"></i>
-                    </button>
+                        <!-- Theme Toggle -->
+                        <button class="theme-toggle-btn" id="themeToggleBtn" title="Toggle Dark/Light Mode">
+                            <i class="bi bi-moon-stars"></i>
+                        </button>
 
-                    <!-- Live clock -->
-                    <div class="header-clock">
-                        <span class="clock-time" id="liveClock">--:--:--</span>
-                        <span class="clock-date" id="liveDate">-- --- ----</span>
+                        <!-- Live clock -->
+                        <div class="header-clock">
+                            <span class="clock-time" id="liveClock">--:--:--</span>
+                            <span class="clock-date" id="liveDate">-- --- ----</span>
+                        </div>
                     </div>
-                </div>
             </header>
 
             <!-- Body -->

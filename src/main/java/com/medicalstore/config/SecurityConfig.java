@@ -44,12 +44,18 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, TenantFilter tenantFilter) throws Exception {
         http
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/login", "/css/**", "/js/**", "/images/**", "/error").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/owner/**").hasRole("OWNER")
+                        // Analytics - strict access control
+                        .requestMatchers("/analytics/**").hasAnyRole("ADMIN", "OWNER", "SHOPKEEPER")
+                        // Common endpoints
+                        .requestMatchers("/medicines/**", "/sales/**", "/customers/**", "/reports/**", "/returns/**",
+                                "/suppliers/**", "/purchases/**")
+                        .hasAnyRole("ADMIN", "OWNER", "SHOPKEEPER")
                         .anyRequest().authenticated())
                 .formLogin(form -> form
                         .loginPage("/login")
@@ -66,7 +72,9 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .maximumSessions(-1)
                         .maxSessionsPreventsLogin(false))
-                .authenticationProvider(authenticationProvider());
+                .authenticationProvider(authenticationProvider())
+                .addFilterAfter(tenantFilter,
+                        org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

@@ -21,20 +21,9 @@ public class MedicineController {
 
     @GetMapping
     public String listMedicines(@RequestParam(required = false) String search, Model model) {
-        if (securityUtils.isAdmin()) {
-            model.addAttribute("medicines", search != null && !search.isBlank()
-                    ? medicineService.searchMedicines(search)
-                    : medicineService.getAllMedicines());
-        } else if (securityUtils.isOwner()) {
-            // owner sees all medicines across their branches
-            model.addAttribute("medicines", medicineService.getMedicinesByOwner(securityUtils.getCurrentUserId()));
-        } else {
-            // shopkeeper: branch-scoped only
-            Long branchId = securityUtils.getCurrentBranchId();
-            model.addAttribute("medicines", search != null && !search.isBlank()
-                    ? medicineService.searchMedicinesByBranch(branchId, search)
-                    : medicineService.getMedicinesByBranch(branchId));
-        }
+        model.addAttribute("medicines", search != null && !search.isBlank()
+                ? medicineService.searchMedicines(search)
+                : medicineService.getAllMedicines());
         return "medicines/list";
     }
 
@@ -84,25 +73,14 @@ public class MedicineController {
 
     @GetMapping("/low-stock")
     public String lowStockMedicines(Model model) {
-        if (securityUtils.isShopkeeper()) {
-            model.addAttribute("medicines",
-                    medicineService.getLowStockByBranch(securityUtils.getCurrentBranchId(), 10));
-        } else {
-            model.addAttribute("medicines", medicineService.getLowStockMedicines(10));
-        }
+        model.addAttribute("medicines", medicineService.getLowStockMedicines(10));
         return "medicines/low-stock";
     }
 
     @GetMapping("/expiry-alerts")
     public String expiryAlerts(Model model) {
-        if (securityUtils.isShopkeeper()) {
-            Long bid = securityUtils.getCurrentBranchId();
-            model.addAttribute("expiredMedicines", medicineService.getExpiredByBranch(bid));
-            model.addAttribute("expiringSoonMedicines", medicineService.getExpiringSoonByBranch(bid, 30));
-        } else {
-            model.addAttribute("expiredMedicines", medicineService.getExpiredMedicines());
-            model.addAttribute("expiringSoonMedicines", medicineService.getExpiringSoonMedicines(30));
-        }
+        model.addAttribute("expiredMedicines", medicineService.getExpiredMedicines());
+        model.addAttribute("expiringSoonMedicines", medicineService.getExpiringSoonMedicines(30));
         return "medicines/expiry-alerts";
     }
 }
