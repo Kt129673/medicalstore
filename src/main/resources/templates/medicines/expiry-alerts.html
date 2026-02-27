@@ -48,10 +48,10 @@
                                 </td>
                                 <td><span class="badge bg-dark" th:text="${medicine.quantity}">0</span></td>
                                 <td>
-                                    <a th:href="@{/medicines/delete/{id}(id=${medicine.id})}"
-                                        class="btn btn-sm btn-danger"
-                                        onclick="return confirm('Remove this expired medicine?')">
-                                        <i class="bi bi-trash"></i> Remove
+                                    <a th:href="@{/medicines/delete/{id}(id=${m.id})}"
+                                        class="btn btn-outline-danger btn-sm"
+                                        onclick="return confirmLink(event, this, 'This expired medicine will be permanently deleted.')">
+                                        Remove
                                     </a>
                                 </td>
                             </tr>

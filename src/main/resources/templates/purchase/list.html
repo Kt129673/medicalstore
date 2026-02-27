@@ -113,9 +113,9 @@
                                         <i class="bi bi-pencil"></i>
                                     </a>
                                     <a th:if="${order.status == 'DRAFT'}"
-                                        th:href="@{'/purchases/delete/' + ${order.id}}"
-                                        class="btn btn-sm btn-outline-danger" title="Delete"
-                                        onclick="return confirm('Delete this order?');">
+                                        th:href="@{/purchases/{id}/delete(id=${order.id})}"
+                                        class="btn btn-sm btn-outline-danger"
+                                        onclick="return confirmLink(event, this, 'This purchase order will be permanently deleted.')">
                                         <i class="bi bi-trash"></i>
                                     </a>
                                 </div>

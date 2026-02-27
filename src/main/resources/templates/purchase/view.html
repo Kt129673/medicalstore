@@ -165,7 +165,7 @@
                         </table>
                     </div>
                     <button type="submit" class="btn btn-success"
-                        onclick="return confirm('Confirm goods receipt? This will update stock quantities.');">
+                        onclick="return confirmForm(event, this.form, 'Confirm goods receipt? This will update stock quantities.', 'Confirm')">
                         <i class="bi bi-check-circle"></i> Confirm Receipt
                     </button>
                 </form>
@@ -176,7 +176,7 @@
         <div class="d-flex gap-2 mb-4" th:if="${order.status != 'RECEIVED' && order.status != 'CANCELLED'}">
             <form th:action="@{'/purchases/' + ${order.id} + '/cancel'}" method="post" class="d-inline">
                 <button type="submit" class="btn btn-outline-danger"
-                    onclick="return confirm('Cancel this purchase order?');">
+                    onclick="return confirmForm(event, this.form, 'Cancel this purchase order?', 'Cancel Order')">
                     <i class="bi bi-x-circle"></i> Cancel Order
                 </button>
             </form>

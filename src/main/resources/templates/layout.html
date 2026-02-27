@@ -11,6 +11,8 @@
     <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <!-- SweetAlert2 -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.min.css" rel="stylesheet">
     <style>
         :root {
             --primary-color: #2563eb;
@@ -24,6 +26,27 @@
             --bg-primary: #ffffff;
             --bg-secondary: #f9fafb;
             --hover-bg: #f3f4f6;
+        }
+
+        /* Dark Mode Variables */
+        [data-theme="dark"] {
+            --primary-color: #3b82f6;
+            --primary-dark: #60a5fa;
+            --primary-light: #2563eb;
+            --border-color: #334155;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --bg-primary: #0f172a;
+            --bg-secondary: #020617;
+            --hover-bg: #1e293b;
+        }
+
+        [data-theme="dark"] .table {
+            --bs-table-color: var(--text-primary);
+            --bs-table-bg: transparent;
+            --bs-table-border-color: var(--border-color);
+            --bs-table-hover-color: var(--text-primary);
+            --bs-table-hover-bg: var(--hover-bg);
         }
 
         * {
@@ -234,6 +257,7 @@
             padding: 0 24px;
             flex-shrink: 0;
             gap: 12px;
+            transition: background 0.3s, border-color 0.3s;
         }
 
         .page-title {
@@ -251,8 +275,28 @@
         .header-right {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 16px;
             flex-shrink: 0;
+        }
+
+        .theme-toggle-btn {
+            background: rgba(100, 116, 139, 0.1);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 16px;
+        }
+
+        .theme-toggle-btn:hover {
+            color: var(--text-primary);
+            background: rgba(100, 116, 139, 0.2);
         }
 
         .header-clock {
@@ -955,6 +999,11 @@
                         <i class="bi bi-shop"></i> Shopkeeper
                     </span>
 
+                    <!-- Theme Toggle -->
+                    <button class="theme-toggle-btn" id="themeToggleBtn" title="Toggle Dark/Light Mode">
+                        <i class="bi bi-moon-stars"></i>
+                    </button>
+
                     <!-- Live clock -->
                     <div class="header-clock">
                         <span class="clock-time" id="liveClock">--:--:--</span>
@@ -981,8 +1030,97 @@
         </main>
     </div>
 
+    <!-- Bootstrap JS API -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- SweetAlert2 API -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.all.min.js"></script>
+
+    <!-- Global Layout Scripts -->
     <script>
+        /* ---- Theme Logic ---- */
+        const themeBtn = document.getElementById('themeToggleBtn');
+        const themeIcon = themeBtn ? themeBtn.querySelector('i') : null;
+
+        function setTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+            if (themeIcon) {
+                themeIcon.className = theme === 'dark' ? 'bi bi-sun' : 'bi bi-moon-stars';
+            }
+        }
+
+        // Initialize Theme logic BEFORE page load finishes if possible (or on load)
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        setTheme(savedTheme);
+
+        if (themeBtn) {
+            themeBtn.addEventListener('click', () => {
+                const currentTheme = document.documentElement.getAttribute('data-theme');
+                setTheme(currentTheme === 'dark' ? 'light' : 'dark');
+            });
+        }
+
+        /* ---- Global Notification / Modal Helpers ---- */
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            background: 'var(--bg-primary)',
+            color: 'var(--text-primary)',
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer)
+                toast.addEventListener('mouseleave', Swal.resumeTimer)
+            }
+        });
+
+        // Use this worldwide inline via `showToast('success', 'Saved!')`
+        window.showToast = function (icon, title) {
+            Toast.fire({ icon, title });
+        };
+
+        // Replaces native confirm() with Promise-based SweetAlert2
+        window.confirmAction = function (title, text, confirmBtnText = 'Yes, do it!', icon = 'warning') {
+            return Swal.fire({
+                title: title,
+                text: text,
+                icon: icon,
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: confirmBtnText,
+                background: 'var(--bg-primary)',
+                color: 'var(--text-primary)'
+            });
+        };
+
+        // Helper for anchor tags: onclick="return confirmLink(event, this, 'Delete item?')"
+        window.confirmLink = function (event, element, text, confirmBtnText = 'Delete', title = 'Are you sure?') {
+            event.preventDefault();
+            confirmAction(title, text, confirmBtnText).then((result) => {
+                if (result.isConfirmed) window.location.href = element.href;
+            });
+            return false;
+        };
+
+        /* ---- Check Flash Messages ---- */
+        document.addEventListener('DOMContentLoaded', () => {
+            const successAlert = document.querySelector('.alert-success');
+            const errorAlert = document.querySelector('.alert-danger');
+
+            if (successAlert) {
+                successAlert.style.display = 'none'; // hide native alert
+                showToast('success', successAlert.textContent.trim());
+            }
+            if (errorAlert) {
+                errorAlert.style.display = 'none';
+                showToast('error', errorAlert.textContent.trim());
+            }
+        });
+
+        /* ---- Mobile Sidebar Logic ---- */
         const mobileToggle = document.getElementById('mobileToggle');
         const sidebar = document.getElementById('sidebar');
         const sidebarOverlay = document.getElementById('sidebarOverlay');

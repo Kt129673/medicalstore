@@ -560,7 +560,8 @@
                                         <i class="bi bi-pencil"></i>
                                     </a>
                                     <a th:href="@{/medicines/delete/{id}(id=${medicine.id})}" class="action-btn danger"
-                                        onclick="return confirm('Delete this medicine?')" title="Delete">
+                                        onclick="return confirmLink(event, this, 'This medicine will be permanently deleted.')"
+                                        title="Delete">
                                         <i class="bi bi-trash"></i>
                                     </a>
                                 </div>
@@ -696,8 +697,13 @@
             }
             function bulkDelete() {
                 const ids = Array.from(document.querySelectorAll('.row-check:checked')).map(cb => cb.value);
-                if (ids.length && confirm(`Delete ${ids.length} medicines? This cannot be undone.`)) {
-                    ids.forEach(id => { window.location = '/medicines/delete/' + id; });
+                if (ids.length) {
+                    confirmAction('Delete Medicines?', `Delete ${ids.length} medicines? This cannot be undone.`, 'Delete')
+                        .then((result) => {
+                            if (result.isConfirmed) {
+                                ids.forEach(id => { window.location = '/medicines/delete/' + id; });
+                            }
+                        });
                 }
             }
 

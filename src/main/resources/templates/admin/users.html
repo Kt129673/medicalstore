@@ -64,7 +64,7 @@
                                     </a>
                                     <a th:href="@{/admin/users/delete/{id}(id=${user.id})}"
                                         class="btn btn-sm btn-outline-danger"
-                                        onclick="return confirm('Delete this user?')">
+                                        onclick="return confirmLink(event, this, 'This user will be permanently deleted.')">
                                         <i class="bi bi-trash"></i>
                                     </a>
                                 </td>
