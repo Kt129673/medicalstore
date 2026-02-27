@@ -17,36 +17,38 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class SaleService {
-    
-private final SaleRepository saleRepository;
+
+    private final SaleRepository saleRepository;
     private final MedicineRepository medicineRepository;
     private final CustomerRepository customerRepository;
-    
+
+    @Transactional(readOnly = true)
     public List<Sale> getAllSales() {
         return saleRepository.findAll();
     }
-    
+
     public Optional<Sale> getSaleById(Long id) {
         return saleRepository.findById(id);
     }
-    
+
     @Transactional
     public Sale createSale(Sale sale) {
         // Fetch the full medicine object from database
         Medicine medicine = medicineRepository.findById(sale.getMedicine().getId())
                 .orElseThrow(() -> new RuntimeException("Medicine not found"));
-        
+
         if (medicine.getQuantity() < sale.getQuantity()) {
             throw new RuntimeException("Insufficient stock for medicine: " + medicine.getName());
         }
-        
+
         medicine.setQuantity(medicine.getQuantity() - sale.getQuantity());
         medicineRepository.save(medicine);
-        
+
         // Set the full medicine object to sale
         sale.setMedicine(medicine);
-        
+
         // Award loyalty points (1 point for every ₹100 spent)
         if (sale.getCustomer() != null) {
             Customer customer = customerRepository.findById(sale.getCustomer().getId()).orElse(null);
@@ -58,31 +60,32 @@ private final SaleRepository saleRepository;
                 sale.setCustomer(customer);
             }
         }
-        
+
         return saleRepository.save(sale);
     }
-    
+
     public List<Sale> getSalesByCustomer(Long customerId) {
         return saleRepository.findByCustomerId(customerId);
     }
-    
+
     public List<Sale> getSalesByDateRange(LocalDateTime start, LocalDateTime end) {
         return saleRepository.findBySaleDateBetween(start, end);
     }
-    
+
     public Double getTodaySales() {
         LocalDateTime startOfDay = LocalDate.now().atStartOfDay();
         LocalDateTime endOfDay = LocalDate.now().atTime(23, 59, 59);
         Double total = saleRepository.getTotalSalesBetween(startOfDay, endOfDay);
         return total != null ? total : 0.0;
     }
-    
+
     public Double getTotalSalesBetween(LocalDateTime start, LocalDateTime end) {
         Double total = saleRepository.getTotalSalesBetween(start, end);
         return total != null ? total : 0.0;
     }
-    
+
     public List<Sale> getRecentSales() {
-        return saleRepository.findRecentSales();
+        // DB-level LIMIT 5 — no Java streaming all rows
+        return saleRepository.findTop5ByOrderBySaleDateDesc();
     }
 }

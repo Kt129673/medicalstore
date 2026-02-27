@@ -18,11 +18,12 @@ public class HomeController {
 
     @GetMapping("/")
     public String home(Model model) {
-        model.addAttribute("totalMedicines", medicineService.getAllMedicines().size());
-        model.addAttribute("lowStock", medicineService.getLowStockMedicines(10).size());
+        // Use COUNT(*) queries — no full table fetch
+        model.addAttribute("totalMedicines", medicineService.countAllMedicines());
+        model.addAttribute("lowStock", medicineService.countLowStockMedicines(10));
         model.addAttribute("todaySales", saleService.getTodaySales());
-        model.addAttribute("recentSales", saleService.getRecentSales().stream().limit(5).toList());
-        model.addAttribute("totalCustomers", customerService.getAllCustomers().size());
+        model.addAttribute("recentSales", saleService.getRecentSales()); // already LIMIT 5
+        model.addAttribute("totalCustomers", customerService.countAllCustomers());
         return "index";
     }
 }

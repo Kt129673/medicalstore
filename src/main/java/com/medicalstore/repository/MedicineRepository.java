@@ -10,18 +10,21 @@ import java.util.Optional;
 
 @Repository
 public interface MedicineRepository extends JpaRepository<Medicine, Long> {
-    
+
     Optional<Medicine> findByName(String name);
-    
+
     List<Medicine> findByCategory(String category);
-    
+
     List<Medicine> findByQuantityLessThan(Integer quantity);
-    
+
     List<Medicine> findByExpiryDateBefore(LocalDate date);
-    
+
     List<Medicine> findByExpiryDateBetween(LocalDate startDate, LocalDate endDate);
-    
+
     Optional<Medicine> findByBarcode(String barcode);
-    
+
     List<Medicine> findByNameContainingIgnoreCase(String name);
+
+    /** COUNT only — avoids fetching all Medicine rows */
+    long countByQuantityLessThan(Integer quantity);
 }
