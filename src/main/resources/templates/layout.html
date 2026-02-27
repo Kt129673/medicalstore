@@ -953,14 +953,28 @@
 
             /* Mini / collapsed sidebar */
             .sidebar.mini {
-                width: 68px;
+                width: var(--sidebar-collapsed-width);
             }
 
             .sidebar.mini .sidebar-brand h4 span,
             .sidebar.mini .sidebar-nav .nav-link span,
             .sidebar.mini .user-details,
-            .sidebar.mini .logout-btn span {
+            .sidebar.mini .logout-btn span,
+            .sidebar.mini .nav-group summary,
+            .sidebar.mini .nav-badge,
+            .sidebar.mini .nav-link.top-level span {
                 display: none;
+            }
+
+            .sidebar.mini .nav-group {
+                border-bottom: none;
+                padding-bottom: 0;
+                margin-bottom: 0;
+            }
+
+            /* Force all groups open in mini mode so icons stay visible */
+            .sidebar.mini .nav-group .nav-link {
+                display: flex;
             }
 
             .sidebar.mini .sidebar-brand h4 {
@@ -968,14 +982,44 @@
                 font-size: 22px;
             }
 
-            .sidebar.mini .nav-link {
+            .sidebar.mini .nav-link,
+            .sidebar.mini .nav-group .nav-link {
                 justify-content: center;
                 padding: 12px 0;
+                border-left-width: 0;
             }
 
-            .sidebar.mini .nav-link i {
+            .sidebar.mini .nav-link i.nav-icon {
                 margin-right: 0;
                 font-size: 20px;
+            }
+
+            /* CSS Tooltip on hover (mini mode) */
+            .sidebar.mini .nav-link {
+                position: relative;
+            }
+
+            .sidebar.mini .nav-link::after {
+                content: attr(data-label);
+                position: absolute;
+                left: calc(var(--sidebar-collapsed-width) - 4px);
+                top: 50%;
+                transform: translateY(-50%);
+                background: var(--text-primary);
+                color: var(--bg-primary);
+                padding: 4px 10px;
+                border-radius: 6px;
+                font-size: 12px;
+                font-weight: 600;
+                white-space: nowrap;
+                opacity: 0;
+                pointer-events: none;
+                transition: opacity 0.15s;
+                z-index: 100;
+            }
+
+            .sidebar.mini .nav-link:hover::after {
+                opacity: 1;
             }
 
             .sidebar.mini .user-info {
@@ -1219,14 +1263,14 @@
                 <div sec:authorize="hasRole('ADMIN')">
                     <details class="nav-group" th:attr="open=${page == 'admin' ? 'open' : null}">
                         <summary>Platform Admin</summary>
-                        <a class="nav-link" th:classappend="${page == 'admin'} ? 'active' : ''" href="/admin"
-                            th:attr="aria-current=${page == 'admin'} ? 'page' : null">
+                        <a class="nav-link" data-label="Admin Panel" th:classappend="${page == 'admin'} ? 'active' : ''"
+                            href="/admin" th:attr="aria-current=${page == 'admin'} ? 'page' : null">
                             <i class="bi bi-shield-lock-fill nav-icon"></i><span>Admin Panel</span>
                         </a>
-                        <a class="nav-link" href="/admin/users">
+                        <a class="nav-link" data-label="Manage Users" href="/admin/users">
                             <i class="bi bi-people-fill nav-icon"></i><span>Manage Users</span>
                         </a>
-                        <a class="nav-link" href="/admin/branches">
+                        <a class="nav-link" data-label="Manage Branches" href="/admin/branches">
                             <i class="bi bi-building nav-icon"></i><span>Manage Branches</span>
                         </a>
                     </details>
@@ -1236,11 +1280,12 @@
                 <div sec:authorize="hasRole('OWNER')">
                     <details class="nav-group" th:attr="open=${page == 'owner' ? 'open' : null}">
                         <summary>My Portfolio</summary>
-                        <a class="nav-link" th:classappend="${page == 'owner'} ? 'active' : ''" href="/owner"
+                        <a class="nav-link" data-label="Owner Dashboard"
+                            th:classappend="${page == 'owner'} ? 'active' : ''" href="/owner"
                             th:attr="aria-current=${page == 'owner'} ? 'page' : null">
                             <i class="bi bi-person-badge-fill nav-icon"></i><span>Owner Dashboard</span>
                         </a>
-                        <a class="nav-link" href="/owner/shopkeepers">
+                        <a class="nav-link" data-label="Shopkeepers" href="/owner/shopkeepers">
                             <i class="bi bi-person-gear nav-icon"></i><span>Shopkeepers</span>
                         </a>
                     </details>
@@ -1248,7 +1293,8 @@
 
                 <!-- ── Dashboard (standalone) ── -->
                 <div sec:authorize="hasAnyRole('ADMIN','SHOPKEEPER')">
-                    <a class="nav-link top-level" th:classappend="${page == 'home'} ? 'active' : ''" href="/"
+                    <a class="nav-link top-level" data-label="Dashboard"
+                        th:classappend="${page == 'home'} ? 'active' : ''" href="/"
                         th:attr="aria-current=${page == 'home'} ? 'page' : null">
                         <i class="bi bi-house-door-fill nav-icon"></i><span>Dashboard</span>
                     </a>
@@ -1259,17 +1305,20 @@
                     <details class="nav-group"
                         th:attr="open=${#lists.contains({'medicines','suppliers','purchases'}, page)} ? 'open' : null">
                         <summary>Inventory</summary>
-                        <a class="nav-link" th:classappend="${page == 'medicines'} ? 'active' : ''" href="/medicines"
+                        <a class="nav-link" data-label="Medicines"
+                            th:classappend="${page == 'medicines'} ? 'active' : ''" href="/medicines"
                             th:attr="aria-current=${page == 'medicines'} ? 'page' : null">
                             <i class="bi bi-capsule-pill nav-icon"></i><span>Medicines</span>
                             <span class="nav-badge" th:if="${lowStockCount > 0}" th:text="${lowStockCount}"
                                 title="Low stock items">0</span>
                         </a>
-                        <a class="nav-link" th:classappend="${page == 'purchases'} ? 'active' : ''" href="/purchases"
+                        <a class="nav-link" data-label="Purchases"
+                            th:classappend="${page == 'purchases'} ? 'active' : ''" href="/purchases"
                             th:attr="aria-current=${page == 'purchases'} ? 'page' : null">
                             <i class="bi bi-bag-check-fill nav-icon"></i><span>Purchases</span>
                         </a>
-                        <a class="nav-link" th:classappend="${page == 'suppliers'} ? 'active' : ''" href="/suppliers"
+                        <a class="nav-link" data-label="Suppliers"
+                            th:classappend="${page == 'suppliers'} ? 'active' : ''" href="/suppliers"
                             th:attr="aria-current=${page == 'suppliers'} ? 'page' : null">
                             <i class="bi bi-truck nav-icon"></i><span>Suppliers</span>
                         </a>
@@ -1281,19 +1330,21 @@
                     <details class="nav-group"
                         th:attr="open=${#lists.contains({'sales','returns','customers'}, page)} ? 'open' : null">
                         <summary>Sales &amp; Billing</summary>
-                        <a class="nav-link" href="/sales/new">
+                        <a class="nav-link" data-label="New Sale" href="/sales/new">
                             <i class="bi bi-plus-circle-fill nav-icon" style="color:var(--success-color);"></i><span
                                 style="font-weight:600;">New Sale</span>
                         </a>
-                        <a class="nav-link" th:classappend="${page == 'sales'} ? 'active' : ''" href="/sales"
+                        <a class="nav-link" data-label="Sales History"
+                            th:classappend="${page == 'sales'} ? 'active' : ''" href="/sales"
                             th:attr="aria-current=${page == 'sales'} ? 'page' : null">
                             <i class="bi bi-receipt nav-icon"></i><span>Sales History</span>
                         </a>
-                        <a class="nav-link" th:classappend="${page == 'returns'} ? 'active' : ''" href="/returns"
-                            th:attr="aria-current=${page == 'returns'} ? 'page' : null">
+                        <a class="nav-link" data-label="Returns" th:classappend="${page == 'returns'} ? 'active' : ''"
+                            href="/returns" th:attr="aria-current=${page == 'returns'} ? 'page' : null">
                             <i class="bi bi-arrow-return-left nav-icon"></i><span>Returns</span>
                         </a>
-                        <a class="nav-link" th:classappend="${page == 'customers'} ? 'active' : ''" href="/customers"
+                        <a class="nav-link" data-label="Customers"
+                            th:classappend="${page == 'customers'} ? 'active' : ''" href="/customers"
                             th:attr="aria-current=${page == 'customers'} ? 'page' : null">
                             <i class="bi bi-people-fill nav-icon"></i><span>Customers</span>
                         </a>
@@ -1304,16 +1355,18 @@
                 <details class="nav-group"
                     th:attr="open=${#lists.contains({'reports','analytics','gst'}, page)} ? 'open' : null">
                     <summary>Reports</summary>
-                    <a class="nav-link" th:classappend="${page == 'reports'} ? 'active' : ''" href="/reports"
+                    <a class="nav-link" data-label="Standard Reports"
+                        th:classappend="${page == 'reports'} ? 'active' : ''" href="/reports"
                         th:attr="aria-current=${page == 'reports'} ? 'page' : null">
                         <i class="bi bi-graph-up-arrow nav-icon"></i><span>Standard Reports</span>
                     </a>
-                    <a class="nav-link" th:classappend="${page == 'analytics'} ? 'active' : ''" href="/analytics"
+                    <a class="nav-link" data-label="Advanced Analytics"
+                        th:classappend="${page == 'analytics'} ? 'active' : ''" href="/analytics"
                         th:attr="aria-current=${page == 'analytics'} ? 'page' : null">
                         <i class="bi bi-bar-chart-fill nav-icon"></i><span>Advanced Analytics</span>
                     </a>
-                    <a class="nav-link" th:classappend="${page == 'gst'} ? 'active' : ''" href="/reports/gst"
-                        th:attr="aria-current=${page == 'gst'} ? 'page' : null">
+                    <a class="nav-link" data-label="GST / Tax" th:classappend="${page == 'gst'} ? 'active' : ''"
+                        href="/reports/gst" th:attr="aria-current=${page == 'gst'} ? 'page' : null">
                         <i class="bi bi-file-earmark-ruled nav-icon"></i><span>GST / Tax</span>
                     </a>
                 </details>
@@ -1555,11 +1608,19 @@
         function toggleDesktopMini() {
             const mini = sidebar.classList.toggle('mini');
             localStorage.setItem('sidebarMini', mini ? '1' : '0');
+            /* Force-open all <details> in mini mode so icons are visible */
+            const groups = sidebar.querySelectorAll('details.nav-group');
+            if (mini) {
+                groups.forEach(d => { d._wasOpen = d.open; d.open = true; });
+            } else {
+                groups.forEach(d => { if (d._wasOpen !== undefined) d.open = d._wasOpen; });
+            }
         }
 
         /* Restore desktop preference */
         if (!isMobile() && localStorage.getItem('sidebarMini') === '1') {
             sidebar.classList.add('mini');
+            sidebar.querySelectorAll('details.nav-group').forEach(d => { d._wasOpen = d.open; d.open = true; });
         }
 
         /* ---- Event listeners ---- */
