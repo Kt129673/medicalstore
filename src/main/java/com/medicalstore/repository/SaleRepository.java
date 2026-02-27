@@ -60,4 +60,44 @@ public interface SaleRepository extends JpaRepository<Sale, Long> {
     @Query("SELECT s FROM Sale s LEFT JOIN FETCH s.medicine LEFT JOIN FETCH s.customer " +
             "WHERE s.branch.owner.id = ?1 ORDER BY s.saleDate DESC")
     List<Sale> findTop5ByOwnerIdOrderBySaleDateDesc(Long ownerId);
+
+    // --- dashboard analytics (global / ADMIN) ---
+    @Query("SELECT CAST(s.saleDate AS LocalDate), COALESCE(SUM(s.finalAmount), SUM(s.totalAmount)) " +
+            "FROM Sale s WHERE s.saleDate >= ?1 GROUP BY CAST(s.saleDate AS LocalDate) ORDER BY CAST(s.saleDate AS LocalDate)")
+    List<Object[]> getDailySalesTotals(LocalDateTime since);
+
+    @Query("SELECT s.medicine.category, COALESCE(SUM(s.finalAmount), SUM(s.totalAmount)) " +
+            "FROM Sale s WHERE s.saleDate BETWEEN ?1 AND ?2 GROUP BY s.medicine.category ORDER BY COALESCE(SUM(s.finalAmount), SUM(s.totalAmount)) DESC")
+    List<Object[]> getSalesByCategory(LocalDateTime start, LocalDateTime end);
+
+    @Query("SELECT s FROM Sale s LEFT JOIN FETCH s.medicine LEFT JOIN FETCH s.customer ORDER BY s.saleDate DESC")
+    List<Sale> findTop10WithDetails();
+
+    @Query("SELECT COUNT(s) FROM Sale s WHERE s.saleDate BETWEEN ?1 AND ?2")
+    long countSalesBetween(LocalDateTime start, LocalDateTime end);
+
+    @Query("SELECT COALESCE(SUM(s.finalAmount), SUM(s.totalAmount)) FROM Sale s WHERE s.saleDate BETWEEN ?1 AND ?2")
+    Double getRevenueBetween(LocalDateTime start, LocalDateTime end);
+
+    // --- dashboard analytics (branch-scoped / SHOPKEEPER) ---
+    @Query("SELECT CAST(s.saleDate AS LocalDate), COALESCE(SUM(s.finalAmount), SUM(s.totalAmount)) " +
+            "FROM Sale s WHERE s.branch.id = ?1 AND s.saleDate >= ?2 GROUP BY CAST(s.saleDate AS LocalDate) ORDER BY CAST(s.saleDate AS LocalDate)")
+    List<Object[]> getDailySalesTotalsByBranch(Long branchId, LocalDateTime since);
+
+    @Query("SELECT s.medicine.category, COALESCE(SUM(s.finalAmount), SUM(s.totalAmount)) " +
+            "FROM Sale s WHERE s.branch.id = ?1 AND s.saleDate BETWEEN ?2 AND ?3 GROUP BY s.medicine.category ORDER BY COALESCE(SUM(s.finalAmount), SUM(s.totalAmount)) DESC")
+    List<Object[]> getSalesByCategoryByBranch(Long branchId, LocalDateTime start, LocalDateTime end);
+
+    @Query("SELECT s FROM Sale s LEFT JOIN FETCH s.medicine LEFT JOIN FETCH s.customer " +
+            "WHERE s.branch.id = ?1 ORDER BY s.saleDate DESC")
+    List<Sale> findTop10WithDetailsByBranch(Long branchId);
+
+    // --- dashboard analytics (owner-scoped / OWNER) ---
+    @Query("SELECT CAST(s.saleDate AS LocalDate), COALESCE(SUM(s.finalAmount), SUM(s.totalAmount)) " +
+            "FROM Sale s WHERE s.branch.owner.id = ?1 AND s.saleDate >= ?2 GROUP BY CAST(s.saleDate AS LocalDate) ORDER BY CAST(s.saleDate AS LocalDate)")
+    List<Object[]> getDailySalesTotalsByOwner(Long ownerId, LocalDateTime since);
+
+    @Query("SELECT s.medicine.category, COALESCE(SUM(s.finalAmount), SUM(s.totalAmount)) " +
+            "FROM Sale s WHERE s.branch.owner.id = ?1 AND s.saleDate BETWEEN ?2 AND ?3 GROUP BY s.medicine.category ORDER BY COALESCE(SUM(s.finalAmount), SUM(s.totalAmount)) DESC")
+    List<Object[]> getSalesByCategoryByOwner(Long ownerId, LocalDateTime start, LocalDateTime end);
 }

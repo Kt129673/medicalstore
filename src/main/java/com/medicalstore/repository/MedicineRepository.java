@@ -59,4 +59,25 @@ public interface MedicineRepository extends JpaRepository<Medicine, Long> {
 
     // --- global counts ---
     long count();
+
+    // --- dashboard analytics (global / ADMIN) ---
+    long countByExpiryDateBetween(LocalDate start, LocalDate end);
+
+    List<Medicine> findTop5ByQuantityGreaterThanOrderByQuantityAsc(int minQty);
+
+    @Query("SELECT m FROM Medicine m WHERE m.quantity <= ?1 AND m.quantity > 0 ORDER BY m.quantity ASC")
+    List<Medicine> findCriticalLowStock(int threshold);
+
+    // --- dashboard analytics (branch-scoped) ---
+    long countByBranchIdAndExpiryDateBetween(Long branchId, LocalDate start, LocalDate end);
+
+    @Query("SELECT m FROM Medicine m WHERE m.branch.id = ?1 AND m.quantity <= ?2 AND m.quantity > 0 ORDER BY m.quantity ASC")
+    List<Medicine> findCriticalLowStockByBranch(Long branchId, int threshold);
+
+    // --- dashboard analytics (owner-scoped) ---
+    @Query("SELECT COUNT(m) FROM Medicine m WHERE m.branch.owner.id = :ownerId AND m.expiryDate BETWEEN :start AND :end")
+    long countExpiringByOwner(Long ownerId, LocalDate start, LocalDate end);
+
+    @Query("SELECT m FROM Medicine m WHERE m.branch.owner.id = ?1 AND m.quantity <= ?2 AND m.quantity > 0 ORDER BY m.quantity ASC")
+    List<Medicine> findCriticalLowStockByOwner(Long ownerId, int threshold);
 }

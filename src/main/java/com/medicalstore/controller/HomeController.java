@@ -1,21 +1,19 @@
 package com.medicalstore.controller;
 
-import com.medicalstore.service.CustomerService;
-import com.medicalstore.service.MedicineService;
-import com.medicalstore.service.SaleService;
+import com.medicalstore.service.DashboardService;
 import com.medicalstore.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import java.util.Map;
+
 @Controller
 @RequiredArgsConstructor
 public class HomeController {
 
-    private final MedicineService medicineService;
-    private final SaleService saleService;
-    private final CustomerService customerService;
+    private final DashboardService dashboardService;
     private final SecurityUtils securityUtils;
 
     @GetMapping("/")
@@ -26,22 +24,19 @@ public class HomeController {
             return "redirect:/owner";
         }
 
-        // ── SHOPKEEPER or ADMIN ───────────────────────────────────────────
+        // ── Build dashboard data by role ──────────────────────────────────
+        Map<String, Object> dashboard;
+
         if (securityUtils.isShopkeeper()) {
             Long branchId = securityUtils.getCurrentBranchId();
-            model.addAttribute("totalMedicines", medicineService.countByBranch(branchId));
-            model.addAttribute("lowStock", medicineService.countLowStockByBranch(branchId, 10));
-            model.addAttribute("todaySales", saleService.getTodaySalesByBranch(branchId));
-            model.addAttribute("recentSales", saleService.getRecentSalesByBranch(branchId));
-            model.addAttribute("totalCustomers", customerService.countByBranch(branchId));
+            dashboard = dashboardService.buildBranchDashboard(branchId);
         } else {
-            // ADMIN — global counts
-            model.addAttribute("totalMedicines", medicineService.countAllMedicines());
-            model.addAttribute("lowStock", medicineService.countLowStockMedicines(10));
-            model.addAttribute("todaySales", saleService.getTodaySales());
-            model.addAttribute("recentSales", saleService.getRecentSales());
-            model.addAttribute("totalCustomers", customerService.countAllCustomers());
+            // ADMIN — global
+            dashboard = dashboardService.buildAdminDashboard();
         }
+
+        // Add all dashboard data to the model
+        dashboard.forEach(model::addAttribute);
 
         return "index";
     }

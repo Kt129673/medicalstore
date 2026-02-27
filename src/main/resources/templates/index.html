@@ -2,190 +2,693 @@
 <html xmlns:th="http://www.thymeleaf.org"
     th:replace="~{layout :: layout(title='Dashboard', page='home', content=~{::#content}, pageIcon='bi bi-house-door-fill')}">
 
+<head>
+    <style>
+        /* ═══════════════════════════════════════════════════════════ */
+        /*  DASHBOARD DESIGN SYSTEM                                  */
+        /* ═══════════════════════════════════════════════════════════ */
+
+        /* KPI Cards */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .kpi-card {
+            border-radius: 16px;
+            padding: 20px 24px;
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+        }
+
+        .kpi-card .kpi-icon {
+            position: absolute;
+            top: 14px;
+            right: 18px;
+            font-size: 2rem;
+            opacity: 0.25;
+        }
+
+        .kpi-card .kpi-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            opacity: 0.85;
+            margin-bottom: 4px;
+        }
+
+        .kpi-card .kpi-value {
+            font-size: 1.85rem;
+            font-weight: 800;
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+
+        .kpi-card .kpi-sub {
+            font-size: 0.72rem;
+            opacity: 0.7;
+        }
+
+        /* Gradient presets */
+        .kpi-sales {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .kpi-revenue {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        }
+
+        .kpi-customers {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .kpi-medicines {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+
+        .kpi-lowstock {
+            background: linear-gradient(135deg, #f5576c 0%, #ff6f91 100%);
+        }
+
+        .kpi-expiry {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            color: #333;
+        }
+
+        .kpi-transactions {
+            background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
+            color: #333;
+        }
+
+        /* Chart Cards */
+        .chart-card {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            transition: box-shadow 0.2s;
+        }
+
+        .chart-card:hover {
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.1);
+        }
+
+        .chart-card .chart-header {
+            padding: 18px 24px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .chart-card .chart-header h6 {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: #1e293b;
+            margin: 0;
+        }
+
+        .chart-card .chart-header .chart-badge {
+            font-size: 0.7rem;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+            background: #f1f5f9;
+            color: #64748b;
+        }
+
+        .chart-card .chart-body {
+            padding: 16px 24px 20px;
+        }
+
+        /* Alert Section */
+        .alert-section {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        .alert-section .alert-header {
+            padding: 16px 24px;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .alert-section .alert-header h6 {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: #1e293b;
+            margin: 0;
+        }
+
+        .stock-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 24px;
+            border-bottom: 1px solid #f8fafc;
+            transition: background 0.15s;
+        }
+
+        .stock-item:hover {
+            background: #f8fafc;
+        }
+
+        .stock-item:last-child {
+            border-bottom: none;
+        }
+
+        .stock-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 42px;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.8rem;
+        }
+
+        .stock-critical {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .stock-warning {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .stock-ok {
+            background: #d1fae5;
+            color: #059669;
+        }
+
+        /* Expiry Alert Cards */
+        .expiry-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 12px;
+        }
+
+        .expiry-card {
+            border-radius: 12px;
+            padding: 16px 20px;
+            text-align: center;
+            border: 1px solid;
+            transition: transform 0.15s;
+        }
+
+        .expiry-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .expiry-card .expiry-count {
+            font-size: 2rem;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .expiry-card .expiry-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-top: 4px;
+        }
+
+        .expiry-expired {
+            background: #fef2f2;
+            border-color: #fecaca;
+        }
+
+        .expiry-expired .expiry-count {
+            color: #dc2626;
+        }
+
+        .expiry-30 {
+            background: #fff7ed;
+            border-color: #fed7aa;
+        }
+
+        .expiry-30 .expiry-count {
+            color: #ea580c;
+        }
+
+        .expiry-60 {
+            background: #fefce8;
+            border-color: #fef08a;
+        }
+
+        .expiry-60 .expiry-count {
+            color: #ca8a04;
+        }
+
+        .expiry-90 {
+            background: #f0fdf4;
+            border-color: #bbf7d0;
+        }
+
+        .expiry-90 .expiry-count {
+            color: #16a34a;
+        }
+
+        /* Recent Transactions Table */
+        .txn-card {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        .txn-card .txn-header {
+            padding: 16px 24px;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .txn-card .txn-header h6 {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: #1e293b;
+            margin: 0;
+        }
+
+        .txn-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .txn-table thead th {
+            padding: 10px 16px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #94a3b8;
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .txn-table tbody td {
+            padding: 12px 16px;
+            font-size: 0.85rem;
+            color: #334155;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .txn-table tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        .txn-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .payment-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .payment-cash {
+            background: #d1fae5;
+            color: #059669;
+        }
+
+        .payment-card {
+            background: #dbeafe;
+            color: #2563eb;
+        }
+
+        .payment-upi {
+            background: #e0e7ff;
+            color: #4f46e5;
+        }
+
+        /* Section heading */
+        .section-heading {
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: #1e293b;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-heading i {
+            font-size: 1.1rem;
+            color: var(--primary-color, #2563eb);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .kpi-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .kpi-card .kpi-value {
+                font-size: 1.4rem;
+            }
+
+            .expiry-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+
 <body>
     <div id="content">
-        <!-- Quick Actions Bar -->
-        <div class="page-header mb-3">
-            <div>
-                <h5 class="mb-0">Overview</h5>
-                <p class="text-muted mb-0" style="font-size: 13px;">Welcome back! Here's what's happening today.</p>
-            </div>
-            <a href="/sales/new" class="btn btn-primary">
-                <i class="bi bi-plus-circle"></i> New Sale
-            </a>
-        </div>
 
-        <!-- Statistics Cards -->
-        <div class="row g-3 mb-4">
-            <!-- Total Medicines -->
-            <div class="col-lg-3 col-md-6">
-                <div class="stat-card" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">
-                    <div class="stat-label">Total Medicines</div>
-                    <div class="d-flex justify-content-between align-items-end">
-                        <div class="stat-value" th:text="${totalMedicines}">0</div>
-                        <i class="bi bi-capsule-pill" style="font-size: 36px; opacity: 0.3;"></i>
-                    </div>
-                </div>
+        <!-- ═══════════ KPI CARDS ═══════════ -->
+        <div class="kpi-grid">
+            <div class="kpi-card kpi-sales">
+                <i class="bi bi-cart-check-fill kpi-icon"></i>
+                <div class="kpi-label">Today's Sales</div>
+                <div class="kpi-value">₹<span
+                        th:text="${#numbers.formatDecimal(todaySales, 0, 'COMMA', 0, 'POINT')}">0</span></div>
+                <div class="kpi-sub">Revenue generated today</div>
             </div>
-
-            <!-- Low Stock Alert -->
-            <div class="col-lg-3 col-md-6">
-                <div class="stat-card" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
-                    <div class="stat-label">Low Stock Alert</div>
-                    <div class="d-flex justify-content-between align-items-end">
-                        <div class="stat-value" th:text="${lowStock}">0</div>
-                        <i class="bi bi-exclamation-triangle" style="font-size: 36px; opacity: 0.3;"></i>
-                    </div>
-                    <a href="/medicines/low-stock" class="text-white mt-2"
-                        style="font-size: 12px; text-decoration: none;">
-                        View Details <i class="bi bi-arrow-right"></i>
-                    </a>
-                </div>
+            <div class="kpi-card kpi-revenue">
+                <i class="bi bi-graph-up-arrow kpi-icon"></i>
+                <div class="kpi-label">Monthly Revenue</div>
+                <div class="kpi-value">₹<span
+                        th:text="${#numbers.formatDecimal(monthlyRevenue, 0, 'COMMA', 0, 'POINT')}">0</span></div>
+                <div class="kpi-sub">This month so far</div>
             </div>
-
-            <!-- Today's Revenue -->
-            <div class="col-lg-3 col-md-6">
-                <div class="stat-card" style="background: linear-gradient(135deg, #10b981, #059669);">
-                    <div class="stat-label">Today's Revenue</div>
-                    <div class="d-flex justify-content-between align-items-end">
-                        <div class="stat-value" th:text="'₹' + ${#numbers.formatDecimal(todaySales, 0, 2)}">₹0.00</div>
-                        <i class="bi bi-currency-rupee" style="font-size: 36px; opacity: 0.3;"></i>
-                    </div>
-                </div>
+            <div class="kpi-card kpi-customers">
+                <i class="bi bi-people-fill kpi-icon"></i>
+                <div class="kpi-label">Total Customers</div>
+                <div class="kpi-value" th:text="${totalCustomers}">0</div>
+                <div class="kpi-sub">Registered customers</div>
             </div>
-
-            <!-- Total Customers -->
-            <div class="col-lg-3 col-md-6">
-                <div class="stat-card" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
-                    <div class="stat-label">Total Customers</div>
-                    <div class="d-flex justify-content-between align-items-end">
-                        <div class="stat-value" th:text="${totalCustomers}">0</div>
-                        <i class="bi bi-people-fill" style="font-size: 36px; opacity: 0.3;"></i>
-                    </div>
-                    <a href="/customers" class="text-white mt-2" style="font-size: 12px; text-decoration: none;">
-                        Manage <i class="bi bi-arrow-right"></i>
-                    </a>
-                </div>
+            <div class="kpi-card kpi-medicines">
+                <i class="bi bi-capsule-pill kpi-icon"></i>
+                <div class="kpi-label">Total Medicines</div>
+                <div class="kpi-value" th:text="${totalMedicines}">0</div>
+                <div class="kpi-sub">In inventory</div>
+            </div>
+            <div class="kpi-card kpi-lowstock">
+                <i class="bi bi-exclamation-triangle-fill kpi-icon"></i>
+                <div class="kpi-label">Low Stock</div>
+                <div class="kpi-value" th:text="${lowStockCount}">0</div>
+                <div class="kpi-sub">Items below threshold</div>
+            </div>
+            <div class="kpi-card kpi-expiry">
+                <i class="bi bi-calendar-x-fill kpi-icon"></i>
+                <div class="kpi-label">Expiring (30 days)</div>
+                <div class="kpi-value" th:text="${expiringIn30}">0</div>
+                <div class="kpi-sub">Medicines expiring soon</div>
+            </div>
+            <div class="kpi-card kpi-transactions" th:if="${todayTransactions != null}">
+                <i class="bi bi-receipt kpi-icon"></i>
+                <div class="kpi-label">Today's Transactions</div>
+                <div class="kpi-value" th:text="${todayTransactions}">0</div>
+                <div class="kpi-sub">Sales transactions today</div>
             </div>
         </div>
 
-        <!-- Main Content Row -->
-        <div class="row g-3">
+        <!-- ═══════════ CHARTS ROW ═══════════ -->
+        <div class="row g-4 mb-4">
+            <!-- Sales Trend Line Chart -->
             <div class="col-lg-8">
-                <!-- Recent Sales Table -->
-                <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <span><i class="bi bi-clock-history"></i> Recent Sales</span>
-                        <a href="/sales" class="btn btn-sm btn-outline-primary">View All</a>
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h6><i class="bi bi-activity me-2"></i>Sales Trend (Last 7 Days)</h6>
+                        <span class="chart-badge">Daily Revenue</span>
                     </div>
-                    <div class="card-body p-0">
-                        <div th:if="${recentSales.isEmpty()}" class="text-center py-5">
-                            <i class="bi bi-inbox" style="font-size: 48px; opacity: 0.3;"></i>
-                            <h6 class="mt-3 mb-2">No Sales Yet</h6>
-                            <p class="text-muted mb-3" style="font-size: 13px;">Start by creating your first sale</p>
-                            <a href="/sales/new" class="btn btn-primary btn-sm">
-                                <i class="bi bi-plus-circle"></i> Create Sale
-                            </a>
-                        </div>
-                        <div th:unless="${recentSales.isEmpty()}" style="max-height: 450px; overflow-y: auto;">
-                            <table class="table table-hover mb-0">
-                                <thead style="position: sticky; top: 0; z-index: 10; background: #f9fafb;">
-                                    <tr>
-                                        <th>Date & Time</th>
-                                        <th>Medicine</th>
-                                        <th>Customer</th>
-                                        <th class="text-center">Qty</th>
-                                        <th class="text-end">Amount</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr th:each="sale : ${recentSales}">
-                                        <td>
-                                            <div class="fw-semibold" style="font-size: 12px;"
-                                                th:text="${#temporals.format(sale.saleDate, 'dd MMM yyyy')}"></div>
-                                            <div class="text-muted" style="font-size: 11px;"
-                                                th:text="${#temporals.format(sale.saleDate, 'HH:mm')}"></div>
-                                        </td>
-                                        <td>
-                                            <div class="fw-semibold" th:text="${sale.medicine.name}"></div>
-                                            <div class="text-muted" style="font-size: 11px;"
-                                                th:text="${sale.medicine.category}"></div>
-                                        </td>
-                                        <td>
-                                            <span
-                                                th:text="${sale.customer != null ? sale.customer.name : 'Walk-in Customer'}"></span>
-                                        </td>
-                                        <td class="text-center">
-                                            <span class="badge bg-light text-dark" th:text="${sale.quantity}"></span>
-                                        </td>
-                                        <td class="text-end">
-                                            <strong class="text-success"
-                                                th:text="'₹' + ${#numbers.formatDecimal(sale.totalAmount, 0, 2)}"></strong>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
+                    <div class="chart-body">
+                        <canvas id="salesTrendChart" height="110"></canvas>
                     </div>
                 </div>
             </div>
 
-            <!-- Sidebar -->
+            <!-- Category Pie Chart -->
             <div class="col-lg-4">
-                <!-- Quick Links -->
-                <div class="card mb-3">
-                    <div class="card-header">
-                        <i class="bi bi-lightning-fill"></i> Quick Links
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h6><i class="bi bi-pie-chart-fill me-2"></i>Category Sales</h6>
+                        <span class="chart-badge">This Month</span>
                     </div>
-                    <div class="card-body p-2">
-                        <div class="d-grid gap-2">
-                            <a href="/medicines/new" class="btn btn-outline-primary btn-sm text-start">
-                                <i class="bi bi-plus-circle"></i> Add Medicine
-                            </a>
-                            <a href="/customers/new" class="btn btn-outline-success btn-sm text-start">
-                                <i class="bi bi-person-plus"></i> Add Customer
-                            </a>
-                            <a href="/medicines/expiry-alerts" class="btn btn-outline-warning btn-sm text-start">
-                                <i class="bi bi-exclamation-triangle"></i> Expiry Alerts
-                            </a>
-                            <a href="/reports" class="btn btn-outline-info btn-sm text-start">
-                                <i class="bi bi-graph-up"></i> View Reports
-                            </a>
-                            <a href="/returns/new" class="btn btn-outline-danger btn-sm text-start">
-                                <i class="bi bi-arrow-return-left"></i> Process Return
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- System Status -->
-                <div class="card">
-                    <div class="card-header">
-                        <i class="bi bi-activity"></i> System Status
-                    </div>
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom">
-                            <span class="text-muted" style="font-size: 13px;">Database</span>
-                            <span class="badge bg-success">
-                                <i class="bi bi-check-circle"></i> Connected
-                            </span>
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom">
-                            <span class="text-muted" style="font-size: 13px;">Last Backup</span>
-                            <span style="font-size: 12px;" class="text-muted">Not configured</span>
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom">
-                            <span class="text-muted" style="font-size: 13px;">Storage</span>
-                            <span class="badge bg-success">Healthy</span>
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <span class="text-muted" style="font-size: 13px;">System Status</span>
-                            <span class="badge bg-primary">Active</span>
-                        </div>
+                    <div class="chart-body">
+                        <canvas id="categoryChart" height="200"></canvas>
                     </div>
                 </div>
             </div>
         </div>
+
+        <!-- ═══════════ ALERTS ROW ═══════════ -->
+        <div class="row g-4 mb-4">
+            <!-- Expiry Alerts -->
+            <div class="col-lg-5">
+                <div class="section-heading"><i class="bi bi-clock-history"></i> Expiry Alerts</div>
+                <div class="expiry-grid">
+                    <div class="expiry-card expiry-expired" th:if="${expiredCount != null}">
+                        <div class="expiry-count" th:text="${expiredCount}">0</div>
+                        <div class="expiry-label">Expired</div>
+                    </div>
+                    <div class="expiry-card expiry-30">
+                        <div class="expiry-count" th:text="${expiringIn30}">0</div>
+                        <div class="expiry-label">30 Days</div>
+                    </div>
+                    <div class="expiry-card expiry-60">
+                        <div class="expiry-count" th:text="${expiringIn60}">0</div>
+                        <div class="expiry-label">60 Days</div>
+                    </div>
+                    <div class="expiry-card expiry-90">
+                        <div class="expiry-count" th:text="${expiringIn90}">0</div>
+                        <div class="expiry-label">90 Days</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Critical Stock Alerts -->
+            <div class="col-lg-7">
+                <div class="alert-section">
+                    <div class="alert-header">
+                        <h6><i class="bi bi-exclamation-diamond-fill text-danger me-2"></i>Critical Stock Alerts</h6>
+                        <a href="/medicines/low-stock" class="btn btn-sm btn-outline-danger">View All</a>
+                    </div>
+                    <div th:if="${criticalStockItems != null && !criticalStockItems.isEmpty()}">
+                        <div class="stock-item" th:each="med : ${criticalStockItems}">
+                            <div style="flex:1;">
+                                <div class="fw-semibold" th:text="${med.name}">Medicine</div>
+                                <div class="small text-muted" th:text="${med.category}">Category</div>
+                            </div>
+                            <span class="stock-badge stock-critical" th:if="${med.quantity <= 5}"
+                                th:text="${med.quantity} + ' units'">0</span>
+                            <span class="stock-badge stock-warning" th:if="${med.quantity > 5 && med.quantity <= 10}"
+                                th:text="${med.quantity} + ' units'">0</span>
+                        </div>
+                    </div>
+                    <div th:if="${criticalStockItems == null || criticalStockItems.isEmpty()}"
+                        class="text-center text-muted py-4">
+                        <i class="bi bi-check-circle-fill text-success fs-2 d-block mb-2"></i>
+                        All stock levels are healthy!
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════ RECENT TRANSACTIONS ═══════════ -->
+        <div class="txn-card">
+            <div class="txn-header">
+                <h6><i class="bi bi-clock-history me-2"></i>Recent Transactions</h6>
+                <a href="/sales" class="btn btn-sm btn-outline-primary">View All Sales</a>
+            </div>
+            <div class="table-responsive">
+                <table class="txn-table">
+                    <thead>
+                        <tr>
+                            <th>Invoice</th>
+                            <th>Medicine</th>
+                            <th>Customer</th>
+                            <th>Qty</th>
+                            <th>Amount</th>
+                            <th>Payment</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="sale : ${recentSales}">
+                            <td>
+                                <a th:href="@{/sales/invoice/{id}(id=${sale.id})}"
+                                    class="fw-semibold text-decoration-none">
+                                    <code th:text="'#INV-' + ${sale.id}">#INV-1</code>
+                                </a>
+                            </td>
+                            <td th:text="${sale.medicine?.name ?: '—'}">Medicine</td>
+                            <td th:text="${sale.customer?.name ?: 'Walk-in'}">Customer</td>
+                            <td th:text="${sale.quantity}">0</td>
+                            <td class="fw-semibold" style="color:#059669;">
+                                ₹<span
+                                    th:text="${#numbers.formatDecimal(sale.finalAmount ?: sale.totalAmount, 0, 'COMMA', 2, 'POINT')}">0.00</span>
+                            </td>
+                            <td>
+                                <span th:if="${sale.paymentMethod == 'Cash'}"
+                                    class="payment-badge payment-cash">Cash</span>
+                                <span th:if="${sale.paymentMethod == 'Card'}"
+                                    class="payment-badge payment-card">Card</span>
+                                <span th:if="${sale.paymentMethod == 'UPI'}"
+                                    class="payment-badge payment-upi">UPI</span>
+                                <span
+                                    th:if="${sale.paymentMethod != 'Cash' && sale.paymentMethod != 'Card' && sale.paymentMethod != 'UPI'}"
+                                    class="payment-badge" style="background:#f1f5f9;color:#64748b;"
+                                    th:text="${sale.paymentMethod ?: '—'}">—</span>
+                            </td>
+                            <td class="text-muted" th:text="${#temporals.format(sale.saleDate, 'dd MMM, HH:mm')}">01 Jan
+                            </td>
+                        </tr>
+                        <tr th:if="${recentSales == null || recentSales.isEmpty()}">
+                            <td colspan="7" class="text-center text-muted py-4">
+                                <i class="bi bi-inbox fs-2 d-block mb-2"></i>
+                                No transactions yet today
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Chart.js CDN + Dashboard Charts -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+        <script th:inline="javascript">
+            document.addEventListener('DOMContentLoaded', function () {
+                const salesTrendRaw = /*[[${salesTrendJson}]]*/ '{"labels":[],"data":[]}';
+                const categoryRaw = /*[[${categoryJson}]]*/ '{"labels":[],"data":[]}';
+
+                const salesTrend = typeof salesTrendRaw === 'string' ? JSON.parse(salesTrendRaw) : salesTrendRaw;
+                const categoryData = typeof categoryRaw === 'string' ? JSON.parse(categoryRaw) : categoryRaw;
+
+                // ── Sales Trend Line Chart ───────────────────────────────────────
+                const trendCtx = document.getElementById('salesTrendChart');
+                if (trendCtx) {
+                    new Chart(trendCtx, {
+                        type: 'line',
+                        data: {
+                            labels: salesTrend.labels,
+                            datasets: [{
+                                label: 'Revenue (₹)',
+                                data: salesTrend.data,
+                                borderColor: '#667eea',
+                                backgroundColor: 'rgba(102,126,234,0.08)',
+                                fill: true,
+                                tension: 0.4,
+                                borderWidth: 3,
+                                pointRadius: 5,
+                                pointBackgroundColor: '#667eea',
+                                pointBorderColor: '#fff',
+                                pointBorderWidth: 2,
+                                pointHoverRadius: 7
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: true,
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: {
+                                    backgroundColor: '#1e293b',
+                                    padding: 12,
+                                    titleFont: { size: 13, weight: 'bold' },
+                                    bodyFont: { size: 12 },
+                                    callbacks: {
+                                        label: function (ctx) {
+                                            return '₹' + Number(ctx.parsed.y).toLocaleString('en-IN');
+                                        }
+                                    }
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    grid: { color: 'rgba(0,0,0,0.04)' },
+                                    ticks: {
+                                        font: { size: 11 },
+                                        color: '#94a3b8',
+                                        callback: function (v) { return '₹' + (v >= 1000 ? (v / 1000).toFixed(0) + 'K' : v); }
+                                    }
+                                },
+                                x: {
+                                    grid: { display: false },
+                                    ticks: { font: { size: 11 }, color: '#94a3b8' }
+                                }
+                            }
+                        }
+                    });
+                }
+
+                // ── Category Pie/Doughnut Chart ──────────────────────────────────
+                const catCtx = document.getElementById('categoryChart');
+                if (catCtx) {
+                    const colors = [
+                        '#667eea', '#38ef7d', '#fa709a', '#4facfe', '#a18cd1',
+                        '#fbc2eb', '#f5576c', '#fee140'
+                    ];
+                    new Chart(catCtx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: categoryData.labels,
+                            datasets: [{
+                                data: categoryData.data,
+                                backgroundColor: colors.slice(0, categoryData.labels.length),
+                                borderWidth: 2,
+                                borderColor: '#fff',
+                                hoverOffset: 6
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            cutout: '60%',
+                            plugins: {
+                                legend: {
+                                    position: 'bottom',
+                                    labels: {
+                                        padding: 12,
+                                        usePointStyle: true,
+                                        pointStyle: 'circle',
+                                        font: { size: 11 }
+                                    }
+                                },
+                                tooltip: {
+                                    backgroundColor: '#1e293b',
+                                    padding: 10,
+                                    callbacks: {
+                                        label: function (ctx) {
+                                            return ctx.label + ': ₹' + Number(ctx.parsed).toLocaleString('en-IN');
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+        </script>
+
     </div>
 </body>
 
