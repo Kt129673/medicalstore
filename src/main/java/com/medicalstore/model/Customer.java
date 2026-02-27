@@ -16,6 +16,7 @@ import java.time.LocalDate;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@com.fasterxml.jackson.annotation.JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class Customer {
 
     @Id
@@ -45,6 +46,7 @@ public class Customer {
     /** Branch this customer belongs to */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "branch_id")
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private Branch branch;
 
     @PrePersist

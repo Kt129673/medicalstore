@@ -13,6 +13,7 @@ import java.time.LocalDate;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@com.fasterxml.jackson.annotation.JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class Branch {
 
     @Id
@@ -42,6 +43,7 @@ public class Branch {
     /** Owner of this branch (User with ROLE_OWNER) */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id", nullable = false)
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private User owner;
 
     @PrePersist

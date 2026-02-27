@@ -13,6 +13,7 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@com.fasterxml.jackson.annotation.JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class User {
 
     @Id
@@ -57,6 +58,7 @@ public class User {
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "branch_id")
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private Branch branch;
 
     @PrePersist

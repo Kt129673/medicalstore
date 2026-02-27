@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class SecurityUtils {
 
-    private final UserRepository userRepository;
+    private final @org.springframework.context.annotation.Lazy UserRepository userRepository;
 
     public User getCurrentUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();

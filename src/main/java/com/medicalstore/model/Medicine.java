@@ -26,6 +26,7 @@ import org.hibernate.annotations.SQLRestriction;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@com.fasterxml.jackson.annotation.JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class Medicine {
 
     @Id

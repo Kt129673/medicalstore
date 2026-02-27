@@ -26,8 +26,8 @@ import java.io.IOException;
 @Slf4j
 public class TenantFilter extends OncePerRequestFilter {
 
-    private final UserRepository userRepository;
-    private final SecurityUtils securityUtils;
+    private final @org.springframework.context.annotation.Lazy UserRepository userRepository;
+    private final @org.springframework.context.annotation.Lazy SecurityUtils securityUtils;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
