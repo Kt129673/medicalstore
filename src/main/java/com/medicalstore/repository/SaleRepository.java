@@ -84,8 +84,8 @@ public interface SaleRepository extends JpaRepository<Sale, Long> {
                         "FROM Sale s WHERE s.saleDate >= ?1 GROUP BY CAST(s.saleDate AS LocalDate) ORDER BY CAST(s.saleDate AS LocalDate)")
         List<Object[]> getDailySalesTotals(LocalDateTime since);
 
-        @Query("SELECT s.medicine.category, COALESCE(SUM(s.finalAmount), SUM(s.totalAmount)) " +
-                        "FROM Sale s WHERE s.saleDate BETWEEN ?1 AND ?2 GROUP BY s.medicine.category ORDER BY COALESCE(SUM(s.finalAmount), SUM(s.totalAmount)) DESC")
+        @Query("SELECT i.medicine.category, SUM(i.totalPrice) " +
+                        "FROM Sale s JOIN s.items i WHERE s.saleDate BETWEEN ?1 AND ?2 GROUP BY i.medicine.category ORDER BY SUM(i.totalPrice) DESC")
         List<Object[]> getSalesByCategory(LocalDateTime start, LocalDateTime end);
 
         @Query("SELECT s FROM Sale s LEFT JOIN FETCH s.customer ORDER BY s.saleDate DESC")
@@ -102,8 +102,8 @@ public interface SaleRepository extends JpaRepository<Sale, Long> {
                         "FROM Sale s WHERE s.branch.id = ?1 AND s.saleDate >= ?2 GROUP BY CAST(s.saleDate AS LocalDate) ORDER BY CAST(s.saleDate AS LocalDate)")
         List<Object[]> getDailySalesTotalsByBranch(Long branchId, LocalDateTime since);
 
-        @Query("SELECT s.medicine.category, COALESCE(SUM(s.finalAmount), SUM(s.totalAmount)) " +
-                        "FROM Sale s WHERE s.branch.id = ?1 AND s.saleDate BETWEEN ?2 AND ?3 GROUP BY s.medicine.category ORDER BY COALESCE(SUM(s.finalAmount), SUM(s.totalAmount)) DESC")
+        @Query("SELECT i.medicine.category, SUM(i.totalPrice) " +
+                        "FROM Sale s JOIN s.items i WHERE s.branch.id = ?1 AND s.saleDate BETWEEN ?2 AND ?3 GROUP BY i.medicine.category ORDER BY SUM(i.totalPrice) DESC")
         List<Object[]> getSalesByCategoryByBranch(Long branchId, LocalDateTime start, LocalDateTime end);
 
         @Query("SELECT s FROM Sale s LEFT JOIN FETCH s.customer " +
@@ -115,8 +115,8 @@ public interface SaleRepository extends JpaRepository<Sale, Long> {
                         "FROM Sale s WHERE s.branch.owner.id = ?1 AND s.saleDate >= ?2 GROUP BY CAST(s.saleDate AS LocalDate) ORDER BY CAST(s.saleDate AS LocalDate)")
         List<Object[]> getDailySalesTotalsByOwner(Long ownerId, LocalDateTime since);
 
-        @Query("SELECT s.medicine.category, COALESCE(SUM(s.finalAmount), SUM(s.totalAmount)) " +
-                        "FROM Sale s WHERE s.branch.owner.id = ?1 AND s.saleDate BETWEEN ?2 AND ?3 GROUP BY s.medicine.category ORDER BY COALESCE(SUM(s.finalAmount), SUM(s.totalAmount)) DESC")
+        @Query("SELECT i.medicine.category, SUM(i.totalPrice) " +
+                        "FROM Sale s JOIN s.items i WHERE s.branch.owner.id = ?1 AND s.saleDate BETWEEN ?2 AND ?3 GROUP BY i.medicine.category ORDER BY SUM(i.totalPrice) DESC")
         List<Object[]> getSalesByCategoryByOwner(Long ownerId, LocalDateTime start, LocalDateTime end);
 
         // --- Advanced Analytics queries ---
@@ -126,24 +126,28 @@ public interface SaleRepository extends JpaRepository<Sale, Long> {
          * totalProfit, qtySold]
          */
         @Query("SELECT m.id, m.name, m.category, " +
-                        "FROM Sale s JOIN s.medicine m WHERE s.saleDate BETWEEN ?1 AND ?2 " +
+                        "SUM(i.totalPrice), " +
+                        "SUM(COALESCE(m.purchasePrice, 0.0) * i.quantity), " +
+                        "SUM(i.totalPrice - COALESCE(m.purchasePrice, 0.0) * i.quantity), " +
+                        "SUM(i.quantity) " +
+                        "FROM Sale s JOIN s.items i JOIN i.medicine m WHERE s.saleDate BETWEEN ?1 AND ?2 " +
                         "GROUP BY m.id, m.name, m.category " +
-                        "ORDER BY SUM(COALESCE(s.finalAmount, s.totalAmount) - COALESCE(m.purchasePrice, 0.0) * s.quantity) DESC")
+                        "ORDER BY SUM(i.totalPrice - COALESCE(m.purchasePrice, 0.0) * i.quantity) DESC")
         List<Object[]> getProfitPerMedicine(LocalDateTime start, LocalDateTime end);
 
         /**
          * Fast-moving Top N: [medicineId, name, category, totalQtySold, totalRevenue]
          */
-        @Query("SELECT m.id, m.name, m.category, SUM(s.quantity), SUM(COALESCE(s.finalAmount, s.totalAmount)) " +
-                        "FROM Sale s JOIN s.medicine m WHERE s.saleDate BETWEEN ?1 AND ?2 " +
-                        "GROUP BY m.id, m.name, m.category ORDER BY SUM(s.quantity) DESC")
+        @Query("SELECT m.id, m.name, m.category, SUM(i.quantity), SUM(i.totalPrice) " +
+                        "FROM Sale s JOIN s.items i JOIN i.medicine m WHERE s.saleDate BETWEEN ?1 AND ?2 " +
+                        "GROUP BY m.id, m.name, m.category ORDER BY SUM(i.quantity) DESC")
         List<Object[]> getTopSellingMedicines(LocalDateTime start, LocalDateTime end);
 
         /**
          * Medicine IDs with at least one sale since given date (for dead-stock
          * exclusion)
          */
-        @Query("SELECT DISTINCT s.medicine.id FROM Sale s WHERE s.saleDate >= ?1")
+        @Query("SELECT DISTINCT i.medicine.id FROM Sale s JOIN s.items i WHERE s.saleDate >= ?1")
         List<Long> getMedicineIdsWithSalesSince(LocalDateTime since);
 
         /**
