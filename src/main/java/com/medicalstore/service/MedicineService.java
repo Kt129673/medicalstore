@@ -117,16 +117,16 @@ public class MedicineService {
     }
 
     public Optional<Medicine> getMedicineById(Long id) {
-        // Find by ID, but verify it belongs to the tenant if context is set
+        // Find by ID, but verify it belongs to the tenant or owner if context is set
         Optional<Medicine> medicine = medicineRepository.findById(id);
         if (medicine.isPresent()) {
             Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
             if (tenantId != null && !tenantId.equals(medicine.get().getBranch().getId())) {
-                return Optional.empty(); // Not authorized
+                return Optional.empty(); // Not authorized - Wrong Branch
             }
             Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
             if (ownerId != null && !ownerId.equals(medicine.get().getBranch().getOwner().getId())) {
-                return Optional.empty(); // Not authorized
+                return Optional.empty(); // Not authorized - Wrong Owner
             }
         }
         return medicine;

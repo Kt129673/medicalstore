@@ -127,12 +127,12 @@ public interface SaleRepository extends JpaRepository<Sale, Long> {
          */
         @Query("SELECT m.id, m.name, m.category, " +
                         "SUM(i.totalPrice), " +
-                        "SUM(COALESCE(m.purchasePrice, 0.0) * i.quantity), " +
-                        "SUM(i.totalPrice - COALESCE(m.purchasePrice, 0.0) * i.quantity), " +
+                        "SUM(i.costPrice * i.quantity), " +
+                        "SUM(i.totalPrice - (i.costPrice * i.quantity)), " +
                         "SUM(i.quantity) " +
                         "FROM Sale s JOIN s.items i JOIN i.medicine m WHERE s.saleDate BETWEEN ?1 AND ?2 " +
                         "GROUP BY m.id, m.name, m.category " +
-                        "ORDER BY SUM(i.totalPrice - COALESCE(m.purchasePrice, 0.0) * i.quantity) DESC")
+                        "ORDER BY SUM(i.totalPrice - (i.costPrice * i.quantity)) DESC")
         List<Object[]> getProfitPerMedicine(LocalDateTime start, LocalDateTime end);
 
         /**

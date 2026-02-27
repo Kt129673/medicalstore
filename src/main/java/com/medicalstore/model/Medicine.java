@@ -7,6 +7,9 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
+
 @Entity
 @Table(name = "medicines", indexes = {
         @Index(name = "idx_medicine_name", columnList = "name"),
@@ -18,6 +21,8 @@ import java.time.LocalDate;
         @Index(name = "idx_medicine_barcode", columnList = "barcode"),
         @Index(name = "idx_medicine_batch", columnList = "batch_number")
 })
+@SQLDelete(sql = "UPDATE medicines SET is_deleted = true WHERE id = ?")
+@SQLRestriction("is_deleted = false")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -82,6 +87,9 @@ public class Medicine {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "branch_id")
     private Branch branch;
+
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted = false;
 
     @PrePersist
     protected void onCreate() {

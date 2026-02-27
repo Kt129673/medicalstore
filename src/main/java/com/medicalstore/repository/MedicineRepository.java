@@ -14,6 +14,16 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 @Repository
 public interface MedicineRepository extends JpaRepository<Medicine, Long>, JpaSpecificationExecutor<Medicine> {
 
+        @org.springframework.data.jpa.repository.Modifying
+        @Query("UPDATE Medicine m SET m.quantity = m.quantity - :qty WHERE m.id = :id AND m.quantity >= :qty")
+        int deductStock(@org.springframework.data.repository.query.Param("id") Long id,
+                        @org.springframework.data.repository.query.Param("qty") int qty);
+
+        @org.springframework.data.jpa.repository.Modifying
+        @Query("UPDATE Medicine m SET m.quantity = m.quantity + :qty WHERE m.id = :id")
+        int addStock(@org.springframework.data.repository.query.Param("id") Long id,
+                        @org.springframework.data.repository.query.Param("qty") int qty);
+
         // --- existing ---
         Optional<Medicine> findByName(String name);
 

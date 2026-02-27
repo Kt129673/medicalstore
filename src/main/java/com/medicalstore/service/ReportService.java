@@ -590,7 +590,7 @@ public class ReportService {
                 double totalCost = sales.stream()
                                 .flatMap(s -> s.getItems().stream())
                                 .mapToDouble(i -> {
-                                        Double pp = i.getMedicine().getPurchasePrice();
+                                        Double pp = i.getCostPrice();
                                         return (pp != null ? pp : 0) * i.getQuantity();
                                 })
                                 .sum();
@@ -638,7 +638,7 @@ public class ReportService {
                         double cost = sales.stream()
                                         .flatMap(s -> s.getItems().stream())
                                         .mapToDouble(item -> {
-                                                Double pp = item.getMedicine().getPurchasePrice();
+                                                Double pp = item.getCostPrice();
                                                 return (pp != null ? pp : 0) * item.getQuantity();
                                         })
                                         .sum();

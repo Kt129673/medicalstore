@@ -36,6 +36,9 @@ public class SaleItem {
     @Column(name = "total_price", nullable = false)
     private Double totalPrice;
 
+    @Column(name = "cost_price", nullable = false)
+    private Double costPrice = 0.0;
+
     @PrePersist
     @PreUpdate
     public void calculateTotal() {

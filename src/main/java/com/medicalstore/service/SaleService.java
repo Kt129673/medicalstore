@@ -71,12 +71,17 @@ public class SaleService {
                 throw new RuntimeException("Insufficient stock for medicine: " + medicine.getName());
             }
 
-            // Deduct stock
+            // Deduct stock atomically
+            int updatedRows = medicineRepository.deductStock(medicine.getId(), item.getQuantity());
+            if (updatedRows == 0) {
+                throw new RuntimeException(
+                        "Insufficient stock for medicine: " + medicine.getName() + " or it does not exist.");
+            }
             medicine.setQuantity(medicine.getQuantity() - item.getQuantity());
-            medicineRepository.save(medicine);
 
             // Re-assign accurate entity
             item.setMedicine(medicine);
+            item.setCostPrice(medicine.getPurchasePrice() != null ? medicine.getPurchasePrice() : 0.0);
             item.calculateTotal();
             calculatedTotalAmt += item.getTotalPrice();
         }

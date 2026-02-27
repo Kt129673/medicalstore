@@ -1,6 +1,5 @@
 package com.medicalstore.service;
 
-import com.medicalstore.model.Medicine;
 import com.medicalstore.model.PurchaseOrder;
 import com.medicalstore.model.PurchaseOrderItem;
 import com.medicalstore.repository.MedicineRepository;
@@ -83,10 +82,10 @@ public class PurchaseService {
             int received = receivedQuantities.get(i);
             item.setReceivedQuantity(received);
 
-            // Update medicine stock
-            Medicine medicine = item.getMedicine();
-            medicine.setQuantity(medicine.getQuantity() + received);
-            medicineRepository.save(medicine);
+            // Update medicine stock atomically
+            medicineRepository.addStock(item.getMedicine().getId(), received);
+            // Optional: Update the in-memory object if needed
+            item.getMedicine().setQuantity(item.getMedicine().getQuantity() + received);
         }
 
         order.setStatus("RECEIVED");
