@@ -196,6 +196,9 @@ public class MedicineService {
             throw new IllegalArgumentException("Valid price is required");
         if (medicine.getQuantity() == null || medicine.getQuantity() < 0)
             throw new IllegalArgumentException("Valid quantity is required");
+        if (medicine.getBarcode() == null || medicine.getBarcode().trim().isEmpty()) {
+            medicine.setBarcode("BAR-" + java.util.UUID.randomUUID().toString().substring(0, 8).toUpperCase());
+        }
         if (medicine.getId() == null && medicine.getCreatedDate() == null)
             medicine.setCreatedDate(LocalDate.now());
         return medicineRepository.save(medicine);

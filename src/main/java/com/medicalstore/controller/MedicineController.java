@@ -3,6 +3,7 @@ package com.medicalstore.controller;
 import com.medicalstore.model.Medicine;
 import com.medicalstore.service.BranchService;
 import com.medicalstore.service.MedicineService;
+import com.medicalstore.service.SupplierService;
 import com.medicalstore.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -17,6 +18,7 @@ public class MedicineController {
 
     private final MedicineService medicineService;
     private final BranchService branchService;
+    private final SupplierService supplierService;
     private final SecurityUtils securityUtils;
 
     @GetMapping
@@ -51,6 +53,7 @@ public class MedicineController {
     public String showAddForm(Model model) {
         model.addAttribute("medicine", new Medicine());
         model.addAttribute("categories", medicineService.getAllCategories());
+        model.addAttribute("suppliers", supplierService.getAllSuppliers());
         return "medicines/form";
     }
 
@@ -60,6 +63,7 @@ public class MedicineController {
                 .orElseThrow(() -> new RuntimeException("Medicine not found"));
         model.addAttribute("medicine", medicine);
         model.addAttribute("categories", medicineService.getAllCategories());
+        model.addAttribute("suppliers", supplierService.getAllSuppliers());
         return "medicines/form";
     }
 

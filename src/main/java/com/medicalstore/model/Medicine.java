@@ -49,6 +49,7 @@ public class Medicine {
     private String description;
 
     @Column(name = "expiry_date")
+    @org.springframework.format.annotation.DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate expiryDate;
 
     @Column(name = "batch_number")
@@ -86,7 +87,14 @@ public class Medicine {
     /** Branch this medicine belongs to */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "branch_id")
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private Branch branch;
+
+    /** Supplier of this medicine */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "supplier_id")
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    private Supplier supplier;
 
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted = false;
