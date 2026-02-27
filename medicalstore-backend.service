@@ -1,0 +1,14 @@
+[Unit]
+Description=Medicalstore Spring Boot Backend
+After=network.target
+
+[Service]
+User=ec2-user
+WorkingDirectory=/opt/medicalstore
+ExecStart=/usr/bin/java -jar /opt/medicalstore/app.war
+SuccessExitStatus=143
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
