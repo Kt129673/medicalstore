@@ -25,12 +25,14 @@ public class SaleService {
     private final CustomerRepository customerRepository;
 
     @Transactional(readOnly = true)
-    public List<Sale> getAllSales() {
-        return saleRepository.findAll();
+    public Optional<Sale> getSaleById(Long id) {
+        // Single JOIN FETCH query — avoids N+1 on invoice/detail view
+        return saleRepository.findByIdWithDetails(id);
     }
 
-    public Optional<Sale> getSaleById(Long id) {
-        return saleRepository.findById(id);
+    @Transactional(readOnly = true)
+    public List<Sale> getAllSales() {
+        return saleRepository.findAll();
     }
 
     @Transactional
