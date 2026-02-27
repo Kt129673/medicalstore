@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+    th:replace="~{layout :: layout(title='Manage Branches', page='admin', content=~{::main})}">
+<main>
+    <div class="container-fluid py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="fw-bold mb-0"><i class="bi bi-building-fill me-2"></i>Branch Management</h2>
+                <p class="text-muted mb-0">Create and assign medical store branches</p>
+            </div>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createBranchModal">
+                <i class="bi bi-plus-lg me-1"></i>New Branch
+            </button>
+        </div>
+
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show">
+            <span th:text="${success}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Branch</th>
+                                <th>Address</th>
+                                <th>Phone</th>
+                                <th>GST No.</th>
+                                <th>Owner</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="branch : ${branches}">
+                                <td>
+                                    <div class="fw-semibold" th:text="${branch.name}"></div>
+                                    <div class="small text-muted" th:text="${branch.licenceNumber}"></div>
+                                </td>
+                                <td th:text="${branch.address}"></td>
+                                <td th:text="${branch.phone}"></td>
+                                <td th:text="${branch.gstNumber}"></td>
+                                <td>
+                                    <div th:text="${branch.owner.fullName}"></div>
+                                    <div class="small text-muted" th:text="'@' + ${branch.owner.username}"></div>
+                                </td>
+                                <td>
+                                    <span th:if="${branch.isActive}" class="badge bg-success">Active</span>
+                                    <span th:unless="${branch.isActive}" class="badge bg-secondary">Inactive</span>
+                                </td>
+                                <td>
+                                    <a th:href="@{/admin/branches/toggle/{id}(id=${branch.id})}"
+                                        class="btn btn-sm btn-outline-secondary">
+                                        <i class="bi bi-toggle-on"></i> Toggle
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(branches)}">
+                                <td colspan="7" class="text-center text-muted py-4">No branches yet. Create one.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Branch Modal -->
+    <div class="modal fade" id="createBranchModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form th:action="@{/admin/branches/create}" method="post">
+                    <div class="modal-header">
+                        <h5 class="modal-title fw-bold">Create New Branch</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Branch Name <span class="text-danger">*</span></label>
+                            <input type="text" name="name" class="form-control" required
+                                placeholder="e.g. Pune - Kothrud Branch">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Address <span class="text-danger">*</span></label>
+                            <textarea name="address" class="form-control" rows="2" required></textarea>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label class="form-label fw-semibold">Phone</label>
+                                <input type="text" name="phone" class="form-control">
+                            </div>
+                            <div class="col">
+                                <label class="form-label fw-semibold">GST Number</label>
+                                <input type="text" name="gstNumber" class="form-control">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Licence Number</label>
+                            <input type="text" name="licenceNumber" class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Assign to Owner <span
+                                    class="text-danger">*</span></label>
+                            <select name="ownerId" class="form-select" required>
+                                <option value="">-- Select Owner --</option>
+                                <option th:each="owner : ${owners}" th:value="${owner.id}"
+                                    th:text="${owner.fullName + ' (@' + owner.username + ')'}"></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Create
+                            Branch</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+
+</html>

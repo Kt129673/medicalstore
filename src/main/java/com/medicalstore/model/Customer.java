@@ -42,6 +42,11 @@ public class Customer {
     @Column(name = "registered_date")
     private LocalDate registeredDate;
 
+    /** Branch this customer belongs to */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "branch_id")
+    private Branch branch;
+
     @PrePersist
     protected void onCreate() {
         registeredDate = LocalDate.now();

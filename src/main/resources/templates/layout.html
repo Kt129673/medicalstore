@@ -746,39 +746,72 @@
 
             <!-- Navigation -->
             <nav class="sidebar-nav">
-                <a class="nav-link" th:classappend="${page == 'home'} ? 'active' : ''" href="/">
-                    <i class="bi bi-house-door-fill"></i>
-                    <span>Dashboard</span>
+
+                <!-- ── ADMIN links ── -->
+                <div sec:authorize="hasRole('ADMIN')">
+                    <div class="nav-section-label">Platform Admin</div>
+                    <a class="nav-link" th:classappend="${page == 'admin'} ? 'active' : ''" href="/admin">
+                        <i class="bi bi-shield-lock-fill"></i><span>Admin Panel</span>
+                    </a>
+                    <a class="nav-link" href="/admin/users">
+                        <i class="bi bi-people-fill"></i><span>Manage Users</span>
+                    </a>
+                    <a class="nav-link" href="/admin/branches">
+                        <i class="bi bi-building"></i><span>Manage Branches</span>
+                    </a>
+                    <div class="nav-divider"></div>
+                </div>
+
+                <!-- ── OWNER links ── -->
+                <div sec:authorize="hasRole('OWNER')">
+                    <div class="nav-section-label">My Portfolio</div>
+                    <a class="nav-link" th:classappend="${page == 'owner'} ? 'active' : ''" href="/owner">
+                        <i class="bi bi-person-badge-fill"></i><span>Owner Dashboard</span>
+                    </a>
+                    <a class="nav-link" href="/owner/shopkeepers">
+                        <i class="bi bi-person-gear"></i><span>Shopkeepers</span>
+                    </a>
+                    <div class="nav-divider"></div>
+                </div>
+
+                <!-- ── Common links (ADMIN + SHOPKEEPER; owner only reads) ── -->
+                <div class="nav-section-label" sec:authorize="hasAnyRole('ADMIN','SHOPKEEPER')">Store Operations</div>
+                <a class="nav-link" sec:authorize="hasAnyRole('ADMIN','SHOPKEEPER')"
+                    th:classappend="${page == 'home'} ? 'active' : ''" href="/">
+                    <i class="bi bi-house-door-fill"></i><span>Dashboard</span>
                 </a>
-                <a class="nav-link" th:classappend="${page == 'medicines'} ? 'active' : ''" href="/medicines">
-                    <i class="bi bi-capsule-pill"></i>
-                    <span>Medicines</span>
+                <a class="nav-link" th:classappend="${page == 'medicines'} ? 'active' : ''" href="/medicines"
+                    sec:authorize="hasAnyRole('ADMIN','SHOPKEEPER')">
+                    <i class="bi bi-capsule-pill"></i><span>Medicines</span>
                 </a>
-                <a class="nav-link" th:classappend="${page == 'customers'} ? 'active' : ''" href="/customers">
-                    <i class="bi bi-people-fill"></i>
-                    <span>Customers</span>
+                <a class="nav-link" th:classappend="${page == 'customers'} ? 'active' : ''" href="/customers"
+                    sec:authorize="hasAnyRole('ADMIN','SHOPKEEPER')">
+                    <i class="bi bi-people-fill"></i><span>Customers</span>
                 </a>
-                <a class="nav-link" th:classappend="${page == 'sales'} ? 'active' : ''" href="/sales">
-                    <i class="bi bi-cart-check-fill"></i>
-                    <span>Sales</span>
+                <a class="nav-link" th:classappend="${page == 'sales'} ? 'active' : ''" href="/sales"
+                    sec:authorize="hasAnyRole('ADMIN','SHOPKEEPER')">
+                    <i class="bi bi-cart-check-fill"></i><span>Sales</span>
                 </a>
-                <a class="nav-link" th:classappend="${page == 'returns'} ? 'active' : ''" href="/returns">
-                    <i class="bi bi-arrow-return-left"></i>
-                    <span>Returns</span>
+                <a class="nav-link" th:classappend="${page == 'returns'} ? 'active' : ''" href="/returns"
+                    sec:authorize="hasAnyRole('ADMIN','SHOPKEEPER')">
+                    <i class="bi bi-arrow-return-left"></i><span>Returns</span>
                 </a>
-                <a class="nav-link" th:classappend="${page == 'suppliers'} ? 'active' : ''" href="/suppliers">
-                    <i class="bi bi-truck"></i>
-                    <span>Suppliers</span>
+                <a class="nav-link" th:classappend="${page == 'suppliers'} ? 'active' : ''" href="/suppliers"
+                    sec:authorize="hasAnyRole('ADMIN','SHOPKEEPER')">
+                    <i class="bi bi-truck"></i><span>Suppliers</span>
                 </a>
+
+                <!-- Reports (all roles can view their scope) -->
+                <div class="nav-divider"></div>
+                <div class="nav-section-label">Reports</div>
                 <a class="nav-link" th:classappend="${page == 'reports'} ? 'active' : ''" href="/reports">
-                    <i class="bi bi-graph-up-arrow"></i>
-                    <span>Reports</span>
+                    <i class="bi bi-graph-up-arrow"></i><span>Reports</span>
                 </a>
                 <a class="nav-link" th:classappend="${page == 'gst'} ? 'active' : ''" href="/reports/gst">
-                    <i class="bi bi-file-earmark-ruled"></i>
-                    <span>GST / Tax</span>
+                    <i class="bi bi-file-earmark-ruled"></i><span>GST / Tax</span>
                 </a>
             </nav>
+
 
             <!-- User Profile -->
             <div class="user-profile">

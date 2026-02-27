@@ -87,7 +87,38 @@ public class SaleService {
     }
 
     public List<Sale> getRecentSales() {
-        // DB-level LIMIT 5 — no Java streaming all rows
         return saleRepository.findTop5ByOrderBySaleDateDesc();
+    }
+
+    // ── Branch-scoped (SHOPKEEPER) ──────────────────────────────────────────
+    public List<Sale> getAllSalesByBranch(Long branchId) {
+        return saleRepository.findByBranchId(branchId);
+    }
+
+    public List<Sale> getRecentSalesByBranch(Long branchId) {
+        return saleRepository.findTop5ByBranchIdOrderBySaleDateDesc(branchId);
+    }
+
+    public Double getTodaySalesByBranch(Long branchId) {
+        LocalDateTime start = LocalDate.now().atStartOfDay();
+        LocalDateTime end = LocalDate.now().atTime(23, 59, 59);
+        Double total = saleRepository.getTotalSalesByBranchBetween(branchId, start, end);
+        return total != null ? total : 0.0;
+    }
+
+    // ── Owner-scoped (OWNER) ────────────────────────────────────────────────
+    public List<Sale> getAllSalesByOwner(Long ownerId) {
+        return saleRepository.findByOwnerId(ownerId);
+    }
+
+    public List<Sale> getRecentSalesByOwner(Long ownerId) {
+        return saleRepository.findTop5ByOwnerIdOrderBySaleDateDesc(ownerId);
+    }
+
+    public Double getTodaySalesByOwner(Long ownerId) {
+        LocalDateTime start = LocalDate.now().atStartOfDay();
+        LocalDateTime end = LocalDate.now().atTime(23, 59, 59);
+        Double total = saleRepository.getTotalSalesByOwnerBetween(ownerId, start, end);
+        return total != null ? total : 0.0;
     }
 }

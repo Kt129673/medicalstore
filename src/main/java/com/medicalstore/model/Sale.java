@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
         @Index(name = "idx_sale_date", columnList = "sale_date"),
         @Index(name = "idx_sale_medicine", columnList = "medicine_id"),
         @Index(name = "idx_sale_customer", columnList = "customer_id"),
+        @Index(name = "idx_sale_branch", columnList = "branch_id"),
         @Index(name = "idx_sale_payment", columnList = "paymentMethod"),
         @Index(name = "idx_sale_date_medicine", columnList = "sale_date, medicine_id")
 })
@@ -60,6 +61,11 @@ public class Sale {
     private LocalDateTime saleDate;
 
     private String paymentMethod; // Cash, Card, UPI
+
+    /** Branch this sale belongs to */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "branch_id")
+    private Branch branch;
 
     @PrePersist
     protected void onCreate() {

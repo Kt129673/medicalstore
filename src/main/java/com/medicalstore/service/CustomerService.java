@@ -4,7 +4,6 @@ import com.medicalstore.model.Customer;
 import com.medicalstore.repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -17,11 +16,11 @@ public class CustomerService {
 
     private final CustomerRepository customerRepository;
 
+    // ── Global (ADMIN) ──────────────────────────────────────────────────────
     public List<Customer> getAllCustomers() {
         return customerRepository.findAll();
     }
 
-    /** COUNT only — no full table fetch */
     public long countAllCustomers() {
         return customerRepository.count();
     }
@@ -30,19 +29,44 @@ public class CustomerService {
         return customerRepository.findById(id);
     }
 
-    public Customer saveCustomer(Customer customer) {
-        return customerRepository.save(customer);
-    }
-
-    public void deleteCustomer(Long id) {
-        customerRepository.deleteById(id);
+    public Optional<Customer> getCustomerByPhone(String ph) {
+        return customerRepository.findByPhone(ph);
     }
 
     public List<Customer> searchCustomers(String name) {
         return customerRepository.findByNameContainingIgnoreCase(name);
     }
 
-    public Optional<Customer> getCustomerByPhone(String phone) {
-        return customerRepository.findByPhone(phone);
+    // ── Branch-scoped (SHOPKEEPER) ──────────────────────────────────────────
+    public List<Customer> getCustomersByBranch(Long branchId) {
+        return customerRepository.findByBranchId(branchId);
+    }
+
+    public long countByBranch(Long branchId) {
+        return customerRepository.countByBranchId(branchId);
+    }
+
+    public List<Customer> searchCustomersByBranch(Long branchId, String n) {
+        return customerRepository.findByBranchIdAndNameContainingIgnoreCase(branchId, n);
+    }
+
+    // ── Owner-scoped (OWNER) ────────────────────────────────────────────────
+    public List<Customer> getCustomersByOwner(Long ownerId) {
+        return customerRepository.findByOwnerId(ownerId);
+    }
+
+    public long countByOwner(Long ownerId) {
+        return customerRepository.countByOwnerId(ownerId);
+    }
+
+    // ── Writes ───────────────────────────────────────────────────────────────
+    @Transactional
+    public Customer saveCustomer(Customer customer) {
+        return customerRepository.save(customer);
+    }
+
+    @Transactional
+    public void deleteCustomer(Long id) {
+        customerRepository.deleteById(id);
     }
 }

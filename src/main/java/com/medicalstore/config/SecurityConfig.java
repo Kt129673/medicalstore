@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -48,6 +49,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/login", "/css/**", "/js/**", "/images/**", "/error").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/owner/**").hasRole("OWNER")
                         .anyRequest().authenticated())
                 .formLogin(form -> form
                         .loginPage("/login")
@@ -72,12 +74,16 @@ public class SecurityConfig {
     @Bean
     public AuthenticationSuccessHandler authenticationSuccessHandler() {
         return (request, response, authentication) -> {
-            // Update last login time
-            String username = authentication.getName();
-            userDetailsService.updateLastLogin(username);
+            userDetailsService.updateLastLogin(authentication.getName());
 
-            // Redirect to dashboard
-            response.sendRedirect("/");
+            boolean isOwner = authentication.getAuthorities().stream()
+                    .map(GrantedAuthority::getAuthority).anyMatch("ROLE_OWNER"::equals);
+
+            if (isOwner) {
+                response.sendRedirect("/owner");
+            } else {
+                response.sendRedirect("/");
+            }
         };
     }
 }

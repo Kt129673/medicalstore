@@ -13,6 +13,7 @@ import java.time.LocalDate;
         @Index(name = "idx_medicine_category", columnList = "category"),
         @Index(name = "idx_medicine_expiry", columnList = "expiry_date"),
         @Index(name = "idx_medicine_quantity", columnList = "quantity"),
+        @Index(name = "idx_medicine_branch", columnList = "branch_id"),
         @Index(name = "idx_medicine_qty_expiry", columnList = "quantity, expiry_date")
 })
 @Data
@@ -51,6 +52,11 @@ public class Medicine {
 
     @Column(name = "created_date")
     private LocalDate createdDate;
+
+    /** Branch this medicine belongs to */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "branch_id")
+    private Branch branch;
 
     @PrePersist
     protected void onCreate() {
