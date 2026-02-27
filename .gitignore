@@ -31,3 +31,16 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Node / Angular ###
+node_modules/
+.angular/
+dist/
+.env
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+### Backend build ###
+medical-store-management-backend/target/
