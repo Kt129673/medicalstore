@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
-    <meta charset="UTF-8"/>
+    <meta charset="UTF-8" />
     <title>Monthly Report PDF</title>
     <style>
         * {
@@ -9,7 +10,7 @@
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: 'Arial', sans-serif;
             font-size: 10pt;
@@ -17,32 +18,32 @@
             color: #333;
             padding: 20px;
         }
-        
+
         .header {
             text-align: center;
             border-bottom: 3px solid #667eea;
             padding-bottom: 15px;
             margin-bottom: 20px;
         }
-        
+
         .header h1 {
             color: #667eea;
             font-size: 22pt;
             margin-bottom: 5px;
         }
-        
+
         .header p {
             font-size: 11pt;
             color: #666;
             font-weight: bold;
         }
-        
+
         .kpi-section {
             display: table;
             width: 100%;
             margin: 20px 0;
         }
-        
+
         .kpi-card {
             display: table-cell;
             width: 25%;
@@ -51,20 +52,20 @@
             border: 1px solid #e0e0e0;
             background-color: #f8f9fa;
         }
-        
+
         .kpi-label {
             font-size: 8pt;
             color: #666;
             text-transform: uppercase;
         }
-        
+
         .kpi-value {
             font-size: 16pt;
             font-weight: bold;
             color: #667eea;
             margin: 5px 0;
         }
-        
+
         .section-title {
             font-size: 12pt;
             font-weight: bold;
@@ -73,13 +74,13 @@
             padding-bottom: 5px;
             border-bottom: 2px solid #667eea;
         }
-        
+
         .data-table {
             width: 100%;
             margin: 15px 0;
             border-collapse: collapse;
         }
-        
+
         .data-table th {
             background-color: #667eea;
             color: white;
@@ -87,31 +88,31 @@
             text-align: left;
             font-size: 9pt;
         }
-        
+
         .data-table td {
             padding: 6px 8px;
             border-bottom: 1px solid #e0e0e0;
             font-size: 9pt;
         }
-        
+
         .data-table tr:nth-child(even) {
             background-color: #f8f9fa;
         }
-        
+
         .text-right {
             text-align: right;
         }
-        
+
         .text-center {
             text-align: center;
         }
-        
+
         .highlight-row {
             background-color: #667eea !important;
             color: white;
             font-weight: bold;
         }
-        
+
         .footer {
             margin-top: 30px;
             padding-top: 10px;
@@ -122,6 +123,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="header">
         <h1 th:text="${companyName}">MEDICAL STORE</h1>
@@ -136,15 +138,18 @@
         </div>
         <div class="kpi-card">
             <div class="kpi-label">Gross Revenue</div>
-            <div class="kpi-value">₹<span th:text="${#numbers.formatDecimal(reportData.grossRevenue, 1, 2)}">0.00</span></div>
+            <div class="kpi-value">₹<span th:text="${#numbers.formatDecimal(reportData.grossRevenue, 1, 2)}">0.00</span>
+            </div>
         </div>
         <div class="kpi-card">
             <div class="kpi-label">Net Revenue</div>
-            <div class="kpi-value">₹<span th:text="${#numbers.formatDecimal(reportData.netRevenue, 1, 2)}">0.00</span></div>
+            <div class="kpi-value">₹<span th:text="${#numbers.formatDecimal(reportData.netRevenue, 1, 2)}">0.00</span>
+            </div>
         </div>
         <div class="kpi-card">
             <div class="kpi-label">Daily Avg</div>
-            <div class="kpi-value">₹<span th:text="${#numbers.formatDecimal(reportData.averageDailyRevenue, 1, 2)}">0.00</span></div>
+            <div class="kpi-value">₹<span
+                    th:text="${#numbers.formatDecimal(reportData.averageDailyRevenue, 1, 2)}">0.00</span></div>
         </div>
     </div>
 
@@ -152,28 +157,34 @@
     <table class="data-table" th:if="${reportData != null}">
         <tr>
             <td style="width: 70%; font-weight: bold;">Gross Revenue (Total Sales)</td>
-            <td class="text-right">₹<span th:text="${#numbers.formatDecimal(reportData.grossRevenue, 1, 2)}">0.00</span></td>
+            <td class="text-right">₹<span th:text="${#numbers.formatDecimal(reportData.grossRevenue, 1, 2)}">0.00</span>
+            </td>
         </tr>
         <tr>
             <td>Total Discount Given</td>
-            <td class="text-right">- ₹<span th:text="${#numbers.formatDecimal(reportData.totalDiscount, 1, 2)}">0.00</span></td>
+            <td class="text-right">- ₹<span
+                    th:text="${#numbers.formatDecimal(reportData.totalDiscount, 1, 2)}">0.00</span></td>
         </tr>
         <tr>
             <td>Revenue After Discount</td>
-            <td class="text-right">₹<span th:text="${#numbers.formatDecimal(reportData.grossRevenue - reportData.totalDiscount, 1, 2)}">0.00</span></td>
+            <td class="text-right">₹<span
+                    th:text="${#numbers.formatDecimal(reportData.grossRevenue - reportData.totalDiscount, 1, 2)}">0.00</span>
+            </td>
         </tr>
         <tr>
             <td>GST Amount (18%)</td>
-            <td class="text-right">+ ₹<span th:text="${#numbers.formatDecimal(reportData.totalGST, 1, 2)}">0.00</span></td>
+            <td class="text-right">+ ₹<span th:text="${#numbers.formatDecimal(reportData.totalGST, 1, 2)}">0.00</span>
+            </td>
         </tr>
         <tr class="highlight-row">
             <td>Net Revenue (Final Amount)</td>
-            <td class="text-right">₹<span th:text="${#numbers.formatDecimal(reportData.netRevenue, 1, 2)}">0.00</span></td>
+            <td class="text-right">₹<span th:text="${#numbers.formatDecimal(reportData.netRevenue, 1, 2)}">0.00</span>
+            </td>
         </tr>
     </table>
 
     <h3 class="section-title">Payment Analysis</h3>
-    <table class="data-table" th:if="${reportData != null && reportData.paymentBreakdown != null}">
+    <table class="data-table" th:if="${reportData != null and reportData.paymentBreakdown != null}">
         <thead>
             <tr>
                 <th>Payment Method</th>
@@ -187,13 +198,15 @@
                 <td th:text="${payment.paymentMethod}">Cash</td>
                 <td class="text-center" th:text="${payment.count}">0</td>
                 <td class="text-right">₹<span th:text="${#numbers.formatDecimal(payment.amount, 1, 2)}">0.00</span></td>
-                <td class="text-right" th:text="${#numbers.formatDecimal((payment.amount / reportData.grossRevenue) * 100, 1, 1)} + '%'">0.0%</td>
+                <td class="text-right"
+                    th:text="${#numbers.formatDecimal((payment.amount / reportData.grossRevenue) * 100, 1, 1)} + '%'">
+                    0.0%</td>
             </tr>
         </tbody>
     </table>
 
     <h3 class="section-title">Top 5 Medicines</h3>
-    <table class="data-table" th:if="${reportData != null && reportData.topMedicines != null}">
+    <table class="data-table" th:if="${reportData != null and reportData.topMedicines != null}">
         <thead>
             <tr>
                 <th>Rank</th>
@@ -215,7 +228,9 @@
     <div class="footer">
         <p><strong th:text="${companyName}">MEDICAL STORE</strong></p>
         <p>Report Period: <span th:text="${month + ' ' + year}">November 2025</span></p>
-        <p>Generated on <span th:text="${#temporals.format(#temporals.createNow(), 'dd-MM-yyyy HH:mm:ss')}">Date</span></p>
+        <p>Generated on <span th:text="${#temporals.format(#temporals.createNow(), 'dd-MM-yyyy HH:mm:ss')}">Date</span>
+        </p>
     </div>
 </body>
+
 </html>

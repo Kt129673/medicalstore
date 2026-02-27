@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+    th:replace="~{layout :: layout(title='GST / Tax Report', page='gst', content=~{::#content})}">
+
+<head>
+    <style>
+        .gst-summary-card {
+            border-radius: 16px;
+            padding: 24px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .gst-summary-card::after {
+            content: '';
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .gst-card-1 {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .gst-card-2 {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .gst-card-3 {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .gst-card-4 {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+
+        .gst-value {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .gst-label {
+            font-size: 13px;
+            opacity: 0.85;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .slab-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .slab-0 {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .slab-5 {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .slab-12 {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .slab-18 {
+            background: #fce4ec;
+            color: #c62828;
+        }
+
+        .slab-28 {
+            background: #f3e5f5;
+            color: #6a1b9a;
+        }
+
+        .govt-header {
+            background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
+            color: white;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .govt-header h4 {
+            margin: 0;
+            font-weight: 700;
+        }
+
+        .govt-header p {
+            margin: 4px 0 0;
+            opacity: 0.8;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="content">
+        <!-- Government Style Header -->
+        <div class="govt-header">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <div>
+                    <h4><i class="bi bi-file-earmark-ruled"></i> GST / Tax Report</h4>
+                    <p>Government tax compliance report — CGST & SGST breakdown</p>
+                </div>
+                <div class="d-flex gap-2 align-items-center">
+                    <form method="get" action="/reports/gst" class="d-flex gap-2">
+                        <input type="month" name="month" class="form-control form-control-sm" th:value="${reportMonth}"
+                            style="background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.3);">
+                        <button type="submit" class="btn btn-sm btn-light">
+                            <i class="bi bi-filter"></i> Filter
+                        </button>
+                    </form>
+                    <button onclick="window.print()" class="btn btn-sm btn-outline-light">
+                        <i class="bi bi-printer"></i> Print
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="row mb-4">
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="gst-summary-card gst-card-1">
+                    <div class="gst-label">Total Sales</div>
+                    <div class="gst-value" th:text="${reportData.totalTransactions}">0</div>
+                    <small>Gross: ₹<span
+                            th:text="${#numbers.formatDecimal(reportData.grossRevenue, 1, 2)}">0.00</span></small>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="gst-summary-card gst-card-2">
+                    <div class="gst-label">Taxable Amount</div>
+                    <div class="gst-value">₹<span
+                            th:text="${#numbers.formatDecimal(reportData.totalTaxableAmount, 1, 2)}">0.00</span></div>
+                    <small>After ₹<span th:text="${#numbers.formatDecimal(reportData.totalDiscounts, 1, 2)}">0</span>
+                        discounts</small>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="gst-summary-card gst-card-3">
+                    <div class="gst-label">Total GST Collected</div>
+                    <div class="gst-value">₹<span
+                            th:text="${#numbers.formatDecimal(reportData.totalGST, 1, 2)}">0.00</span></div>
+                    <small>CGST + SGST</small>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="gst-summary-card gst-card-4">
+                    <div class="gst-label">Net Revenue</div>
+                    <div class="gst-value">₹<span
+                            th:text="${#numbers.formatDecimal(reportData.netRevenue, 1, 2)}">0.00</span></div>
+                    <small>Taxable + GST</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- CGST / SGST Split -->
+        <div class="row mb-4">
+            <div class="col-md-6 mb-3">
+                <div class="card modern-card h-100">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-pie-chart"></i> CGST (Central GST)</h5>
+                    </div>
+                    <div class="card-body text-center">
+                        <div style="font-size: 36px; font-weight: 700; color: #667eea;">
+                            ₹<span th:text="${#numbers.formatDecimal(reportData.totalCGST, 1, 2)}">0.00</span>
+                        </div>
+                        <p class="text-muted mb-0">50% of total GST collected</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-3">
+                <div class="card modern-card h-100">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-pie-chart-fill"></i> SGST (State GST)</h5>
+                    </div>
+                    <div class="card-body text-center">
+                        <div style="font-size: 36px; font-weight: 700; color: #f5576c;">
+                            ₹<span th:text="${#numbers.formatDecimal(reportData.totalSGST, 1, 2)}">0.00</span>
+                        </div>
+                        <p class="text-muted mb-0">50% of total GST collected</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- GST Slab-wise Breakdown -->
+        <div class="card modern-card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-bar-chart-steps"></i> GST Slab-wise Breakdown</h5>
+            </div>
+            <div class="card-body">
+                <div th:if="${reportData.slabBreakdown.isEmpty()}" class="text-center text-muted py-4">
+                    <i class="bi bi-inbox" style="font-size: 3rem;"></i>
+                    <p class="mt-2">No GST data available for this period</p>
+                </div>
+                <div th:unless="${reportData.slabBreakdown.isEmpty()}" class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>GST Slab</th>
+                                <th class="text-center">Transactions</th>
+                                <th class="text-end">Taxable Amount</th>
+                                <th class="text-end">CGST</th>
+                                <th class="text-end">SGST</th>
+                                <th class="text-end">Total GST</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="slab : ${reportData.slabBreakdown}">
+                                <td>
+                                    <span class="slab-badge"
+                                        th:classappend="'slab-' + ${#numbers.formatInteger(slab.slabPercentage, 1)}"
+                                        th:text="${#numbers.formatDecimal(slab.slabPercentage, 1, 0)} + '%'">0%</span>
+                                </td>
+                                <td class="text-center" th:text="${slab.transactionCount}">0</td>
+                                <td class="text-end fw-semibold"
+                                    th:text="'₹' + ${#numbers.formatDecimal(slab.taxableAmount, 1, 2)}">₹0.00</td>
+                                <td class="text-end" th:text="'₹' + ${#numbers.formatDecimal(slab.cgstAmount, 1, 2)}">
+                                    ₹0.00</td>
+                                <td class="text-end" th:text="'₹' + ${#numbers.formatDecimal(slab.sgstAmount, 1, 2)}">
+                                    ₹0.00</td>
+                                <td class="text-end fw-bold"
+                                    th:text="'₹' + ${#numbers.formatDecimal(slab.totalGst, 1, 2)}">₹0.00</td>
+                            </tr>
+                        </tbody>
+                        <tfoot class="table-light">
+                            <tr class="fw-bold">
+                                <td>TOTAL</td>
+                                <td class="text-center" th:text="${reportData.totalTransactions}">0</td>
+                                <td class="text-end"
+                                    th:text="'₹' + ${#numbers.formatDecimal(reportData.totalTaxableAmount, 1, 2)}">₹0.00
+                                </td>
+                                <td class="text-end"
+                                    th:text="'₹' + ${#numbers.formatDecimal(reportData.totalCGST, 1, 2)}">₹0.00</td>
+                                <td class="text-end"
+                                    th:text="'₹' + ${#numbers.formatDecimal(reportData.totalSGST, 1, 2)}">₹0.00</td>
+                                <td class="text-end"
+                                    th:text="'₹' + ${#numbers.formatDecimal(reportData.totalGST, 1, 2)}">₹0.00</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Daily GST Collection -->
+        <div class="card modern-card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-calendar3"></i> Daily GST Collection</h5>
+            </div>
+            <div class="card-body">
+                <div th:if="${reportData.dailyBreakdown.isEmpty()}" class="text-center text-muted py-4">
+                    <i class="bi bi-calendar-x" style="font-size: 3rem;"></i>
+                    <p class="mt-2">No transactions for this period</p>
+                </div>
+                <div th:unless="${reportData.dailyBreakdown.isEmpty()}" class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Date</th>
+                                <th class="text-center">Transactions</th>
+                                <th class="text-end">Taxable Amount</th>
+                                <th class="text-end">GST Collected</th>
+                                <th class="text-end">Net Revenue</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="day : ${reportData.dailyBreakdown}">
+                                <td th:text="${day.date}">01 Jan 2025</td>
+                                <td class="text-center" th:text="${day.transactionCount}">0</td>
+                                <td class="text-end" th:text="'₹' + ${#numbers.formatDecimal(day.taxableAmount, 1, 2)}">
+                                    ₹0.00</td>
+                                <td class="text-end fw-semibold"
+                                    th:text="'₹' + ${#numbers.formatDecimal(day.gstCollected, 1, 2)}">₹0.00</td>
+                                <td class="text-end fw-bold"
+                                    th:text="'₹' + ${#numbers.formatDecimal(day.netRevenue, 1, 2)}">₹0.00</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Report Footer -->
+        <div class="card modern-card">
+            <div class="card-body text-center text-muted">
+                <small>
+                    <i class="bi bi-info-circle"></i>
+                    Report generated on <span
+                        th:text="${#temporals.format(reportGeneratedAt, 'dd MMM yyyy, hh:mm a')}">date</span>
+                    | Period: <span th:text="${reportMonth}">month</span>
+                    | This report is for tax compliance purposes under GST Act
+                </small>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

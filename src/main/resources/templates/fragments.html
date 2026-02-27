@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!-- Reusable Page Header Fragment -->
+<div th:fragment="page-header(headerTitle, headerDescription, headerIcon, actionUrl, actionText, actionClass)"
+    class="page-header mb-4">
+    <div>
+        <h2>
+            <i th:class="${headerIcon}"></i> <span th:text="${headerTitle}">Title</span>
+        </h2>
+        <p class="text-muted mb-0" th:text="${headerDescription}">Description</p>
+    </div>
+    <a th:if="${actionUrl}" th:href="${actionUrl}" th:class="${actionClass ?: 'btn btn-primary'}">
+        <i class="bi bi-plus-circle"></i> <span th:text="${actionText}">Action</span>
+    </a>
+</div>
+
+<!-- Reusable Empty State Fragment -->
+<div th:fragment="empty-state(emptyIcon, emptyTitle, emptyMessage, emptyActionUrl, emptyActionText)"
+    class="empty-state">
+    <i th:class="${emptyIcon}"></i>
+    <h5 th:text="${emptyTitle}">No Items</h5>
+    <p th:text="${emptyMessage}">No items found</p>
+    <a th:if="${emptyActionUrl}" th:href="${emptyActionUrl}" class="btn btn-primary mt-2">
+        <i class="bi bi-plus-circle"></i> <span th:text="${emptyActionText}">Add</span>
+    </a>
+</div>
+
+<!-- Reusable Search Bar Fragment -->
+<div th:fragment="search-bar(searchAction, searchPlaceholder)">
+    <form th:action="${searchAction}" method="get" class="mb-4">
+        <div class="input-group" style="max-width: 500px;">
+            <span class="input-group-text bg-white">
+                <i class="bi bi-search"></i>
+            </span>
+            <input type="text" name="search" class="form-control" th:placeholder="${searchPlaceholder}"
+                th:value="${param.search}">
+            <button class="btn btn-primary" type="submit">Search</button>
+        </div>
+    </form>
+</div>
+
+</html>

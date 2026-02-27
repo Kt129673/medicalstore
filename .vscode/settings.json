@@ -1,5 +1,6 @@
 {
     "java.dependency.syncWithFolderExplorer": false,
     "java.dependency.packagePresentation": "hierarchical",
-    "git.ignoreLimitWarning": true
+    "git.ignoreLimitWarning": true,
+    "java.compile.nullAnalysis.mode": "disabled"
 }

@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
-    <meta charset="UTF-8"/>
+    <meta charset="UTF-8" />
     <title>Invoice PDF</title>
     <style>
         * {
@@ -9,18 +10,18 @@
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: 'Helvetica', 'Arial', sans-serif;
             font-size: 11pt;
             line-height: 1.6;
             color: #333;
         }
-        
+
         .container {
             padding: 30px;
         }
-        
+
         /* Header Section */
         .header {
             text-align: center;
@@ -28,43 +29,44 @@
             padding-bottom: 15px;
             margin-bottom: 25px;
         }
-        
+
         .header h1 {
             color: #667eea;
             font-size: 24pt;
             font-weight: bold;
             margin-bottom: 8px;
         }
-        
+
         .header p {
             font-size: 10pt;
             margin: 3px 0;
             color: #555;
         }
-        
+
         .header .gstin {
             font-weight: bold;
             color: #333;
             margin-top: 5px;
         }
-        
+
         /* Invoice Info Section */
         .invoice-info {
             display: table;
             width: 100%;
             margin-bottom: 25px;
         }
-        
-        .invoice-info-left, .invoice-info-right {
+
+        .invoice-info-left,
+        .invoice-info-right {
             display: table-cell;
             width: 50%;
             vertical-align: top;
         }
-        
+
         .invoice-info-right {
             text-align: right;
         }
-        
+
         .section-title {
             font-size: 12pt;
             font-weight: bold;
@@ -73,23 +75,23 @@
             border-bottom: 2px solid #e0e0e0;
             padding-bottom: 3px;
         }
-        
+
         .info-line {
             font-size: 10pt;
             margin: 4px 0;
         }
-        
+
         .info-line strong {
             color: #333;
         }
-        
+
         /* Items Table */
         .items-table {
             width: 100%;
             border-collapse: collapse;
             margin: 20px 0;
         }
-        
+
         .items-table th {
             background-color: #667eea;
             color: white;
@@ -98,64 +100,64 @@
             font-size: 10pt;
             font-weight: bold;
         }
-        
+
         .items-table td {
             padding: 8px 10px;
             border-bottom: 1px solid #e0e0e0;
             font-size: 10pt;
         }
-        
+
         .items-table tr:nth-child(even) {
             background-color: #f8f9fa;
         }
-        
+
         .items-table .text-right {
             text-align: right;
         }
-        
+
         .items-table .text-center {
             text-align: center;
         }
-        
+
         /* Totals Section */
         .totals-section {
             width: 100%;
             margin-top: 20px;
         }
-        
+
         .totals-table {
             width: 300px;
             float: right;
             border-collapse: collapse;
         }
-        
+
         .totals-table td {
             padding: 6px 10px;
             font-size: 10pt;
         }
-        
+
         .totals-table .label {
             text-align: right;
             font-weight: bold;
             width: 60%;
         }
-        
+
         .totals-table .value {
             text-align: right;
             width: 40%;
         }
-        
+
         .totals-table .total-row {
             background-color: #667eea;
             color: white;
             font-weight: bold;
             font-size: 12pt;
         }
-        
+
         .totals-table .subtotal-row {
             border-top: 1px solid #ddd;
         }
-        
+
         /* Footer Section */
         .footer {
             clear: both;
@@ -164,18 +166,18 @@
             border-top: 2px solid #e0e0e0;
             text-align: center;
         }
-        
+
         .footer p {
             font-size: 9pt;
             color: #666;
             margin: 3px 0;
         }
-        
+
         .footer .signature-section {
             margin-top: 40px;
             text-align: right;
         }
-        
+
         .footer .signature-line {
             border-top: 1px solid #333;
             width: 200px;
@@ -184,7 +186,7 @@
             text-align: center;
             font-size: 9pt;
         }
-        
+
         /* Notes Section */
         .notes {
             margin-top: 30px;
@@ -192,19 +194,20 @@
             background-color: #f8f9fa;
             border-left: 4px solid #667eea;
         }
-        
+
         .notes h4 {
             font-size: 10pt;
             margin-bottom: 5px;
             color: #667eea;
         }
-        
+
         .notes p {
             font-size: 9pt;
             color: #555;
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <!-- Header -->
@@ -212,7 +215,7 @@
             <h1 th:text="${companyName}">MEDICAL STORE</h1>
             <p th:text="${companyAddress}">123 Medical Street, Healthcare City</p>
             <p>
-                Phone: <span th:text="${companyPhone}">+91 9876543210</span> | 
+                Phone: <span th:text="${companyPhone}">+91 9876543210</span> |
                 Email: <span th:text="${companyEmail}">info@medicalstore.com</span>
             </p>
             <p class="gstin">GSTIN: <span th:text="${companyGstin}">29ABCDE1234F1Z5</span></p>
@@ -223,27 +226,28 @@
             <div class="invoice-info-left">
                 <div class="section-title">BILL TO:</div>
                 <div class="info-line">
-                    <strong th:text="${sale.customer != null ? sale.customer.name : 'Walk-in Customer'}">Customer Name</strong>
+                    <strong th:text="${sale.customer != null ? sale.customer.name : 'Walk-in Customer'}">Customer
+                        Name</strong>
                 </div>
                 <div class="info-line" th:if="${sale.customer != null}">
                     Phone: <span th:text="${sale.customer.phone}">Phone</span>
                 </div>
-                <div class="info-line" th:if="${sale.customer != null && sale.customer.address != null}">
+                <div class="info-line" th:if="${sale.customer != null and sale.customer.address != null}">
                     <span th:text="${sale.customer.address}">Address</span>
                 </div>
             </div>
             <div class="invoice-info-right">
                 <div class="section-title">INVOICE DETAILS:</div>
                 <div class="info-line">
-                    <strong>Invoice #:</strong> 
+                    <strong>Invoice #:</strong>
                     <span th:text="'INV-' + ${T(java.lang.String).format('%06d', sale.id)}">INV-000001</span>
                 </div>
                 <div class="info-line">
-                    <strong>Date:</strong> 
+                    <strong>Date:</strong>
                     <span th:text="${#temporals.format(sale.saleDate, 'dd-MM-yyyy')}">17-11-2025</span>
                 </div>
                 <div class="info-line">
-                    <strong>Time:</strong> 
+                    <strong>Time:</strong>
                     <span th:text="${#temporals.format(sale.saleDate, 'HH:mm:ss')}">10:30:00</span>
                 </div>
             </div>
@@ -267,8 +271,10 @@
                     <td th:text="${sale.medicine.name}">Medicine Name</td>
                     <td th:text="${sale.medicine.batchNumber}">BATCH123</td>
                     <td class="text-center" th:text="${sale.quantity}">10</td>
-                    <td class="text-right">₹<span th:text="${#numbers.formatDecimal(sale.unitPrice, 1, 2)}">50.00</span></td>
-                    <td class="text-right">₹<span th:text="${#numbers.formatDecimal(sale.totalAmount, 1, 2)}">500.00</span></td>
+                    <td class="text-right">₹<span th:text="${#numbers.formatDecimal(sale.unitPrice, 1, 2)}">50.00</span>
+                    </td>
+                    <td class="text-right">₹<span
+                            th:text="${#numbers.formatDecimal(sale.totalAmount, 1, 2)}">500.00</span></td>
                 </tr>
             </tbody>
         </table>
@@ -278,19 +284,23 @@
             <table class="totals-table">
                 <tr class="subtotal-row">
                     <td class="label">Subtotal:</td>
-                    <td class="value">₹<span th:text="${#numbers.formatDecimal(sale.totalAmount, 1, 2)}">500.00</span></td>
+                    <td class="value">₹<span th:text="${#numbers.formatDecimal(sale.totalAmount, 1, 2)}">500.00</span>
+                    </td>
                 </tr>
-                <tr th:if="${sale.discount != null && sale.discount > 0}">
+                <tr th:if="${sale.discount != null and sale.discount gt 0}">
                     <td class="label">Discount:</td>
                     <td class="value">- ₹<span th:text="${#numbers.formatDecimal(sale.discount, 1, 2)}">0.00</span></td>
                 </tr>
                 <tr>
                     <td class="label">GST (18%):</td>
-                    <td class="value">₹<span th:text="${#numbers.formatDecimal(sale.totalAmount * 0.18, 1, 2)}">90.00</span></td>
+                    <td class="value">₹<span
+                            th:text="${#numbers.formatDecimal(sale.totalAmount * 0.18, 1, 2)}">90.00</span></td>
                 </tr>
                 <tr class="total-row">
                     <td class="label">Grand Total:</td>
-                    <td class="value">₹<span th:text="${#numbers.formatDecimal(sale.totalAmount * 1.18 - (sale.discount != null ? sale.discount : 0), 1, 2)}">590.00</span></td>
+                    <td class="value">₹<span
+                            th:text="${#numbers.formatDecimal(sale.totalAmount * 1.18 - (sale.discount != null ? sale.discount : 0), 1, 2)}">590.00</span>
+                    </td>
                 </tr>
             </table>
         </div>
@@ -309,13 +319,16 @@
             <p style="font-weight: bold; margin-bottom: 5px;">Thank you for your business!</p>
             <p>For any queries, please contact us at <span th:text="${companyPhone}">+91 9876543210</span></p>
             <p style="font-size: 8pt; margin-top: 10px; color: #999;">
-                Generated on <span th:text="${#temporals.format(#temporals.createNow(), 'dd-MM-yyyy HH:mm:ss')}">21-11-2025 10:30:00</span>
+                Generated on <span
+                    th:text="${#temporals.format(#temporals.createNow(), 'dd-MM-yyyy HH:mm:ss')}">21-11-2025
+                    10:30:00</span>
             </p>
-            
+
             <div class="signature-section">
                 <div class="signature-line">Authorized Signature</div>
             </div>
         </div>
     </div>
 </body>
+
 </html>
