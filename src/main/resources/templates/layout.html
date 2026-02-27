@@ -461,8 +461,119 @@
             margin-bottom: 0;
         }
 
-        /* Responsive */
+        /* Sidebar close btn (mobile only) */
+        .sidebar-close-btn {
+            display: none;
+        }
+
+        /* Desktop mini-collapse */
+        @media (min-width: 993px) {
+            .mobile-toggle {
+                display: block;
+                position: fixed;
+                top: 14px;
+                left: 14px;
+                z-index: 1100;
+                background: transparent;
+                color: var(--text-secondary);
+                border: none;
+                border-radius: 6px;
+                width: 36px;
+                height: 36px;
+                font-size: 20px;
+                cursor: pointer;
+                transition: color 0.2s;
+                padding: 0;
+                line-height: 36px;
+                text-align: center;
+            }
+
+            .mobile-toggle:hover {
+                color: var(--primary-color);
+            }
+
+            .sidebar-overlay {
+                display: none !important;
+            }
+
+            /* Mini / collapsed sidebar */
+            .sidebar.mini {
+                width: 68px;
+            }
+
+            .sidebar.mini .sidebar-brand h4 span,
+            .sidebar.mini .sidebar-nav .nav-link span,
+            .sidebar.mini .user-details,
+            .sidebar.mini .logout-btn span {
+                display: none;
+            }
+
+            .sidebar.mini .sidebar-brand h4 {
+                justify-content: center;
+                font-size: 22px;
+            }
+
+            .sidebar.mini .nav-link {
+                justify-content: center;
+                padding: 12px 0;
+            }
+
+            .sidebar.mini .nav-link i {
+                margin-right: 0;
+                font-size: 20px;
+            }
+
+            .sidebar.mini .user-info {
+                justify-content: center;
+            }
+
+            .sidebar.mini .user-avatar {
+                margin-right: 0;
+            }
+
+            .sidebar.mini .logout-btn {
+                justify-content: center;
+                padding: 10px 0;
+            }
+
+            .app-container {
+                transition: padding-left 0.3s ease;
+            }
+
+            .sidebar {
+                transition: width 0.3s ease;
+                overflow: hidden;
+            }
+
+            .main-header {
+                padding-left: 50px;
+            }
+        }
+
+        /* Responsive mobile */
         @media (max-width: 992px) {
+            .sidebar-close-btn {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                background: rgba(255, 255, 255, 0.15);
+                border: none;
+                color: white;
+                width: 32px;
+                height: 32px;
+                border-radius: 50%;
+                font-size: 16px;
+                cursor: pointer;
+                z-index: 10;
+            }
+
+            .sidebar-close-btn:hover {
+                background: rgba(255, 255, 255, 0.3);
+            }
+
             .sidebar {
                 position: fixed;
                 left: 0;
@@ -470,11 +581,12 @@
                 height: 100vh;
                 z-index: 1000;
                 transform: translateX(-100%);
-                transition: transform 0.3s ease;
+                transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             }
 
             .sidebar.active {
                 transform: translateX(0);
+                box-shadow: 4px 0 24px rgba(0, 0, 0, 0.25);
             }
 
             .sidebar-overlay {
@@ -486,6 +598,8 @@
                 background: rgba(0, 0, 0, 0.5);
                 z-index: 999;
                 display: none;
+                backdrop-filter: blur(2px);
+                -webkit-backdrop-filter: blur(2px);
             }
 
             .sidebar-overlay.active {
@@ -497,29 +611,32 @@
                 position: fixed;
                 top: 12px;
                 left: 12px;
-                z-index: 998;
+                z-index: 1100;
                 background: var(--primary-color);
                 color: white;
                 border: none;
-                border-radius: 6px;
+                border-radius: 8px;
                 width: 40px;
                 height: 40px;
                 font-size: 20px;
-                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+                box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
+                cursor: pointer;
+                transition: background 0.2s, transform 0.2s;
+                line-height: 40px;
+                text-align: center;
+                padding: 0;
+            }
+
+            .mobile-toggle:hover {
+                background: var(--primary-dark, #4f46e5);
+            }
+
+            .mobile-toggle.open {
+                background: #ef4444;
             }
 
             .main-header {
-                padding-left: 60px;
-            }
-        }
-
-        @media (min-width: 993px) {
-            .mobile-toggle {
-                display: none;
-            }
-
-            .sidebar-overlay {
-                display: none !important;
+                padding-left: 62px;
             }
         }
 
@@ -605,8 +722,8 @@
 
 <body>
     <!-- Mobile Toggle Button -->
-    <button class="mobile-toggle" id="mobileToggle">
-        <i class="bi bi-list"></i>
+    <button class="mobile-toggle" id="mobileToggle" title="Toggle sidebar">
+        <i class="bi bi-list" id="toggleIcon"></i>
     </button>
 
     <!-- Sidebar Overlay -->
@@ -615,9 +732,13 @@
     <div class="app-container">
         <!-- Sidebar -->
         <aside class="sidebar" id="sidebar">
+            <!-- Close btn (mobile only) -->
+            <button class="sidebar-close-btn" id="sidebarCloseBtn" title="Close menu">
+                <i class="bi bi-x-lg"></i>
+            </button>
             <!-- Brand -->
             <div class="sidebar-brand">
-                <h4><i class="bi bi-heart-pulse-fill"></i> MediStore</h4>
+                <h4><i class="bi bi-heart-pulse-fill"></i> <span>MediStore</span></h4>
             </div>
 
             <!-- Navigation -->
@@ -708,37 +829,71 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Mobile menu functionality
         const mobileToggle = document.getElementById('mobileToggle');
         const sidebar = document.getElementById('sidebar');
         const sidebarOverlay = document.getElementById('sidebarOverlay');
+        const sidebarCloseBtn = document.getElementById('sidebarCloseBtn');
+        const toggleIcon = document.getElementById('toggleIcon');
 
-        function toggleSidebar() {
-            sidebar.classList.toggle('active');
-            sidebarOverlay.classList.toggle('active');
+        const isMobile = () => window.innerWidth <= 992;
+
+        /* ---- Mobile helpers ---- */
+        function openSidebarMobile() {
+            sidebar.classList.add('active');
+            sidebarOverlay.classList.add('active');
+            mobileToggle.classList.add('open');
+            toggleIcon.className = 'bi bi-x-lg';
+            mobileToggle.setAttribute('aria-expanded', 'true');
         }
 
-        function closeSidebar() {
+        function closeSidebarMobile() {
             sidebar.classList.remove('active');
             sidebarOverlay.classList.remove('active');
+            mobileToggle.classList.remove('open');
+            toggleIcon.className = 'bi bi-list';
+            mobileToggle.setAttribute('aria-expanded', 'false');
         }
 
+        function toggleMobile() {
+            sidebar.classList.contains('active') ? closeSidebarMobile() : openSidebarMobile();
+        }
+
+        /* ---- Desktop mini-collapse ---- */
+        function toggleDesktopMini() {
+            const mini = sidebar.classList.toggle('mini');
+            localStorage.setItem('sidebarMini', mini ? '1' : '0');
+        }
+
+        /* Restore desktop preference */
+        if (!isMobile() && localStorage.getItem('sidebarMini') === '1') {
+            sidebar.classList.add('mini');
+        }
+
+        /* ---- Event listeners ---- */
         if (mobileToggle) {
-            mobileToggle.addEventListener('click', toggleSidebar);
+            mobileToggle.addEventListener('click', () => {
+                isMobile() ? toggleMobile() : toggleDesktopMini();
+            });
+        }
+
+        if (sidebarCloseBtn) {
+            sidebarCloseBtn.addEventListener('click', closeSidebarMobile);
         }
 
         if (sidebarOverlay) {
-            sidebarOverlay.addEventListener('click', closeSidebar);
+            sidebarOverlay.addEventListener('click', closeSidebarMobile);
         }
 
-        // Close sidebar when clicking nav link on mobile
-        const navLinks = document.querySelectorAll('.sidebar .nav-link');
-        navLinks.forEach(link => {
+        /* Close on nav-link click (mobile) */
+        document.querySelectorAll('.sidebar .nav-link').forEach(link => {
             link.addEventListener('click', () => {
-                if (window.innerWidth <= 992) {
-                    closeSidebar();
-                }
+                if (isMobile()) closeSidebarMobile();
             });
+        });
+
+        /* Reset mobile state on resize to desktop */
+        window.addEventListener('resize', () => {
+            if (!isMobile()) closeSidebarMobile();
         });
     </script>
 </body>
