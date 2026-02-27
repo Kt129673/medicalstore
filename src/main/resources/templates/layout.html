@@ -21,14 +21,22 @@
             --primary-color: #2563eb;
             --primary-dark: #1e40af;
             --primary-light: #3b82f6;
-            --sidebar-width: 240px;
-            --header-height: 60px;
+            --sidebar-width: 248px;
+            --sidebar-collapsed-width: 68px;
+            --header-height: 56px;
             --border-color: #e5e7eb;
             --text-primary: #111827;
             --text-secondary: #6b7280;
             --bg-primary: #ffffff;
             --bg-secondary: #f9fafb;
             --hover-bg: #f3f4f6;
+            --sidebar-group-indent: 12px;
+            --nav-badge-bg: #ef4444;
+            --nav-badge-text: #fff;
+            --breadcrumb-sep: #9ca3af;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
         }
 
         /* Dark Mode Variables */
@@ -42,6 +50,7 @@
             --bg-primary: #0f172a;
             --bg-secondary: #020617;
             --hover-bg: #1e293b;
+            --breadcrumb-sep: #475569;
         }
 
         [data-theme="dark"] .table {
@@ -80,7 +89,7 @@
             overflow: hidden;
         }
 
-        /* Sidebar */
+        /* ═══════════════ SIDEBAR ═══════════════ */
         .sidebar {
             width: var(--sidebar-width);
             background: var(--bg-primary);
@@ -90,35 +99,43 @@
             height: 100vh;
             overflow: hidden;
             flex-shrink: 0;
+            will-change: width;
+            transition: width 0.25s cubic-bezier(.4, 0, .2, 1);
         }
 
         .sidebar-brand {
             height: var(--header-height);
-            padding: 0 20px;
+            padding: 0 16px;
             border-bottom: 1px solid var(--border-color);
             display: flex;
             align-items: center;
             flex-shrink: 0;
+            gap: 10px;
+            overflow: hidden;
         }
 
         .sidebar-brand h4 {
-            font-size: 18px;
+            font-size: 17px;
             font-weight: 700;
             color: var(--primary-color);
             margin: 0;
             display: flex;
             align-items: center;
             gap: 10px;
+            white-space: nowrap;
         }
 
         .sidebar-brand h4 i {
             font-size: 24px;
+            flex-shrink: 0;
         }
 
         .sidebar-nav {
             flex: 1;
             overflow-y: auto;
-            padding: 12px 0;
+            overflow-x: hidden;
+            padding: 8px 0;
+            overscroll-behavior: contain;
         }
 
         .sidebar-nav::-webkit-scrollbar {
@@ -134,23 +151,29 @@
             border-radius: 4px;
         }
 
+        /* ── Nav Links ── */
         .nav-link {
             color: var(--text-secondary);
             text-decoration: none;
-            padding: 10px 20px;
+            padding: 8px 16px;
             display: flex;
             align-items: center;
-            font-size: 14px;
+            font-size: 13.5px;
             font-weight: 500;
-            transition: all 0.2s ease;
+            transition: background 0.15s, color 0.15s;
             border-left: 3px solid transparent;
+            position: relative;
+            white-space: nowrap;
+            overflow: hidden;
         }
 
-        .nav-link i {
-            margin-right: 12px;
-            font-size: 18px;
+        .nav-link i.nav-icon {
+            margin-right: 10px;
+            font-size: 17px;
             width: 20px;
             text-align: center;
+            flex-shrink: 0;
+            line-height: 1;
         }
 
         .nav-link:hover {
@@ -160,30 +183,101 @@
 
         .nav-link.active {
             color: var(--primary-color);
-            background: var(--hover-bg);
+            background: color-mix(in srgb, var(--primary-color) 8%, transparent);
             border-left-color: var(--primary-color);
             font-weight: 600;
         }
 
-        /* Sidebar section labels and dividers */
-        .nav-section-label {
+        /* ── Nav Badge ── */
+        .nav-badge {
+            margin-left: auto;
+            background: var(--nav-badge-bg);
+            color: var(--nav-badge-text);
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 10px;
+            min-width: 18px;
+            text-align: center;
+            line-height: 1.4;
+            flex-shrink: 0;
+        }
+
+        .nav-badge.warning {
+            background: var(--warning-color);
+        }
+
+        .nav-badge.success {
+            background: var(--success-color);
+        }
+
+        /* ── Collapsible Groups (<details>) ── */
+        .nav-group {
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 4px;
+            margin-bottom: 4px;
+        }
+
+        .nav-group:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .nav-group summary {
+            display: flex;
+            align-items: center;
             font-size: 10px;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 1px;
             color: var(--text-secondary);
-            padding: 12px 20px 4px;
-            opacity: 0.7;
+            padding: 10px 16px 6px;
+            cursor: pointer;
+            user-select: none;
+            list-style: none;
+            outline: none;
         }
 
-        .nav-divider {
-            height: 1px;
-            background: var(--border-color);
-            margin: 8px 16px;
+        .nav-group summary::-webkit-details-marker {
+            display: none;
         }
 
+        .nav-group summary::before {
+            content: '\F285';
+            font-family: 'bootstrap-icons';
+            font-size: 10px;
+            margin-right: 6px;
+            transition: transform 0.2s;
+            display: inline-block;
+        }
+
+        .nav-group[open] summary::before {
+            transform: rotate(90deg);
+        }
+
+        .nav-group summary:hover {
+            color: var(--text-primary);
+        }
+
+        .nav-group summary:focus-visible {
+            outline: 2px solid var(--primary-color);
+            outline-offset: -2px;
+            border-radius: 4px;
+        }
+
+        .nav-group .nav-link {
+            padding-left: calc(16px + var(--sidebar-group-indent));
+        }
+
+        /* ── Top-level standalone link (Dashboard) ── */
+        .nav-link.top-level {
+            padding: 10px 16px;
+            font-size: 14px;
+        }
+
+        /* ── User Profile Footer ── */
         .user-profile {
-            padding: 16px 20px;
+            padding: 12px 16px;
             border-top: 1px solid var(--border-color);
             flex-shrink: 0;
         }
@@ -191,20 +285,21 @@
         .user-info {
             display: flex;
             align-items: center;
-            gap: 12px;
-            margin-bottom: 12px;
+            gap: 10px;
+            margin-bottom: 10px;
+            overflow: hidden;
         }
 
         .user-avatar {
-            width: 40px;
-            height: 40px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
             background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 600;
             flex-shrink: 0;
         }
@@ -213,7 +308,10 @@
             font-size: 13px;
             font-weight: 600;
             color: var(--text-primary);
-            margin: 0 0 2px 0;
+            margin: 0 0 1px 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .user-details small {
@@ -226,18 +324,219 @@
             border: 1px solid var(--border-color);
             color: var(--text-primary);
             width: 100%;
-            padding: 8px 12px;
+            padding: 7px 12px;
             border-radius: 6px;
             font-size: 13px;
             font-weight: 500;
             cursor: pointer;
             transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
         }
 
         .logout-btn:hover {
             background: #fee2e2;
             border-color: #fecaca;
             color: #dc2626;
+        }
+
+        /* ═══════════════ NAVBAR ADDITIONS ═══════════════ */
+
+        /* Breadcrumbs */
+        .header-breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            min-width: 0;
+            overflow: hidden;
+        }
+
+        .header-breadcrumb a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .header-breadcrumb a:hover {
+            color: var(--primary-color);
+        }
+
+        .header-breadcrumb .bc-sep {
+            color: var(--breadcrumb-sep);
+            font-size: 10px;
+        }
+
+        .header-breadcrumb .bc-current {
+            color: var(--text-primary);
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Global Search */
+        .header-search {
+            position: relative;
+            flex: 0 1 280px;
+        }
+
+        .header-search input {
+            width: 100%;
+            padding: 7px 12px 7px 34px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 13px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .header-search input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-color) 12%, transparent);
+            background: var(--bg-primary);
+        }
+
+        .header-search .search-icon {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            font-size: 14px;
+            pointer-events: none;
+        }
+
+        .header-search kbd {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 10px;
+            font-weight: 600;
+            padding: 2px 5px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background: var(--bg-primary);
+            color: var(--text-secondary);
+            pointer-events: none;
+        }
+
+        /* Notification Bell */
+        .header-notif {
+            position: relative;
+        }
+
+        .header-notif-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .header-notif-btn:hover {
+            color: var(--text-primary);
+            background: var(--hover-bg);
+        }
+
+        .header-notif-btn .notif-dot {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            width: 8px;
+            height: 8px;
+            background: var(--danger-color);
+            border-radius: 50%;
+            border: 2px solid var(--bg-primary);
+        }
+
+        .notif-dropdown {
+            position: absolute;
+            top: calc(100% + 6px);
+            right: 0;
+            width: 280px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            z-index: 200;
+            display: none;
+            overflow: hidden;
+        }
+
+        .notif-dropdown.open {
+            display: block;
+        }
+
+        .notif-header {
+            padding: 12px 16px;
+            font-size: 13px;
+            font-weight: 700;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .notif-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            font-size: 13px;
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+
+        .notif-item:hover {
+            background: var(--hover-bg);
+            color: var(--text-primary);
+        }
+
+        .notif-item i {
+            font-size: 18px;
+            flex-shrink: 0;
+            width: 24px;
+            text-align: center;
+        }
+
+        .notif-item .notif-count {
+            margin-left: auto;
+            font-weight: 700;
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        .notif-item .notif-count.danger {
+            background: #fef2f2;
+            color: var(--danger-color);
+        }
+
+        .notif-item .notif-count.warning {
+            background: #fffbeb;
+            color: var(--warning-color);
+        }
+
+        [data-theme="dark"] .notif-item .notif-count.danger {
+            background: #450a0a;
+        }
+
+        [data-theme="dark"] .notif-item .notif-count.warning {
+            background: #451a03;
         }
 
         /* Main Content */
@@ -902,92 +1201,123 @@
 
     <div class="app-container">
         <!-- Sidebar -->
-        <aside class="sidebar" id="sidebar">
+        <aside class="sidebar" id="sidebar" role="navigation" aria-label="Main navigation">
             <!-- Close btn (mobile only) -->
-            <button class="sidebar-close-btn" id="sidebarCloseBtn" title="Close menu">
+            <button class="sidebar-close-btn" id="sidebarCloseBtn" title="Close menu" aria-label="Close menu">
                 <i class="bi bi-x-lg"></i>
             </button>
+
             <!-- Brand -->
             <div class="sidebar-brand">
                 <h4><i class="bi bi-heart-pulse-fill"></i> <span>MediStore</span></h4>
             </div>
 
             <!-- Navigation -->
-            <nav class="sidebar-nav">
+            <nav class="sidebar-nav" aria-label="Primary">
 
                 <!-- ── ADMIN links ── -->
                 <div sec:authorize="hasRole('ADMIN')">
-                    <div class="nav-section-label">Platform Admin</div>
-                    <a class="nav-link" th:classappend="${page == 'admin'} ? 'active' : ''" href="/admin">
-                        <i class="bi bi-shield-lock-fill"></i><span>Admin Panel</span>
-                    </a>
-                    <a class="nav-link" href="/admin/users">
-                        <i class="bi bi-people-fill"></i><span>Manage Users</span>
-                    </a>
-                    <a class="nav-link" href="/admin/branches">
-                        <i class="bi bi-building"></i><span>Manage Branches</span>
-                    </a>
-                    <div class="nav-divider"></div>
+                    <details class="nav-group" th:attr="open=${page == 'admin' ? 'open' : null}">
+                        <summary>Platform Admin</summary>
+                        <a class="nav-link" th:classappend="${page == 'admin'} ? 'active' : ''" href="/admin"
+                            th:attr="aria-current=${page == 'admin'} ? 'page' : null">
+                            <i class="bi bi-shield-lock-fill nav-icon"></i><span>Admin Panel</span>
+                        </a>
+                        <a class="nav-link" href="/admin/users">
+                            <i class="bi bi-people-fill nav-icon"></i><span>Manage Users</span>
+                        </a>
+                        <a class="nav-link" href="/admin/branches">
+                            <i class="bi bi-building nav-icon"></i><span>Manage Branches</span>
+                        </a>
+                    </details>
                 </div>
 
                 <!-- ── OWNER links ── -->
                 <div sec:authorize="hasRole('OWNER')">
-                    <div class="nav-section-label">My Portfolio</div>
-                    <a class="nav-link" th:classappend="${page == 'owner'} ? 'active' : ''" href="/owner">
-                        <i class="bi bi-person-badge-fill"></i><span>Owner Dashboard</span>
-                    </a>
-                    <a class="nav-link" href="/owner/shopkeepers">
-                        <i class="bi bi-person-gear"></i><span>Shopkeepers</span>
-                    </a>
-                    <div class="nav-divider"></div>
+                    <details class="nav-group" th:attr="open=${page == 'owner' ? 'open' : null}">
+                        <summary>My Portfolio</summary>
+                        <a class="nav-link" th:classappend="${page == 'owner'} ? 'active' : ''" href="/owner"
+                            th:attr="aria-current=${page == 'owner'} ? 'page' : null">
+                            <i class="bi bi-person-badge-fill nav-icon"></i><span>Owner Dashboard</span>
+                        </a>
+                        <a class="nav-link" href="/owner/shopkeepers">
+                            <i class="bi bi-person-gear nav-icon"></i><span>Shopkeepers</span>
+                        </a>
+                    </details>
                 </div>
 
-                <!-- ── Common links (ADMIN + SHOPKEEPER; owner only reads) ── -->
-                <div class="nav-section-label" sec:authorize="hasAnyRole('ADMIN','SHOPKEEPER')">Store Operations</div>
-                <a class="nav-link" sec:authorize="hasAnyRole('ADMIN','SHOPKEEPER')"
-                    th:classappend="${page == 'home'} ? 'active' : ''" href="/">
-                    <i class="bi bi-house-door-fill"></i><span>Dashboard</span>
-                </a>
-                <a class="nav-link" th:classappend="${page == 'medicines'} ? 'active' : ''" href="/medicines"
-                    sec:authorize="hasAnyRole('ADMIN','SHOPKEEPER')">
-                    <i class="bi bi-capsule-pill"></i><span>Medicines</span>
-                </a>
-                <a class="nav-link" th:classappend="${page == 'customers'} ? 'active' : ''" href="/customers"
-                    sec:authorize="hasAnyRole('ADMIN','SHOPKEEPER')">
-                    <i class="bi bi-people-fill"></i><span>Customers</span>
-                </a>
-                <a class="nav-link" th:classappend="${page == 'sales'} ? 'active' : ''" href="/sales"
-                    sec:authorize="hasAnyRole('ADMIN','SHOPKEEPER')">
-                    <i class="bi bi-cart-check-fill"></i><span>Sales</span>
-                </a>
-                <a class="nav-link" th:classappend="${page == 'returns'} ? 'active' : ''" href="/returns"
-                    sec:authorize="hasAnyRole('ADMIN','SHOPKEEPER')">
-                    <i class="bi bi-arrow-return-left"></i><span>Returns</span>
-                </a>
-                <a class="nav-link" th:classappend="${page == 'suppliers'} ? 'active' : ''" href="/suppliers"
-                    sec:authorize="hasAnyRole('ADMIN','SHOPKEEPER')">
-                    <i class="bi bi-truck"></i><span>Suppliers</span>
-                </a>
-                <a class="nav-link" th:classappend="${page == 'purchases'} ? 'active' : ''" href="/purchases"
-                    sec:authorize="hasAnyRole('ADMIN','SHOPKEEPER')">
-                    <i class="bi bi-bag-check-fill"></i><span>Purchases</span>
-                </a>
+                <!-- ── Dashboard (standalone) ── -->
+                <div sec:authorize="hasAnyRole('ADMIN','SHOPKEEPER')">
+                    <a class="nav-link top-level" th:classappend="${page == 'home'} ? 'active' : ''" href="/"
+                        th:attr="aria-current=${page == 'home'} ? 'page' : null">
+                        <i class="bi bi-house-door-fill nav-icon"></i><span>Dashboard</span>
+                    </a>
+                </div>
 
-                <!-- Reports (all roles can view their scope) -->
-                <div class="nav-divider"></div>
-                <div class="nav-section-label">Reports</div>
-                <a class="nav-link" th:classappend="${page == 'reports'} ? 'active' : ''" href="/reports">
-                    <i class="bi bi-graph-up-arrow"></i><span>Standard Reports</span>
-                </a>
-                <a class="nav-link" th:classappend="${page == 'analytics'} ? 'active' : ''" href="/analytics">
-                    <i class="bi bi-bar-chart-fill"></i><span
-                        style="font-weight:700; color:var(--primary-color);">Advanced Analytics</span>
-                </a>
-                <a class="nav-link" th:classappend="${page == 'gst'} ? 'active' : ''" href="/reports/gst">
-                    <i class="bi bi-file-earmark-ruled"></i><span>GST / Tax</span>
-                </a>
+                <!-- ── Inventory Group ── -->
+                <div sec:authorize="hasAnyRole('ADMIN','SHOPKEEPER')">
+                    <details class="nav-group"
+                        th:attr="open=${#lists.contains({'medicines','suppliers','purchases'}, page)} ? 'open' : null">
+                        <summary>Inventory</summary>
+                        <a class="nav-link" th:classappend="${page == 'medicines'} ? 'active' : ''" href="/medicines"
+                            th:attr="aria-current=${page == 'medicines'} ? 'page' : null">
+                            <i class="bi bi-capsule-pill nav-icon"></i><span>Medicines</span>
+                            <span class="nav-badge" th:if="${lowStockCount > 0}" th:text="${lowStockCount}"
+                                title="Low stock items">0</span>
+                        </a>
+                        <a class="nav-link" th:classappend="${page == 'purchases'} ? 'active' : ''" href="/purchases"
+                            th:attr="aria-current=${page == 'purchases'} ? 'page' : null">
+                            <i class="bi bi-bag-check-fill nav-icon"></i><span>Purchases</span>
+                        </a>
+                        <a class="nav-link" th:classappend="${page == 'suppliers'} ? 'active' : ''" href="/suppliers"
+                            th:attr="aria-current=${page == 'suppliers'} ? 'page' : null">
+                            <i class="bi bi-truck nav-icon"></i><span>Suppliers</span>
+                        </a>
+                    </details>
+                </div>
+
+                <!-- ── Sales & Billing Group ── -->
+                <div sec:authorize="hasAnyRole('ADMIN','SHOPKEEPER')">
+                    <details class="nav-group"
+                        th:attr="open=${#lists.contains({'sales','returns','customers'}, page)} ? 'open' : null">
+                        <summary>Sales &amp; Billing</summary>
+                        <a class="nav-link" href="/sales/new">
+                            <i class="bi bi-plus-circle-fill nav-icon" style="color:var(--success-color);"></i><span
+                                style="font-weight:600;">New Sale</span>
+                        </a>
+                        <a class="nav-link" th:classappend="${page == 'sales'} ? 'active' : ''" href="/sales"
+                            th:attr="aria-current=${page == 'sales'} ? 'page' : null">
+                            <i class="bi bi-receipt nav-icon"></i><span>Sales History</span>
+                        </a>
+                        <a class="nav-link" th:classappend="${page == 'returns'} ? 'active' : ''" href="/returns"
+                            th:attr="aria-current=${page == 'returns'} ? 'page' : null">
+                            <i class="bi bi-arrow-return-left nav-icon"></i><span>Returns</span>
+                        </a>
+                        <a class="nav-link" th:classappend="${page == 'customers'} ? 'active' : ''" href="/customers"
+                            th:attr="aria-current=${page == 'customers'} ? 'page' : null">
+                            <i class="bi bi-people-fill nav-icon"></i><span>Customers</span>
+                        </a>
+                    </details>
+                </div>
+
+                <!-- ── Reports Group ── -->
+                <details class="nav-group"
+                    th:attr="open=${#lists.contains({'reports','analytics','gst'}, page)} ? 'open' : null">
+                    <summary>Reports</summary>
+                    <a class="nav-link" th:classappend="${page == 'reports'} ? 'active' : ''" href="/reports"
+                        th:attr="aria-current=${page == 'reports'} ? 'page' : null">
+                        <i class="bi bi-graph-up-arrow nav-icon"></i><span>Standard Reports</span>
+                    </a>
+                    <a class="nav-link" th:classappend="${page == 'analytics'} ? 'active' : ''" href="/analytics"
+                        th:attr="aria-current=${page == 'analytics'} ? 'page' : null">
+                        <i class="bi bi-bar-chart-fill nav-icon"></i><span>Advanced Analytics</span>
+                    </a>
+                    <a class="nav-link" th:classappend="${page == 'gst'} ? 'active' : ''" href="/reports/gst"
+                        th:attr="aria-current=${page == 'gst'} ? 'page' : null">
+                        <i class="bi bi-file-earmark-ruled nav-icon"></i><span>GST / Tax</span>
+                    </a>
+                </details>
             </nav>
-
 
             <!-- User Profile -->
             <div class="user-profile">
@@ -1002,7 +1332,7 @@
                 </div>
                 <form th:action="@{/logout}" method="post">
                     <button type="submit" class="logout-btn">
-                        <i class="bi bi-box-arrow-right"></i> Logout
+                        <i class="bi bi-box-arrow-right"></i> <span>Logout</span>
                     </button>
                 </form>
             </div>
@@ -1018,38 +1348,69 @@
             </div>
 
             <header class="main-header">
-                <div class="d-flex align-items-center gap-3">
-                    <!-- Left: page title -->
-                    <h1 class="page-title">
-                        <i th:if="${pageIcon}" th:class="${pageIcon}" style="margin-right: 8px;"></i>
-                        <span th:text="${title}">Page</span>
-                    </h1>
+                <!-- Left: Breadcrumb -->
+                <nav class="header-breadcrumb" aria-label="Breadcrumb">
+                    <a href="/"><i class="bi bi-house-door"></i></a>
+                    <i class="bi bi-chevron-right bc-sep"></i>
+                    <span class="bc-current" th:text="${title}">Page</span>
+                </nav>
 
-                    <!-- Right: live clock + role badge -->
-                    <div class="header-right">
+                <!-- Center: Global Search -->
+                <div class="header-search">
+                    <i class="bi bi-search search-icon"></i>
+                    <input type="text" id="globalSearch" placeholder="Search medicines, pages..." autocomplete="off"
+                        aria-label="Global search" />
+                    <kbd>Ctrl K</kbd>
+                </div>
 
-                        <!-- Role badge -->
-                        <span class="header-role-badge role-admin" sec:authorize="hasRole('ADMIN')">
-                            <i class="bi bi-shield-fill"></i> Admin
-                        </span>
-                        <span class="header-role-badge role-owner" sec:authorize="hasRole('OWNER')">
-                            <i class="bi bi-person-badge-fill"></i> Owner
-                        </span>
-                        <span class="header-role-badge role-shopkeeper" sec:authorize="hasRole('SHOPKEEPER')">
-                            <i class="bi bi-shop"></i> Shopkeeper
-                        </span>
+                <!-- Right: controls -->
+                <div class="header-right">
+                    <!-- Role badge -->
+                    <span class="header-role-badge role-admin" sec:authorize="hasRole('ADMIN')">
+                        <i class="bi bi-shield-fill"></i> Admin
+                    </span>
+                    <span class="header-role-badge role-owner" sec:authorize="hasRole('OWNER')">
+                        <i class="bi bi-person-badge-fill"></i> Owner
+                    </span>
+                    <span class="header-role-badge role-shopkeeper" sec:authorize="hasRole('SHOPKEEPER')">
+                        <i class="bi bi-shop"></i> Shopkeeper
+                    </span>
 
-                        <!-- Theme Toggle -->
-                        <button class="theme-toggle-btn" id="themeToggleBtn" title="Toggle Dark/Light Mode">
-                            <i class="bi bi-moon-stars"></i>
+                    <!-- Notification Bell -->
+                    <div class="header-notif" id="notifContainer">
+                        <button class="header-notif-btn" id="notifBtn" title="Notifications" aria-label="Notifications"
+                            aria-expanded="false">
+                            <i class="bi bi-bell"></i>
+                            <span class="notif-dot"
+                                th:if="${(lowStockCount != null and lowStockCount > 0) or (expiringCount != null and expiringCount > 0)}"></span>
                         </button>
-
-                        <!-- Live clock -->
-                        <div class="header-clock">
-                            <span class="clock-time" id="liveClock">--:--:--</span>
-                            <span class="clock-date" id="liveDate">-- --- ----</span>
+                        <div class="notif-dropdown" id="notifDropdown" role="menu">
+                            <div class="notif-header">Alerts</div>
+                            <a class="notif-item" href="/medicines?filter=lowstock" role="menuitem">
+                                <i class="bi bi-exclamation-triangle" style="color:var(--danger-color);"></i>
+                                <span>Low Stock Items</span>
+                                <span class="notif-count danger" th:text="${lowStockCount}">0</span>
+                            </a>
+                            <a class="notif-item" href="/medicines?filter=expiring" role="menuitem">
+                                <i class="bi bi-calendar-x" style="color:var(--warning-color);"></i>
+                                <span>Expiring Soon (30d)</span>
+                                <span class="notif-count warning" th:text="${expiringCount}">0</span>
+                            </a>
                         </div>
                     </div>
+
+                    <!-- Theme Toggle -->
+                    <button class="theme-toggle-btn" id="themeToggleBtn" title="Toggle Dark/Light Mode"
+                        aria-label="Toggle dark mode">
+                        <i class="bi bi-moon-stars"></i>
+                    </button>
+
+                    <!-- Live clock -->
+                    <div class="header-clock">
+                        <span class="clock-time" id="liveClock">--:--:--</span>
+                        <span class="clock-date" id="liveDate">-- --- ----</span>
+                    </div>
+                </div>
             </header>
 
             <!-- Body -->
@@ -1243,6 +1604,44 @@
         }
         updateClock();
         setInterval(updateClock, 1000);
+
+        /* ---- Notification Dropdown ---- */
+        const notifBtn = document.getElementById('notifBtn');
+        const notifDropdown = document.getElementById('notifDropdown');
+        const notifContainer = document.getElementById('notifContainer');
+
+        if (notifBtn && notifDropdown) {
+            notifBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isOpen = notifDropdown.classList.toggle('open');
+                notifBtn.setAttribute('aria-expanded', isOpen);
+            });
+            document.addEventListener('click', (e) => {
+                if (notifContainer && !notifContainer.contains(e.target)) {
+                    notifDropdown.classList.remove('open');
+                    notifBtn.setAttribute('aria-expanded', 'false');
+                }
+            });
+        }
+
+        /* ---- Global Search (Ctrl+K) ---- */
+        const globalSearchInput = document.getElementById('globalSearch');
+        if (globalSearchInput) {
+            document.addEventListener('keydown', (e) => {
+                if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                    e.preventDefault();
+                    globalSearchInput.focus();
+                }
+            });
+            globalSearchInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && globalSearchInput.value.trim()) {
+                    window.location.href = '/medicines?search=' + encodeURIComponent(globalSearchInput.value.trim());
+                }
+                if (e.key === 'Escape') {
+                    globalSearchInput.blur();
+                }
+            });
+        }
     </script>
 </body>
 

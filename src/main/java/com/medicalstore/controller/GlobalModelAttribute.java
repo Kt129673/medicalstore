@@ -1,6 +1,7 @@
 package com.medicalstore.controller;
 
 import com.medicalstore.model.SubscriptionPlan;
+import com.medicalstore.service.MedicineService;
 import com.medicalstore.service.SubscriptionService;
 import com.medicalstore.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +13,26 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 public class GlobalModelAttribute {
 
     private final SubscriptionService subscriptionService;
+    private final MedicineService medicineService;
     private final SecurityUtils securityUtils;
+
+    @ModelAttribute("lowStockCount")
+    public long lowStockCount() {
+        try {
+            return medicineService.countLowStockMedicines(10);
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
+    @ModelAttribute("expiringCount")
+    public long expiringCount() {
+        try {
+            return medicineService.getExpiringSoonMedicines(30).size();
+        } catch (Exception e) {
+            return 0;
+        }
+    }
 
     @ModelAttribute("subscriptionWarning")
     public String subscriptionWarning() {
