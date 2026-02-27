@@ -44,3 +44,5 @@ yarn-error.log*
 
 ### Backend build ###
 medical-store-management-backend/target/
+
+*.pem

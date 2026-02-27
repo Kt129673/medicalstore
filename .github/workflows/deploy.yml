@@ -1,0 +1,63 @@
+name: Deploy to EC2
+
+on:
+    push:
+        branches: ["main", "working_branch"]
+    workflow_dispatch:
+
+jobs:
+    build-and-deploy:
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v3
+
+            # --- BUILD ---
+            - name: Set up JDK 17
+              uses: actions/setup-java@v3
+              with:
+                  java-version: "17"
+                  distribution: "temurin"
+                  cache: maven
+
+            - name: Build with Maven
+              run: |
+                  chmod +x mvnw
+                  ./mvnw clean package -DskipTests
+
+            # --- DEPLOYMENT ---
+            - name: Deploy WAR to EC2
+              uses: appleboy/scp-action@master
+              with:
+                  host: ${{ secrets.EC2_HOST }}
+                  username: ${{ secrets.EC2_USER }}
+                  key: ${{ secrets.EC2_SSH_KEY }}
+                  port: 22
+                  source: "target/medicalstore-0.0.1-SNAPSHOT.war"
+                  target: "/tmp/medicalstore-deploy"
+                  strip_components: 1
+
+            - name: Configure EC2 & Restart
+              uses: appleboy/ssh-action@master
+              with:
+                  host: ${{ secrets.EC2_HOST }}
+                  username: ${{ secrets.EC2_USER }}
+                  key: ${{ secrets.EC2_SSH_KEY }}
+                  script: |
+                      echo "Starting Deployment..."
+
+                      # Update Application
+                      echo "Updating Medicalstore App..."
+                      sudo systemctl stop medicalstore-backend || true
+
+                      sudo rm -rf /opt/medicalstore/app.war
+                      sudo cp /tmp/medicalstore-deploy/medicalstore-0.0.1-SNAPSHOT.war /opt/medicalstore/app.war
+
+                      # Restart
+                      echo "Restarting services..."
+                      sudo systemctl start medicalstore-backend || true
+
+                      # Cleanup
+                      rm -rf /tmp/medicalstore-deploy
+
+                      echo "Deployment Success!"
