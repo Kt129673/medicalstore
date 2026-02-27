@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,246 +10,229 @@
     <style>
         :root {
             --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            --success-color: #10b981;
-            --danger-color: #ef4444;
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
         }
-        
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
+            background-color: #f8fafc;
+            overflow-x: hidden;
         }
-        
-        .login-container {
-            max-width: 480px;
-            width: 100%;
-        }
-        
-        .login-card {
-            background: white;
-            border-radius: 24px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+
+        /* Left Panel - Branding */
+        .left-panel {
+            background: var(--primary-gradient);
+            padding: 4rem 3rem;
+            color: white;
+            position: relative;
             overflow: hidden;
-            animation: slideUp 0.6s ease-out;
         }
-        
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
+
+        .brand-decorative-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .circle-1 {
+            width: 400px;
+            height: 400px;
+            top: -100px;
+            right: -100px;
+        }
+
+        .circle-2 {
+            width: 300px;
+            height: 300px;
+            bottom: -50px;
+            left: -100px;
+        }
+
+        .brand-logo {
+            font-size: 56px;
+            margin-bottom: 24px;
+            display: inline-block;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
                 transform: translateY(0);
             }
+
+            50% {
+                transform: translateY(-10px);
+            }
         }
-        
-        .login-header {
-            background: var(--primary-gradient);
-            padding: 40px 30px;
-            text-align: center;
-            color: white;
+
+        .brand-header h2 {
+            font-size: 36px;
+            font-weight: 800;
+            line-height: 1.2;
+            letter-spacing: -1px;
+            margin-bottom: 12px;
         }
-        
-        .login-header i {
-            font-size: 64px;
-            margin-bottom: 15px;
-            animation: pulse 2s ease-in-out infinite;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-        
-        .login-header h1 {
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 8px;
-            letter-spacing: -0.5px;
-        }
-        
-        .login-header p {
-            font-size: 14px;
+
+        .brand-header p {
+            font-size: 16px;
             opacity: 0.9;
+            font-weight: 500;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            padding: 32px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .glass-card h5 {
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
             margin: 0;
         }
-        
-        .login-body {
-            padding: 40px 30px;
+
+        .feature-list li {
+            margin-bottom: 16px;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            opacity: 0.95;
         }
-        
+
+        .feature-list li:last-child {
+            margin-bottom: 0;
+        }
+
+        .feature-list li i {
+            font-size: 20px;
+            color: #a7f3d0;
+        }
+
+        .brand-footer {
+            font-size: 13px;
+            opacity: 0.7;
+        }
+
+        /* Right Panel - Login */
+        .right-panel {
+            background-color: #ffffff;
+            padding: 2rem;
+        }
+
+        .login-container {
+            max-width: 420px;
+            width: 100%;
+            margin: 0 auto;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
         .form-label {
             font-weight: 600;
-            color: #374151;
-            font-size: 14px;
+            color: var(--text-muted);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
             margin-bottom: 8px;
+            margin-left: 4px;
         }
-        
+
         .form-control {
-            border: 2px solid #e5e7eb;
-            border-radius: 12px;
-            padding: 14px 18px;
+            background-color: #f1f5f9;
+            border: 2px solid transparent;
+            border-radius: 14px;
+            padding: 16px 20px 16px 52px;
             font-size: 15px;
+            font-weight: 500;
+            color: var(--text-dark);
             transition: all 0.3s ease;
         }
-        
+
         .form-control:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
-            outline: none;
+            background-color: #ffffff;
+            border-color: var(--primary-color);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.15);
+            transform: translateY(-2px);
         }
-        
+
         .input-group {
             position: relative;
         }
-        
+
         .input-group-icon {
             position: absolute;
-            left: 18px;
+            left: 20px;
             top: 50%;
             transform: translateY(-50%);
-            color: #9ca3af;
+            color: #94a3b8;
             font-size: 18px;
             z-index: 10;
+            transition: color 0.3s ease;
         }
-        
-        .input-group .form-control {
-            padding-left: 50px;
+
+        .form-control:focus+.input-group-icon {
+            color: var(--primary-color);
         }
-        
+
         .btn-login {
             background: var(--primary-gradient);
             border: none;
-            border-radius: 12px;
-            padding: 14px;
+            border-radius: 14px;
+            padding: 16px;
             font-size: 16px;
             font-weight: 600;
+            letter-spacing: 0.5px;
             color: white;
             width: 100%;
-            transition: all 0.3s ease;
-            margin-top: 24px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 10px 20px -5px rgba(102, 126, 234, 0.5);
+            position: relative;
+            overflow: hidden;
         }
-        
+
         .btn-login:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
-        }
-        
-        .btn-login:active {
-            transform: translateY(0);
-        }
-        
-        .alert {
-            border-radius: 12px;
-            border: none;
-            padding: 14px 18px;
-            font-size: 14px;
-            margin-bottom: 24px;
-            animation: slideDown 0.4s ease-out;
-        }
-        
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .alert-danger {
-            background-color: #fee2e2;
-            color: #991b1b;
-        }
-        
-        .alert-success {
-            background-color: #d1fae5;
-            color: #065f46;
-        }
-        
-        .alert i {
-            margin-right: 8px;
-        }
-        
-        .remember-forgot {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 16px;
-            font-size: 14px;
-        }
-        
-        .form-check-label {
-            color: #6b7280;
-            font-weight: 500;
-        }
-        
-        .forgot-link {
-            color: #667eea;
-            text-decoration: none;
-            font-weight: 600;
-            transition: color 0.2s;
-        }
-        
-        .forgot-link:hover {
-            color: #764ba2;
-        }
-        
-        .login-footer {
-            text-align: center;
-            padding: 20px;
-            background: #f9fafb;
-            font-size: 13px;
-            color: #6b7280;
-        }
-        
-        .version-badge {
-            display: inline-block;
-            background: var(--primary-gradient);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 25px -5px rgba(102, 126, 234, 0.6);
             color: white;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 600;
-            margin-top: 8px;
         }
-        
-        .security-note {
-            text-align: center;
-            margin-top: 20px;
-            padding: 16px;
-            background: #f0f9ff;
-            border-radius: 12px;
-            border-left: 4px solid #0ea5e9;
+
+        .btn-login:active {
+            transform: translateY(-1px);
         }
-        
-        .security-note i {
-            color: #0ea5e9;
-            margin-right: 8px;
-        }
-        
-        .security-note p {
-            margin: 0;
-            font-size: 13px;
-            color: #075985;
-            font-weight: 500;
-        }
-        
-        /* Loading state */
+
         .btn-login.loading {
             pointer-events: none;
-            position: relative;
             color: transparent;
+            position: relative;
         }
-        
+
         .btn-login.loading::after {
             content: "";
             position: absolute;
@@ -256,300 +240,251 @@
             height: 20px;
             top: 50%;
             left: 50%;
-            margin-left: -10px;
-            margin-top: -10px;
+            transform: translate(-50%, -50%);
             border: 3px solid rgba(255, 255, 255, 0.3);
             border-top-color: white;
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
         }
-        
+
         @keyframes spin {
-            to { transform: rotate(360deg); }
+            to {
+                transform: translate(-50%, -50%) rotate(360deg);
+            }
         }
-        
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            body {
-                padding: 15px;
+
+        /* Alerts */
+        .alert {
+            border-radius: 12px;
+            border: none;
+            padding: 14px 18px;
+            font-size: 14px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .alert-danger {
+            background-color: #fef2f2;
+            color: #991b1b;
+            border-left: 4px solid #ef4444;
+        }
+
+        .alert-success {
+            background-color: #ecfdf5;
+            color: #065f46;
+            border-left: 4px solid #10b981;
+        }
+
+        /* Dev Quick Login */
+        .dev-quick-login {
+            margin-top: 32px;
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 14px;
+            border: 1px dashed #cbd5e1;
+            text-align: center;
+        }
+
+        .dev-quick-login p {
+            font-size: 12px;
+            color: #64748b;
+            margin-bottom: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 700;
+        }
+
+        .dev-quick-login-btns {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .btn-dev-role {
+            font-size: 13px;
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            background: white;
+            color: #475569;
+            font-weight: 600;
+            transition: all 0.2s;
+            cursor: pointer;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .btn-dev-role:hover {
+            background: #f1f5f9;
+            border-color: #cbd5e1;
+            color: #0f172a;
+            transform: translateY(-1px);
+        }
+
+        /* Responsive */
+        @media (max-width: 991px) {
+            .right-panel {
+                min-height: 100vh;
+                align-items: center;
             }
-            
-            .login-container {
-                max-width: 100%;
+
+            .mobile-header i {
+                background: var(--primary-gradient);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
             }
-            
-            .login-card {
-                border-radius: 20px;
+        }
+
+        @media (max-width: 576px) {
+            .right-panel {
+                padding: 1.5rem;
             }
-            
-            .login-header {
-                padding: 30px 20px;
-            }
-            
-            .login-header i {
-                font-size: 52px;
-                margin-bottom: 12px;
-            }
-            
-            .login-header h1 {
+
+            .login-header-text h1 {
                 font-size: 24px;
-                margin-bottom: 6px;
             }
-            
-            .login-header p {
-                font-size: 13px;
-            }
-            
-            .login-body {
-                padding: 30px 20px;
-            }
-            
+
             .form-control {
-                padding: 12px 16px;
-                font-size: 14px;
+                padding: 12px 16px 12px 45px;
             }
-            
-            .input-group .form-control {
-                padding-left: 45px;
-            }
-            
+
             .input-group-icon {
-                left: 16px;
-                font-size: 16px;
-            }
-            
-            .btn-login {
-                padding: 12px;
-                font-size: 15px;
-                margin-top: 20px;
-            }
-            
-            .security-note {
-                padding: 12px;
-                margin-top: 16px;
-            }
-            
-            .security-note p {
-                font-size: 12px;
-            }
-            
-            .login-footer {
-                padding: 16px;
-                font-size: 12px;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            body {
-                padding: 10px;
-            }
-            
-            .login-header {
-                padding: 25px 15px;
-            }
-            
-            .login-header i {
-                font-size: 48px;
-            }
-            
-            .login-header h1 {
-                font-size: 20px;
-            }
-            
-            .login-header p {
-                font-size: 12px;
-            }
-            
-            .login-body {
-                padding: 25px 15px;
-            }
-            
-            .form-label {
-                font-size: 13px;
-            }
-            
-            .form-control {
-                padding: 11px 14px;
-                font-size: 13px;
-                border-radius: 10px;
-            }
-            
-            .input-group .form-control {
-                padding-left: 42px;
-            }
-            
-            .input-group-icon {
-                left: 14px;
-                font-size: 15px;
-            }
-            
-            .btn-login {
-                padding: 11px;
-                font-size: 14px;
-                border-radius: 10px;
-            }
-            
-            .remember-forgot {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 10px;
-            }
-            
-            .alert {
-                padding: 12px 14px;
-                font-size: 13px;
-                margin-bottom: 20px;
-            }
-            
-            .security-note {
-                padding: 10px;
-                margin-top: 14px;
-            }
-            
-            .security-note p {
-                font-size: 11px;
-            }
-            
-            .login-footer {
-                padding: 14px;
-            }
-            
-            .version-badge {
-                font-size: 10px;
-                padding: 3px 10px;
-            }
-        }
-        
-        /* Landscape orientation on mobile */
-        @media (max-height: 600px) and (orientation: landscape) {
-            body {
-                padding: 10px;
-                align-items: flex-start;
-            }
-            
-            .login-header {
-                padding: 20px 25px;
-            }
-            
-            .login-header i {
-                font-size: 40px;
-                margin-bottom: 8px;
-            }
-            
-            .login-header h1 {
-                font-size: 22px;
-            }
-            
-            .login-body {
-                padding: 20px 25px;
-            }
-            
-            .security-note {
-                margin-top: 12px;
-                padding: 10px;
+                left: 15px;
             }
         }
     </style>
 </head>
+
 <body>
-    <div class="login-container">
-        <div class="login-card">
-            <!-- Header -->
-            <div class="login-header">
-                <i class="bi bi-shield-lock-fill"></i>
-                <h1>Medical Store Management</h1>
-                <p>Enterprise Security Portal</p>
+    <div class="container-fluid p-0">
+        <div class="row g-0 vh-100">
+            <!-- Left Panel (Brand & Visuals) -->
+            <div class="col-lg-5 col-xl-4 d-none d-lg-flex flex-column justify-content-between left-panel">
+                <div class="brand-decorative-circle circle-1"></div>
+                <div class="brand-decorative-circle circle-2"></div>
+
+                <div class="brand-header position-relative z-1">
+                    <i class="bi bi-shield-lock-fill brand-logo"></i>
+                    <h2>Medical Store<br>Management</h2>
+                    <p>Enterprise Security Portal</p>
+                </div>
+
+                <div class="brand-features position-relative z-1">
+                    <div class="glass-card">
+                        <h5><i class="bi bi-stars text-warning"></i> System Features</h5>
+                        <ul class="feature-list">
+                            <li><i class="bi bi-check2-circle"></i> Comprehensive Inventory Tracking</li>
+                            <li><i class="bi bi-check2-circle"></i> Seamless Sales & Invoicing</li>
+                            <li><i class="bi bi-check2-circle"></i> Expiry & Low Stock Alerts</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="brand-footer position-relative z-1">
+                    <p class="mb-0">&copy; 2025 Medical Store Management System &bull; v1.0.0</p>
+                </div>
             </div>
-            
-            <!-- Body -->
-            <div class="login-body">
-                <!-- Error Alert -->
-                <div th:if="${error}" class="alert alert-danger" role="alert">
-                    <i class="bi bi-exclamation-triangle-fill"></i>
-                    <span th:text="${error}">Error message</span>
-                </div>
-                
-                <!-- Success Alert -->
-                <div th:if="${message}" class="alert alert-success" role="alert">
-                    <i class="bi bi-check-circle-fill"></i>
-                    <span th:text="${message}">Success message</span>
-                </div>
-                
-                <!-- Login Form -->
-                <form th:action="@{/login}" method="post" id="loginForm">
-                    <!-- Username -->
-                    <div class="mb-3">
-                        <label for="username" class="form-label">Username</label>
-                        <div class="input-group">
-                            <i class="bi bi-person-fill input-group-icon"></i>
-                            <input type="text" 
-                                   class="form-control" 
-                                   id="username" 
-                                   name="username" 
-                                   placeholder="Enter your username"
-                                   required 
-                                   autofocus
-                                   autocomplete="username">
-                        </div>
+
+            <!-- Right Panel (Login Form) -->
+            <div class="col-12 col-lg-7 col-xl-8 d-flex align-items-center justify-content-center right-panel">
+                <div class="login-container">
+
+                    <!-- Mobile only header (visible when left panel is hidden) -->
+                    <div class="d-lg-none mobile-header text-center mb-5">
+                        <i class="bi bi-shield-lock-fill" style="font-size: 48px;"></i>
+                        <h3 class="mt-2 fw-bold text-dark">Medical Store</h3>
                     </div>
-                    
-                    <!-- Password -->
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Password</label>
-                        <div class="input-group">
-                            <i class="bi bi-lock-fill input-group-icon"></i>
-                            <input type="password" 
-                                   class="form-control" 
-                                   id="password" 
-                                   name="password" 
-                                   placeholder="Enter your password"
-                                   required
-                                   autocomplete="current-password">
-                        </div>
+
+                    <div class="login-header-text mb-5">
+                        <h1 class="fw-bold mb-2" style="letter-spacing: -1px; color: var(--text-dark);">Welcome Back! 👋
+                        </h1>
+                        <p class="text-muted fw-medium fs-6">Please sign in to your account to continue.</p>
                     </div>
-                    
-                    <!-- Remember Me & Forgot Password -->
-                    <div class="remember-forgot">
-                        <div class="form-check">
+
+                    <!-- Error Alert -->
+                    <div th:if="${error}" class="alert alert-danger" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill fs-5"></i>
+                        <span th:text="${error}">Error message</span>
+                    </div>
+
+                    <!-- Success Alert -->
+                    <div th:if="${message}" class="alert alert-success" role="alert">
+                        <i class="bi bi-check-circle-fill fs-5"></i>
+                        <span th:text="${message}">Success message</span>
+                    </div>
+
+                    <!-- Login Form -->
+                    <form th:action="@{/login}" method="post" id="loginForm">
+                        <!-- Username -->
+                        <div class="mb-4">
+                            <label for="username" class="form-label">Username</label>
+                            <div class="input-group">
+                                <i class="bi bi-person-fill input-group-icon"></i>
+                                <input type="text" class="form-control" id="username" name="username"
+                                    placeholder="Enter your username" required autofocus autocomplete="username">
+                            </div>
+                        </div>
+
+                        <!-- Password -->
+                        <div class="mb-4">
+                            <label for="password" class="form-label">Password</label>
+                            <div class="input-group">
+                                <i class="bi bi-lock-fill input-group-icon"></i>
+                                <input type="password" class="form-control" id="password" name="password"
+                                    placeholder="Enter your password" required autocomplete="current-password">
+                            </div>
+                        </div>
+
+                        <!-- Remember Me -->
+                        <div class="form-check mb-4">
                             <input class="form-check-input" type="checkbox" id="remember" name="remember-me">
-                            <label class="form-check-label" for="remember">
+                            <label class="form-check-label text-muted fw-medium" for="remember">
                                 Remember me
                             </label>
                         </div>
-                    </div>
-                    
-                    <!-- Login Button -->
-                    <button type="submit" class="btn btn-login" id="loginBtn">
-                        <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
-                    </button>
-                </form>
-                
-                <!-- Security Note -->
-                <div class="security-note">
-                    <i class="bi bi-shield-check"></i>
-                    <p>Secured with 256-bit encryption</p>
+
+                        <!-- Login Button -->
+                        <button type="submit" class="btn btn-login" id="loginBtn">
+                            Sign In <i class="bi bi-arrow-right ms-2 mt-1"></i>
+                        </button>
+
+                        <!-- Development Quick Login -->
+                        <div class="dev-quick-login">
+                            <p><i class="bi bi-tools text-primary me-1"></i> Development Quick Login</p>
+                            <div class="dev-quick-login-btns">
+                                <button type="button" class="btn-dev-role"
+                                    onclick="fillCredentials('admin', 'admin123')">
+                                    <i class="bi bi-shield-lock text-danger"></i> Admin
+                                </button>
+                                <button type="button" class="btn-dev-role" onclick="fillCredentials('user', 'user123')">
+                                    <i class="bi bi-person text-success"></i> User
+                                </button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
-            </div>
-            
-            <!-- Footer -->
-            <div class="login-footer">
-                <p>&copy; 2025 Medical Store Management System</p>
-                <span class="version-badge">v1.0.0</span>
             </div>
         </div>
     </div>
-    
+
     <script>
+        // Auto-fill credentials for development
+        function fillCredentials(username, password) {
+            document.getElementById('username').value = username;
+            document.getElementById('password').value = password;
+        }
+
         // Add loading state to button on form submit
-        document.getElementById('loginForm').addEventListener('submit', function() {
+        document.getElementById('loginForm').addEventListener('submit', function () {
             const btn = document.getElementById('loginBtn');
             btn.classList.add('loading');
         });
-        
+
         // Auto-remove alerts after 5 seconds
-        setTimeout(function() {
+        setTimeout(function () {
             const alerts = document.querySelectorAll('.alert');
-            alerts.forEach(function(alert) {
+            alerts.forEach(function (alert) {
                 alert.style.transition = 'opacity 0.5s ease';
                 alert.style.opacity = '0';
                 setTimeout(() => alert.remove(), 500);
@@ -557,4 +492,5 @@
         }, 5000);
     </script>
 </body>
+
 </html>
