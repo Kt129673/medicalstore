@@ -27,6 +27,11 @@
                 border-radius: 6px;
                 font-size: 12px;
             }
+
+            [data-theme="dark"] .gst-badge {
+                background: #334155;
+                color: #f8fafc;
+            }
         </style>
         <!-- Page Header -->
         <div
@@ -38,11 +43,11 @@
 
         <!-- Suppliers Table -->
         <div class="card modern-card">
-            <div class="card-header d-flex justify-content-between align-items-center">
+            <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
                 <h5 class="mb-0">
                     <i class="bi bi-list-ul"></i> Supplier Directory
                 </h5>
-                <span class="badge bg-primary" th:text="${suppliers.size()} + ' Suppliers'">0 Suppliers</span>
+                <span class="badge bg-primary ms-auto" th:text="${suppliers.size()} + ' Suppliers'">0 Suppliers</span>
             </div>
             <div class="card-body">
                 <th:block th:if="${suppliers.isEmpty()}">
@@ -57,10 +62,10 @@
                         <thead>
                             <tr>
                                 <th><i class="bi bi-building"></i> Company</th>
-                                <th><i class="bi bi-person"></i> Contact Person</th>
+                                <th class="d-none d-md-table-cell"><i class="bi bi-person"></i> Contact Person</th>
                                 <th><i class="bi bi-telephone"></i> Phone</th>
-                                <th><i class="bi bi-envelope"></i> Email</th>
-                                <th><i class="bi bi-file-text"></i> GST Number</th>
+                                <th class="d-none d-lg-table-cell"><i class="bi bi-envelope"></i> Email</th>
+                                <th class="d-none d-sm-table-cell"><i class="bi bi-file-text"></i> GST Number</th>
                                 <th class="text-end"><i class="bi bi-tools"></i> Actions</th>
                             </tr>
                         </thead>
@@ -69,19 +74,20 @@
                                 <td>
                                     <span style="font-weight: 600;" th:text="${supplier.name}">Company Name</span>
                                 </td>
-                                <td th:text="${supplier.contactPerson}">Contact Person</td>
+                                <td class="d-none d-md-table-cell" th:text="${supplier.contactPerson}">Contact Person
+                                </td>
                                 <td>
                                     <i class="bi bi-telephone-fill" style="color: #667eea; margin-right: 4px;"></i>
                                     <span th:text="${supplier.phone}"></span>
                                 </td>
-                                <td>
+                                <td class="d-none d-lg-table-cell">
                                     <span th:if="${supplier.email}">
                                         <i class="bi bi-envelope-fill" style="color: #667eea; margin-right: 4px;"></i>
                                         <span th:text="${supplier.email}"></span>
                                     </span>
                                     <span th:unless="${supplier.email}" class="text-muted small">No email</span>
                                 </td>
-                                <td>
+                                <td class="d-none d-sm-table-cell">
                                     <span th:if="${supplier.gstNumber}" class="gst-badge"
                                         th:text="${supplier.gstNumber}">GST123</span>
                                     <span th:unless="${supplier.gstNumber}" class="text-muted small">N/A</span>

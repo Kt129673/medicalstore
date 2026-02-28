@@ -62,7 +62,7 @@
 
             .kpi-card .kpi-sub {
                 font-size: 0.72rem;
-                opacity: 0.7;
+                opacity: 0.95;
             }
 
             /* Gradient presets */
@@ -402,14 +402,20 @@
                 .kpi-grid {
                     grid-template-columns: repeat(2, 1fr);
                 }
+            }
 
-                .kpi-card .kpi-value {
-                    font-size: 1.4rem;
+            @media (max-width: 576px) {
+                .kpi-grid {
+                    grid-template-columns: 1fr;
                 }
+            }
 
-                .expiry-grid {
-                    grid-template-columns: repeat(2, 1fr);
-                }
+            .kpi-card .kpi-value {
+                font-size: 1.4rem;
+            }
+
+            .expiry-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
         </style>
 

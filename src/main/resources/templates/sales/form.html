@@ -177,17 +177,17 @@
                 padding: 12px 16px;
                 border-radius: 10px;
                 background: rgba(255, 255, 255, 0.1);
-                font-size: 0.7rem;
-                color: rgba(255, 255, 255, 0.7);
+                font-size: 0.85rem;
+                color: rgba(255, 255, 255, 0.9);
             }
 
             .shortcuts-bar kbd {
                 display: inline-block;
-                padding: 2px 6px;
+                padding: 3px 8px;
                 border-radius: 4px;
-                background: rgba(255, 255, 255, 0.2);
-                font-size: 0.65rem;
-                margin: 0 2px;
+                background: rgba(255, 255, 255, 0.25);
+                font-size: 0.8rem;
+                margin: 0 4px;
             }
 
             /* Tips card */
@@ -367,8 +367,16 @@
                         <span class="bill-value bill-total">₹<span id="displayFinal">0.00</span></span>
                     </div>
 
-                    <div class="shortcuts-bar">
-                        <kbd>F2</kbd> Search • <kbd>F5</kbd> Complete • <kbd>Esc</kbd> Cancel
+                    <div class="mt-4">
+                        <button class="btn w-100 fw-bold shadow-sm"
+                            style="background:#fff; color:#764ba2; font-size: 1.1rem; padding: 12px;"
+                            id="submitBtnRight" onclick="submitSale()">
+                            <i class="bi bi-check-circle me-1"></i> Complete Transaction
+                        </button>
+                    </div>
+
+                    <div class="shortcuts-bar text-center">
+                        <kbd>F2</kbd> Search &nbsp; <kbd>F5</kbd> Complete &nbsp; <kbd>Esc</kbd> Cancel
                     </div>
                 </div>
 

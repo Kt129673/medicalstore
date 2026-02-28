@@ -1244,6 +1244,31 @@
             .d-flex.gap-2.justify-content-between .d-flex.gap-2 .btn {
                 flex: 1;
             }
+
+            .header-search {
+                margin-left: auto;
+                margin-right: 12px;
+            }
+
+            .header-search input {
+                width: 140px;
+            }
+
+            .header-search input:focus {
+                width: 200px;
+                position: absolute;
+                right: 0;
+                z-index: 1000;
+            }
+
+            .header-search kbd {
+                display: none;
+            }
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
         }
     </style>
 </head>

@@ -82,10 +82,10 @@
                             <tr>
                                 <th><i class="bi bi-calendar-event"></i> Date & Time</th>
                                 <th><i class="bi bi-capsule"></i> Items</th>
-                                <th><i class="bi bi-person"></i> Customer</th>
-                                <th><i class="bi bi-box"></i> Total Qty</th>
+                                <th class="d-none d-md-table-cell"><i class="bi bi-person"></i> Customer</th>
+                                <th class="d-none d-lg-table-cell"><i class="bi bi-box"></i> Total Qty</th>
                                 <th><i class="bi bi-currency-rupee"></i> Final Amount</th>
-                                <th><i class="bi bi-credit-card"></i> Payment</th>
+                                <th class="d-none d-sm-table-cell"><i class="bi bi-credit-card"></i> Payment</th>
                                 <th class="text-end"><i class="bi bi-tools"></i> Actions</th>
                             </tr>
                         </thead>
@@ -113,13 +113,13 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td>
+                                <td class="d-none d-md-table-cell">
                                     <span th:if="${sale.customer != null}" th:text="${sale.customer.name}"></span>
                                     <span th:unless="${sale.customer != null}" class="customer-type">
                                         <i class="bi bi-person-walking"></i> Walk-in
                                     </span>
                                 </td>
-                                <td>
+                                <td class="d-none d-lg-table-cell">
                                     <span class="badge bg-secondary"
                                         th:text="${#aggregates.sum(sale.items.![quantity]) ?: 0} + ' units'"></span>
                                 </td>
@@ -127,7 +127,7 @@
                                     <span class="sale-amount"
                                         th:text="'₹' + ${#numbers.formatDecimal(sale.finalAmount != null ? sale.finalAmount : sale.totalAmount, 0, 2)}"></span>
                                 </td>
-                                <td>
+                                <td class="d-none d-sm-table-cell">
                                     <span th:class="'payment-badge payment-' + ${sale.paymentMethod.toLowerCase()}"
                                         th:text="${sale.paymentMethod}">
                                     </span>

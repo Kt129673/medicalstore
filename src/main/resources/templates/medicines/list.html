@@ -229,6 +229,11 @@
                 color: #7c3aed;
             }
 
+            [data-theme="dark"] .cat-tag {
+                background: #4c1d95;
+                color: #ddd6fe;
+            }
+
             /* Action buttons */
             .action-btn {
                 width: 30px;
@@ -435,7 +440,8 @@
                     </div>
                     <div class="filter-actions">
                         <button type="submit" class="btn btn-primary"><i class="bi bi-search"></i> Search</button>
-                        <a href="/medicines" class="btn btn-outline-secondary"><i class="bi bi-x-lg"></i></a>
+                        <a href="/medicines" class="btn btn-outline-secondary"><i
+                                class="bi bi-arrow-counterclockwise"></i> Reset</a>
                     </div>
                 </div>
             </form>
@@ -490,10 +496,10 @@
                             <th onclick="sortTable(1)">Medicine <i class="bi bi-chevron-expand"
                                     style="font-size:0.6rem;"></i></th>
                             <th onclick="sortTable(2)">Category</th>
-                            <th onclick="sortTable(3)">Manufacturer</th>
+                            <th onclick="sortTable(3)" class="d-none d-md-table-cell">Manufacturer</th>
                             <th onclick="sortTable(4)" class="text-end">Price</th>
                             <th onclick="sortTable(5)" class="text-center">Stock</th>
-                            <th onclick="sortTable(6)">Batch</th>
+                            <th onclick="sortTable(6)" class="d-none d-lg-table-cell">Batch</th>
                             <th onclick="sortTable(7)">Expiry</th>
                             <th class="text-center" style="width:80px;">Actions</th>
                         </tr>
@@ -517,7 +523,8 @@
                                 </div>
                             </td>
                             <td><span class="cat-tag" th:text="${medicine.category}">—</span></td>
-                            <td class="text-muted" th:text="${medicine.manufacturer ?: '—'}">—</td>
+                            <td class="text-muted d-none d-md-table-cell" th:text="${medicine.manufacturer ?: '—'}">—
+                            </td>
                             <td class="text-end fw-semibold"
                                 th:text="'₹' + ${#numbers.formatDecimal(medicine.price, 0, 2)}">₹0</td>
                             <td class="text-center">
@@ -527,7 +534,8 @@
                                     <span th:text="${medicine.quantity}">0</span>
                                 </span>
                             </td>
-                            <td class="text-muted" style="font-size:0.8rem;" th:text="${medicine.batchNumber ?: '—'}">—
+                            <td class="text-muted d-none d-lg-table-cell" style="font-size:0.8rem;"
+                                th:text="${medicine.batchNumber ?: '—'}">—
                             </td>
                             <td>
                                 <span th:if="${medicine.expiryDate != null}">
