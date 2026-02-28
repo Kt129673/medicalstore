@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Invoice PDF</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Helvetica', 'Arial', sans-serif; font-size: 11pt; line-height: 1.6; color: #333; }
+        .container { padding: 30px; }
+        .header { text-align: center; border-bottom: 3px solid #667eea; padding-bottom: 15px; margin-bottom: 25px; }
+        .header h1 { color: #667eea; font-size: 24pt; font-weight: bold; margin-bottom: 8px; }
+        .header p { font-size: 10pt; margin: 3px 0; color: #555; }
+        .header .gstin { font-weight: bold; color: #333; margin-top: 5px; }
+        .invoice-info { display: table; width: 100%; margin-bottom: 25px; }
+        .invoice-info-left, .invoice-info-right { display: table-cell; width: 50%; vertical-align: top; }
+        .invoice-info-right { text-align: right; }
+        .section-title { font-size: 12pt; font-weight: bold; color: #667eea; margin-bottom: 8px; border-bottom: 2px solid #e0e0e0; padding-bottom: 3px; }
+        .info-line { font-size: 10pt; margin: 4px 0; }
+        .info-line strong { color: #333; }
+        .items-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        .items-table th { background-color: #667eea; color: white; padding: 10px; text-align: left; font-size: 10pt; font-weight: bold; }
+        .items-table td { padding: 8px 10px; border-bottom: 1px solid #e0e0e0; font-size: 10pt; }
+        .items-table tr:nth-child(even) { background-color: #f8f9fa; }
+        .items-table .text-right { text-align: right; }
+        .items-table .text-center { text-align: center; }
+        .totals-section { width: 100%; margin-top: 20px; }
+        .totals-table { width: 300px; float: right; border-collapse: collapse; }
+        .totals-table td { padding: 6px 10px; font-size: 10pt; }
+        .totals-table .label { text-align: right; font-weight: bold; width: 60%; }
+        .totals-table .value { text-align: right; width: 40%; }
+        .totals-table .total-row { background-color: #667eea; color: white; font-weight: bold; font-size: 12pt; }
+        .totals-table .subtotal-row { border-top: 1px solid #ddd; }
+        .footer { clear: both; margin-top: 40px; padding-top: 15px; border-top: 2px solid #e0e0e0; text-align: center; }
+        .footer p { font-size: 9pt; color: #666; margin: 3px 0; }
+        .footer .signature-section { margin-top: 40px; text-align: right; }
+        .footer .signature-line { border-top: 1px solid #333; width: 200px; float: right; margin-top: 50px; text-align: center; font-size: 9pt; }
+        .notes { margin-top: 30px; padding: 10px; background-color: #f8f9fa; border-left: 4px solid #667eea; }
+        .notes h4 { font-size: 10pt; margin-bottom: 5px; color: #667eea; }
+        .notes p { font-size: 9pt; color: #555; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>${companyName}</h1>
+            <p>${companyAddress}</p>
+            <p>Phone: ${companyPhone} | Email: ${companyEmail}</p>
+            <p class="gstin">GSTIN: ${companyGstin}</p>
+        </div>
+
+        <!-- Invoice Information -->
+        <div class="invoice-info">
+            <div class="invoice-info-left">
+                <div class="section-title">BILL TO:</div>
+                <div class="info-line">
+                    <strong>${customerName}</strong>
+                </div>
+                #if($customerPhone && $customerPhone != "")
+                <div class="info-line">Phone: ${customerPhone}</div>
+                #end
+                #if($customerAddress && $customerAddress != "")
+                <div class="info-line">${customerAddress}</div>
+                #end
+            </div>
+            <div class="invoice-info-right">
+                <div class="section-title">INVOICE DETAILS:</div>
+                <div class="info-line"><strong>Invoice #:</strong> ${invoiceNumber}</div>
+                <div class="info-line"><strong>Date:</strong> ${saleDate}</div>
+                <div class="info-line"><strong>Time:</strong> ${saleTime}</div>
+            </div>
+        </div>
+
+        <!-- Items Table -->
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th style="width: 8%;">Sr. No.</th>
+                    <th style="width: 35%;">Medicine Name</th>
+                    <th style="width: 15%;">Batch No.</th>
+                    <th class="text-center" style="width: 10%;">Qty</th>
+                    <th class="text-right" style="width: 16%;">Unit Price</th>
+                    <th class="text-right" style="width: 16%;">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                #foreach($item in $items)
+                <tr>
+                    <td class="text-center">$foreach.count</td>
+                    <td>${item.medicineName}</td>
+                    <td>${item.batchNumber}</td>
+                    <td class="text-center">${item.quantity}</td>
+                    <td class="text-right">&#8377;${item.unitPrice}</td>
+                    <td class="text-right">&#8377;${item.totalPrice}</td>
+                </tr>
+                #end
+            </tbody>
+        </table>
+
+        <!-- Totals Section -->
+        <div class="totals-section">
+            <table class="totals-table">
+                <tr class="subtotal-row">
+                    <td class="label">Subtotal:</td>
+                    <td class="value">&#8377;${subtotal}</td>
+                </tr>
+                #if($discountPercentage > 0)
+                <tr>
+                    <td class="label">Discount (${discountPercentage}%):</td>
+                    <td class="value">- &#8377;${discountAmount}</td>
+                </tr>
+                #end
+                #if($gstPercentage > 0)
+                <tr>
+                    <td class="label">GST (${gstPercentage}%):</td>
+                    <td class="value">+ &#8377;${gstAmount}</td>
+                </tr>
+                #end
+                <tr class="total-row">
+                    <td class="label">Grand Total:</td>
+                    <td class="value">&#8377;${grandTotal}</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Notes -->
+        <div class="notes" style="clear: both;">
+            <h4>Payment Terms &amp; Conditions:</h4>
+            <p>&bull; Payment is due within 15 days of invoice date.</p>
+            <p>&bull; Please include invoice number with payment.</p>
+            <p>&bull; Medicines once sold cannot be returned or exchanged without valid prescription.</p>
+            <p>&bull; This is a computer-generated invoice and does not require a signature.</p>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p style="font-weight: bold; margin-bottom: 5px;">Thank you for your business!</p>
+            <p>For any queries, please contact us at ${companyPhone}</p>
+            <p style="font-size: 8pt; margin-top: 10px; color: #999;">Generated on ${generatedDate}</p>
+            <div class="signature-section">
+                <div class="signature-line">Authorized Signature</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

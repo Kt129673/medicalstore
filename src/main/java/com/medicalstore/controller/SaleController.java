@@ -87,13 +87,32 @@ public class SaleController {
         }
     }
 
-    @GetMapping("/invoice/{id}")
-    public String viewInvoice(@PathVariable Long id, Model model) {
-        Sale sale = saleService.getSaleById(id)
-                .orElseThrow(() -> new RuntimeException("Sale not found"));
-        model.addAttribute("sale", sale);
-        model.addAttribute("whatsappEnabled", whatsAppService.isConfigured());
-        return "sales/invoice";
+    /**
+     * View Invoice — rendered via Apache Velocity Engine (bypasses Thymeleaf).
+     * Returns the fully rendered HTML page directly.
+     */
+    @GetMapping(value = "/invoice/{id}", produces = MediaType.TEXT_HTML_VALUE)
+    @ResponseBody
+    public ResponseEntity<String> viewInvoice(@PathVariable Long id) {
+        try {
+            Sale sale = saleService.getSaleById(id)
+                    .orElseThrow(() -> new RuntimeException("Sale not found"));
+
+            String html = pdfService.generateInvoiceHtml(sale);
+            return ResponseEntity.ok()
+                    .contentType(MediaType.TEXT_HTML)
+                    .body(html);
+        } catch (Exception e) {
+            String errorHtml = "<!DOCTYPE html><html><head><title>Error</title>"
+                    + "<link href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css' rel='stylesheet'>"
+                    + "</head><body class='d-flex justify-content-center align-items-center' style='height:100vh'>"
+                    + "<div class='text-center'><h1 class='text-danger'>Invoice Error</h1>"
+                    + "<p>" + e.getMessage() + "</p>"
+                    + "<a href='/sales' class='btn btn-primary mt-3'>Back to Sales</a></div></body></html>";
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .contentType(MediaType.TEXT_HTML)
+                    .body(errorHtml);
+        }
     }
 
     @PostMapping("/send-whatsapp/{id}")

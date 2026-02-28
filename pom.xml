@@ -97,6 +97,12 @@
 			<artifactId>html2pdf</artifactId>
 			<version>5.0.2</version>
 		</dependency>
+		<!-- Apache Velocity Engine for report generation -->
+		<dependency>
+			<groupId>org.apache.velocity</groupId>
+			<artifactId>velocity-engine-core</artifactId>
+			<version>2.3</version>
+		</dependency>
 		<!-- Apache POI for Excel export -->
 		<dependency>
 			<groupId>org.apache.poi</groupId>
