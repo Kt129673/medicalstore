@@ -302,8 +302,8 @@
                         <div class="col-md-6">
                             <label class="form-label fw-semibold" style="font-size:0.8rem;">Discount %</label>
                             <input type="number" step="0.01" class="form-control" id="discountPercentage" value="0"
-                                min="0" max="100" oninput="calculateCart()"
-                                style="border-radius:10px;padding:10px 14px;">
+                                min="0" max="100" oninput="calculateCart()" onkeyup="calculateCart()"
+                                onchange="calculateCart()" style="border-radius:10px;padding:10px 14px;">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-semibold" style="font-size:0.8rem;">GST Rate</label>
@@ -530,7 +530,7 @@
                             <td>₹${parseFloat(item.unitPrice).toFixed(2)}</td>
                             <td>
                                 <input type="number" class="qty-input" value="${item.quantity}" min="1" 
-                                    onchange="updateQty(${idx}, this.value)" onkeyup="updateQty(${idx}, this.value)">
+                                    oninput="updateQty(${idx}, this.value)" onchange="updateQty(${idx}, this.value)" onkeyup="updateQty(${idx}, this.value)">
                             </td>
                             <td class="fw-bold text-success">₹${(item.quantity * item.unitPrice).toFixed(2)}</td>
                             <td>

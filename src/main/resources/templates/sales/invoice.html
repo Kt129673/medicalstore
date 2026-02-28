@@ -95,7 +95,8 @@
                     <strong th:text="${sale.customer != null ? sale.customer.name : 'Walk-in Customer'}">Customer
                         Name</strong>
                 </p>
-                <p class="mb-1" th:if="${sale.customer != null}" th:text="'Phone: ' + ${sale.customer.phone}">Phone</p>
+                <p class="mb-1" th:if="${sale.customer != null and sale.customer.phone != null}"
+                    th:text="'Phone: ' + ${sale.customer.phone}">Phone</p>
                 <p class="mb-1" th:if="${sale.customer != null && sale.customer.address != null}"
                     th:text="${sale.customer.address}">Address</p>
             </div>
@@ -131,8 +132,10 @@
                     </td>
                     <td th:text="${item.medicine.batchNumber ?: 'N/A'}">BATCH123</td>
                     <td th:text="${item.quantity}">10</td>
-                    <td th:text="'₹' + ${#numbers.formatDecimal(item.unitPrice, 0, 2)}">₹100.00</td>
-                    <td th:text="'₹' + ${#numbers.formatDecimal(item.totalPrice, 0, 2)}">₹1000.00</td>
+                    <td th:text="'₹' + ${#numbers.formatDecimal(item.unitPrice != null ? item.unitPrice : 0, 0, 2)}">
+                        ₹100.00</td>
+                    <td th:text="'₹' + ${#numbers.formatDecimal(item.totalPrice != null ? item.totalPrice : 0, 0, 2)}">
+                        ₹1000.00</td>
                 </tr>
             </tbody>
         </table>
@@ -144,7 +147,9 @@
                     <h5>Subtotal:</h5>
                 </div>
                 <div class="col-4 text-end">
-                    <h5 th:text="'₹' + ${#numbers.formatDecimal(sale.totalAmount, 0, 2)}">₹1000.00</h5>
+                    <h5
+                        th:text="'₹' + ${#numbers.formatDecimal(sale.totalAmount != null ? sale.totalAmount : 0, 0, 2)}">
+                        ₹1000.00</h5>
                 </div>
             </div>
             <div class="row" th:if="${sale.discountPercentage != null && sale.discountPercentage > 0}">
@@ -153,7 +158,8 @@
                 </div>
                 <div class="col-4 text-end">
                     <h5 class="text-danger">- ₹<span
-                            th:text="${#numbers.formatDecimal(sale.discountAmount, 0, 2)}">0.00</span></h5>
+                            th:text="${#numbers.formatDecimal(sale.discountAmount != null ? sale.discountAmount : 0, 0, 2)}">0.00</span>
+                    </h5>
                 </div>
             </div>
             <div class="row" th:if="${sale.gstPercentage != null && sale.gstPercentage > 0}">
@@ -162,7 +168,8 @@
                 </div>
                 <div class="col-4 text-end">
                     <h5 class="text-success">+ ₹<span
-                            th:text="${#numbers.formatDecimal(sale.gstAmount, 0, 2)}">0.00</span></h5>
+                            th:text="${#numbers.formatDecimal(sale.gstAmount != null ? sale.gstAmount : 0, 0, 2)}">0.00</span>
+                    </h5>
                 </div>
             </div>
             <hr>
