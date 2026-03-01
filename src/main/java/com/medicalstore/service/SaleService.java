@@ -61,11 +61,20 @@ public class SaleService {
             throw new RuntimeException("Sale must have at least one item.");
         }
 
+        // Batch-load all medicines in ONE query instead of N individual findById calls
+        List<Long> medicineIds = sale.getItems().stream()
+                .map(item -> item.getMedicine().getId())
+                .collect(java.util.stream.Collectors.toList());
+        java.util.Map<Long, Medicine> medicineMap = medicineRepository.findAllById(medicineIds).stream()
+                .collect(java.util.stream.Collectors.toMap(Medicine::getId, m -> m));
+
         double calculatedTotalAmt = 0.0;
 
         for (com.medicalstore.model.SaleItem item : sale.getItems()) {
-            Medicine medicine = medicineRepository.findById(item.getMedicine().getId())
-                    .orElseThrow(() -> new RuntimeException("Medicine not found"));
+            Medicine medicine = medicineMap.get(item.getMedicine().getId());
+            if (medicine == null) {
+                throw new RuntimeException("Medicine not found: id=" + item.getMedicine().getId());
+            }
 
             if (medicine.getQuantity() < item.getQuantity()) {
                 throw new RuntimeException("Insufficient stock for medicine: " + medicine.getName());

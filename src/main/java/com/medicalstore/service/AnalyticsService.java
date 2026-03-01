@@ -6,6 +6,8 @@ import com.medicalstore.repository.SaleRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,6 +35,7 @@ public class AnalyticsService {
      * Returns list of maps with keys: id, name, category, revenue, cost, profit,
      * qtySold, margin
      */
+    @Cacheable(value = "analytics_profit", key = "#start.toLocalDate().toString() + '-' + #end.toLocalDate().toString()")
     public List<Map<String, Object>> getProfitPerMedicine(LocalDateTime start, LocalDateTime end) {
         List<Object[]> rows = saleRepository.getProfitPerMedicine(start, end);
         List<Map<String, Object>> result = new ArrayList<>();
@@ -62,6 +65,7 @@ public class AnalyticsService {
     // 2. Dead Stock (> N days with no sale)
     // ═══════════════════════════════════════════════════════════════════
 
+    @Cacheable(value = "analytics_deadstock", key = "#days")
     public List<Map<String, Object>> getDeadStock(int days) {
         LocalDateTime since = LocalDate.now().minusDays(days).atStartOfDay();
         List<Long> activeIds = saleRepository.getMedicineIdsWithSalesSince(since);
@@ -95,14 +99,12 @@ public class AnalyticsService {
     // 3. Fast-Moving Items (Top N)
     // ═══════════════════════════════════════════════════════════════════
 
+    @Cacheable(value = "analytics_fastmoving", key = "#limit + '-' + #start.toLocalDate().toString() + '-' + #end.toLocalDate().toString()")
     public List<Map<String, Object>> getFastMovingItems(int limit, LocalDateTime start, LocalDateTime end) {
-        List<Object[]> rows = saleRepository.getTopSellingMedicines(start, end);
+        // LIMIT pushed to SQL via Pageable — avoids loading all rows and breaking in Java
+        List<Object[]> rows = saleRepository.getTopSellingMedicinesLimited(start, end, PageRequest.of(0, limit));
         List<Map<String, Object>> result = new ArrayList<>();
-
-        int count = 0;
         for (Object[] row : rows) {
-            if (count >= limit)
-                break;
             Map<String, Object> item = new LinkedHashMap<>();
             item.put("id", row[0]);
             item.put("name", row[1]);
@@ -110,7 +112,6 @@ public class AnalyticsService {
             item.put("qtySold", row[3] != null ? ((Number) row[3]).longValue() : 0);
             item.put("revenue", row[4] != null ? ((Number) row[4]).doubleValue() : 0);
             result.add(item);
-            count++;
         }
         return result;
     }
@@ -119,6 +120,7 @@ public class AnalyticsService {
     // 4. GST Monthly Summary
     // ═══════════════════════════════════════════════════════════════════
 
+    @Cacheable(value = "analytics_gst", key = "#year")
     public List<Map<String, Object>> getGstMonthlySummary(int year) {
         LocalDateTime start = LocalDate.of(year, 1, 1).atStartOfDay();
         LocalDateTime end = LocalDate.of(year, 12, 31).atTime(23, 59, 59);

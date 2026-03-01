@@ -32,7 +32,8 @@ public class GlobalModelAttribute {
         // OWNER has no branch context and cannot access /medicines — skip
         if (securityUtils.isOwner()) return 0;
         try {
-            return medicineService.getExpiringSoonMedicines(30).size();
+            // COUNT query — avoids loading full Medicine entities just to call .size()
+            return medicineService.countExpiringSoonMedicines(30);
         } catch (Exception e) {
             return 0;
         }

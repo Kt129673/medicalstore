@@ -5,6 +5,7 @@ import com.medicalstore.model.User;
 import com.medicalstore.repository.SubscriptionPlanRepository;
 import com.medicalstore.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +21,7 @@ public class SubscriptionService {
     private final UserRepository userRepository;
     private final com.medicalstore.util.SecurityUtils securityUtils;
 
+    @Cacheable(value = "subscription_plan", key = "#ownerId")
     public Optional<SubscriptionPlan> getPlanForOwner(Long ownerId) {
         return planRepository.findByOwnerId(ownerId);
     }

@@ -29,7 +29,8 @@ public class ReportService {
         private final MedicineRepository medicineRepository;
 
         public DailyReportData generateDailyReport(LocalDateTime startOfDay, LocalDateTime endOfDay) {
-                List<Sale> sales = saleRepository.findBySaleDateBetween(startOfDay, endOfDay);
+                // JOIN FETCH on items + medicine — prevents N+1 when accessing s.getItems()
+                List<Sale> sales = saleRepository.findWithItemsBySaleDateBetween(startOfDay, endOfDay);
 
                 if (sales.isEmpty()) {
                         return createEmptyDailyReport();
@@ -99,7 +100,8 @@ public class ReportService {
 
         public MonthlyReportData generateMonthlyReport(LocalDateTime startOfMonth, LocalDateTime endOfMonth,
                         YearMonth yearMonth) {
-                List<Sale> sales = saleRepository.findBySaleDateBetween(startOfMonth, endOfMonth);
+                // JOIN FETCH on items + medicine — prevents N+1 when accessing s.getItems()
+                List<Sale> sales = saleRepository.findWithItemsBySaleDateBetween(startOfMonth, endOfMonth);
 
                 if (sales.isEmpty()) {
                         return createEmptyMonthlyReport();
@@ -215,7 +217,8 @@ public class ReportService {
         }
 
         public GstReportData generateGstReport(LocalDateTime start, LocalDateTime end) {
-                List<Sale> sales = saleRepository.findBySaleDateBetween(start, end);
+                // JOIN FETCH on items + medicine — prevents N+1 when accessing s.getItems()
+                List<Sale> sales = saleRepository.findWithItemsBySaleDateBetween(start, end);
 
                 if (sales.isEmpty()) {
                         return GstReportData.builder()

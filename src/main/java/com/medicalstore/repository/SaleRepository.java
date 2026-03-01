@@ -167,4 +167,30 @@ public interface SaleRepository extends JpaRepository<Sale, Long> {
                         "GROUP BY FUNCTION('DATE_FORMAT', s.saleDate, '%Y-%m') " +
                         "ORDER BY FUNCTION('DATE_FORMAT', s.saleDate, '%Y-%m')")
         List<Object[]> getMonthlyGstSummary(LocalDateTime start, LocalDateTime end);
-}
+        // ── Eager item loading (avoids N+1 in reports) ─────────────────────────
+
+        /** Load sales with their items and medicines in a single JOIN FETCH — used by reports */
+        @Query("SELECT DISTINCT s FROM Sale s " +
+                        "LEFT JOIN FETCH s.items i LEFT JOIN FETCH i.medicine " +
+                        "WHERE s.saleDate BETWEEN ?1 AND ?2 ORDER BY s.saleDate DESC")
+        List<Sale> findWithItemsBySaleDateBetween(LocalDateTime start, LocalDateTime end);
+
+        @Query("SELECT DISTINCT s FROM Sale s " +
+                        "LEFT JOIN FETCH s.items i LEFT JOIN FETCH i.medicine " +
+                        "WHERE s.branch.id = ?1 AND s.saleDate BETWEEN ?2 AND ?3 ORDER BY s.saleDate DESC")
+        List<Sale> findWithItemsByBranchBetween(Long branchId, LocalDateTime start, LocalDateTime end);
+
+        @Query("SELECT DISTINCT s FROM Sale s " +
+                        "LEFT JOIN FETCH s.items i LEFT JOIN FETCH i.medicine " +
+                        "WHERE s.branch.owner.id = ?1 AND s.saleDate BETWEEN ?2 AND ?3 ORDER BY s.saleDate DESC")
+        List<Sale> findWithItemsByOwnerBetween(Long ownerId, LocalDateTime start, LocalDateTime end);
+
+        /**
+         * Top-selling medicines with SQL LIMIT pushed via Pageable — avoids fetching
+         * ALL rows into Java and breaking in a loop.
+         */
+        @Query("SELECT m.id, m.name, m.category, SUM(i.quantity), SUM(i.totalPrice) " +
+                        "FROM Sale s JOIN s.items i JOIN i.medicine m WHERE s.saleDate BETWEEN ?1 AND ?2 " +
+                        "GROUP BY m.id, m.name, m.category ORDER BY SUM(i.quantity) DESC")
+        List<Object[]> getTopSellingMedicinesLimited(LocalDateTime start, LocalDateTime end,
+                        org.springframework.data.domain.Pageable pageable);}

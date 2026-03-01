@@ -181,6 +181,19 @@ public class MedicineService {
         return medicineRepository.findByExpiryDateBetween(LocalDate.now(), LocalDate.now().plusDays(days));
     }
 
+    /** COUNT-only query — avoids loading full Medicine entities just to call .size() */
+    public long countExpiringSoonMedicines(int days) {
+        Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
+        Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
+        LocalDate now = LocalDate.now();
+        LocalDate limit = now.plusDays(days);
+        if (tenantId != null)
+            return medicineRepository.countByBranchIdAndExpiryDateBetween(tenantId, now, limit);
+        if (ownerId != null)
+            return medicineRepository.countExpiringByOwner(ownerId, now, limit);
+        return medicineRepository.countByExpiryDateBetween(now, limit);
+    }
+
     public List<Medicine> getMedicinesByCategory(String category) {
         // Simplification for MVP: category search usually UI-filtered
         return medicineRepository.findByCategory(category);

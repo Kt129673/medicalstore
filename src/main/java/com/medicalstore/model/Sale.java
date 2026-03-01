@@ -25,6 +25,7 @@ public class Sale {
     private Long id;
 
     @OneToMany(mappedBy = "sale", cascade = CascadeType.ALL, orphanRemoval = true)
+    @org.hibernate.annotations.BatchSize(size = 30)
     private java.util.List<SaleItem> items = new java.util.ArrayList<>();
 
     // Keep denormalized totals at the header level for fast querying
