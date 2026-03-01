@@ -15,8 +15,15 @@ public class CacheConfig {
 
     @Bean
     public CacheManager cacheManager() {
-        CaffeineCacheManager cacheManager = new CaffeineCacheManager("medicines_search", "dashboard_kpis",
-                "dashboard_charts");
+        CaffeineCacheManager cacheManager = new CaffeineCacheManager(
+                "medicines_search",
+                "dashboard_kpis",
+                "dashboard_charts",
+                "subscription_plan",
+                "analytics_profit",
+                "analytics_deadstock",
+                "analytics_fastmoving",
+                "analytics_gst");
 
         cacheManager.setCaffeine(Caffeine.newBuilder()
                 .initialCapacity(100)
