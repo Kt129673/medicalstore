@@ -1,6 +1,5 @@
 package com.medicalstore.config;
 
-import com.medicalstore.model.User;
 import com.medicalstore.model.Branch;
 import com.medicalstore.repository.UserRepository;
 import com.medicalstore.util.SecurityUtils;

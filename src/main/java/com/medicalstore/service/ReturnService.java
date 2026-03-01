@@ -4,7 +4,6 @@ import com.medicalstore.model.Return;
 import com.medicalstore.model.Sale;
 import com.medicalstore.model.Medicine;
 import com.medicalstore.repository.ReturnRepository;
-import com.medicalstore.repository.SaleRepository;
 import com.medicalstore.repository.MedicineRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,7 +17,6 @@ import java.util.Optional;
 public class ReturnService {
 
     private final ReturnRepository returnRepository;
-    private final SaleRepository saleRepository;
     private final MedicineRepository medicineRepository;
 
     public List<Return> getAllReturns() {

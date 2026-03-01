@@ -48,8 +48,12 @@ public class CustomerController {
     
     @GetMapping("/delete/{id}")
     public String deleteCustomer(@PathVariable Long id, RedirectAttributes redirectAttributes) {
-        customerService.deleteCustomer(id);
-        redirectAttributes.addFlashAttribute("success", "Customer deleted successfully!");
+        try {
+            customerService.deleteCustomer(id);
+            redirectAttributes.addFlashAttribute("success", "Customer deleted successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Cannot delete customer: it may be linked to sales records.");
+        }
         return "redirect:/customers";
     }
 }

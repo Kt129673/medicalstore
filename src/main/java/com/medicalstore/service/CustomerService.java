@@ -41,11 +41,14 @@ public class CustomerService {
         Optional<Customer> customer = customerRepository.findById(id);
         if (customer.isPresent()) {
             Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
-            if (tenantId != null && !tenantId.equals(customer.get().getBranch().getId())) {
+            if (tenantId != null && customer.get().getBranch() != null 
+                && !tenantId.equals(customer.get().getBranch().getId())) {
                 return Optional.empty(); // Not authorized
             }
             Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
-            if (ownerId != null && !ownerId.equals(customer.get().getBranch().getOwner().getId())) {
+            if (ownerId != null && customer.get().getBranch() != null 
+                && customer.get().getBranch().getOwner() != null
+                && !ownerId.equals(customer.get().getBranch().getOwner().getId())) {
                 return Optional.empty(); // Not authorized
             }
         }

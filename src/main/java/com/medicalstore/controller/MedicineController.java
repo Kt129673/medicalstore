@@ -92,8 +92,12 @@ public class MedicineController {
 
     @GetMapping("/delete/{id}")
     public String deleteMedicine(@PathVariable Long id, RedirectAttributes ra) {
-        medicineService.deleteMedicine(id);
-        ra.addFlashAttribute("success", "Medicine deleted successfully!");
+        try {
+            medicineService.deleteMedicine(id);
+            ra.addFlashAttribute("success", "Medicine deleted successfully!");
+        } catch (Exception e) {
+            ra.addFlashAttribute("error", "Cannot delete medicine: it may be linked to sales or purchases.");
+        }
         return "redirect:/medicines";
     }
 

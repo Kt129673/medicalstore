@@ -44,11 +44,14 @@ public class PurchaseService {
         Optional<PurchaseOrder> order = purchaseOrderRepository.findById(id);
         if (order.isPresent()) {
             Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
-            if (tenantId != null && !tenantId.equals(order.get().getBranch().getId())) {
+            if (tenantId != null && order.get().getBranch() != null 
+                && !tenantId.equals(order.get().getBranch().getId())) {
                 return Optional.empty(); // Not authorized
             }
             Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
-            if (ownerId != null && !ownerId.equals(order.get().getBranch().getOwner().getId())) {
+            if (ownerId != null && order.get().getBranch() != null 
+                && order.get().getBranch().getOwner() != null
+                && !ownerId.equals(order.get().getBranch().getOwner().getId())) {
                 return Optional.empty(); // Not authorized
             }
         }

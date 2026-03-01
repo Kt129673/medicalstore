@@ -14,7 +14,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -131,8 +130,12 @@ public class PurchaseController {
 
     @GetMapping("/delete/{id}")
     public String deleteOrder(@PathVariable Long id, RedirectAttributes ra) {
-        purchaseService.deleteOrder(id);
-        ra.addFlashAttribute("success", "Purchase order deleted.");
+        try {
+            purchaseService.deleteOrder(id);
+            ra.addFlashAttribute("success", "Purchase order deleted.");
+        } catch (Exception e) {
+            ra.addFlashAttribute("error", "Cannot delete purchase order: " + e.getMessage());
+        }
         return "redirect:/purchases";
     }
 

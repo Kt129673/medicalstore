@@ -1,7 +1,6 @@
 package com.medicalstore.controller;
 
 import com.medicalstore.service.AnalyticsService;
-import com.medicalstore.service.PdfService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,11 +18,9 @@ import java.util.Map;
 public class AnalyticsController {
 
     private final AnalyticsService analyticsService;
-    private final PdfService pdfService;
 
-    public AnalyticsController(AnalyticsService analyticsService, PdfService pdfService) {
+    public AnalyticsController(AnalyticsService analyticsService) {
         this.analyticsService = analyticsService;
-        this.pdfService = pdfService;
     }
 
     @GetMapping

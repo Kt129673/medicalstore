@@ -48,8 +48,12 @@ public class SupplierController {
     
     @GetMapping("/delete/{id}")
     public String deleteSupplier(@PathVariable Long id, RedirectAttributes redirectAttributes) {
-        supplierService.deleteSupplier(id);
-        redirectAttributes.addFlashAttribute("success", "Supplier deleted successfully!");
+        try {
+            supplierService.deleteSupplier(id);
+            redirectAttributes.addFlashAttribute("success", "Supplier deleted successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Cannot delete supplier: it may be linked to purchase records.");
+        }
         return "redirect:/suppliers";
     }
 }
