@@ -27,8 +27,8 @@
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             background-color: var(--surface);
             margin: 0;
-            height: 100vh;
-            overflow: hidden;
+            min-height: 100vh;
+            overflow-x: hidden;
         }
 
         a:focus-visible,
@@ -550,7 +550,7 @@
 
         /* ── Responsive ───────────────────────────────────── */
         @media (max-width: 991px) {
-            body { overflow: auto; height: auto; }
+            body { overflow-y: auto; }
             .right-panel {
                 min-height: 100vh;
                 overflow-y: auto;
@@ -585,6 +585,48 @@
                 transition-duration: 0.01ms !important;
             }
         }
+
+        /* ── Bootstrap critical fallbacks (layout still works if CDN is unavailable) ── */
+        .container-fluid { width: 100%; padding-right: 0; padding-left: 0; margin-right: auto; margin-left: auto; }
+        .row           { display: flex !important; flex-wrap: wrap; }
+        .g-0 > *       { padding-right: 0; padding-left: 0; }
+        .col-12        { flex: 0 0 auto; width: 100%; }
+        .d-none        { display: none !important; }
+        .d-flex        { display: flex !important; }
+        .flex-column   { flex-direction: column !important; }
+        .align-items-center   { align-items: center !important; }
+        .justify-content-center  { justify-content: center !important; }
+        .justify-content-between { justify-content: space-between !important; }
+        .p-0  { padding: 0 !important; }
+        .mb-0 { margin-bottom: 0 !important; }
+        .mb-1 { margin-bottom: .25rem !important; }
+        .mb-3 { margin-bottom: 1rem !important; }
+        .mb-4 { margin-bottom: 1.5rem !important; }
+        .mt-1 { margin-top: .25rem !important; }
+        .ms-2 { margin-left: .5rem !important; }
+        .fw-bold    { font-weight: 700 !important; }
+        .fw-medium  { font-weight: 500 !important; }
+        .fw-semibold{ font-weight: 600 !important; }
+        .text-muted  { color: var(--text-muted) !important; }
+        .text-center { text-align: center !important; }
+        .position-relative { position: relative !important; }
+        .w-100 { width: 100% !important; }
+        @media (min-width: 992px) {
+            .d-none.d-lg-flex { display: flex !important; }
+            .col-lg-5 { flex: 0 0 auto; width: 41.66667%; }
+            .col-lg-7 { flex: 0 0 auto; width: 58.33333%; }
+        }
+        @media (min-width: 1200px) {
+            .col-xl-4 { flex: 0 0 auto; width: 33.33333%; }
+            .col-xl-8 { flex: 0 0 auto; width: 66.66667%; }
+        }
+        /* Bootstrap form-check fallback */
+        .form-check { display: flex; align-items: center; gap: .4rem; }
+        .form-check-input { width: 1em; height: 1em; cursor: pointer; }
+        /* Bootstrap alert fallback */
+        .alert { display: flex; border-radius: 14px; padding: 13px 16px; margin-bottom: 20px; }
+        .alert-danger  { background: #fef2f2; color: #991b1b; border-left: 4px solid #ef4444; }
+        .alert-success { background: #ecfdf5; color: #065f46; border-left: 4px solid #10b981; }
     </style>
 </head>
 
