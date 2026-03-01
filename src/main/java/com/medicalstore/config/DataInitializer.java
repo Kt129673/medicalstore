@@ -5,6 +5,7 @@ import com.medicalstore.model.Customer;
 import com.medicalstore.model.Medicine;
 import com.medicalstore.model.Sale;
 import com.medicalstore.model.Supplier;
+import com.medicalstore.model.SubscriptionPlan;
 import com.medicalstore.model.User;
 import com.medicalstore.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
@@ -40,6 +42,7 @@ public class DataInitializer implements CommandLineRunner {
     private final SaleRepository saleRepository;
     private final CustomerRepository customerRepository;
     private final SupplierRepository supplierRepository;
+    private final SubscriptionPlanRepository subscriptionPlanRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Override
@@ -84,6 +87,19 @@ public class DataInitializer implements CommandLineRunner {
             log.info("Default owner created: default_owner / Owner@123");
         } else {
             defaultOwner = userRepository.findByUsername("default_owner").orElseThrow();
+        }
+
+        // 2b. Auto-provision FREE subscription for default_owner if missing
+        if (subscriptionPlanRepository.findByOwnerId(defaultOwner.getId()).isEmpty()) {
+            SubscriptionPlan plan = new SubscriptionPlan();
+            plan.setOwner(defaultOwner);
+            plan.setPlanType("FREE");
+            plan.setExpiryDate(LocalDate.now().plusYears(10));
+            plan.setMaxUsers(50);
+            plan.setMaxBranches(10);
+            plan.setActive(true);
+            subscriptionPlanRepository.save(plan);
+            log.info("FREE subscription plan created for default_owner");
         }
 
         // 3. Ensure Default Branch

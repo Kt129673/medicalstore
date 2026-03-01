@@ -5,6 +5,7 @@ import com.medicalstore.model.User;
 import com.medicalstore.repository.UserRepository;
 import com.medicalstore.service.BranchService;
 import com.medicalstore.service.CustomerService;
+import com.medicalstore.service.DashboardService;
 import com.medicalstore.service.MedicineService;
 import com.medicalstore.service.SaleService;
 import com.medicalstore.util.SecurityUtils;
@@ -16,10 +17,14 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.LinkedHashMap;
 
 /**
- * Owner panel — view all owned branches, combined stats,
+ * Owner panel â€” view all owned branches, combined stats,
  * and manage shopkeepers for their branches.
  * Access restricted to ROLE_OWNER only (via SecurityConfig).
  */
@@ -36,27 +41,34 @@ public class OwnerController {
         private final UserRepository userRepository;
         private final SecurityUtils securityUtils;
         private final PasswordEncoder passwordEncoder;
+        private final DashboardService dashboardService;
 
-        // ─── Owner Dashboard ───────────────────────────────────────────────────
+        // â”€â”€â”€ Owner Dashboard â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         @GetMapping
         public String dashboard(Model model) {
                 Long ownerId = securityUtils.getCurrentUserId();
+                List<Branch> branches = branchService.getBranchesByOwner(ownerId);
+
+                // Use DashboardService for fully aggregated, properly scoped KPIs
+                Map<String, Object> kpis = dashboardService.buildOwnerDashboard(ownerId);
 
                 model.addAttribute("title", "Owner Dashboard");
                 model.addAttribute("page", "owner");
-                model.addAttribute("branches", branchService.getBranchesByOwner(ownerId));
+                model.addAttribute("branches", branches);
 
-                // Aggregated stats across all owner's branches
-                model.addAttribute("totalMedicines", medicineService.countAllMedicines());
-                model.addAttribute("totalCustomers", customerService.countAllCustomers());
-                model.addAttribute("todaySales", saleService.getTodaySales());
-                model.addAttribute("lowStock", medicineService.countLowStockMedicines(10));
-                model.addAttribute("recentSales", saleService.getRecentSales());
+                // Populate all KPI attributes from dashboard service
+                kpis.forEach(model::addAttribute);
+
+                // Alias for template backward-compat
+                model.addAttribute("lowStock", kpis.get("lowStockCount"));
+                model.addAttribute("branchCount", branches.size());
+                model.addAttribute("shopkeeperCount",
+                        userRepository.countByRole("SHOPKEEPER"));
 
                 return "owner/dashboard";
         }
 
-        // ─── Branch Details ────────────────────────────────────────────────────
+        // â”€â”€â”€ Branch Details â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         @GetMapping("/branches/{id}")
         public String branchDetail(@PathVariable Long id, Model model) {
                 Long ownerId = securityUtils.getCurrentUserId();
@@ -64,40 +76,83 @@ public class OwnerController {
                                 .filter(b -> b.getOwner().getId().equals(ownerId))
                                 .orElseThrow(() -> new RuntimeException("Branch not found or access denied"));
 
-                // Temporarily override Tenant Context for this request to scope data to the
-                // specific branch
-                com.medicalstore.config.TenantContext.setTenantId(id);
-                com.medicalstore.config.TenantContext.clearOwner();
+                // Build branch-scoped KPI data
+                Map<String, Object> kpis = dashboardService.buildBranchDashboard(id);
 
-                model.addAttribute("title", branch.getName() + " Detail");
+                model.addAttribute("title", branch.getName() + " â€” Detail");
                 model.addAttribute("page", "owner");
                 model.addAttribute("branch", branch);
-                model.addAttribute("medicines", medicineService.getAllMedicines());
-                model.addAttribute("recentSales", saleService.getRecentSales());
-                model.addAttribute("shopkeepers", userRepository.findAll().stream()
-                                .filter(u -> u.getRoles().contains("SHOPKEEPER")
-                                                && u.getBranch() != null
-                                                && u.getBranch().getId().equals(id))
-                                .toList());
+                model.addAttribute("shopkeepers", userRepository.findShopkeepersByBranchId(id));
 
-                // Restore context state is handled by the TenantFilter `finally` block
+                // Medicines and recent sales from KPI data
+                model.addAttribute("medicines", medicineService.getMedicinesByBranch(id));
+
+                // Provide all KPI attributes for the template
+                kpis.forEach(model::addAttribute);
+                model.addAttribute("lowStock", kpis.get("lowStockCount"));
+
                 return "owner/branch-detail";
         }
 
-        // ─── Shopkeeper Management ─────────────────────────────────────────────
+        // â”€â”€â”€ Branch Comparison â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        @GetMapping("/compare")
+        public String compareBranches(Model model) {
+                Long ownerId = securityUtils.getCurrentUserId();
+                List<Branch> branches = branchService.getBranchesByOwner(ownerId);
+
+                // Build per-branch KPI summary for comparison table
+                List<Map<String, Object>> branchStats = new ArrayList<>();
+                for (Branch b : branches) {
+                        Map<String, Object> stats = new LinkedHashMap<>();
+                        Map<String, Object> kpis = dashboardService.buildBranchDashboard(b.getId());
+                        stats.put("branch", b);
+                        stats.put("todaySales", kpis.getOrDefault("todaySales", 0.0));
+                        stats.put("monthlyRevenue", kpis.getOrDefault("monthlyRevenue", 0.0));
+                        stats.put("totalMedicines", kpis.getOrDefault("totalMedicines", 0L));
+                        stats.put("totalCustomers", kpis.getOrDefault("totalCustomers", 0L));
+                        stats.put("lowStockCount", kpis.getOrDefault("lowStockCount", 0L));
+                        stats.put("expiringIn30", kpis.getOrDefault("expiringIn30", 0L));
+                        branchStats.add(stats);
+                }
+
+                // Build flat arrays for Chart.js
+                List<String> branchLabels    = new ArrayList<>();
+                List<Double> todaySalesData  = new ArrayList<>();
+                List<Double> monthlyData     = new ArrayList<>();
+                List<Long>   medicinesData   = new ArrayList<>();
+                List<Long>   lowStockData    = new ArrayList<>();
+                List<Long>   totalMedicinesData = new ArrayList<>();
+                for (Map<String, Object> s : branchStats) {
+                        Branch b = (Branch) s.get("branch");
+                        branchLabels.add(b.getName());
+                        todaySalesData.add(((Number) s.get("todaySales")).doubleValue());
+                        monthlyData.add(((Number) s.get("monthlyRevenue")).doubleValue());
+                        medicinesData.add(((Number) s.get("totalMedicines")).longValue());
+                        lowStockData.add(((Number) s.get("lowStockCount")).longValue());
+                        totalMedicinesData.add(((Number) s.get("totalMedicines")).longValue());
+                }
+
+                model.addAttribute("title", "Branch Comparison");
+                model.addAttribute("page", "owner");
+                model.addAttribute("branches", branches);
+                model.addAttribute("branchStats", branchStats);
+                model.addAttribute("branchLabels", branchLabels);
+                model.addAttribute("todaySalesData", todaySalesData);
+                model.addAttribute("monthlyData", monthlyData);
+                model.addAttribute("medicinesData", medicinesData);
+                model.addAttribute("lowStockData", lowStockData);
+                model.addAttribute("totalMedicinesData", totalMedicinesData);
+                return "owner/compare";
+        }
+
+        // â”€â”€â”€ Shopkeeper Management â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         @GetMapping("/shopkeepers")
         public String listShopkeepers(Model model) {
                 Long ownerId = securityUtils.getCurrentUserId();
-                var myBranchIds = branchService.getBranchesByOwner(ownerId)
-                                .stream().map(Branch::getId).toList();
 
                 model.addAttribute("title", "My Shopkeepers");
                 model.addAttribute("page", "owner");
-                model.addAttribute("shopkeepers", userRepository.findAll().stream()
-                                .filter(u -> u.getRoles().contains("SHOPKEEPER")
-                                                && u.getBranch() != null
-                                                && myBranchIds.contains(u.getBranch().getId()))
-                                .toList());
+                model.addAttribute("shopkeepers", userRepository.findShopkeepersByOwnerId(ownerId));
                 model.addAttribute("branches", branchService.getBranchesByOwner(ownerId));
                 return "owner/shopkeepers";
         }
@@ -144,16 +199,16 @@ public class OwnerController {
                 return "redirect:/owner/shopkeepers";
         }
 
-    @PostMapping("/shopkeepers/toggle/{id}")
-    public String toggleShopkeeper(@PathVariable Long id, RedirectAttributes ra) {
+        @PostMapping("/shopkeepers/toggle/{id}")
+        public String toggleShopkeeper(@PathVariable Long id, RedirectAttributes ra) {
                 Long ownerId = securityUtils.getCurrentUserId();
                 var myBranchIds = branchService.getBranchesByOwner(ownerId)
                                 .stream().map(Branch::getId).collect(java.util.stream.Collectors.toSet());
 
                 userRepository.findById(id).ifPresentOrElse(u -> {
                         if (!u.getRoles().contains("SHOPKEEPER")
-                                || u.getBranch() == null
-                                || !myBranchIds.contains(u.getBranch().getId())) {
+                                        || u.getBranch() == null
+                                        || !myBranchIds.contains(u.getBranch().getId())) {
                                 ra.addFlashAttribute("error", "Access denied: shopkeeper not in your branches.");
                                 return;
                         }

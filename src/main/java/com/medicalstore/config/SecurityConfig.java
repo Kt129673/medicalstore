@@ -73,8 +73,13 @@ public class SecurityConfig {
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/login?logout=true")
                         .invalidateHttpSession(true)
-                        .deleteCookies("JSESSIONID")
+                        .deleteCookies("JSESSIONID", "remember-me")
                         .permitAll())
+                .rememberMe(rm -> rm
+                        .key("medicalStoreRememberMeKey2024")
+                        .tokenValiditySeconds(60 * 60 * 24 * 7)  // 7 days
+                        .userDetailsService(userDetailsService)
+                        .rememberMeParameter("remember-me"))
                 .exceptionHandling(ex -> ex
                         .accessDeniedHandler(accessDeniedHandler()))
                 .sessionManagement(session -> session

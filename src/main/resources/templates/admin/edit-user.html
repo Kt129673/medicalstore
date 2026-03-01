@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+    th:replace="~{layout :: layout(title='Edit User', page='admin', content=~{::main}, pageIcon='bi bi-person-gear')}">
+<main>
+    <div class="container-fluid py-4" style="max-width:650px">
+        <div class="d-flex align-items-center gap-3 mb-4">
+            <a href="/admin/users" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-arrow-left me-1"></i>Back
+            </a>
+            <div>
+                <h2 class="fw-bold mb-0"><i class="bi bi-person-gear text-primary me-2"></i>Edit User</h2>
+                <p class="text-muted mb-0" th:text="${editUser.username}"></p>
+            </div>
+        </div>
+
+        <!-- Flash Messages -->
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle me-2"></i><span th:text="${success}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle me-2"></i><span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- Edit User Form -->
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-white border-0 py-3">
+                <h5 class="fw-bold mb-0"><i class="bi bi-pencil me-2 text-primary"></i>User Details</h5>
+            </div>
+            <div class="card-body">
+                <form th:action="@{/admin/users/edit/{id}(id=${editUser.id})}" method="post">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Username</label>
+                        <input type="text" class="form-control bg-light" th:value="${editUser.username}" readonly>
+                        <div class="form-text">Username cannot be changed.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Full Name <span class="text-danger">*</span></label>
+                        <input type="text" name="fullName" class="form-control" th:value="${editUser.fullName}" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Email</label>
+                        <input type="email" name="email" class="form-control" th:value="${editUser.email}">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Role</label>
+                        <input type="text" class="form-control bg-light"
+                            th:value="${editUser.roles != null and !editUser.roles.isEmpty() ? editUser.roles.iterator().next() : ''}" readonly>
+                        <div class="form-text">Role cannot be changed here. Delete and recreate to change roles.</div>
+                    </div>
+
+                    <!-- Branch selector for SHOPKEEPER only -->
+                    <div class="mb-3" th:if="${editUser.roles != null and editUser.roles.contains('SHOPKEEPER')}">
+                        <label class="form-label fw-semibold">Assigned Branch</label>
+                        <select name="branchId" class="form-select">
+                            <option value="">— No Branch —</option>
+                            <option th:each="b : ${branches}"
+                                    th:value="${b.id}"
+                                    th:text="${b.name + ' (' + b.owner.fullName + ')'}"
+                                    th:selected="${editUser.branch != null and editUser.branch.id == b.id}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-6">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" name="enabled" id="enabledCheck"
+                                    th:checked="${editUser.enabled}">
+                                <label class="form-check-label fw-semibold" for="enabledCheck">Account Enabled</label>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" name="accountNonLocked" id="lockedCheck"
+                                    th:checked="${editUser.accountNonLocked}">
+                                <label class="form-check-label fw-semibold" for="lockedCheck">Account Unlocked</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg me-1"></i>Save Changes
+                        </button>
+                        <a href="/admin/users" class="btn btn-outline-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Reset Password -->
+        <div class="card border-0 shadow-sm border-danger" style="border-left:4px solid #dc3545!important">
+            <div class="card-header bg-white border-0 py-3">
+                <h5 class="fw-bold mb-0 text-danger"><i class="bi bi-key me-2"></i>Reset Password</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted small">This will immediately overwrite the user's current password.</p>
+                <form th:action="@{/admin/users/reset-password/{id}(id=${editUser.id})}" method="post">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                    <div class="input-group">
+                        <input type="text" name="newPassword" class="form-control"
+                            placeholder="New password (min 6 characters)" minlength="6" required>
+                        <button type="submit" class="btn btn-danger">
+                            <i class="bi bi-key me-1"></i>Reset
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+</html>

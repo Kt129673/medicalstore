@@ -5,6 +5,7 @@ import com.medicalstore.model.Branch;
 import com.medicalstore.model.User;
 import com.medicalstore.repository.UserRepository;
 import com.medicalstore.service.BranchService;
+import com.medicalstore.service.DashboardService;
 import com.medicalstore.service.SubscriptionService;
 import com.medicalstore.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
@@ -39,17 +40,64 @@ public class AdminController {
     private final SecurityUtils securityUtils;
     private final PasswordEncoder passwordEncoder;
     private final SubscriptionService subscriptionService;
+    private final DashboardService dashboardService;
 
     // ─── Admin Dashboard ───────────────────────────────────────────────────
     @GetMapping
     public String dashboard(Model model) {
+        List<User> owners = userRepository.findByRole("OWNER");
+        List<Branch> branches = branchService.getAllBranches();
+
+        // Platform KPIs from DashboardService (global, unscoped)
+        Map<String, Object> kpis = dashboardService.buildAdminDashboard();
+
+        // Subscription summary
+        long activeSubscriptions = owners.stream()
+                .filter(o -> subscriptionService.isSubscriptionActive(o.getId()))
+                .count();
+        long expiredSubscriptions = owners.size() - activeSubscriptions;
+
+        // Plan type breakdown
+        long freePlans = owners.stream()
+                .flatMap(o -> subscriptionService.getPlanForOwner(o.getId()).stream())
+                .filter(p -> "FREE".equals(p.getPlanType()))
+                .count();
+        long proPlans = owners.stream()
+                .flatMap(o -> subscriptionService.getPlanForOwner(o.getId()).stream())
+                .filter(p -> "PRO".equals(p.getPlanType()))
+                .count();
+        long enterprisePlans = owners.stream()
+                .flatMap(o -> subscriptionService.getPlanForOwner(o.getId()).stream())
+                .filter(p -> "ENTERPRISE".equals(p.getPlanType()))
+                .count();
+
         model.addAttribute("title", "Admin Panel");
         model.addAttribute("page", "admin");
+
+        // User counts by role
         model.addAttribute("totalUsers", userRepository.count());
-        model.addAttribute("totalBranches", branchService.getAllBranches().size());
-        model.addAttribute("owners", userRepository.findAll().stream()
-                .filter(u -> u.getRoles().contains("OWNER")).toList());
-        model.addAttribute("branches", branchService.getAllBranches());
+        model.addAttribute("totalOwners", owners.size());
+        model.addAttribute("totalShopkeepers", userRepository.countByRole("SHOPKEEPER"));
+        model.addAttribute("totalAdmins", userRepository.countByRole("ADMIN"));
+
+        // Branch stats
+        model.addAttribute("totalBranches", branches.size());
+        model.addAttribute("activeBranches", branches.stream().filter(Branch::getIsActive).count());
+
+        // Subscription stats
+        model.addAttribute("activeSubscriptions", activeSubscriptions);
+        model.addAttribute("expiredSubscriptions", expiredSubscriptions);
+        model.addAttribute("freePlans", freePlans);
+        model.addAttribute("proPlans", proPlans);
+        model.addAttribute("enterprisePlans", enterprisePlans);
+
+        // Revenue KPIs from platform-wide dashboard
+        model.addAttribute("todaySales", kpis.getOrDefault("todaySales", 0.0));
+        model.addAttribute("monthlyRevenue", kpis.getOrDefault("monthlyRevenue", 0.0));
+        model.addAttribute("todayTransactions", kpis.getOrDefault("todayTransactions", 0L));
+
+        model.addAttribute("owners", owners);
+        model.addAttribute("branches", branches);
         return "admin/index";
     }
 
@@ -68,8 +116,63 @@ public class AdminController {
         model.addAttribute("title", "Create User");
         model.addAttribute("page", "admin");
         model.addAttribute("branches", branchService.getAllBranches());
+        model.addAttribute("owners", userRepository.findByRole("OWNER"));
         model.addAttribute("newUser", new User());
         return "admin/create-user";
+    }
+
+    @GetMapping("/users/edit/{id}")
+    public String showEditUserForm(@PathVariable Long id, Model model, RedirectAttributes ra) {
+        User user = userRepository.findById(id).orElse(null);
+        if (user == null) {
+            ra.addFlashAttribute("error", "User not found.");
+            return RoutePaths.redirectTo(RoutePaths.ADMIN_USERS);
+        }
+        model.addAttribute("title", "Edit User");
+        model.addAttribute("page", "admin");
+        model.addAttribute("editUser", user);
+        model.addAttribute("branches", branchService.getAllBranches());
+        return "admin/edit-user";
+    }
+
+    @PostMapping("/users/edit/{id}")
+    public String updateUser(
+            @PathVariable Long id,
+            @RequestParam String fullName,
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) Long branchId,
+            @RequestParam(defaultValue = "true") boolean enabled,
+            @RequestParam(defaultValue = "true") boolean accountNonLocked,
+            RedirectAttributes ra) {
+        userRepository.findById(id).ifPresent(user -> {
+            user.setFullName(fullName);
+            if (email != null && !email.isBlank()) user.setEmail(email);
+            user.setEnabled(enabled);
+            user.setAccountNonLocked(accountNonLocked);
+            if (branchId != null && user.getRoles().contains("SHOPKEEPER")) {
+                branchService.getBranchById(branchId).ifPresent(user::setBranch);
+            }
+            userRepository.save(user);
+        });
+        ra.addFlashAttribute("success", "User updated successfully.");
+        return RoutePaths.redirectTo(RoutePaths.ADMIN_USERS);
+    }
+
+    @PostMapping("/users/reset-password/{id}")
+    public String resetPassword(
+            @PathVariable Long id,
+            @RequestParam String newPassword,
+            RedirectAttributes ra) {
+        if (newPassword == null || newPassword.length() < 6) {
+            ra.addFlashAttribute("error", "Password must be at least 6 characters.");
+            return RoutePaths.redirectTo(RoutePaths.ADMIN_USERS);
+        }
+        userRepository.findById(id).ifPresent(user -> {
+            user.setPassword(passwordEncoder.encode(newPassword));
+            userRepository.save(user);
+        });
+        ra.addFlashAttribute("success", "Password reset successfully.");
+        return RoutePaths.redirectTo(RoutePaths.ADMIN_USERS);
     }
 
     @PostMapping("/users/create")
@@ -110,7 +213,19 @@ public class AdminController {
             branchService.getBranchById(branchId).ifPresent(user::setBranch);
         }
 
-        userRepository.save(user);
+        User saved = userRepository.save(user);
+
+        // Auto-provision FREE subscription plan for new OWNERs so they can log in
+        // without being immediately blocked by the SubscriptionInterceptor.
+        if ("OWNER".equals(role)) {
+            subscriptionService.createOrUpdatePlan(
+                    saved.getId(), "FREE",
+                    LocalDate.now().plusYears(1), // 1-year trial by default
+                    5,  // maxUsers
+                    3   // maxBranches
+            );
+        }
+
         ra.addFlashAttribute("success", "User '" + username + "' created with role " + role);
         return RoutePaths.redirectTo(RoutePaths.ADMIN_USERS);
     }
@@ -143,9 +258,45 @@ public class AdminController {
         model.addAttribute("title", "Manage Branches");
         model.addAttribute("page", "admin");
         model.addAttribute("branches", branchService.getAllBranches());
-        model.addAttribute("owners", userRepository.findAll().stream()
-                .filter(u -> u.getRoles().contains("OWNER")).toList());
+        model.addAttribute("owners", userRepository.findByRole("OWNER"));
         return "admin/branches";
+    }
+
+    @GetMapping("/branches/edit/{id}")
+    public String showEditBranchForm(@PathVariable Long id, Model model, RedirectAttributes ra) {
+        Branch branch = branchService.getBranchById(id).orElse(null);
+        if (branch == null) {
+            ra.addFlashAttribute("error", "Branch not found.");
+            return RoutePaths.redirectTo(RoutePaths.ADMIN_BRANCHES);
+        }
+        model.addAttribute("title", "Edit Branch");
+        model.addAttribute("page", "admin");
+        model.addAttribute("editBranch", branch);
+        model.addAttribute("owners", userRepository.findByRole("OWNER"));
+        return "admin/edit-branch";
+    }
+
+    @PostMapping("/branches/edit/{id}")
+    public String updateBranch(
+            @PathVariable Long id,
+            @RequestParam String name,
+            @RequestParam String address,
+            @RequestParam(required = false) String phone,
+            @RequestParam(required = false) String gstNumber,
+            @RequestParam(required = false) String licenceNumber,
+            @RequestParam Long ownerId,
+            RedirectAttributes ra) {
+        branchService.getBranchById(id).ifPresent(branch -> {
+            branch.setName(name);
+            branch.setAddress(address);
+            branch.setPhone(phone);
+            branch.setGstNumber(gstNumber);
+            branch.setLicenceNumber(licenceNumber);
+            userRepository.findById(ownerId).ifPresent(branch::setOwner);
+            branchService.saveBranch(branch);
+        });
+        ra.addFlashAttribute("success", "Branch updated successfully.");
+        return RoutePaths.redirectTo(RoutePaths.ADMIN_BRANCHES);
     }
 
     @PostMapping("/branches/create")

@@ -199,6 +199,11 @@ public class MedicineService {
         return medicineRepository.findByCategory(category);
     }
 
+    /** Explicitly fetch medicines for a specific branch (used by Owner branch detail). */
+    public List<Medicine> getMedicinesByBranch(Long branchId) {
+        return medicineRepository.findByBranchId(branchId);
+    }
+
     // ── Branch-scoped (Legacy - kept for explicit calls if needed) ─────────
 
     // ── Writes (all roles, branch set by controller) ─────────────────────────
