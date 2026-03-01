@@ -676,7 +676,7 @@
 
             <!-- Footer -->
             <div class="brand-footer position-relative" style="z-index:1;">
-                <p class="mb-0">&copy; <span th:text="${#temporals.year(#temporals.createNow())}">2026</span>
+                <p class="mb-0">&copy; <span id="footerYear">2026</span>
                     Medical Store Management System &bull; v1.0.0</p>
             </div>
         </div>
@@ -931,6 +931,10 @@
             loginForm.classList.remove('shake');
         }, { once: true });
     }
+
+    /* ── Footer year (replaces broken #temporals.year Thymeleaf call) ── */
+    const footerYear = document.getElementById('footerYear');
+    if (footerYear) { footerYear.textContent = new Date().getFullYear(); }
 })();
 </script>
 </body>
