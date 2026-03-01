@@ -35,10 +35,10 @@
 <!-- Fragment: Sensitive action confirmation with role-based messaging -->
 <div th:fragment="confirm-delete-dialog(itemId, itemName, message)">
     <script>
-        function confirmDelete_${itemId}() {
+        function confirmDelete(itemId, itemName, message) {
             Swal.fire({
-                title: 'Delete ' + '${itemName}',
-                text: '${message}',
+                title: 'Delete ' + itemName,
+                text: message,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#dc3545',
@@ -47,7 +47,7 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     // Submit the hidden form
-                    document.getElementById('deleteForm_${itemId}').submit();
+                    document.getElementById('deleteForm_' + itemId).submit();
                 }
             });
             return false;
@@ -96,7 +96,7 @@
           method="post"
           style="display:inline;">
         <button type="button"
-                th:onclick="'return confirmDelete_' + ${itemId} + '()';"
+                th:onclick="|return confirmDelete(${itemId}, 'Item', 'Are you sure you want to delete this item?');|"
                 class="btn btn-sm btn-outline-danger">
             <i class="bi bi-trash me-1"></i>Delete
         </button>
