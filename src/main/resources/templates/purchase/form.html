@@ -17,7 +17,7 @@
             </a>
         </div>
 
-        <form action="/purchases/save" method="post" id="poForm">
+        <form th:action="@{/purchases/save}" method="post" id="poForm">
             <input type="hidden" name="orderId" th:value="${order.id}">
 
             <!-- Order Details -->
@@ -127,7 +127,7 @@
 
             <!-- Actions -->
             <div class="d-flex gap-2 mb-4">
-                <button type="submit" class="btn btn-primary btn-lg">
+                <button type="submit" id="saveOrderBtn" class="btn btn-primary btn-lg">
                     <i class="bi bi-save"></i> Save Order
                 </button>
                 <a href="/purchases" class="btn btn-secondary btn-lg">
@@ -212,6 +212,13 @@
                 }
 
                 addBtn.addEventListener('click', addRow);
+
+                // Loading state on form submit
+                document.getElementById('poForm').addEventListener('submit', function () {
+                    const btn = document.getElementById('saveOrderBtn');
+                    btn.disabled = true;
+                    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Saving...';
+                });
 
                 // Bind existing rows (edit mode)
                 itemsBody.querySelectorAll('.item-row').forEach(tr => bindRow(tr));

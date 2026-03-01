@@ -59,7 +59,7 @@
                                     <tr>
                                         <th>Name</th>
                                         <th>Username</th>
-                                        <th>Branches</th>
+                                        <th>Role</th>
                                         <th>Status</th>
                                         <th>Action</th>
                                     </tr>
@@ -69,8 +69,8 @@
                                         <td th:text="${owner.fullName}"></td>
                                         <td><code th:text="${owner.username}"></code></td>
                                         <td>
-                                            <span class="badge bg-secondary"
-                                                th:text="${#lists.size(owner.roles)}">OWNER</span>
+                                            <span class="badge bg-primary"
+                                                th:text="${owner.roles != null and !owner.roles.isEmpty() ? owner.roles.iterator().next() : 'OWNER'}">OWNER</span>
                                         </td>
                                         <td>
                                             <span th:if="${owner.enabled}" class="badge bg-success">Active</span>

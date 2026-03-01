@@ -96,7 +96,7 @@
                                 <td>
                                     <div class="customer-info">
                                         <div class="customer-avatar"
-                                            th:text="${customer.name.substring(0,1).toUpperCase()}">C</div>
+                                            th:text="${!#strings.isEmpty(customer.name) ? customer.name.substring(0,1).toUpperCase() : '?'}">C</div>
                                         <div class="customer-details">
                                             <span class="customer-name" th:text="${customer.name}">Customer Name</span>
                                             <span class="customer-id" th:text="'ID: #' + ${customer.id}">ID: #1</span>

@@ -747,6 +747,16 @@
                                 const form = document.createElement('form');
                                 form.method = 'POST';
                                 form.action = '/medicines/bulk-delete';
+                                // Add CSRF token
+                                const csrfMeta = document.querySelector('meta[name="_csrf"]');
+                                const csrfHeaderMeta = document.querySelector('meta[name="_csrf_header"]');
+                                if (csrfMeta) {
+                                    const csrfInput = document.createElement('input');
+                                    csrfInput.type = 'hidden';
+                                    csrfInput.name = '_csrf';
+                                    csrfInput.value = csrfMeta.getAttribute('content');
+                                    form.appendChild(csrfInput);
+                                }
                                 ids.forEach(id => {
                                     const input = document.createElement('input');
                                     input.type = 'hidden';

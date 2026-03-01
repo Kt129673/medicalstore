@@ -128,8 +128,8 @@
                                         th:text="'₹' + ${#numbers.formatDecimal(sale.finalAmount != null ? sale.finalAmount : sale.totalAmount, 0, 2)}"></span>
                                 </td>
                                 <td class="d-none d-sm-table-cell">
-                                    <span th:class="'payment-badge payment-' + ${sale.paymentMethod.toLowerCase()}"
-                                        th:text="${sale.paymentMethod}">
+                                    <span th:class="'payment-badge payment-' + (${sale.paymentMethod != null ? sale.paymentMethod.toLowerCase() : 'unknown'})"
+                                        th:text="${sale.paymentMethod != null ? sale.paymentMethod : 'N/A'}">
                                     </span>
                                 </td>
                                 <td class="text-end">

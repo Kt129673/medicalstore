@@ -7,8 +7,9 @@
         <!-- Page Header -->
         <div class="page-header mb-4">
             <div>
-                <h2 th:text="${medicine.id != null ? 'Edit Medicine' : 'Add New Medicine'}">
-                    <i class="bi bi-capsule-pill text-primary"></i> Add Medicine
+                <h2>
+                    <i class="bi bi-capsule-pill text-primary"></i>
+                    <span th:text="${medicine.id != null ? 'Edit Medicine' : 'Add New Medicine'}">Add Medicine</span>
                 </h2>
                 <p class="text-muted mb-0">Enter medicine details including pricing, regulatory, and stock information
                 </p>
@@ -199,7 +200,7 @@
 
                     <!-- Action Buttons -->
                     <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary py-3 fw-bold shadow-sm">
+                        <button type="submit" id="saveMedicineBtn" class="btn btn-primary py-3 fw-bold shadow-sm">
                             <i class="bi bi-save me-1"></i> Save Medicine
                         </button>
                         <a href="/medicines" class="btn btn-light border py-2 text-muted fw-bold shadow-sm">
@@ -212,6 +213,12 @@
 
         <!-- Margin Calculator Script -->
         <script>
+            // Loading state on submit
+            document.querySelector('form[th\\:action]') && document.querySelector('form').addEventListener('submit', function () {
+                const btn = document.getElementById('saveMedicineBtn');
+                if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Saving...'; }
+            });
+
             (function () {
                 const pp = document.getElementById('purchasePrice');
                 const sp = document.getElementById('price');

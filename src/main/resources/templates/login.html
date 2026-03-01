@@ -387,7 +387,7 @@
                 </div>
 
                 <div class="brand-footer position-relative z-1">
-                    <p class="mb-0">&copy; 2025 Medical Store Management System &bull; v1.0.0</p>
+                    <p class="mb-0">&copy; <span th:text="${#temporals.year(#temporals.createNow())}">2026</span> Medical Store Management System &bull; v1.0.0</p>
                 </div>
             </div>
 
@@ -456,19 +456,7 @@
                             Sign In <i class="bi bi-arrow-right ms-2 mt-1"></i>
                         </button>
 
-                        <!-- Development Quick Login -->
-                        <div class="dev-quick-login">
-                            <p><i class="bi bi-tools text-primary me-1"></i> Development Quick Login</p>
-                            <div class="dev-quick-login-btns">
-                                <button type="button" class="btn-dev-role"
-                                    onclick="fillCredentials('admin', 'admin123')">
-                                    <i class="bi bi-shield-lock text-danger"></i> Admin
-                                </button>
-                                <button type="button" class="btn-dev-role" onclick="fillCredentials('user', 'user123')">
-                                    <i class="bi bi-person text-success"></i> User
-                                </button>
-                            </div>
-                        </div>
+
                     </form>
                 </div>
             </div>
@@ -476,12 +464,6 @@
     </div>
 
     <script>
-        // Auto-fill credentials for development
-        function fillCredentials(username, password) {
-            document.getElementById('username').value = username;
-            document.getElementById('password').value = password;
-        }
-
         // Add loading state to button on form submit
         document.getElementById('loginForm').addEventListener('submit', function () {
             const btn = document.getElementById('loginBtn');
