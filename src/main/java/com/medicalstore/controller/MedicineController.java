@@ -7,6 +7,7 @@ import com.medicalstore.service.MedicineService;
 import com.medicalstore.service.SupplierService;
 import com.medicalstore.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +16,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 @RequestMapping(RoutePaths.MEDICINES)
 @RequiredArgsConstructor
+@PreAuthorize("hasAnyRole('ADMIN', 'SHOPKEEPER')")
 public class MedicineController {
 
     private final MedicineService medicineService;
@@ -92,6 +94,7 @@ public class MedicineController {
     }
 
     @GetMapping("/delete/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public String deleteMedicine(@PathVariable Long id, RedirectAttributes ra) {
         try {
             medicineService.deleteMedicine(id);
@@ -103,6 +106,7 @@ public class MedicineController {
     }
 
     @PostMapping("/bulk-delete")
+    @PreAuthorize("hasRole('ADMIN')")
     public String bulkDeleteMedicines(@RequestParam("ids") java.util.List<Long> ids, RedirectAttributes ra) {
         int count = 0;
         if (ids != null && !ids.isEmpty()) {

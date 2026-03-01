@@ -4,6 +4,7 @@ import com.medicalstore.model.Return;
 import com.medicalstore.service.ReturnService;
 import com.medicalstore.service.SaleService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +13,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 @RequestMapping("/returns")
 @RequiredArgsConstructor
+@PreAuthorize("hasAnyRole('ADMIN', 'SHOPKEEPER')")
 public class ReturnController {
     
     private final ReturnService returnService;

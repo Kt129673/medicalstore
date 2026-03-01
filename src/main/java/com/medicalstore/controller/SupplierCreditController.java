@@ -6,6 +6,7 @@ import com.medicalstore.service.SupplierCreditService;
 import com.medicalstore.service.SupplierService;
 import com.medicalstore.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +15,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 @RequestMapping("/suppliers/credits")
 @RequiredArgsConstructor
+@PreAuthorize("hasAnyRole('ADMIN', 'SHOPKEEPER')")
 public class SupplierCreditController {
 
     private final SupplierCreditService creditService;

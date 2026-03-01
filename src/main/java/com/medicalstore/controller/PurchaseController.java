@@ -9,6 +9,7 @@ import com.medicalstore.service.PurchaseService;
 import com.medicalstore.service.SupplierService;
 import com.medicalstore.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +20,7 @@ import java.util.List;
 @Controller
 @RequestMapping("/purchases")
 @RequiredArgsConstructor
+@PreAuthorize("hasAnyRole('ADMIN', 'SHOPKEEPER')")
 public class PurchaseController {
 
     private final PurchaseService purchaseService;

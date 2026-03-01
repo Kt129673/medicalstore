@@ -9,6 +9,7 @@ import com.medicalstore.service.MedicineService;
 import com.medicalstore.service.SaleService;
 import com.medicalstore.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,6 +26,7 @@ import java.util.Set;
 @Controller
 @RequestMapping("/owner")
 @RequiredArgsConstructor
+@PreAuthorize("hasRole('OWNER')")
 public class OwnerController {
 
         private final BranchService branchService;

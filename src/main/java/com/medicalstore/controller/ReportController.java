@@ -6,6 +6,7 @@ import com.medicalstore.dto.MonthlyReportData;
 import com.medicalstore.service.ReportService;
 import com.medicalstore.service.SaleService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +19,7 @@ import java.util.Map;
 @Controller
 @RequestMapping("/reports")
 @RequiredArgsConstructor
+@PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'SHOPKEEPER')")
 public class ReportController {
 
     private final SaleService saleService;

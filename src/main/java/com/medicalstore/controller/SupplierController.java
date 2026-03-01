@@ -4,6 +4,7 @@ import com.medicalstore.config.RoutePaths;
 import com.medicalstore.model.Supplier;
 import com.medicalstore.service.SupplierService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +13,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 @RequestMapping(RoutePaths.SUPPLIERS)
 @RequiredArgsConstructor
+@PreAuthorize("hasAnyRole('ADMIN', 'SHOPKEEPER')")
 public class SupplierController {
     
     private final SupplierService supplierService;
@@ -48,6 +50,7 @@ public class SupplierController {
     }
     
     @GetMapping("/delete/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public String deleteSupplier(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
             supplierService.deleteSupplier(id);

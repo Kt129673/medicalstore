@@ -1,6 +1,7 @@
 package com.medicalstore.controller;
 
 import com.medicalstore.service.AnalyticsService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,6 +16,7 @@ import java.util.Map;
 
 @Controller
 @RequestMapping("/analytics")
+@PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'SHOPKEEPER')")
 public class AnalyticsController {
 
     private final AnalyticsService analyticsService;
