@@ -16,7 +16,7 @@
     /* ── Layout dimensions ── */
     --sidebar-width:            248px;
     --sidebar-collapsed-width:   68px;
-    --header-height:             62px;
+    --header-height:             70px;
 
     /* ── Neutral palette ── */
     --border-color:   #E2E8F0;
@@ -161,6 +161,18 @@
 }
 [data-theme="dark"] .table-striped > tbody > tr:nth-of-type(odd) > td {
     background: rgba(255,255,255,0.025);
+}
+
+/* Dark mode: page-header card picks up dark surface colours */
+[data-theme="dark"] .page-header {
+    background: var(--bg-primary);
+    border-color: var(--border-color);
+}
+
+/* Dark mode: table hover rows use token */
+[data-theme="dark"] .table-hover tbody tr:hover > td,
+[data-theme="dark"] .modern-table tbody tr:hover td {
+    background: var(--hover-bg);
 }
 
 /* Global Smooth Transitions */

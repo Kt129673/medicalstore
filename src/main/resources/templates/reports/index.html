@@ -8,100 +8,35 @@
 <body>
     <div id="content">
         <style>
-            .page-header {
-                background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-                color: white;
-                border-radius: 16px;
-                padding: 35px 30px;
-                margin-bottom: 30px;
-                box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.4);
-                position: relative;
-                overflow: hidden;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-            }
-
-            .page-header::after {
-                content: '';
-                position: absolute;
-                top: -50%;
-                left: -50%;
-                width: 200%;
-                height: 200%;
-                background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0) 60%);
-                transform: rotate(30deg);
-                pointer-events: none;
-            }
-
-            .page-header h2 {
-                margin: 0;
-                font-weight: 700;
-                color: white;
-            }
-
-            .page-header p {
-                margin: 4px 0 0;
-                opacity: 0.8;
-                color: rgba(255, 255, 255, 0.8) !important;
-            }
-
-            .card {
-                border: none;
-                border-radius: 16px;
-                background: rgba(255, 255, 255, 0.95);
-                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-                overflow: hidden;
-                position: relative;
-            }
-
-            .card:hover {
-                transform: translateY(-8px) scale(1.02);
-                box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-            }
-
-            .card::after {
-                content: '';
-                position: absolute;
-                top: 0;
-                right: 0;
-                bottom: 0;
-                left: 0;
-                background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 100%);
-                pointer-events: none;
-            }
-
-            .btn {
-                border-radius: 8px;
-                font-weight: 500;
-                letter-spacing: 0.5px;
-                transition: all 0.2s ease;
-            }
-
-            .btn:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            }
-
+            /* Report card icon box — flat, single colour accent */
             .icon-box {
-                width: 48px;
-                height: 48px;
+                width: 52px;
+                height: 52px;
                 border-radius: 12px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+                flex-shrink: 0;
             }
+            .icon-box i { font-size: 22px; }
+
+            /* Colour aliases kept to 3 intent-based tokens only */
+            .ib-primary  { background: #EFF6FF; color: #2563EB; }
+            .ib-success  { background: #ECFDF5; color: #16A34A; }
+            .ib-warning  { background: #FFFBEB; color: #D97706; }
+            .ib-danger   { background: #FEF2F2; color: #DC2626; }
+            .ib-slate    { background: #F1F5F9; color: #475569; }
         </style>
+
+        <!-- Page Header -->
         <div class="page-header mb-4">
             <div>
-                <h2><i class="bi bi-graph-up-arrow text-primary"></i> Reports & Analytics</h2>
-                <p class="text-muted mb-0">Comprehensive business intelligence and financial reports</p>
+                <h2><i class="bi bi-graph-up-arrow text-primary me-2"></i>Reports &amp; Analytics</h2>
+                <p class="mb-0">Comprehensive business intelligence and financial reports</p>
             </div>
         </div>
 
-        <!-- Sales Reports -->
+        <!-- ── Sales Reports ── -->
         <div class="mb-3">
             <div class="nav-section-label"
                 style="font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--text-secondary); padding:0 0 8px;">
@@ -109,26 +44,25 @@
             </div>
         </div>
         <div class="row g-3 mb-4">
+
+            <!-- Daily -->
             <div class="col-md-6 col-lg-3">
-                <div class="card h-100 p-2" style="border-left: 4px solid #3b82f6;">
+                <div class="card card-top-blue h-100 p-2">
                     <div class="card-body d-flex flex-column">
                         <div class="d-flex align-items-center gap-3 mb-4">
-                            <div class="icon-box"
-                                style="background:linear-gradient(135deg,#3b82f6,#60a5fa); width: 54px; height: 54px; border-radius: 14px;">
-                                <i class="bi bi-calendar-day text-white" style="font-size:24px;"></i>
+                            <div class="icon-box ib-primary">
+                                <i class="bi bi-calendar-day"></i>
                             </div>
                             <div>
-                                <h5 class="mb-1" style="font-size:16px;font-weight:700; color: #1e293b;">Daily Report
-                                </h5>
-                                <small class="text-muted" style="font-size: 13px;">Today's sales summary</small>
+                                <h5 class="mb-1" style="font-size:15px;font-weight:700;">Daily Report</h5>
+                                <small class="text-muted">Today's sales summary</small>
                             </div>
                         </div>
                         <div class="d-flex flex-column gap-2 mt-auto">
-                            <a href="/reports/daily-detailed" class="btn text-white py-2" style="background: #3b82f6;">
+                            <a href="/reports/daily-detailed" class="btn btn-primary py-2">
                                 <i class="bi bi-file-earmark-bar-graph me-1"></i> Detailed View
                             </a>
-                            <a href="/reports/daily" class="btn btn-light py-2"
-                                style="border: 1px solid #e2e8f0; color: #475569;">
+                            <a href="/reports/daily" class="btn btn-secondary py-2">
                                 <i class="bi bi-list-ul me-1"></i> Quick View
                             </a>
                         </div>
@@ -136,26 +70,24 @@
                 </div>
             </div>
 
+            <!-- Monthly -->
             <div class="col-md-6 col-lg-3">
-                <div class="card h-100 p-2" style="border-left: 4px solid #10b981;">
+                <div class="card card-top-green h-100 p-2">
                     <div class="card-body d-flex flex-column">
                         <div class="d-flex align-items-center gap-3 mb-4">
-                            <div class="icon-box"
-                                style="background:linear-gradient(135deg,#10b981,#34d399); width: 54px; height: 54px; border-radius: 14px;">
-                                <i class="bi bi-calendar-month text-white" style="font-size:24px;"></i>
+                            <div class="icon-box ib-success">
+                                <i class="bi bi-calendar-month"></i>
                             </div>
                             <div>
-                                <h5 class="mb-1" style="font-size:16px;font-weight:700; color: #1e293b;">Monthly Report
-                                </h5>
-                                <small class="text-muted" style="font-size: 13px;">Monthly performance</small>
+                                <h5 class="mb-1" style="font-size:15px;font-weight:700;">Monthly Report</h5>
+                                <small class="text-muted">Monthly performance</small>
                             </div>
                         </div>
                         <div class="d-flex flex-column gap-2 mt-auto">
-                            <a href="/reports/monthly-detailed" class="btn text-white py-2" style="background:#10b981;">
+                            <a href="/reports/monthly-detailed" class="btn btn-success py-2">
                                 <i class="bi bi-file-earmark-bar-graph me-1"></i> Detailed View
                             </a>
-                            <a href="/reports/monthly" class="btn btn-light py-2"
-                                style="border: 1px solid #e2e8f0; color: #475569;">
+                            <a href="/reports/monthly" class="btn btn-secondary py-2">
                                 <i class="bi bi-list-ul me-1"></i> Quick View
                             </a>
                         </div>
@@ -163,22 +95,21 @@
                 </div>
             </div>
 
+            <!-- Yearly -->
             <div class="col-md-6 col-lg-3">
-                <div class="card h-100 p-2" style="border-left: 4px solid #6366f1;">
+                <div class="card card-top-blue h-100 p-2">
                     <div class="card-body d-flex flex-column">
                         <div class="d-flex align-items-center gap-3 mb-4">
-                            <div class="icon-box"
-                                style="background:linear-gradient(135deg,#6366f1,#818cf8); width: 54px; height: 54px; border-radius: 14px;">
-                                <i class="bi bi-calendar-range text-white" style="font-size:24px;"></i>
+                            <div class="icon-box ib-primary">
+                                <i class="bi bi-calendar-range"></i>
                             </div>
                             <div>
-                                <h5 class="mb-1" style="font-size:16px;font-weight:700; color: #1e293b;">Yearly Report
-                                </h5>
-                                <small class="text-muted" style="font-size: 13px;">Annual overview</small>
+                                <h5 class="mb-1" style="font-size:15px;font-weight:700;">Yearly Report</h5>
+                                <small class="text-muted">Annual overview</small>
                             </div>
                         </div>
                         <div class="d-grid mt-auto">
-                            <a href="/reports/yearly" class="btn py-2 text-white" style="background:#6366f1;">
+                            <a href="/reports/yearly" class="btn btn-primary py-2">
                                 <i class="bi bi-arrow-right-circle me-1"></i> View Report
                             </a>
                         </div>
@@ -186,21 +117,21 @@
                 </div>
             </div>
 
+            <!-- GST / Tax -->
             <div class="col-md-6 col-lg-3">
-                <div class="card h-100 p-2" style="border-left: 4px solid #7c3aed;">
+                <div class="card card-top-slate h-100 p-2">
                     <div class="card-body d-flex flex-column">
                         <div class="d-flex align-items-center gap-3 mb-4">
-                            <div class="icon-box"
-                                style="background:linear-gradient(135deg,#7c3aed,#a78bfa); width: 54px; height: 54px; border-radius: 14px;">
-                                <i class="bi bi-file-earmark-ruled text-white" style="font-size:24px;"></i>
+                            <div class="icon-box ib-slate">
+                                <i class="bi bi-file-earmark-ruled"></i>
                             </div>
                             <div>
-                                <h5 class="mb-1" style="font-size:16px;font-weight:700; color: #1e293b;">GST / Tax</h5>
-                                <small class="text-muted" style="font-size: 13px;">Tax compliance</small>
+                                <h5 class="mb-1" style="font-size:15px;font-weight:700;">GST / Tax</h5>
+                                <small class="text-muted">Tax compliance</small>
                             </div>
                         </div>
                         <div class="d-grid mt-auto">
-                            <a href="/reports/gst" class="btn py-2 text-white" style="background:#7c3aed;">
+                            <a href="/reports/gst" class="btn btn-secondary py-2">
                                 <i class="bi bi-arrow-right-circle me-1"></i> View Report
                             </a>
                         </div>
@@ -209,80 +140,83 @@
             </div>
         </div>
 
-        <!-- Analytics & Financial -->
+        <!-- ── Analytics & Financial ── -->
         <div class="mb-3">
             <div class="nav-section-label"
                 style="font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--text-secondary); padding:0 0 8px;">
-                Analytics & Financial
+                Analytics &amp; Financial
             </div>
         </div>
         <div class="row g-3 mb-4">
+
+            <!-- Expiry Report -->
             <div class="col-md-6 col-lg-4">
-                <div class="card h-100 p-2" style="border-left: 4px solid #ef4444;">
+                <div class="card card-top-red h-100 p-2">
                     <div class="card-body d-flex flex-column">
                         <div class="d-flex align-items-center gap-3 mb-4">
-                            <div class="icon-box"
-                                style="background:linear-gradient(135deg,#ef4444,#f87171); width: 54px; height: 54px; border-radius: 14px;">
-                                <i class="bi bi-calendar-x text-white" style="font-size:24px;"></i>
+                            <div class="icon-box ib-danger">
+                                <i class="bi bi-calendar-x"></i>
                             </div>
                             <div>
-                                <h5 class="mb-1" style="font-size:16px;font-weight:700; color: #1e293b;">Expiry Report</h5>
-                                <small class="text-muted" style="font-size: 13px;">Medicines nearing expiry</small>
+                                <h5 class="mb-1" style="font-size:15px;font-weight:700;">Expiry Report</h5>
+                                <small class="text-muted">Medicines nearing expiry</small>
                             </div>
                         </div>
-                        <p class="text-muted mb-4" style="font-size:14px; line-height: 1.5;">List of medicines expiring
-                            soon to help reduce wastage and ensure compliance.</p>
+                        <p class="text-muted mb-4" style="font-size:13.5px; line-height:1.6;">
+                            Medicines expiring soon to help reduce wastage and ensure compliance.
+                        </p>
                         <div class="d-grid mt-auto">
-                            <a href="/reports/expiry" class="btn py-2 text-white" style="background:#ef4444;">
+                            <a href="/reports/expiry" class="btn btn-danger py-2">
                                 <i class="bi bi-arrow-right-circle me-1"></i> View Expiry Report
                             </a>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <!-- Profit & Loss -->
             <div class="col-md-6 col-lg-4">
-                <div class="card h-100 p-2" style="border-left: 4px solid #f59e0b;">
+                <div class="card card-top-green h-100 p-2">
                     <div class="card-body d-flex flex-column">
                         <div class="d-flex align-items-center gap-3 mb-4">
-                            <div class="icon-box"
-                                style="background:linear-gradient(135deg,#f59e0b,#fbbf24); width: 54px; height: 54px; border-radius: 14px;">
-                                <i class="bi bi-cash-stack text-white" style="font-size:24px;"></i>
+                            <div class="icon-box ib-success">
+                                <i class="bi bi-cash-stack"></i>
                             </div>
                             <div>
-                                <h5 class="mb-1" style="font-size:16px;font-weight:700; color: #1e293b;">Profit & Loss
-                                </h5>
-                                <small class="text-muted" style="font-size: 13px;">Revenue vs cost analysis</small>
+                                <h5 class="mb-1" style="font-size:15px;font-weight:700;">Profit &amp; Loss</h5>
+                                <small class="text-muted">Revenue vs cost analysis</small>
                             </div>
                         </div>
-                        <p class="text-muted mb-4" style="font-size:14px; line-height: 1.5;">Monthly P&L with trend
-                            chart comparing revenue, costs, and gross margin.</p>
+                        <p class="text-muted mb-4" style="font-size:13.5px; line-height:1.6;">
+                            Monthly P&amp;L with trend chart comparing revenue, costs, and gross margin.
+                        </p>
                         <div class="d-grid mt-auto">
-                            <a href="/reports/profit-loss" class="btn py-2 text-white" style="background:#f59e0b;">
-                                <i class="bi bi-graph-up me-1"></i> View P&L Report
+                            <a href="/reports/profit-loss" class="btn btn-success py-2">
+                                <i class="bi bi-graph-up me-1"></i> View P&amp;L Report
                             </a>
                         </div>
                     </div>
                 </div>
             </div>
 
+            <!-- Excel Export -->
             <div class="col-md-6 col-lg-4">
-                <div class="card h-100 p-2" style="border-left: 4px solid #0ea5e9;">
+                <div class="card card-top-blue h-100 p-2">
                     <div class="card-body d-flex flex-column">
                         <div class="d-flex align-items-center gap-3 mb-4">
-                            <div class="icon-box"
-                                style="background:linear-gradient(135deg,#0ea5e9,#38bdf8); width: 54px; height: 54px; border-radius: 14px;">
-                                <i class="bi bi-file-earmark-spreadsheet text-white" style="font-size:24px;"></i>
+                            <div class="icon-box ib-primary">
+                                <i class="bi bi-file-earmark-spreadsheet"></i>
                             </div>
                             <div>
-                                <h5 class="mb-1" style="font-size:16px;font-weight:700; color: #1e293b;">Excel Export
-                                </h5>
-                                <small class="text-muted" style="font-size: 13px;">Download data</small>
+                                <h5 class="mb-1" style="font-size:15px;font-weight:700;">Excel Export</h5>
+                                <small class="text-muted">Download data</small>
                             </div>
                         </div>
-                        <p class="text-muted mb-4" style="font-size:14px; line-height: 1.5;">Export sales data to Excel
-                            spreadsheet for external analysis and backup.</p>
+                        <p class="text-muted mb-4" style="font-size:13.5px; line-height:1.6;">
+                            Export sales data to Excel spreadsheet for external analysis and backup.
+                        </p>
                         <div class="d-grid mt-auto">
-                            <a href="/reports/export/excel" class="btn py-2 text-white" style="background:#0ea5e9;">
+                            <a href="/reports/export/excel" class="btn btn-primary py-2">
                                 <i class="bi bi-download me-1"></i> Download Excel Archive
                             </a>
                         </div>
@@ -290,6 +224,7 @@
                 </div>
             </div>
         </div>
+    </div>
 </body>
 
-</html>
+</html>
