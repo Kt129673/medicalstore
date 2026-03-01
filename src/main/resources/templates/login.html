@@ -153,14 +153,20 @@
         /* ── Right Panel ─────────────────────────────────── */
         .right-panel {
             background-color: #ffffff;
-            padding: 1.5rem 2rem;
+            padding: 2.5rem 2rem;
             overflow-y: auto;
+            /* Fix: override Bootstrap's align-items-center which clips overflowing
+               content in a scrollable flex container. flex-start lets the browser
+               expand the content height naturally so the full form is always visible. */
+            align-items: flex-start !important;
         }
 
         .login-container {
             max-width: 440px;
             width: 100%;
             margin: 0 auto;
+            padding-top: 0.5rem;
+            padding-bottom: 2rem;
             animation: slideIn 0.45s cubic-bezier(0.22, 1, 0.36, 1);
         }
 
