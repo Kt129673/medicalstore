@@ -478,10 +478,10 @@
 
             <!-- Table -->
             <div th:if="${medicinePage.isEmpty()}" class="inv-empty">
-                <i class="bi bi-inbox"></i>
-                <h5>No Medicines Found</h5>
-                <p>Start by adding your first medicine to the inventory</p>
-                <a href="/medicines/new" class="btn btn-primary mt-2">
+                <i class="bi bi-box-seam text-primary" style="opacity: 0.8;"></i>
+                <h5>No medicines?</h5>
+                <p>Click here to add your first medicine and kickstart your inventory</p>
+                <a href="/medicines/new" class="btn btn-primary mt-3 border-0 shadow-sm">
                     <i class="bi bi-plus-circle"></i> Add First Medicine
                 </a>
             </div>

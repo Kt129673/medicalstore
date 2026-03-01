@@ -14,7 +14,7 @@
             <div class="card-body">
                 <th:block th:if="${returns.isEmpty()}">
                     <div
-                        th:replace="~{fragments :: empty-state('bi bi-inbox', 'No Returns Yet', 'No returns processed yet', null, null)}">
+                        th:replace="~{fragments :: empty-state('bi bi-emoji-smile text-success opacity-75', 'Zero returns?', 'Your customers must be really happy!', null, null)}">
                     </div>
                 </th:block>
                 <div th:unless="${returns.isEmpty()}" class="table-responsive">

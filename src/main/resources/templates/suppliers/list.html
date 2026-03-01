@@ -52,7 +52,7 @@
             <div class="card-body">
                 <th:block th:if="${suppliers.isEmpty()}">
                     <div
-                        th:replace="~{fragments :: empty-state('bi bi-building', 'No Suppliers Yet', 'Add suppliers to manage your inventory sources', '/suppliers/new', 'Add First Supplier')}">
+                        th:replace="~{fragments :: empty-state('bi bi-building text-primary', 'No suppliers yet?', 'Connect with your first supplier to start stocking up!', '/suppliers/new', 'Add First Supplier')}">
                     </div>
                 </th:block>
 

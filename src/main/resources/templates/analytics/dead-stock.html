@@ -99,11 +99,11 @@
                                 </tr>
                                 <tr th:if="${#lists.isEmpty(data)}">
                                     <td colspan="7" class="text-center py-4">
-                                        <div class="empty-state">
-                                            <i class="bi bi-check-circle-fill text-success"
-                                                style="font-size: 3rem; opacity: 1;"></i>
-                                            <h5>Great news!</h5>
-                                            <p>No dead stock found for the selected period.</p>
+                                        <div class="empty-state py-4">
+                                            <i class="bi bi-shield-check text-success opacity-75"
+                                                style="font-size: 3.5rem;"></i>
+                                            <h5 class="mt-3">No dead stock - great job!</h5>
+                                            <p class="text-muted">Your inventory management is extremely efficient.</p>
                                         </div>
                                     </td>
                                 </tr>

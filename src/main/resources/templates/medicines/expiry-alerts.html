@@ -17,9 +17,10 @@
                 <h5 class="mb-0"><i class="bi bi-exclamation-octagon"></i> Expired Medicines (Remove Immediately)</h5>
             </div>
             <div class="card-body">
-                <div th:if="${expiredMedicines.isEmpty()}" class="text-center text-success py-3">
-                    <i class="bi bi-check-circle" style="font-size: 2rem;"></i>
-                    <p class="mt-2">No expired medicines found!</p>
+                <div th:if="${expiredMedicines.isEmpty()}" class="text-center text-success py-4">
+                    <i class="bi bi-shield-check opacity-75" style="font-size: 3.5rem;"></i>
+                    <h5 class="mt-3">No expired medicines - great job!</h5>
+                    <p class="text-muted">Your inventory is fresh, safe, and up-to-date.</p>
                 </div>
                 <div th:unless="${expiredMedicines.isEmpty()}" class="table-responsive">
                     <table class="table table-hover">
@@ -67,9 +68,10 @@
                 <h5 class="mb-0"><i class="bi bi-exclamation-triangle"></i> Expiring Within 30 Days</h5>
             </div>
             <div class="card-body">
-                <div th:if="${expiringSoonMedicines.isEmpty()}" class="text-center text-success py-3">
-                    <i class="bi bi-check-circle" style="font-size: 2rem;"></i>
-                    <p class="mt-2">No medicines expiring soon!</p>
+                <div th:if="${expiringSoonMedicines.isEmpty()}" class="text-center text-success py-4">
+                    <i class="bi bi-shield-check opacity-75" style="font-size: 3.5rem;"></i>
+                    <h5 class="mt-3">No expiring medicines this month - great job!</h5>
+                    <p class="text-muted">Your stock looks healthy and up-to-date.</p>
                 </div>
                 <div th:unless="${expiringSoonMedicines.isEmpty()}" class="table-responsive">
                     <table class="table table-hover">

@@ -74,7 +74,7 @@
             <div class="card-body">
                 <th:block th:if="${customers.isEmpty()}">
                     <div
-                        th:replace="~{fragments :: empty-state('bi bi-people', 'No Customers Yet', 'Start adding customers to build your database', '/customers/new', 'Add First Customer')}">
+                        th:replace="~{fragments :: empty-state('bi bi-people text-info opacity-75', 'No customers yet?', 'Add your first customer to start building relationships!', '/customers/new', 'Add First Customer')}">
                     </div>
                 </th:block>
 

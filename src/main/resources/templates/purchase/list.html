@@ -60,9 +60,9 @@
 
             <div th:if="${#lists.isEmpty(orders)}">
                 <div class="empty-state">
-                    <i class="bi bi-bag-x"></i>
-                    <h5>No Purchase Orders</h5>
-                    <p>Create your first purchase order to start tracking inventory purchases.</p>
+                    <i class="bi bi-bag-check text-primary opacity-75"></i>
+                    <h5>No purchases yet?</h5>
+                    <p>Stock up your inventory by creating your first purchase order today!</p>
                     <a href="/purchases/new" class="btn btn-primary mt-3">
                         <i class="bi bi-plus-lg"></i> Create Purchase Order
                     </a>

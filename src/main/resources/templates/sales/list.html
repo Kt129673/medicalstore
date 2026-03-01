@@ -71,7 +71,7 @@
             <div class="card-body">
                 <th:block th:if="${salePage.isEmpty()}">
                     <div
-                        th:replace="~{fragments :: empty-state('bi bi-cart-x', 'No Sales Yet', 'Start recording sales to track your business', '/sales/new', 'Make First Sale')}">
+                        th:replace="~{fragments :: empty-state('bi bi-cart-check text-success opacity-75', 'No sales yet?', 'Make your first sale and watch your business grow!', '/sales/new', 'Make First Sale')}">
                     </div>
                 </th:block>
 
