@@ -15,6 +15,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 @Configuration
@@ -53,10 +54,13 @@ public class SecurityConfig {
                         .requestMatchers("/owner/**").hasRole("OWNER")
                         // Analytics - strict access control
                         .requestMatchers("/analytics/**").hasAnyRole("ADMIN", "OWNER", "SHOPKEEPER")
-                        // Common endpoints
-                        .requestMatchers("/medicines/**", "/sales/**", "/customers/**", "/reports/**", "/returns/**",
-                                "/suppliers/**", "/purchases/**")
+                        // Reports — all authenticated roles can view
+                        .requestMatchers("/reports/**")
                         .hasAnyRole("ADMIN", "OWNER", "SHOPKEEPER")
+                        // Operational endpoints — ADMIN and SHOPKEEPER only (OWNER uses /owner portal)
+                        .requestMatchers("/medicines/**", "/sales/**", "/customers/**", "/returns/**",
+                                "/suppliers/**", "/purchases/**")
+                        .hasAnyRole("ADMIN", "SHOPKEEPER")
                         .anyRequest().authenticated())
                 .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**", "/sales/save"))
                 .formLogin(form -> form
@@ -71,6 +75,8 @@ public class SecurityConfig {
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")
                         .permitAll())
+                .exceptionHandling(ex -> ex
+                        .accessDeniedHandler(accessDeniedHandler()))
                 .sessionManagement(session -> session
                         .maximumSessions(-1)
                         .maxSessionsPreventsLogin(false))
@@ -79,6 +85,28 @@ public class SecurityConfig {
                         org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
+    }
+
+    @Bean
+    public AccessDeniedHandler accessDeniedHandler() {
+        return (request, response, accessDeniedException) -> {
+            var auth = org.springframework.security.core.context.SecurityContextHolder
+                    .getContext().getAuthentication();
+            if (auth != null) {
+                boolean isOwner = auth.getAuthorities().stream()
+                        .map(GrantedAuthority::getAuthority).anyMatch("ROLE_OWNER"::equals);
+                boolean isAdmin = auth.getAuthorities().stream()
+                        .map(GrantedAuthority::getAuthority).anyMatch("ROLE_ADMIN"::equals);
+                if (isAdmin) {
+                    response.sendRedirect(request.getContextPath() + RoutePaths.ADMIN + "?denied=true");
+                    return;
+                } else if (isOwner) {
+                    response.sendRedirect(request.getContextPath() + "/owner?denied=true");
+                    return;
+                }
+            }
+            response.sendRedirect(request.getContextPath() + "/?denied=true");
+        };
     }
 
     @Bean

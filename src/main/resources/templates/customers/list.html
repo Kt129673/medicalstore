@@ -139,7 +139,8 @@
                                         <a th:href="@{/customers/delete/{id}(id=${customer.id})}"
                                             class="btn btn-outline-danger"
                                             onclick="return confirmLink(event, this, 'Are you sure you want to delete this customer? This action cannot be undone.', 'Yes, Delete!', 'Delete Customer?')"
-                                            title="Delete">
+                                            title="Delete"
+                                            sec:authorize="hasRole('ADMIN')">
                                             <i class="bi bi-trash"></i>
                                         </a>
                                     </div>

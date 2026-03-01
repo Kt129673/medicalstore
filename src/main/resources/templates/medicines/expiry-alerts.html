@@ -51,7 +51,8 @@
                                 <td>
                                     <a th:href="@{/medicines/delete/{id}(id=${m.id})}"
                                         class="btn btn-outline-danger btn-sm"
-                                        onclick="return confirmLink(event, this, 'This expired medicine will be permanently deleted.')">
+                                        onclick="return confirmLink(event, this, 'This expired medicine will be permanently deleted.')"
+                                        sec:authorize="hasRole('ADMIN')">
                                         Remove
                                     </a>
                                 </td>
