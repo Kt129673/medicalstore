@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+    th:replace="~{layout :: layout(title='Subscription Status', page='owner', content=~{::main}, pageIcon='bi bi-credit-card-fill')}">
+<main>
+<div class="container-fluid py-4">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-0"><i class="bi bi-credit-card-fill text-primary me-2"></i>Subscription Status</h2>
+            <p class="text-muted mb-0">View your current plan details and limits</p>
+        </div>
+        <a href="/owner" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left me-1"></i>Back to Dashboard
+        </a>
+    </div>
+
+    <!-- Warning: expiring soon -->
+    <div th:if="${daysLeft != null and daysLeft <= 7}"
+         class="alert alert-warning d-flex align-items-center mb-4 rounded-3" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2 flex-shrink-0 fs-5"></i>
+        <span>
+            Your subscription expires in <strong th:text="${daysLeft}"></strong> day(s).
+            Contact your administrator to renew.
+        </span>
+    </div>
+
+    <!-- No plan -->
+    <div th:if="${plan == null}" class="alert alert-danger d-flex align-items-center mb-4 rounded-3" role="alert">
+        <i class="bi bi-x-circle-fill me-2 flex-shrink-0 fs-5"></i>
+        <span>No subscription plan is associated with your account. Please contact the platform administrator.</span>
+    </div>
+
+    <div th:if="${plan != null}" class="row g-4">
+
+        <!-- Plan Summary Card -->
+        <div class="col-md-5">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="fw-bold mb-3"><i class="bi bi-layers-fill text-primary me-2"></i>Plan Summary</h5>
+
+                    <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                        <span class="text-muted">Plan Type</span>
+                        <span>
+                            <span th:if="${plan.planType == 'FREE'}" class="badge bg-secondary fs-6 px-3">FREE</span>
+                            <span th:if="${plan.planType == 'PRO'}" class="badge bg-info text-dark fs-6 px-3">PRO</span>
+                            <span th:if="${plan.planType == 'ENTERPRISE'}" class="badge bg-warning text-dark fs-6 px-3">ENTERPRISE</span>
+                        </span>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                        <span class="text-muted">Status</span>
+                        <span th:if="${!plan.expired}" class="badge bg-success fs-6 px-3">
+                            <i class="bi bi-check-circle me-1"></i>Active
+                        </span>
+                        <span th:if="${plan.expired}" class="badge bg-danger fs-6 px-3">
+                            <i class="bi bi-x-circle me-1"></i>Expired
+                        </span>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                        <span class="text-muted">Expiry Date</span>
+                        <span class="fw-semibold" th:classappend="${plan.expired} ? 'text-danger' : 'text-success'">
+                            <i class="bi bi-calendar-event me-1"></i>
+                            <span th:text="${#temporals.format(plan.expiryDate, 'dd MMM yyyy')}"></span>
+                        </span>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center py-2 border-bottom" th:if="${daysLeft != null}">
+                        <span class="text-muted">Days Remaining</span>
+                        <span class="fw-semibold"
+                              th:classappend="${daysLeft <= 7} ? 'text-warning' : 'text-success'"
+                              th:text="${daysLeft + ' days'}"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                        <span class="text-muted">Max Users</span>
+                        <span class="fw-semibold" th:text="${plan.maxUsers}"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center py-2">
+                        <span class="text-muted">Max Branches</span>
+                        <span class="fw-semibold" th:text="${plan.maxBranches}"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Plan Tiers Comparison -->
+        <div class="col-md-7">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="fw-bold mb-3"><i class="bi bi-bar-chart-steps text-primary me-2"></i>Plan Comparison</h5>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Feature</th>
+                                    <th class="text-center"><span class="badge bg-secondary">FREE</span></th>
+                                    <th class="text-center"><span class="badge bg-info text-dark">PRO</span></th>
+                                    <th class="text-center"><span class="badge bg-warning text-dark">ENTERPRISE</span></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="text-muted">Max Branches</td>
+                                    <td class="text-center fw-semibold">1</td>
+                                    <td class="text-center fw-semibold">5</td>
+                                    <td class="text-center fw-semibold">Unlimited</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-muted">Max Users</td>
+                                    <td class="text-center fw-semibold">5</td>
+                                    <td class="text-center fw-semibold">10</td>
+                                    <td class="text-center fw-semibold">Unlimited</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-muted">Sales &amp; POS</td>
+                                    <td class="text-center"><i class="bi bi-check-circle-fill text-success"></i></td>
+                                    <td class="text-center"><i class="bi bi-check-circle-fill text-success"></i></td>
+                                    <td class="text-center"><i class="bi bi-check-circle-fill text-success"></i></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-muted">Reports &amp; Analytics</td>
+                                    <td class="text-center"><i class="bi bi-check-circle-fill text-success"></i></td>
+                                    <td class="text-center"><i class="bi bi-check-circle-fill text-success"></i></td>
+                                    <td class="text-center"><i class="bi bi-check-circle-fill text-success"></i></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-muted">Branch Comparison</td>
+                                    <td class="text-center"><i class="bi bi-dash-circle text-muted"></i></td>
+                                    <td class="text-center"><i class="bi bi-check-circle-fill text-success"></i></td>
+                                    <td class="text-center"><i class="bi bi-check-circle-fill text-success"></i></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-muted">Priority Support</td>
+                                    <td class="text-center"><i class="bi bi-dash-circle text-muted"></i></td>
+                                    <td class="text-center"><i class="bi bi-dash-circle text-muted"></i></td>
+                                    <td class="text-center"><i class="bi bi-check-circle-fill text-success"></i></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Renew / Upgrade guidance -->
+                    <div class="alert alert-info mt-4 mb-0 d-flex align-items-start gap-2 rounded-3" role="alert">
+                        <i class="bi bi-info-circle-fill flex-shrink-0 fs-5 mt-1"></i>
+                        <div>
+                            <strong>Need to renew or upgrade?</strong><br>
+                            <span class="small">Contact your platform administrator. They can update your plan from
+                            <code>/admin/subscriptions</code>.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+</main>
+</html>

@@ -50,7 +50,7 @@
                                 <td><span class="badge bg-dark" th:text="${medicine.quantity}">0</span></td>
                                 <td>
                                     <form method="post" th:action="@{/medicines/delete/{id}(id=${m.id})}" style="display:inline"
-                                          onsubmit="return confirm('This expired medicine will be permanently deleted.')"
+                                          data-confirm-delete="This expired medicine will be permanently deleted."
                                           sec:authorize="hasRole('ADMIN')">
                                         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                                         <button type="submit" class="btn btn-outline-danger btn-sm">

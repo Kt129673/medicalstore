@@ -113,7 +113,7 @@
                                         <i class="bi bi-pencil"></i>
                                     </a>
                                     <form th:if="${order.status == 'DRAFT'}" method="post" th:action="@{/purchases/delete/{id}(id=${order.id})}" style="display:inline"
-                                          onsubmit="return confirm('This purchase order will be permanently deleted.')">
+                                          data-confirm-delete="This purchase order will be permanently deleted.">
                                         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                                         <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete">
                                             <i class="bi bi-trash"></i>

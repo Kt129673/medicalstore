@@ -9,6 +9,16 @@
             th:replace="~{fragments :: page-header('Returns & Refunds', 'Process and track product returns', 'bi bi-arrow-return-left', '/returns/new', 'Process Return', null)}">
         </div>
 
+        <!-- Flash Messages -->
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i><span th:text="${success}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i><span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
         <!-- Returns Table -->
         <div class="card">
             <div class="card-body">
@@ -18,7 +28,7 @@
                     </div>
                 </th:block>
                 <div th:unless="${#lists.isEmpty(returns)}" class="table-responsive">
-                    <table class="table table-hover">
+                    <table class="table table-hover table-animate-rows table-sticky-right">
                         <thead>
                             <tr>
                                 <th>Return ID</th>
@@ -28,6 +38,7 @@
                                 <th>Quantity</th>
                                 <th>Refund Amount</th>
                                 <th>Reason</th>
+                                <th class="text-end">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -36,16 +47,43 @@
                                 </td>
                                 <td th:text="${#temporals.format(returnItem.returnDate, 'dd-MM-yyyy HH:mm')}">17-11-2025
                                 </td>
-                                <td th:text="'INV-' + ${#strings.padLeft(returnItem.sale.id.toString(), 6, '0')}">
-                                    INV-000001</td>
+                                <td>
+                                    <a th:href="@{/sales/invoice/{id}(id=${returnItem.sale.id})}"
+                                        class="text-decoration-none text-primary fw-semibold" target="_blank"
+                                        th:text="'INV-' + ${#strings.padLeft(returnItem.sale.id.toString(), 6, '0')}">
+                                        INV-000001
+                                    </a>
+                                </td>
                                 <td th:text="${returnItem.saleItem.medicine.name}">Medicine</td>
-                                <td><span class="badge bg-warning" th:text="${returnItem.returnQuantity}">1</span></td>
+                                <td><span class="badge bg-warning text-dark" th:text="${returnItem.returnQuantity}">1</span></td>
                                 <td class="fw-bold text-danger"
                                     th:text="'₹' + ${#numbers.formatDecimal(returnItem.refundAmount, 0, 2)}">₹100.00
                                 </td>
-                                <td th:text="${returnItem.reason}">Expired</td>
+                                <td>
+                                    <span class="badge bg-secondary" th:text="${returnItem.reason}">Expired</span>
+                                </td>
+                                <td class="text-end" sec:authorize="hasRole('ADMIN')">
+                                    <form th:action="@{/returns/delete/{id}(id=${returnItem.id})}" method="post"
+                                        style="display:inline"
+                                        data-confirm-delete="Cancel this return? The stock adjustment will be reversed.">
+                                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Cancel Return">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                                <td th:unless="${#authorization.expression('hasRole(''ADMIN'')')}"></td>
                             </tr>
                         </tbody>
+                        <tfoot class="table-light fw-bold">
+                            <tr>
+                                <td colspan="5" class="text-end">Total Refunded:</td>
+                                <td class="text-danger">
+                                    ₹<span th:text="${#numbers.formatDecimal(returns.stream().mapToDouble(r -> r.refundAmount).sum(), 0, 2)}">0.00</span>
+                                </td>
+                                <td colspan="2"></td>
+                            </tr>
+                        </tfoot>
                     </table>
                 </div>
             </div>

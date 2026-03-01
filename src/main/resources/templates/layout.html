@@ -81,6 +81,9 @@
                         <a class="nav-link" data-label="Shopkeepers" href="/owner/shopkeepers">
                             <i class="bi bi-person-gear nav-icon"></i><span>Shopkeepers</span>
                         </a>
+                        <a class="nav-link" data-label="Subscription" href="/owner/subscription">
+                            <i class="bi bi-credit-card nav-icon"></i><span>Subscription</span>
+                        </a>
                     </details>
                 </div>
 
@@ -231,6 +234,11 @@
                     <span class="header-role-badge role-shopkeeper" sec:authorize="hasRole('SHOPKEEPER')">
                         <i class="bi bi-shop"></i> Shopkeeper
                     </span>
+
+                    <!-- Theme Toggle -->
+                    <button class="theme-toggle-btn" id="themeToggle" title="Toggle dark mode" aria-label="Toggle dark mode">
+                        <i class="bi bi-moon-stars-fill" id="themeIcon"></i>
+                    </button>
 
                     <!-- Notification Bell -->
                     <div class="header-notif" id="notifContainer" sec:authorize="hasAnyRole('ADMIN','SHOPKEEPER')">

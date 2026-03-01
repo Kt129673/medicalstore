@@ -65,7 +65,7 @@
                                         </button>
                                     </form>
                                     <form method="post" th:action="@{/admin/users/delete/{id}(id=${user.id})}" style="display:inline"
-                                          onsubmit="return confirm('This user will be permanently deleted.')">
+                                          data-confirm-delete="This user will be permanently deleted.">
                                         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                                         <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete">
                                             <i class="bi bi-trash"></i>
