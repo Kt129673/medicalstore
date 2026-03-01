@@ -7,6 +7,19 @@
 </style>
 <div class="container-fluid py-4">
 
+    <!-- ── Owner Viewing Shopkeeper Banner (Section 4.2) ─────────────────── -->
+    <div th:if="${shopkeeperViewMode}" class="alert alert-info border-info d-flex align-items-center justify-content-between mb-4 shadow-sm" role="alert">
+        <div>
+            <i class="bi bi-person-gear me-2 text-info"></i>
+            <strong>Viewing as Shopkeeper: <span th:text="${viewingShopkeeperName}">Shopkeeper Name</span></strong>
+            <span class="ms-2 badge bg-info text-dark">Owner Mode</span>
+            <small class="ms-2 text-muted">Read-only view of this shopkeeper's operational context.</small>
+        </div>
+        <a th:href="${exitShopkeeperViewUrl}" class="btn btn-sm btn-outline-info ms-3 text-nowrap">
+            <i class="bi bi-x-circle me-1"></i>Exit Shopkeeper View
+        </a>
+    </div>
+
     <!-- Back + Header -->
     <div class="d-flex flex-wrap align-items-center gap-3 mb-4">
         <a href="/owner" class="btn btn-outline-secondary btn-sm">

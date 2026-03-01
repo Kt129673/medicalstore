@@ -255,4 +255,53 @@ public class OwnerController {
 
                 return "owner/subscription";
         }
+
+        // ─── Owner → Shopkeeper View Mode (Section 4.2) ────────────────────────
+        /**
+         * Enter Shopkeeper View mode: owner sees a read-only operational summary
+         * for a specific shopkeeper, with a banner —
+         * "Viewing as Shopkeeper: [Name] (Owner Mode)".
+         *
+         * Flow:
+         *   1. Owner clicks a shopkeeper's profile in /owner/shopkeepers.
+         *   2. System renders a shopkeeper-context summary page.
+         *   3. A top banner identifies the view context.
+         *   4. Owner can exit back to /owner/shopkeepers.
+         *
+         * The owner cannot directly use the shopkeeper's POS; this is a view-only
+         * context for monitoring operational status.
+         */
+        @GetMapping("/view-as-shopkeeper/{shopkeeperId}")
+        public String viewAsShopkeeper(@PathVariable Long shopkeeperId, Model model, RedirectAttributes ra) {
+                Long ownerId = securityUtils.getCurrentUserId();
+                var myBranchIds = branchService.getBranchesByOwner(ownerId)
+                                .stream().map(Branch::getId).collect(java.util.stream.Collectors.toSet());
+
+                User shopkeeper = userRepository.findById(shopkeeperId).orElse(null);
+                if (shopkeeper == null
+                                || !shopkeeper.getRoles().contains("SHOPKEEPER")
+                                || shopkeeper.getBranch() == null
+                                || !myBranchIds.contains(shopkeeper.getBranch().getId())) {
+                        ra.addFlashAttribute("error", "Shopkeeper not found or not in your branches.");
+                        return "redirect:/owner/shopkeepers";
+                }
+
+                Branch branch = shopkeeper.getBranch();
+                Map<String, Object> kpis = dashboardService.buildBranchDashboard(branch.getId());
+
+                model.addAttribute("title", "Viewing as Shopkeeper: " + shopkeeper.getFullName());
+                model.addAttribute("page", "owner");
+                model.addAttribute("branch", branch);
+                model.addAttribute("medicines", medicineService.getMedicinesByBranch(branch.getId()));
+                model.addAttribute("shopkeepers", userRepository.findShopkeepersByBranchId(branch.getId()));
+                kpis.forEach(model::addAttribute);
+                model.addAttribute("lowStock", kpis.get("lowStockCount"));
+
+                // Shopkeeper view context — banner in owner/branch-detail.html
+                model.addAttribute("shopkeeperViewMode", true);
+                model.addAttribute("viewingShopkeeperName", shopkeeper.getFullName());
+                model.addAttribute("exitShopkeeperViewUrl", "/owner/shopkeepers");
+
+                return "owner/branch-detail";
+        }
 }

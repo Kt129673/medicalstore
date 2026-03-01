@@ -5,6 +5,10 @@ import com.medicalstore.service.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
+import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -32,6 +36,26 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+    // ─── Role Hierarchy: ADMIN > OWNER > SHOPKEEPER ────────────────────────
+    // Satisfies Section 5.1 of the RBAC specification.
+    // ADMIN inherits all permissions of OWNER and SHOPKEEPER.
+    // OWNER inherits all permissions of SHOPKEEPER.
+    @Bean
+    public RoleHierarchy roleHierarchy() {
+        return RoleHierarchyImpl.withDefaultRolePrefix()
+                .role("ADMIN").implies("OWNER")
+                .role("OWNER").implies("SHOPKEEPER")
+                .build();
+    }
+
+    // Apply role hierarchy to method-level security (@PreAuthorize annotations)
+    @Bean
+    static MethodSecurityExpressionHandler methodSecurityExpressionHandler(RoleHierarchy roleHierarchy) {
+        DefaultMethodSecurityExpressionHandler handler = new DefaultMethodSecurityExpressionHandler();
+        handler.setRoleHierarchy(roleHierarchy);
+        return handler;
+    }
+
     @SuppressWarnings("deprecation")
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
@@ -53,8 +77,9 @@ public class SecurityConfig {
                         .requestMatchers("/login", "/css/**", "/js/**", "/images/**", "/error").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/owner/**").hasRole("OWNER")
-                        // Analytics - strict access control
-                        .requestMatchers("/analytics/**").hasAnyRole("ADMIN", "OWNER", "SHOPKEEPER")
+                        // Analytics — financial insights restricted to ADMIN and OWNER only.
+                        // SHOPKEEPER cannot view financial analytics (Section 2.3).
+                        .requestMatchers("/analytics/**").hasAnyRole("ADMIN", "OWNER")
                         // Reports — all authenticated roles can view
                         .requestMatchers("/reports/**")
                         .hasAnyRole("ADMIN", "OWNER", "SHOPKEEPER")

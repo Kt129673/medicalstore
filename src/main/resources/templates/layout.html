@@ -169,11 +169,14 @@
                         th:attr="aria-current=${page == 'reports'} ? 'page' : null">
                         <i class="bi bi-graph-up-arrow nav-icon"></i><span>Standard Reports</span>
                     </a>
-                    <a class="nav-link" data-label="Advanced Analytics"
-                        th:classappend="${page == 'analytics'} ? 'active' : ''" href="/analytics"
-                        th:attr="aria-current=${page == 'analytics'} ? 'page' : null">
-                        <i class="bi bi-bar-chart-fill nav-icon"></i><span>Advanced Analytics</span>
-                    </a>
+                    <!-- Advanced Analytics — restricted to ADMIN and OWNER (Section 2.3) -->
+                    <div sec:authorize="hasAnyRole('ADMIN', 'OWNER')">
+                        <a class="nav-link" data-label="Advanced Analytics"
+                            th:classappend="${page == 'analytics'} ? 'active' : ''" href="/analytics"
+                            th:attr="aria-current=${page == 'analytics'} ? 'page' : null">
+                            <i class="bi bi-bar-chart-fill nav-icon"></i><span>Advanced Analytics</span>
+                        </a>
+                    </div>
                     <a class="nav-link" data-label="GST / Tax" th:classappend="${page == 'gst'} ? 'active' : ''"
                         href="/reports/gst" th:attr="aria-current=${page == 'gst'} ? 'page' : null">
                         <i class="bi bi-file-earmark-ruled nav-icon"></i><span>GST / Tax</span>
