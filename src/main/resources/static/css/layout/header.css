@@ -196,6 +196,14 @@
     text-align: center;
 }
 
+.notif-item i.notif-icon-danger {
+    color: var(--danger-color);
+}
+
+.notif-item i.notif-icon-warning {
+    color: var(--warning-color);
+}
+
 .notif-item .notif-count {
     margin-left: auto;
     font-weight: 700;

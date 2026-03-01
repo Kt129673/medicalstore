@@ -121,8 +121,8 @@
                         th:attr="open=${#lists.contains({'sales','returns','customers'}, page)} ? 'open' : null">
                         <summary>Sales &amp; Billing</summary>
                         <a class="nav-link" data-label="New Sale" href="/sales/new">
-                            <i class="bi bi-plus-circle-fill nav-icon" style="color:var(--success-color);"></i><span
-                                style="font-weight:600;">New Sale</span>
+                            <i class="bi bi-plus-circle-fill nav-icon nav-icon--sale"></i><span
+                                class="nav-link-text--emphasis">New Sale</span>
                         </a>
                         <a class="nav-link" data-label="Sales History"
                             th:classappend="${page == 'sales'} ? 'active' : ''" href="/sales"
@@ -230,12 +230,12 @@
                         <div class="notif-dropdown" id="notifDropdown" role="menu">
                             <div class="notif-header">Alerts</div>
                             <a class="notif-item" href="/medicines?filter=lowstock" role="menuitem">
-                                <i class="bi bi-exclamation-triangle" style="color:var(--danger-color);"></i>
+                                <i class="bi bi-exclamation-triangle notif-icon-danger"></i>
                                 <span>Low Stock Items</span>
                                 <span class="notif-count danger" th:text="${lowStockCount}">0</span>
                             </a>
                             <a class="notif-item" href="/medicines?filter=expiring" role="menuitem">
-                                <i class="bi bi-calendar-x" style="color:var(--warning-color);"></i>
+                                <i class="bi bi-calendar-x notif-icon-warning"></i>
                                 <span>Expiring Soon (30d)</span>
                                 <span class="notif-count warning" th:text="${expiringCount}">0</span>
                             </a>

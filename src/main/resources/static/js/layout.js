@@ -18,6 +18,14 @@ window.showToast = function (icon, title) {
     Toast.fire({ icon, title });
 };
 
+const onDomReady = (callback) => {
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', callback);
+    } else {
+        callback();
+    }
+};
+
 // Replaces native confirm() with Promise-based SweetAlert2
 window.confirmAction = function (title, text, confirmBtnText = 'Yes, do it!', icon = 'warning') {
     return Swal.fire({
@@ -25,8 +33,8 @@ window.confirmAction = function (title, text, confirmBtnText = 'Yes, do it!', ic
         text: text,
         icon: icon,
         showCancelButton: true,
-        confirmButtonColor: '#ef4444',
-        cancelButtonColor: '#6b7280',
+        confirmButtonColor: 'var(--danger-color)',
+        cancelButtonColor: 'var(--text-secondary)',
         confirmButtonText: confirmBtnText,
         background: 'var(--bg-primary)',
         color: 'var(--text-primary)'
@@ -43,7 +51,7 @@ window.confirmLink = function (event, element, text, confirmBtnText = 'Delete', 
 };
 
 /* ---- Check Flash Messages ---- */
-document.addEventListener('DOMContentLoaded', () => {
+onDomReady(() => {
     const successAlert = document.querySelector('.alert-success');
     const errorAlert = document.querySelector('.alert-danger');
     const activeNavLink = document.querySelector('.sidebar .nav-link.active');
@@ -79,6 +87,7 @@ const isMobile = () => window.innerWidth <= 992;
 
 /* ---- Mobile helpers ---- */
 function openSidebarMobile() {
+    if (!sidebar || !sidebarOverlay || !mobileToggle || !toggleIcon) return;
     sidebar.classList.add('active');
     sidebarOverlay.classList.add('active');
     mobileToggle.classList.add('open');
@@ -87,6 +96,7 @@ function openSidebarMobile() {
 }
 
 function closeSidebarMobile() {
+    if (!sidebar || !sidebarOverlay || !mobileToggle || !toggleIcon) return;
     sidebar.classList.remove('active');
     sidebarOverlay.classList.remove('active');
     mobileToggle.classList.remove('open');
@@ -100,6 +110,7 @@ function toggleMobile() {
 
 /* ---- Desktop mini-collapse ---- */
 function toggleDesktopMini() {
+    if (!sidebar) return;
     const mini = sidebar.classList.toggle('mini');
     localStorage.setItem('sidebarMini', mini ? '1' : '0');
     /* Force-open all <details> in mini mode so icons are visible */
@@ -112,7 +123,7 @@ function toggleDesktopMini() {
 }
 
 /* Restore desktop preference */
-if (!isMobile() && localStorage.getItem('sidebarMini') === '1') {
+if (sidebar && !isMobile() && localStorage.getItem('sidebarMini') === '1') {
     sidebar.classList.add('mini');
     sidebar.querySelectorAll('details.nav-group').forEach(d => { d._wasOpen = d.open; d.open = true; });
 }
@@ -206,7 +217,7 @@ if (globalSearchInput) {
 
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
-        if (isMobile() && sidebar.classList.contains('active')) {
+        if (isMobile() && sidebar && sidebar.classList.contains('active')) {
             closeSidebarMobile();
         }
         if (notifDropdown && notifDropdown.classList.contains('open')) {
@@ -286,7 +297,7 @@ window.entInitTableSort = function (tableId) {
     const headers = table.querySelectorAll('th.ent-sortable');
     headers.forEach((th, idx) => {
         th.addEventListener('click', () => {
-            const col   = th.dataset.col !== undefined ? parseInt(th.dataset.col) : idx;
+            const col   = th.dataset.col !== undefined ? parseInt(th.dataset.col, 10) : idx;
             const tbody = table.querySelector('tbody');
             if (!tbody) return;
             const asc = th.classList.contains('asc');
@@ -346,9 +357,9 @@ window.entInitBulkSelect = function (tableId) {
 
 /* Gets selected row IDs (from data-id on checkbox) */
 window.entGetSelectedIds = function (tableId) {
-    const table = document.getElementById(tableId);
-    if (!table) return [];
-    return Array.from(table.querySelectorAll('tbody .ent-row-check:checked'))
+    const scope = tableId ? document.getElementById(tableId) : document;
+    if (!scope) return [];
+    return Array.from(scope.querySelectorAll('tbody .ent-row-check:checked, .ent-row-check:checked'))
                 .map(cb => cb.dataset.id).filter(Boolean);
 };
 
@@ -358,8 +369,8 @@ window.entClearBulkSelect = function () {
     if (bulkBar) bulkBar.classList.remove('active');
 };
 
-window.entBulkDelete = function (url) {
-    const ids = entGetSelectedIds(document.querySelector('[id]')?.id);
+window.entBulkDelete = function (url, tableId = null) {
+    const ids = entGetSelectedIds(tableId);
     if (!ids.length) { showToast('warning', 'No rows selected.'); return; }
     confirmAction('Delete selected items?', ids.length + ' item(s) will be permanently removed.', 'Yes, delete all!').then(r => {
         if (r.isConfirmed) {
@@ -383,7 +394,7 @@ window.entInitFormDirty = function (formId) {
     const form = document.getElementById(formId);
     if (!form) return;
     let dirty = false;
-    let indicatorEl = form.querySelector('.ent-dirty-indicator');
+    const indicatorEl = form.querySelector('.ent-dirty-indicator');
 
     const markDirty = () => {
         dirty = true;
@@ -408,7 +419,7 @@ window.entInitFormDirty = function (formId) {
    Replaces the auto-hide that was baked into layout.html inline script.
    Alerts with class "ent-auto-dismiss" or Bootstrap ".alert" will fade.
 ───────────────────────────────────────────────── */
-document.addEventListener('DOMContentLoaded', () => {
+onDomReady(() => {
     const AUTO_DISMISS_MS = 5000;
     document.querySelectorAll('.alert-success.alert-dismissible, .alert-info.alert-dismissible, .ent-auto-dismiss').forEach(el => {
         setTimeout(() => {
@@ -521,10 +532,10 @@ window.entCharCounter = function (fieldId, max) {
 };
 
 // Auto-init any textarea[data-max]
-document.addEventListener('DOMContentLoaded', () => {
+onDomReady(() => {
     document.querySelectorAll('textarea[data-max]').forEach(ta => {
         if (!ta.id) ta.id = 'ent_ta_' + Math.random().toString(36).slice(2);
-        entCharCounter(ta.id, parseInt(ta.dataset.max));
+        entCharCounter(ta.id, parseInt(ta.dataset.max, 10));
     });
 });
 
@@ -532,7 +543,7 @@ document.addEventListener('DOMContentLoaded', () => {
    10. SEARCH CLEAR BUTTON  (ent-search component)
    Auto-shows/hides the × button as user types.
 ───────────────────────────────────────────────── */
-document.addEventListener('DOMContentLoaded', () => {
+onDomReady(() => {
     document.querySelectorAll('.ent-search input').forEach(input => {
         const clearBtn = input.parentElement.querySelector('.ent-search__clear');
         if (!clearBtn) return;

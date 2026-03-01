@@ -96,6 +96,14 @@
     transition: transform 0.2s, color 0.2s;
 }
 
+.nav-link .nav-icon--sale {
+    color: var(--success-color);
+}
+
+.nav-link .nav-link-text--emphasis {
+    font-weight: 600;
+}
+
 .nav-link:hover {
     background: var(--hover-bg);
     color: var(--text-primary);
