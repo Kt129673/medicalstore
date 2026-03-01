@@ -707,19 +707,190 @@ onDomReady(() => {
    13. DATA-CONFIRM-DELETE  (auto-wire delete forms)
    Add data-confirm-delete="Message here" to any <form>
    to replace the native confirm() with SweetAlert2.
+   Optimistic UI: the table row collapses immediately on confirm,
+   then the fetch request fires in the background.
+   On failure, the row is restored and an error toast is shown.
 ───────────────────────────────────────────────── */
 document.addEventListener('submit', function (e) {
     const form = e.target;
     if (!form.hasAttribute('data-confirm-delete')) return;
-    if (form.dataset.confirmed === '1') { delete form.dataset.confirmed; return; }
     e.preventDefault();
+
     const msg = form.getAttribute('data-confirm-delete');
+
     confirmAction('Are you sure?', msg, 'Delete').then(result => {
-        if (result.isConfirmed) {
-            form.dataset.confirmed = '1';
-            form.submit();
+        if (!result.isConfirmed) return;
+
+        const row       = form.closest('tr');
+        const actionUrl = form.action;
+        const csrfInput = form.querySelector('[name="_csrf"], [name^="_csrf"]');
+        const csrfVal   = csrfInput ? csrfInput.value : null;
+        const csrfName  = csrfInput ? csrfInput.name  : '_csrf';
+
+        // ── Optimistic: dim the row & swap trash icon for spinner ──
+        const deleteBtn = form.querySelector('button[type="submit"]');
+        const originalBtnHtml = deleteBtn ? deleteBtn.innerHTML : null;
+        if (deleteBtn) {
+            deleteBtn.innerHTML = '<span class="ent-del-spinner"></span>';
         }
+        if (row) {
+            row.classList.add('ent-row-deleting');
+        }
+
+        // ── Build fetch body ──
+        const body = new URLSearchParams();
+        if (csrfVal) body.append(csrfName, csrfVal);
+
+        NProgress.start();
+        fetch(actionUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: body.toString(),
+            redirect: 'manual'   // don't follow the redirect — we handle it
+        })
+        .then(res => {
+            // Spring returns 3xx redirect on success, OR 2xx if it's a REST endpoint
+            const ok = res.ok || res.type === 'opaqueredirect' || res.status === 302 || res.status === 303;
+            if (!ok) throw new Error('Server returned ' + res.status);
+
+            NProgress.done();
+            // ── Collapse the row ──
+            if (row) {
+                row.classList.remove('ent-row-deleting');
+                row.classList.add('ent-row-removed');
+                setTimeout(() => row.remove(), 420); // matches animation duration
+            }
+
+            // ── Bump the live row-count badge (if present on the page) ──
+            _entBumpRowCount(-1);
+
+            showToast('success', 'Deleted successfully');
+        })
+        .catch(() => {
+            NProgress.done();
+            // Restore row to original state
+            if (row) {
+                row.classList.remove('ent-row-deleting');
+            }
+            if (deleteBtn && originalBtnHtml !== null) {
+                deleteBtn.innerHTML = originalBtnHtml;
+            }
+            showToast('error', 'Delete failed — please try again.');
+        });
     });
 });
 
+/** Update any .ent-row-count badge on the page by delta (+1 / -1). */
+function _entBumpRowCount(delta) {
+    document.querySelectorAll('.ent-row-count').forEach(el => {
+        const current = parseInt(el.textContent.replace(/\D/g, ''), 10);
+        if (isNaN(current)) return;
+        const next = Math.max(0, current + delta);
+        el.textContent = el.textContent.replace(/\d+/, next);
+        el.classList.add('bump');
+        setTimeout(() => el.classList.remove('bump'), 400);
+    });
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   N-PROGRESS  –  lightweight top-bar progress indicator
+   • Fires on every <a href> navigation (click)
+   • Fires on every <form> submit (non-delete) 
+   • Completes on window load (new page arrival)
+   • window.NProgress exposed so inline scripts can call it
+══════════════════════════════════════════════════════════════ */
+(function () {
+    /* ── DOM setup ── */
+    const el = document.createElement('div');
+    el.id = 'nprogress';
+    el.innerHTML = '<div class="bar"></div>';
+    document.body.appendChild(el);
+    const bar = el.querySelector('.bar');
+
+    let _current = 0;
+    let _timer    = null;
+    let _trickling = null;
+
+    function _set(n) {
+        n = Math.min(Math.max(n, 0), 1);
+        _current = n;
+        bar.style.width = (n * 100).toFixed(1) + '%';
+        bar.style.opacity = '1';
+        el.classList.remove('nprogress-done');
+    }
+
+    function _trickle() {
+        if (_current >= 0.94) return;
+        /* slow logarithmic trickle — feels natural */
+        const inc = (_current < 0.2) ? 0.1
+                  : (_current < 0.5) ? 0.04
+                  : (_current < 0.8) ? 0.02
+                  : (_current < 0.9) ? 0.005
+                  : 0;
+        _set(_current + inc);
+    }
+
+    function start() {
+        if (_trickling) return;   // already running
+        _set(0.08);
+        _trickling = setInterval(_trickle, 320);
+    }
+
+    function done() {
+        clearInterval(_trickling);
+        _trickling = null;
+        _set(1);
+        clearTimeout(_timer);
+        _timer = setTimeout(() => {
+            el.classList.add('nprogress-done');   // CSS fades the bar out
+            setTimeout(() => {
+                _current = 0;
+                bar.style.width = '0%';
+            }, 600);
+        }, 120);
+    }
+
+    window.NProgress = { start, done, set: _set };
+
+    /* ── Intercept navigation links ── */
+    document.addEventListener('click', function (e) {
+        /* only plain left-clicks with no modifier */
+        if (e.button !== 0 || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
+
+        const anchor = e.target.closest('a[href]');
+        if (!anchor) return;
+
+        const href = anchor.getAttribute('href') || '';
+        /* skip: hash links, javascript:, target=_blank, downloads, external */
+        if (!href
+            || href.startsWith('#')
+            || href.startsWith('javascript')
+            || anchor.target === '_blank'
+            || anchor.hasAttribute('download')
+            || (anchor.origin && anchor.origin !== location.origin)
+        ) return;
+
+        NProgress.start();
+    });
+
+    /* ── Intercept form submissions (non-delete — those handled above) ── */
+    document.addEventListener('submit', function (e) {
+        const form = e.target;
+        if (form.hasAttribute('data-confirm-delete')) return; // handled separately
+        if (form.dataset.noProgress) return;                  // opt-out escape hatch
+        NProgress.start();
+    });
+
+    /* ── Finish on page-ready (handles full-page navigations) ── */
+    if (document.readyState === 'complete') {
+        done();
+    } else {
+        window.addEventListener('load', done);
+    }
+
+    /* ── Back/forward navigation ── */
+    window.addEventListener('pageshow', function (e) {
+        if (e.persisted) done();
+    });
+})();
 

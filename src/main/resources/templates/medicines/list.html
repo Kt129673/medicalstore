@@ -453,7 +453,7 @@
             <div class="inv-table-header">
                 <div class="d-flex align-items-center gap-2">
                     <h6><i class="bi bi-table me-1"></i> Medicine List</h6>
-                    <span class="inv-count-badge" th:text="${medicinePage.totalElements} + ' items'" id="itemCount">0
+                    <span class="inv-count-badge ent-row-count" th:text="${medicinePage.totalElements} + ' items'" id="itemCount">0
                         items</span>
                 </div>
                 <div class="inv-toolbar">
@@ -504,7 +504,77 @@
                             <th class="text-center" style="width:80px;">Actions</th>
                         </tr>
                     </thead>
-                    <tbody id="tableBody">
+                    <!-- ░░ SKELETON ROWS ░░ shown while page is loading; JS hides these and reveals real rows -->
+                    <tbody id="skeletonBody" aria-hidden="true">
+                        <tr class="ent-skeleton--row">
+                            <td><span class="ent-skeleton" style="width:16px;height:16px;border-radius:3px;display:inline-block;"></span></td>
+                            <td><div class="d-flex align-items-center gap-2"><span class="ent-skeleton ent-skeleton--avatar"></span><div><span class="ent-skeleton ent-skeleton--text" style="width:100px;margin-bottom:6px;"></span><span class="ent-skeleton ent-skeleton--text" style="width:65px;height:10px;"></span></div></div></td>
+                            <td><span class="ent-skeleton ent-skeleton--text" style="width:72px;"></span></td>
+                            <td class="d-none d-md-table-cell"><span class="ent-skeleton ent-skeleton--text" style="width:88px;"></span></td>
+                            <td class="text-end"><span class="ent-skeleton ent-skeleton--text" style="width:52px;display:inline-block;"></span></td>
+                            <td class="text-center"><span class="ent-skeleton" style="width:52px;height:22px;border-radius:12px;display:inline-block;"></span></td>
+                            <td class="d-none d-lg-table-cell"><span class="ent-skeleton ent-skeleton--text" style="width:60px;"></span></td>
+                            <td><span class="ent-skeleton ent-skeleton--text" style="width:70px;"></span></td>
+                            <td class="text-center"><div class="d-flex gap-1 justify-content-center"><span class="ent-skeleton" style="width:28px;height:28px;border-radius:6px;display:inline-block;"></span><span class="ent-skeleton" style="width:28px;height:28px;border-radius:6px;display:inline-block;"></span><span class="ent-skeleton" style="width:28px;height:28px;border-radius:6px;display:inline-block;"></span></div></td>
+                        </tr>
+                        <tr class="ent-skeleton--row">
+                            <td><span class="ent-skeleton" style="width:16px;height:16px;border-radius:3px;display:inline-block;"></span></td>
+                            <td><div class="d-flex align-items-center gap-2"><span class="ent-skeleton ent-skeleton--avatar"></span><div><span class="ent-skeleton ent-skeleton--text" style="width:130px;margin-bottom:6px;"></span><span class="ent-skeleton ent-skeleton--text" style="width:80px;height:10px;"></span></div></div></td>
+                            <td><span class="ent-skeleton ent-skeleton--text" style="width:58px;"></span></td>
+                            <td class="d-none d-md-table-cell"><span class="ent-skeleton ent-skeleton--text" style="width:100px;"></span></td>
+                            <td class="text-end"><span class="ent-skeleton ent-skeleton--text" style="width:44px;display:inline-block;"></span></td>
+                            <td class="text-center"><span class="ent-skeleton" style="width:52px;height:22px;border-radius:12px;display:inline-block;"></span></td>
+                            <td class="d-none d-lg-table-cell"><span class="ent-skeleton ent-skeleton--text" style="width:70px;"></span></td>
+                            <td><span class="ent-skeleton ent-skeleton--text" style="width:60px;"></span></td>
+                            <td class="text-center"><div class="d-flex gap-1 justify-content-center"><span class="ent-skeleton" style="width:28px;height:28px;border-radius:6px;display:inline-block;"></span><span class="ent-skeleton" style="width:28px;height:28px;border-radius:6px;display:inline-block;"></span><span class="ent-skeleton" style="width:28px;height:28px;border-radius:6px;display:inline-block;"></span></div></td>
+                        </tr>
+                        <tr class="ent-skeleton--row">
+                            <td><span class="ent-skeleton" style="width:16px;height:16px;border-radius:3px;display:inline-block;"></span></td>
+                            <td><div class="d-flex align-items-center gap-2"><span class="ent-skeleton ent-skeleton--avatar"></span><div><span class="ent-skeleton ent-skeleton--text" style="width:115px;margin-bottom:6px;"></span><span class="ent-skeleton ent-skeleton--text" style="width:55px;height:10px;"></span></div></div></td>
+                            <td><span class="ent-skeleton ent-skeleton--text" style="width:80px;"></span></td>
+                            <td class="d-none d-md-table-cell"><span class="ent-skeleton ent-skeleton--text" style="width:75px;"></span></td>
+                            <td class="text-end"><span class="ent-skeleton ent-skeleton--text" style="width:60px;display:inline-block;"></span></td>
+                            <td class="text-center"><span class="ent-skeleton" style="width:52px;height:22px;border-radius:12px;display:inline-block;"></span></td>
+                            <td class="d-none d-lg-table-cell"><span class="ent-skeleton ent-skeleton--text" style="width:55px;"></span></td>
+                            <td><span class="ent-skeleton ent-skeleton--text" style="width:68px;"></span></td>
+                            <td class="text-center"><div class="d-flex gap-1 justify-content-center"><span class="ent-skeleton" style="width:28px;height:28px;border-radius:6px;display:inline-block;"></span><span class="ent-skeleton" style="width:28px;height:28px;border-radius:6px;display:inline-block;"></span><span class="ent-skeleton" style="width:28px;height:28px;border-radius:6px;display:inline-block;"></span></div></td>
+                        </tr>
+                        <tr class="ent-skeleton--row">
+                            <td><span class="ent-skeleton" style="width:16px;height:16px;border-radius:3px;display:inline-block;"></span></td>
+                            <td><div class="d-flex align-items-center gap-2"><span class="ent-skeleton ent-skeleton--avatar"></span><div><span class="ent-skeleton ent-skeleton--text" style="width:90px;margin-bottom:6px;"></span><span class="ent-skeleton ent-skeleton--text" style="width:75px;height:10px;"></span></div></div></td>
+                            <td><span class="ent-skeleton ent-skeleton--text" style="width:64px;"></span></td>
+                            <td class="d-none d-md-table-cell"><span class="ent-skeleton ent-skeleton--text" style="width:92px;"></span></td>
+                            <td class="text-end"><span class="ent-skeleton ent-skeleton--text" style="width:48px;display:inline-block;"></span></td>
+                            <td class="text-center"><span class="ent-skeleton" style="width:52px;height:22px;border-radius:12px;display:inline-block;"></span></td>
+                            <td class="d-none d-lg-table-cell"><span class="ent-skeleton ent-skeleton--text" style="width:66px;"></span></td>
+                            <td><span class="ent-skeleton ent-skeleton--text" style="width:62px;"></span></td>
+                            <td class="text-center"><div class="d-flex gap-1 justify-content-center"><span class="ent-skeleton" style="width:28px;height:28px;border-radius:6px;display:inline-block;"></span><span class="ent-skeleton" style="width:28px;height:28px;border-radius:6px;display:inline-block;"></span><span class="ent-skeleton" style="width:28px;height:28px;border-radius:6px;display:inline-block;"></span></div></td>
+                        </tr>
+                        <tr class="ent-skeleton--row">
+                            <td><span class="ent-skeleton" style="width:16px;height:16px;border-radius:3px;display:inline-block;"></span></td>
+                            <td><div class="d-flex align-items-center gap-2"><span class="ent-skeleton ent-skeleton--avatar"></span><div><span class="ent-skeleton ent-skeleton--text" style="width:122px;margin-bottom:6px;"></span><span class="ent-skeleton ent-skeleton--text" style="width:60px;height:10px;"></span></div></div></td>
+                            <td><span class="ent-skeleton ent-skeleton--text" style="width:76px;"></span></td>
+                            <td class="d-none d-md-table-cell"><span class="ent-skeleton ent-skeleton--text" style="width:82px;"></span></td>
+                            <td class="text-end"><span class="ent-skeleton ent-skeleton--text" style="width:56px;display:inline-block;"></span></td>
+                            <td class="text-center"><span class="ent-skeleton" style="width:52px;height:22px;border-radius:12px;display:inline-block;"></span></td>
+                            <td class="d-none d-lg-table-cell"><span class="ent-skeleton ent-skeleton--text" style="width:50px;"></span></td>
+                            <td><span class="ent-skeleton ent-skeleton--text" style="width:64px;"></span></td>
+                            <td class="text-center"><div class="d-flex gap-1 justify-content-center"><span class="ent-skeleton" style="width:28px;height:28px;border-radius:6px;display:inline-block;"></span><span class="ent-skeleton" style="width:28px;height:28px;border-radius:6px;display:inline-block;"></span><span class="ent-skeleton" style="width:28px;height:28px;border-radius:6px;display:inline-block;"></span></div></td>
+                        </tr>
+                        <tr class="ent-skeleton--row">
+                            <td><span class="ent-skeleton" style="width:16px;height:16px;border-radius:3px;display:inline-block;"></span></td>
+                            <td><div class="d-flex align-items-center gap-2"><span class="ent-skeleton ent-skeleton--avatar"></span><div><span class="ent-skeleton ent-skeleton--text" style="width:105px;margin-bottom:6px;"></span><span class="ent-skeleton ent-skeleton--text" style="width:70px;height:10px;"></span></div></div></td>
+                            <td><span class="ent-skeleton ent-skeleton--text" style="width:68px;"></span></td>
+                            <td class="d-none d-md-table-cell"><span class="ent-skeleton ent-skeleton--text" style="width:95px;"></span></td>
+                            <td class="text-end"><span class="ent-skeleton ent-skeleton--text" style="width:50px;display:inline-block;"></span></td>
+                            <td class="text-center"><span class="ent-skeleton" style="width:52px;height:22px;border-radius:12px;display:inline-block;"></span></td>
+                            <td class="d-none d-lg-table-cell"><span class="ent-skeleton ent-skeleton--text" style="width:58px;"></span></td>
+                            <td><span class="ent-skeleton ent-skeleton--text" style="width:66px;"></span></td>
+                            <td class="text-center"><div class="d-flex gap-1 justify-content-center"><span class="ent-skeleton" style="width:28px;height:28px;border-radius:6px;display:inline-block;"></span><span class="ent-skeleton" style="width:28px;height:28px;border-radius:6px;display:inline-block;"></span><span class="ent-skeleton" style="width:28px;height:28px;border-radius:6px;display:inline-block;"></span></div></td>
+                        </tr>
+                    </tbody>
+                    <!-- ░░ REAL ROWS ░░ -->
+                    <tbody id="tableBody" style="display:none">
                         <tr th:each="medicine : ${medicinePage.content}" class="inv-row"
                             th:data-category="${medicine.category}" th:data-stock="${medicine.quantity}"
                             th:data-expiry="${medicine.expiryDate}">
@@ -586,6 +656,19 @@
                     </tbody>
                 </table>
             </div>
+
+            <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                var skeleton = document.getElementById('skeletonBody');
+                var real     = document.getElementById('tableBody');
+                if (!skeleton || !real) return;
+                // Brief shimmer pause — creates perception of content loading
+                setTimeout(function () {
+                    skeleton.style.display = 'none';
+                    real.style.display     = '';
+                }, 220);
+            });
+            </script>
 
             <!-- Pagination (Server-side) -->
             <div class="inv-pagination" id="paginationBar" th:if="${medicinePage.totalPages > 1}">

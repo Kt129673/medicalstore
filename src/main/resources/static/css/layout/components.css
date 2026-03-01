@@ -1146,3 +1146,106 @@ tr:focus-within .ent-row-actions { opacity: 1; }
     color: #fde68a;
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   N-PROGRESS  –  thin top-of-page navigation progress bar
+   Markup injected by layout.js:  <div id="nprogress"><div class="bar"></div></div>
+═══════════════════════════════════════════════════════════════ */
+#nprogress {
+    pointer-events: none;
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 10000;
+}
+#nprogress .bar {
+    position: absolute;
+    top: 0; left: 0;
+    width: 0%;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary-color, #2563eb), #60a5fa);
+    box-shadow: 0 0 8px rgba(37,99,235,0.7), 0 0 20px rgba(96,165,250,0.4);
+    transition: width 0.3s cubic-bezier(0.4,0,0.2,1),
+                opacity 0.4s ease;
+    border-radius: 0 2px 2px 0;
+}
+#nprogress .bar::after {
+    /* Glowing peg at the right end */
+    content: '';
+    position: absolute;
+    right: -4px; top: -2px;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #60a5fa;
+    box-shadow: 0 0 8px 3px rgba(96,165,250,0.7);
+    opacity: 1;
+    transition: opacity 0.3s;
+}
+#nprogress.nprogress-done .bar {
+    opacity: 0;
+    transition: width 0.05s ease, opacity 0.5s ease 0.1s;
+}
+[data-theme="dark"] #nprogress .bar {
+    background: linear-gradient(90deg, #3b82f6, #93c5fd);
+    box-shadow: 0 0 8px rgba(59,130,246,0.8), 0 0 20px rgba(147,197,253,0.4);
+}
+[data-theme="dark"] #nprogress .bar::after {
+    background: #93c5fd;
+    box-shadow: 0 0 8px 3px rgba(147,197,253,0.8);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   OPTIMISTIC DELETE  –  row fade + collapse animation
+═══════════════════════════════════════════════════════════════ */
+tbody tr {
+    /* allow smooth max-height collapse */
+    transition: opacity 0.22s ease, outline-color 0.15s;
+}
+/* State 1 — pending server response */
+tbody tr.ent-row-deleting td {
+    opacity: 0.42;
+    pointer-events: none;
+    background: rgba(239,68,68,0.04) !important;
+}
+/* State 2 — confirmed, collapse the row */
+@keyframes rowCollapse {
+    0% {
+        max-height: 80px;
+        opacity: 0.42;
+        transform: scaleY(1);
+    }
+    60% {
+        opacity: 0;
+        transform: scaleY(0.6);
+    }
+    100% {
+        max-height: 0;
+        opacity: 0;
+        transform: scaleY(0);
+        padding: 0;
+    }
+}
+tbody tr.ent-row-removed {
+    animation: rowCollapse 0.38s cubic-bezier(0.4,0,0.2,1) forwards;
+    overflow: hidden;
+    pointer-events: none;
+}
+/* Inline delete spinner (replaces the trash icon while request is in-flight) */
+.ent-del-spinner {
+    display: inline-block;
+    width: 14px; height: 14px;
+    border: 2px solid rgba(220,38,38,0.3);
+    border-top-color: #dc2626;
+    border-radius: 50%;
+    animation: spin 0.65s linear infinite;
+    vertical-align: middle;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Row count badge – live update on delete */
+.ent-row-count {
+    transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1), color 0.15s;
+}
+.ent-row-count.bump {
+    transform: scale(1.35);
+    color: var(--danger-color, #dc2626);
+}
+
