@@ -6,6 +6,7 @@ import com.medicalstore.repository.MedicineRepository;
 import com.medicalstore.repository.SaleRepository;
 import com.medicalstore.repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +30,7 @@ public class DashboardService {
     // ═══════════════════════════════════════════════════════════════════
 
     /** Global dashboard (ADMIN) */
+    @Cacheable("dashboard_kpis")
     public Map<String, Object> buildAdminDashboard() {
         Map<String, Object> data = new LinkedHashMap<>();
 
@@ -77,6 +79,7 @@ public class DashboardService {
     }
 
     /** Branch-scoped dashboard (SHOPKEEPER) */
+    @Cacheable(value = "dashboard_kpis", key = "#branchId")
     public Map<String, Object> buildBranchDashboard(Long branchId) {
         Map<String, Object> data = new LinkedHashMap<>();
 

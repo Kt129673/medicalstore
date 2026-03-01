@@ -70,12 +70,15 @@ public interface SaleRepository extends JpaRepository<Sale, Long> {
         List<Sale> findTop5ByOwnerIdOrderBySaleDateDesc(Long ownerId);
 
         // --- pagination methods ---
+        @org.springframework.data.jpa.repository.EntityGraph(attributePaths = { "customer" })
         org.springframework.data.domain.Page<Sale> findAllByOrderBySaleDateDesc(
                         org.springframework.data.domain.Pageable pageable);
 
+        @org.springframework.data.jpa.repository.EntityGraph(attributePaths = { "customer" })
         org.springframework.data.domain.Page<Sale> findByBranchIdOrderBySaleDateDesc(Long branchId,
                         org.springframework.data.domain.Pageable pageable);
 
+        @org.springframework.data.jpa.repository.EntityGraph(attributePaths = { "customer", "branch" })
         org.springframework.data.domain.Page<Sale> findByBranchOwnerIdOrderBySaleDateDesc(Long ownerId,
                         org.springframework.data.domain.Pageable pageable);
 
