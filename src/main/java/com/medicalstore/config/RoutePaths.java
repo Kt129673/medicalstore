@@ -12,6 +12,10 @@ public final class RoutePaths {
     public static final String MEDICINES = "/medicines";
     public static final String CUSTOMERS = "/customers";
     public static final String SUPPLIERS = "/suppliers";
+    public static final String ADMIN = "/admin";
+    public static final String ADMIN_USERS = "/admin/users";
+    public static final String ADMIN_USERS_CREATE = "/admin/users/create";
+    public static final String ADMIN_BRANCHES = "/admin/branches";
 
     public static final String REDIRECT_PREFIX = "redirect:";
 

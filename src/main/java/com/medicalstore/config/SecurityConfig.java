@@ -1,5 +1,6 @@
 package com.medicalstore.config;
 
+import com.medicalstore.config.RoutePaths;
 import com.medicalstore.service.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -87,8 +88,12 @@ public class SecurityConfig {
 
             boolean isOwner = authentication.getAuthorities().stream()
                     .map(GrantedAuthority::getAuthority).anyMatch("ROLE_OWNER"::equals);
+            boolean isAdmin = authentication.getAuthorities().stream()
+                    .map(GrantedAuthority::getAuthority).anyMatch("ROLE_ADMIN"::equals);
 
-            if (isOwner) {
+            if (isAdmin) {
+                response.sendRedirect(RoutePaths.ADMIN);
+            } else if (isOwner) {
                 response.sendRedirect("/owner");
             } else {
                 response.sendRedirect("/");

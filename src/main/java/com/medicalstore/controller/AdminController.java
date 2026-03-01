@@ -1,5 +1,6 @@
 package com.medicalstore.controller;
 
+import com.medicalstore.config.RoutePaths;
 import com.medicalstore.model.Branch;
 import com.medicalstore.model.User;
 import com.medicalstore.repository.UserRepository;
@@ -72,7 +73,12 @@ public class AdminController {
 
         if (userRepository.existsByUsername(username)) {
             ra.addFlashAttribute("error", "Username already exists: " + username);
-            return "redirect:/admin/users/create";
+            return RoutePaths.redirectTo(RoutePaths.ADMIN_USERS_CREATE);
+        }
+
+        if (email != null && !email.isBlank() && userRepository.existsByEmail(email)) {
+            ra.addFlashAttribute("error", "Email already registered: " + email);
+            return RoutePaths.redirectTo(RoutePaths.ADMIN_USERS_CREATE);
         }
 
         User user = new User();
@@ -90,7 +96,7 @@ public class AdminController {
 
         userRepository.save(user);
         ra.addFlashAttribute("success", "User '" + username + "' created with role " + role);
-        return "redirect:/admin/users";
+        return RoutePaths.redirectTo(RoutePaths.ADMIN_USERS);
     }
 
     @GetMapping("/users/toggle/{id}")
@@ -100,7 +106,7 @@ public class AdminController {
             userRepository.save(u);
         });
         ra.addFlashAttribute("success", "User status updated.");
-        return "redirect:/admin/users";
+        return RoutePaths.redirectTo(RoutePaths.ADMIN_USERS);
     }
 
     @GetMapping("/users/delete/{id}")
@@ -108,11 +114,11 @@ public class AdminController {
         Long currentId = securityUtils.getCurrentUserId();
         if (id.equals(currentId)) {
             ra.addFlashAttribute("error", "You cannot delete your own account.");
-            return "redirect:/admin/users";
+            return RoutePaths.redirectTo(RoutePaths.ADMIN_USERS);
         }
         userRepository.deleteById(id);
         ra.addFlashAttribute("success", "User deleted.");
-        return "redirect:/admin/users";
+        return RoutePaths.redirectTo(RoutePaths.ADMIN_USERS);
     }
 
     // ─── Branch Management ─────────────────────────────────────────────────
@@ -150,13 +156,13 @@ public class AdminController {
         branchService.saveBranch(branch);
 
         ra.addFlashAttribute("success", "Branch '" + name + "' created successfully.");
-        return "redirect:/admin/branches";
+        return RoutePaths.redirectTo(RoutePaths.ADMIN_BRANCHES);
     }
 
     @GetMapping("/branches/toggle/{id}")
     public String toggleBranch(@PathVariable Long id, RedirectAttributes ra) {
         branchService.toggleActive(id);
         ra.addFlashAttribute("success", "Branch status updated.");
-        return "redirect:/admin/branches";
+        return RoutePaths.redirectTo(RoutePaths.ADMIN_BRANCHES);
     }
 }
