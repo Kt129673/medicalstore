@@ -64,10 +64,19 @@ public class DataInitializer implements CommandLineRunner {
             log.info("Platform admin created: admin / admin123");
         } else {
             adminUser = userRepository.findByUsername("admin").orElseThrow();
-            // Ensure account is not inadvertently locked — do NOT reset password
+            boolean changed = false;
+            if (adminUser.getPassword() == null || !adminUser.getPassword().startsWith("$2a$")) {
+                adminUser.setPassword(passwordEncoder.encode("admin123"));
+                changed = true;
+                log.info("Upgraded password for admin");
+            }
+            // Ensure account is not inadvertently locked
             if (!adminUser.getEnabled() || !adminUser.getAccountNonLocked()) {
                 adminUser.setEnabled(true);
                 adminUser.setAccountNonLocked(true);
+                changed = true;
+            }
+            if (changed) {
                 userRepository.save(adminUser);
             }
         }
@@ -87,6 +96,20 @@ public class DataInitializer implements CommandLineRunner {
             log.info("Default owner created: default_owner / Owner@123");
         } else {
             defaultOwner = userRepository.findByUsername("default_owner").orElseThrow();
+            boolean changed = false;
+            if (defaultOwner.getPassword() == null || !defaultOwner.getPassword().startsWith("$2a$")) {
+                defaultOwner.setPassword(passwordEncoder.encode("Owner@123"));
+                changed = true;
+                log.info("Upgraded password for default_owner");
+            }
+            if (!defaultOwner.getEnabled() || !defaultOwner.getAccountNonLocked()) {
+                defaultOwner.setEnabled(true);
+                defaultOwner.setAccountNonLocked(true);
+                changed = true;
+            }
+            if (changed) {
+                defaultOwner = userRepository.save(defaultOwner);
+            }
         }
 
         // 2b. Auto-provision FREE subscription for default_owner if missing
@@ -119,7 +142,8 @@ public class DataInitializer implements CommandLineRunner {
             defaultBranch = existing.get(0);
         }
 
-        // 3b. Ensure default shopkeeper assigned to Default Branch — password set only on first creation
+        // 3b. Ensure default shopkeeper assigned to Default Branch — password set only
+        // on first creation
         User shopkeeper;
         if (!userRepository.existsByUsername("shop1")) {
             shopkeeper = new User();
@@ -135,9 +159,23 @@ public class DataInitializer implements CommandLineRunner {
             log.info("Default shopkeeper created: shop1 / shop123 (branch={})", defaultBranch.getName());
         } else {
             shopkeeper = userRepository.findByUsername("shop1").orElseThrow();
+            boolean changed = false;
+            if (shopkeeper.getPassword() == null || !shopkeeper.getPassword().startsWith("$2a$")) {
+                shopkeeper.setPassword(passwordEncoder.encode("shop123"));
+                changed = true;
+                log.info("Upgraded password for shopkeeper");
+            }
+            if (!shopkeeper.getEnabled() || !shopkeeper.getAccountNonLocked()) {
+                shopkeeper.setEnabled(true);
+                shopkeeper.setAccountNonLocked(true);
+                changed = true;
+            }
             // Ensure branch is always assigned
             if (shopkeeper.getBranch() == null) {
                 shopkeeper.setBranch(defaultBranch);
+                changed = true;
+            }
+            if (changed) {
                 userRepository.save(shopkeeper);
             }
         }
