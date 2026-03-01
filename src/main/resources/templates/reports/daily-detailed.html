@@ -5,8 +5,14 @@
 <head>
     <style>
         @media print {
-            .no-print { display: none !important; }
-            .card { border: 1px solid #dee2e6 !important; box-shadow: none !important; }
+            .no-print {
+                display: none !important;
+            }
+
+            .card {
+                border: 1px solid #dee2e6 !important;
+                box-shadow: none !important;
+            }
         }
 
         /* Top Notch Premium UI Adjustments */
@@ -24,8 +30,11 @@
         .report-header::after {
             content: '';
             position: absolute;
-            top: -50%; left: -50%; width: 200%; height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 60%);
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 60%);
             transform: rotate(30deg);
             pointer-events: none;
         }
@@ -43,12 +52,28 @@
 
         .metric-card::before {
             content: '';
-            position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
         }
-        .metric-card.border-primary::before { background-color: #3b82f6; }
-        .metric-card.border-success::before { background-color: #10b981; }
-        .metric-card.border-warning::before { background-color: #f59e0b; }
-        .metric-card.border-info::before { background-color: #0ea5e9; }
+
+        .metric-card.border-primary::before {
+            background-color: #3b82f6;
+        }
+
+        .metric-card.border-success::before {
+            background-color: #10b981;
+        }
+
+        .metric-card.border-warning::before {
+            background-color: #f59e0b;
+        }
+
+        .metric-card.border-info::before {
+            background-color: #0ea5e9;
+        }
 
         .metric-card:hover {
             transform: translateY(-8px) scale(1.02);
@@ -61,10 +86,10 @@
             padding: 20px;
             margin: 15px 0;
             border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
             transition: transform 0.2s;
         }
-        
+
         .calculation-box:hover {
             transform: translateX(5px);
         }
@@ -75,8 +100,12 @@
             border-radius: 12px;
             overflow: hidden;
         }
-        
-        .card-header { border-bottom: none; font-weight: 600; padding: 1rem 1.25rem; }
+
+        .card-header {
+            border-bottom: none;
+            font-weight: 600;
+            padding: 1rem 1.25rem;
+        }
     </style>
 </head>
 
@@ -422,19 +451,28 @@
                                 </td>
                                 <td th:text="${#temporals.format(sale.saleDate, 'HH:mm:ss')}">10:30:45</td>
                                 <td>
-                                    <span th:if="${sale.items.size() == 1}" th:text="${sale.items[0].medicine.name}">Medicine</span>
-                                    <span th:if="${sale.items.size() > 1}" th:text="${sale.items.size()} + ' Items'" class="badge bg-info bg-opacity-25 text-info border border-info"></span>
+                                    <span th:if="${sale.items.size() == 1}"
+                                        th:text="${sale.items[0].medicine.name}">Medicine</span>
+                                    <span th:if="${sale.items.size() > 1}" th:text="${sale.items.size()} + ' Items'"
+                                        class="badge bg-info bg-opacity-25 text-info border border-info"></span>
+                                    <span th:if="${sale.items.size() == 0}">-</span>
                                 </td>
                                 <td th:text="${sale.customer != null ? sale.customer.name : 'Walk-in'}">Customer</td>
-                                <td class="text-center" th:text="${#aggregates.sum(sale.items.![quantity])}">1</td>
-                                <td class="text-end" th:text="'₹' + ${#numbers.formatDecimal(sale.totalAmount, 0, 2)}">
+                                <td class="text-center"
+                                    th:text="${sale.items.size() > 0 ? #aggregates.sum(sale.items.![quantity]) : 0}">1
+                                </td>
+                                <td class="text-end"
+                                    th:text="'₹' + ${#numbers.formatDecimal(sale.totalAmount != null ? sale.totalAmount : 0, 0, 2)}">
                                     ₹0.00</td>
                                 <td class="text-end text-warning"
-                                    th:text="'₹' + ${#numbers.formatDecimal(sale.discountAmount, 0, 2)}">₹0.00</td>
+                                    th:text="'₹' + ${#numbers.formatDecimal(sale.discountAmount != null ? sale.discountAmount : 0, 0, 2)}">
+                                    ₹0.00</td>
                                 <td class="text-end text-info"
-                                    th:text="'₹' + ${#numbers.formatDecimal(sale.gstAmount, 0, 2)}">₹0.00</td>
+                                    th:text="'₹' + ${#numbers.formatDecimal(sale.gstAmount != null ? sale.gstAmount : 0, 0, 2)}">
+                                    ₹0.00</td>
                                 <td class="text-end fw-bold text-success"
-                                    th:text="'₹' + ${#numbers.formatDecimal(sale.finalAmount, 0, 2)}">₹0.00</td>
+                                    th:text="'₹' + ${#numbers.formatDecimal(sale.finalAmount != null ? sale.finalAmount : (sale.totalAmount != null ? sale.totalAmount : 0), 0, 2)}">
+                                    ₹0.00</td>
                                 <td><span class="badge bg-primary" th:text="${sale.paymentMethod}">Cash</span></td>
                             </tr>
                         </tbody>

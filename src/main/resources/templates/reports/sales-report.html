@@ -111,11 +111,11 @@
                                 <th>Sr. No.</th>
                                 <th>Date & Time</th>
                                 <th>Invoice #</th>
-                                <th>Medicine</th>
+                                <th>Medicine(s)</th>
                                 <th>Customer</th>
-                                <th>Qty</th>
-                                <th>Unit Price</th>
-                                <th>Total</th>
+                                <th class="text-center">Total Qty</th>
+                                <th>Base Amount</th>
+                                <th>Final Amount</th>
                                 <th>Payment</th>
                             </tr>
                         </thead>
@@ -125,11 +125,22 @@
                                 <td th:text="${#temporals.format(sale.saleDate, 'dd-MM-yyyy HH:mm')}">17-11-2025 10:30
                                 </td>
                                 <td th:text="'INV-' + ${T(java.lang.String).format('%06d', sale.id)}">INV-000001</td>
-                                <td th:text="${sale.medicine.name}">Medicine</td>
+                                <td>
+                                    <span th:if="${sale.items.size() == 1}"
+                                        th:text="${sale.items[0].medicine.name}">Medicine</span>
+                                    <span th:if="${sale.items.size() > 1}" th:text="${sale.items.size()} + ' Items'"
+                                        class="badge bg-info bg-opacity-25 text-info border border-info"></span>
+                                    <span th:if="${sale.items.size() == 0}">-</span>
+                                </td>
                                 <td th:text="${sale.customer != null ? sale.customer.name : 'Walk-in'}">Customer</td>
-                                <td th:text="${sale.quantity}">10</td>
-                                <td th:text="'₹' + ${#numbers.formatDecimal(sale.unitPrice, 0, 2)}">₹100.00</td>
-                                <td class="fw-bold" th:text="'₹' + ${#numbers.formatDecimal(sale.totalAmount, 0, 2)}">
+                                <td class="text-center"
+                                    th:text="${sale.items.size() > 0 ? #aggregates.sum(sale.items.![quantity]) : 0}">10
+                                </td>
+                                <td
+                                    th:text="'₹' + ${#numbers.formatDecimal(sale.totalAmount != null ? sale.totalAmount : 0, 0, 2)}">
+                                    ₹100.00</td>
+                                <td class="fw-bold"
+                                    th:text="'₹' + ${#numbers.formatDecimal(sale.finalAmount != null ? sale.finalAmount : (sale.totalAmount != null ? sale.totalAmount : 0), 0, 2)}">
                                     ₹1000.00</td>
                                 <td><span class="badge bg-success" th:text="${sale.paymentMethod}">Cash</span></td>
                             </tr>
@@ -137,7 +148,9 @@
                         <tfoot class="table-light">
                             <tr>
                                 <th colspan="7" class="text-end">TOTAL:</th>
-                                <th colspan="2" th:text="'₹' + ${#numbers.formatDecimal(totalSales, 0, 2)}">₹0.00</th>
+                                <th colspan="2"
+                                    th:text="'₹' + ${#numbers.formatDecimal(totalSales != null ? totalSales : 0, 0, 2)}">
+                                    ₹0.00</th>
                             </tr>
                         </tfoot>
                     </table>
