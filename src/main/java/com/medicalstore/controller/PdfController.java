@@ -21,7 +21,7 @@ import java.time.format.DateTimeFormatter;
 @Controller
 @RequestMapping("/pdf")
 @RequiredArgsConstructor
-@PreAuthorize("isAuthenticated()")
+@PreAuthorize("hasAnyRole('ADMIN', 'SHOPKEEPER')")
 public class PdfController {
 
     private final PdfService pdfService;

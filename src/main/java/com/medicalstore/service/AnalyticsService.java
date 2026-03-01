@@ -27,6 +27,18 @@ public class AnalyticsService {
     private final SaleRepository saleRepository;
     private final MedicineRepository medicineRepository;
 
+    /**
+     * Returns a unique cache key prefix based on the current tenant context.
+     * Called via SpEL in @Cacheable keys as: #root.target.tenantCachePrefix()
+     */
+    public String tenantCachePrefix() {
+        Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
+        if (tenantId != null) return "b" + tenantId + "-";
+        Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
+        if (ownerId != null) return "o" + ownerId + "-";
+        return "admin-";
+    }
+
     // ═══════════════════════════════════════════════════════════════════
     // 1. Profit per Medicine
     // ═══════════════════════════════════════════════════════════════════
@@ -35,9 +47,18 @@ public class AnalyticsService {
      * Returns list of maps with keys: id, name, category, revenue, cost, profit,
      * qtySold, margin
      */
-    @Cacheable(value = "analytics_profit", key = "#start.toLocalDate().toString() + '-' + #end.toLocalDate().toString()")
+    @Cacheable(value = "analytics_profit", key = "#root.target.tenantCachePrefix() + #start.toLocalDate().toString() + '-' + #end.toLocalDate().toString()")
     public List<Map<String, Object>> getProfitPerMedicine(LocalDateTime start, LocalDateTime end) {
-        List<Object[]> rows = saleRepository.getProfitPerMedicine(start, end);
+        Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
+        Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
+
+        List<Object[]> rows;
+        if (tenantId != null)
+            rows = saleRepository.getProfitPerMedicineByBranch(tenantId, start, end);
+        else if (ownerId != null)
+            rows = saleRepository.getProfitPerMedicineByOwner(ownerId, start, end);
+        else
+            rows = saleRepository.getProfitPerMedicine(start, end);
         List<Map<String, Object>> result = new ArrayList<>();
 
         for (Object[] row : rows) {
@@ -65,17 +86,36 @@ public class AnalyticsService {
     // 2. Dead Stock (> N days with no sale)
     // ═══════════════════════════════════════════════════════════════════
 
-    @Cacheable(value = "analytics_deadstock", key = "#days")
+    @Cacheable(value = "analytics_deadstock", key = "#root.target.tenantCachePrefix() + #days")
     public List<Map<String, Object>> getDeadStock(int days) {
         LocalDateTime since = LocalDate.now().minusDays(days).atStartOfDay();
-        List<Long> activeIds = saleRepository.getMedicineIdsWithSalesSince(since);
+
+        Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
+        Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
+
+        List<Long> activeIds;
+        if (tenantId != null)
+            activeIds = saleRepository.getMedicineIdsWithSalesSinceByBranch(tenantId, since);
+        else if (ownerId != null)
+            activeIds = saleRepository.getMedicineIdsWithSalesSinceByOwner(ownerId, since);
+        else
+            activeIds = saleRepository.getMedicineIdsWithSalesSince(since);
 
         List<Medicine> deadMedicines;
-        if (activeIds == null || activeIds.isEmpty()) {
-            // No sales at all — all in-stock medicines are "dead"
-            deadMedicines = medicineRepository.findByQuantityGreaterThan(0);
+        boolean noActiveIds = activeIds == null || activeIds.isEmpty();
+
+        if (tenantId != null) {
+            deadMedicines = noActiveIds
+                    ? medicineRepository.findByBranchIdAndQuantityGreaterThan(tenantId, 0)
+                    : medicineRepository.findDeadStockByBranch(tenantId, activeIds);
+        } else if (ownerId != null) {
+            deadMedicines = noActiveIds
+                    ? medicineRepository.findByOwnerIdAndQuantityGreaterThan(ownerId)
+                    : medicineRepository.findDeadStockByOwner(ownerId, activeIds);
         } else {
-            deadMedicines = medicineRepository.findDeadStock(activeIds);
+            deadMedicines = noActiveIds
+                    ? medicineRepository.findByQuantityGreaterThan(0)
+                    : medicineRepository.findDeadStock(activeIds);
         }
 
         return deadMedicines.stream().map(m -> {
@@ -99,10 +139,19 @@ public class AnalyticsService {
     // 3. Fast-Moving Items (Top N)
     // ═══════════════════════════════════════════════════════════════════
 
-    @Cacheable(value = "analytics_fastmoving", key = "#limit + '-' + #start.toLocalDate().toString() + '-' + #end.toLocalDate().toString()")
+    @Cacheable(value = "analytics_fastmoving", key = "#root.target.tenantCachePrefix() + #limit + '-' + #start.toLocalDate().toString() + '-' + #end.toLocalDate().toString()")
     public List<Map<String, Object>> getFastMovingItems(int limit, LocalDateTime start, LocalDateTime end) {
+        Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
+        Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
+
         // LIMIT pushed to SQL via Pageable — avoids loading all rows and breaking in Java
-        List<Object[]> rows = saleRepository.getTopSellingMedicinesLimited(start, end, PageRequest.of(0, limit));
+        List<Object[]> rows;
+        if (tenantId != null)
+            rows = saleRepository.getTopSellingMedicinesLimitedByBranch(tenantId, start, end, PageRequest.of(0, limit));
+        else if (ownerId != null)
+            rows = saleRepository.getTopSellingMedicinesLimitedByOwner(ownerId, start, end, PageRequest.of(0, limit));
+        else
+            rows = saleRepository.getTopSellingMedicinesLimited(start, end, PageRequest.of(0, limit));
         List<Map<String, Object>> result = new ArrayList<>();
         for (Object[] row : rows) {
             Map<String, Object> item = new LinkedHashMap<>();
@@ -120,12 +169,21 @@ public class AnalyticsService {
     // 4. GST Monthly Summary
     // ═══════════════════════════════════════════════════════════════════
 
-    @Cacheable(value = "analytics_gst", key = "#year")
+    @Cacheable(value = "analytics_gst", key = "#root.target.tenantCachePrefix() + #year")
     public List<Map<String, Object>> getGstMonthlySummary(int year) {
         LocalDateTime start = LocalDate.of(year, 1, 1).atStartOfDay();
         LocalDateTime end = LocalDate.of(year, 12, 31).atTime(23, 59, 59);
 
-        List<Object[]> rows = saleRepository.getMonthlyGstSummary(start, end);
+        Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
+        Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
+
+        List<Object[]> rows;
+        if (tenantId != null)
+            rows = saleRepository.getMonthlyGstSummaryByBranch(tenantId, start, end);
+        else if (ownerId != null)
+            rows = saleRepository.getMonthlyGstSummaryByOwner(ownerId, start, end);
+        else
+            rows = saleRepository.getMonthlyGstSummary(start, end);
         List<Map<String, Object>> result = new ArrayList<>();
 
         for (Object[] row : rows) {

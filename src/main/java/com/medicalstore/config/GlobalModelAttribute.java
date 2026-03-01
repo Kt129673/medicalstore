@@ -18,8 +18,6 @@ public class GlobalModelAttribute {
 
     @ModelAttribute("lowStockCount")
     public long lowStockCount() {
-        // OWNER has no branch context and cannot access /medicines — skip
-        if (securityUtils.isOwner()) return 0;
         try {
             return medicineService.countLowStockMedicines(10);
         } catch (Exception e) {
@@ -29,8 +27,6 @@ public class GlobalModelAttribute {
 
     @ModelAttribute("expiringCount")
     public long expiringCount() {
-        // OWNER has no branch context and cannot access /medicines — skip
-        if (securityUtils.isOwner()) return 0;
         try {
             // COUNT query — avoids loading full Medicine entities just to call .size()
             return medicineService.countExpiringSoonMedicines(30);

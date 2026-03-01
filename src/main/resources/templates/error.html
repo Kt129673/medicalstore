@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+    th:replace="~{layout :: layout(title='Error', page='error', content=~{::#content}, pageIcon='bi bi-exclamation-triangle')}">
+
+<body>
+    <div id="content">
+        <style>
+            .error-container {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                min-height: 60vh;
+                text-align: center;
+                padding: 2rem;
+            }
+            .error-code {
+                font-size: 7rem;
+                font-weight: 800;
+                line-height: 1;
+                background: linear-gradient(135deg, #ef4444, #f97316);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+                margin-bottom: 0.5rem;
+            }
+            .error-icon {
+                font-size: 3rem;
+                color: #f97316;
+                margin-bottom: 1rem;
+            }
+            .error-title {
+                font-size: 1.75rem;
+                font-weight: 700;
+                color: #1e293b;
+                margin-bottom: 0.75rem;
+            }
+            .error-message {
+                font-size: 1rem;
+                color: #64748b;
+                max-width: 480px;
+                margin-bottom: 2rem;
+            }
+            .error-actions {
+                display: flex;
+                gap: 1rem;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        </style>
+
+        <div class="error-container">
+            <div class="error-code" th:text="${errorStatus} ?: '500'">500</div>
+            <i class="bi bi-exclamation-octagon-fill error-icon"></i>
+            <div class="error-title" th:text="${errorTitle} ?: 'Something Went Wrong'">Something Went Wrong</div>
+            <div class="error-message" th:text="${errorMessage} ?: 'An unexpected error occurred. Please try again or contact support.'">
+                An unexpected error occurred. Please try again or contact support.
+            </div>
+            <div class="error-actions">
+                <a href="javascript:history.back()" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-1"></i>Go Back
+                </a>
+                <a th:href="@{/}" class="btn btn-primary">
+                    <i class="bi bi-house me-1"></i>Home
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

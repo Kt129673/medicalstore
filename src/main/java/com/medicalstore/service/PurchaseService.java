@@ -79,6 +79,17 @@ public class PurchaseService {
         PurchaseOrder order = purchaseOrderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Purchase order not found"));
 
+        // Tenant check — only the owning branch or admin can receive
+        Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
+        if (tenantId != null && (order.getBranch() == null || !tenantId.equals(order.getBranch().getId()))) {
+            throw new RuntimeException("Access denied: order does not belong to your branch.");
+        }
+        Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
+        if (ownerId != null && order.getBranch() != null && order.getBranch().getOwner() != null
+                && !ownerId.equals(order.getBranch().getOwner().getId())) {
+            throw new RuntimeException("Access denied: order does not belong to your organisation.");
+        }
+
         List<PurchaseOrderItem> items = order.getItems();
         for (int i = 0; i < items.size() && i < receivedQuantities.size(); i++) {
             PurchaseOrderItem item = items.get(i);
@@ -100,6 +111,18 @@ public class PurchaseService {
     public void cancelOrder(Long orderId) {
         PurchaseOrder order = purchaseOrderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Purchase order not found"));
+
+        // Tenant check
+        Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
+        if (tenantId != null && (order.getBranch() == null || !tenantId.equals(order.getBranch().getId()))) {
+            throw new RuntimeException("Access denied: order does not belong to your branch.");
+        }
+        Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
+        if (ownerId != null && order.getBranch() != null && order.getBranch().getOwner() != null
+                && !ownerId.equals(order.getBranch().getOwner().getId())) {
+            throw new RuntimeException("Access denied: order does not belong to your organisation.");
+        }
+
         order.setStatus("CANCELLED");
         purchaseOrderRepository.save(order);
     }

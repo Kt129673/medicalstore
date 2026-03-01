@@ -122,8 +122,47 @@ public class DashboardService {
         return data;
     }
 
-    // ═══════════════════════════════════════════════════════════════════
-    // JSON builders for Chart.js
+    /** Owner-scoped dashboard (OWNER sees all their branches combined) */
+    @Cacheable(value = "dashboard_kpis", key = "'owner-' + #ownerId")
+    public Map<String, Object> buildOwnerDashboard(Long ownerId) {
+        Map<String, Object> data = new LinkedHashMap<>();
+
+        LocalDateTime startOfDay = LocalDate.now().atStartOfDay();
+        LocalDateTime endOfDay = LocalDate.now().atTime(23, 59, 59);
+        LocalDateTime startOfMonth = LocalDate.now().withDayOfMonth(1).atStartOfDay();
+        LocalDateTime sevenDaysAgo = LocalDate.now().minusDays(6).atStartOfDay();
+
+        Double todaySales = saleRepository.getTotalSalesByOwnerBetween(ownerId, startOfDay, endOfDay);
+        data.put("todaySales", todaySales != null ? todaySales : 0.0);
+        Double monthlyRevenue = saleRepository.getTotalSalesByOwnerBetween(ownerId, startOfMonth, endOfDay);
+        data.put("monthlyRevenue", monthlyRevenue != null ? monthlyRevenue : 0.0);
+        data.put("totalMedicines", medicineRepository.countByOwnerId(ownerId));
+        data.put("totalCustomers", customerRepository.countByOwnerId(ownerId));
+        data.put("lowStockCount", medicineRepository.countLowStockByOwnerId(ownerId, 10));
+
+        LocalDate now = LocalDate.now();
+        data.put("expiringIn30", medicineRepository.countExpiringByOwner(ownerId, now, now.plusDays(30)));
+        data.put("expiringIn60", medicineRepository.countExpiringByOwner(ownerId, now.plusDays(31), now.plusDays(60)));
+        data.put("expiringIn90", medicineRepository.countExpiringByOwner(ownerId, now.plusDays(61), now.plusDays(90)));
+
+        List<Medicine> criticalStock = medicineRepository.findCriticalLowStockByOwner(ownerId, 10);
+        data.put("criticalStockItems", criticalStock.stream().limit(8).collect(Collectors.toList()));
+
+        data.put("salesTrendJson",
+                buildSalesTrendJson(saleRepository.getDailySalesTotalsByOwner(ownerId, sevenDaysAgo)));
+        data.put("categoryJson",
+                buildCategoryJson(saleRepository.getSalesByCategoryByOwner(ownerId, startOfMonth, endOfDay)));
+
+        List<Sale> recent = saleRepository.findTop10WithDetailsByOwner(ownerId);
+        data.put("recentSales", recent.stream().limit(10).collect(Collectors.toList()));
+
+        org.springframework.data.domain.Pageable top5 = org.springframework.data.domain.PageRequest.of(0, 5);
+        data.put("recentMedicines", medicineRepository.findTop5ByOwnerIdOrderByCreatedDateDesc(ownerId, top5));
+        data.put("recentCustomers", customerRepository.findTop5ByOwnerIdOrderByRegisteredDateDesc(ownerId, top5));
+
+        return data;
+    }
+
     // ═══════════════════════════════════════════════════════════════════
 
     private String buildSalesTrendJson(List<Object[]> rows) {

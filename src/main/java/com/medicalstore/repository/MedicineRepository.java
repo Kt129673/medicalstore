@@ -129,11 +129,27 @@ public interface MedicineRepository extends JpaRepository<Medicine, Long>, JpaSp
         @Query("SELECT m FROM Medicine m WHERE m.id NOT IN :excludeIds AND m.quantity > 0 ORDER BY m.quantity DESC")
         List<Medicine> findDeadStock(List<Long> excludeIds);
 
+        /** Branch-scoped dead stock */
+        @Query("SELECT m FROM Medicine m WHERE m.branch.id = :branchId AND (:excludeIds IS NULL OR m.id NOT IN :excludeIds) AND m.quantity > 0 ORDER BY m.quantity DESC")
+        List<Medicine> findDeadStockByBranch(Long branchId, List<Long> excludeIds);
+
+        /** Owner-scoped dead stock */
+        @Query("SELECT m FROM Medicine m WHERE m.branch.owner.id = :ownerId AND (:excludeIds IS NULL OR m.id NOT IN :excludeIds) AND m.quantity > 0 ORDER BY m.quantity DESC")
+        List<Medicine> findDeadStockByOwner(Long ownerId, List<Long> excludeIds);
+
         /** All medicines with stock > 0 (fallback when no sales exist) */
         List<Medicine> findByQuantityGreaterThan(int minQty);
+
+        List<Medicine> findByBranchIdAndQuantityGreaterThan(Long branchId, int minQty);
+
+        @Query("SELECT m FROM Medicine m WHERE m.branch.owner.id = :ownerId AND m.quantity > 0")
+        List<Medicine> findByOwnerIdAndQuantityGreaterThan(Long ownerId);
 
         // --- Recent Activity ---
         List<Medicine> findTop5ByOrderByCreatedDateDesc();
 
         List<Medicine> findTop5ByBranchIdOrderByCreatedDateDesc(Long branchId);
+
+        @Query("SELECT m FROM Medicine m WHERE m.branch.owner.id = :ownerId ORDER BY m.createdDate DESC")
+        List<Medicine> findTop5ByOwnerIdOrderByCreatedDateDesc(Long ownerId, org.springframework.data.domain.Pageable pageable);
 }

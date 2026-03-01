@@ -57,27 +57,39 @@ public class MedicineController {
         model.addAttribute("medicine", new Medicine());
         model.addAttribute("categories", medicineService.getAllCategories());
         model.addAttribute("suppliers", supplierService.getAllSuppliers());
+        if (securityUtils.isAdmin()) {
+            model.addAttribute("branches", branchService.getAllBranches());
+        }
         return "medicines/form";
     }
 
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable Long id, Model model) {
         Medicine medicine = medicineService.getMedicineById(id)
-                .orElseThrow(() -> new RuntimeException("Medicine not found"));
+                .orElseThrow(() -> new org.springframework.security.access.AccessDeniedException(
+                        "Medicine not found or access denied"));
         model.addAttribute("medicine", medicine);
         model.addAttribute("categories", medicineService.getAllCategories());
         model.addAttribute("suppliers", supplierService.getAllSuppliers());
+        if (securityUtils.isAdmin()) {
+            model.addAttribute("branches", branchService.getAllBranches());
+        }
         return "medicines/form";
     }
 
     @PostMapping("/save")
     public String saveMedicine(@ModelAttribute Medicine medicine,
+            @RequestParam(required = false) Long branchId,
             RedirectAttributes ra, Model model) {
         try {
-            // Set branch for new medicines by shopkeeper
-            if (medicine.getId() == null && securityUtils.isShopkeeper()) {
-                Long branchId = securityUtils.getCurrentBranchId();
-                branchService.getBranchById(branchId).ifPresent(medicine::setBranch);
+            if (medicine.getId() == null) {
+                // New medicine: auto-assign branch from context
+                if (securityUtils.isShopkeeper()) {
+                    Long bid = securityUtils.getCurrentBranchId();
+                    branchService.getBranchById(bid).ifPresent(medicine::setBranch);
+                } else if (securityUtils.isAdmin() && branchId != null) {
+                    branchService.getBranchById(branchId).ifPresent(medicine::setBranch);
+                }
             }
             medicineService.saveMedicine(medicine);
             ra.addFlashAttribute("success", "Medicine saved successfully!");
@@ -85,15 +97,25 @@ public class MedicineController {
         } catch (IllegalArgumentException e) {
             model.addAttribute("error", e.getMessage());
             model.addAttribute("medicine", medicine);
+            if (securityUtils.isAdmin()) {
+                model.addAttribute("branches", branchService.getAllBranches());
+            }
+            model.addAttribute("categories", medicineService.getAllCategories());
+            model.addAttribute("suppliers", supplierService.getAllSuppliers());
             return "medicines/form";
         } catch (Exception e) {
             model.addAttribute("error", "Failed to save medicine: " + e.getMessage());
             model.addAttribute("medicine", medicine);
+            if (securityUtils.isAdmin()) {
+                model.addAttribute("branches", branchService.getAllBranches());
+            }
+            model.addAttribute("categories", medicineService.getAllCategories());
+            model.addAttribute("suppliers", supplierService.getAllSuppliers());
             return "medicines/form";
         }
     }
 
-    @GetMapping("/delete/{id}")
+    @PostMapping("/delete/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public String deleteMedicine(@PathVariable Long id, RedirectAttributes ra) {
         try {

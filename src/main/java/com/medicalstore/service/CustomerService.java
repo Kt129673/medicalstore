@@ -69,9 +69,11 @@ public class CustomerService {
 
     public List<Customer> searchCustomers(String name) {
         Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
+        Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
         if (tenantId != null)
             return customerRepository.findByBranchIdAndNameContainingIgnoreCase(tenantId, name);
-        // Owner global search not explicitly defined, fallback to global
+        if (ownerId != null)
+            return customerRepository.findByOwnerIdAndNameContainingIgnoreCase(ownerId, name);
         return customerRepository.findByNameContainingIgnoreCase(name);
     }
 

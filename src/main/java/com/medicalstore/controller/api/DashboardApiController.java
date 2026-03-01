@@ -27,6 +27,9 @@ public class DashboardApiController {
         if (securityUtils.isShopkeeper()) {
             Long branchId = securityUtils.getCurrentBranchId();
             dashboard = dashboardService.buildBranchDashboard(branchId);
+        } else if (securityUtils.isOwner()) {
+            Long ownerId = securityUtils.getCurrentUserId();
+            dashboard = dashboardService.buildOwnerDashboard(ownerId);
         } else {
             dashboard = dashboardService.buildAdminDashboard();
         }

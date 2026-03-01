@@ -2,7 +2,9 @@ package com.medicalstore.controller;
 
 import com.medicalstore.config.RoutePaths;
 import com.medicalstore.model.Supplier;
+import com.medicalstore.service.BranchService;
 import com.medicalstore.service.SupplierService;
+import com.medicalstore.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -17,6 +19,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class SupplierController {
     
     private final SupplierService supplierService;
+    private final SecurityUtils securityUtils;
+    private final BranchService branchService;
     
     @GetMapping
     public String listSuppliers(@RequestParam(required = false) String search, Model model) {
@@ -44,12 +48,17 @@ public class SupplierController {
     
     @PostMapping("/save")
     public String saveSupplier(@ModelAttribute Supplier supplier, RedirectAttributes redirectAttributes) {
+        // Auto-assign branch for shopkeeper
+        if (supplier.getId() == null && securityUtils.isShopkeeper()) {
+            Long branchId = securityUtils.getCurrentBranchId();
+            branchService.getBranchById(branchId).ifPresent(supplier::setBranch);
+        }
         supplierService.saveSupplier(supplier);
         redirectAttributes.addFlashAttribute("success", "Supplier saved successfully!");
         return RoutePaths.redirectTo(RoutePaths.SUPPLIERS);
     }
     
-    @GetMapping("/delete/{id}")
+    @PostMapping("/delete/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public String deleteSupplier(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {

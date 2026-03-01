@@ -62,7 +62,7 @@ public class SecurityConfig {
                                 "/suppliers/**", "/purchases/**")
                         .hasAnyRole("ADMIN", "SHOPKEEPER")
                         .anyRequest().authenticated())
-                .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**", "/sales/save"))
+                .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**"))
                 .formLogin(form -> form
                         .loginPage("/login")
                         .loginProcessingUrl("/login")

@@ -28,9 +28,25 @@ public class ReportService {
         private final SaleRepository saleRepository;
         private final MedicineRepository medicineRepository;
 
+        /**
+         * Returns sales for the given time range, scoped to the current tenant.
+         * - SHOPKEEPER: branch-scoped
+         * - OWNER: owner-scoped
+         * - ADMIN: global
+         */
+        private List<Sale> fetchSalesWithItems(LocalDateTime start, LocalDateTime end) {
+                Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
+                Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
+                if (tenantId != null)
+                        return saleRepository.findWithItemsByBranchBetween(tenantId, start, end);
+                if (ownerId != null)
+                        return saleRepository.findWithItemsByOwnerBetween(ownerId, start, end);
+                return saleRepository.findWithItemsBySaleDateBetween(start, end);
+        }
+
         public DailyReportData generateDailyReport(LocalDateTime startOfDay, LocalDateTime endOfDay) {
                 // JOIN FETCH on items + medicine — prevents N+1 when accessing s.getItems()
-                List<Sale> sales = saleRepository.findWithItemsBySaleDateBetween(startOfDay, endOfDay);
+                List<Sale> sales = fetchSalesWithItems(startOfDay, endOfDay);
 
                 if (sales.isEmpty()) {
                         return createEmptyDailyReport();
@@ -101,7 +117,7 @@ public class ReportService {
         public MonthlyReportData generateMonthlyReport(LocalDateTime startOfMonth, LocalDateTime endOfMonth,
                         YearMonth yearMonth) {
                 // JOIN FETCH on items + medicine — prevents N+1 when accessing s.getItems()
-                List<Sale> sales = saleRepository.findWithItemsBySaleDateBetween(startOfMonth, endOfMonth);
+                List<Sale> sales = fetchSalesWithItems(startOfMonth, endOfMonth);
 
                 if (sales.isEmpty()) {
                         return createEmptyMonthlyReport();
@@ -218,7 +234,7 @@ public class ReportService {
 
         public GstReportData generateGstReport(LocalDateTime start, LocalDateTime end) {
                 // JOIN FETCH on items + medicine — prevents N+1 when accessing s.getItems()
-                List<Sale> sales = saleRepository.findWithItemsBySaleDateBetween(start, end);
+                List<Sale> sales = fetchSalesWithItems(start, end);
 
                 if (sales.isEmpty()) {
                         return GstReportData.builder()

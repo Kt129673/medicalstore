@@ -622,7 +622,11 @@
 
                 fetch('/sales/save', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        [document.querySelector('meta[name="_csrf_header"]').content]:
+                            document.querySelector('meta[name="_csrf"]').content
+                    },
                     body: JSON.stringify(payload)
                 })
                     .then(res => {

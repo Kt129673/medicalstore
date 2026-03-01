@@ -31,6 +31,9 @@ import java.util.stream.Collectors;
 @PreAuthorize("hasRole('ADMIN')")
 public class AdminController {
 
+    /** Allowed role values an admin can assign to a new user. */
+    private static final Set<String> ALLOWED_ROLES = Set.of("ADMIN", "OWNER", "SHOPKEEPER");
+
     private final UserRepository userRepository;
     private final BranchService branchService;
     private final SecurityUtils securityUtils;
@@ -84,6 +87,11 @@ public class AdminController {
             return RoutePaths.redirectTo(RoutePaths.ADMIN_USERS_CREATE);
         }
 
+        if (!ALLOWED_ROLES.contains(role)) {
+            ra.addFlashAttribute("error", "Invalid role: " + role);
+            return RoutePaths.redirectTo(RoutePaths.ADMIN_USERS_CREATE);
+        }
+
         if (email != null && !email.isBlank() && userRepository.existsByEmail(email)) {
             ra.addFlashAttribute("error", "Email already registered: " + email);
             return RoutePaths.redirectTo(RoutePaths.ADMIN_USERS_CREATE);
@@ -107,7 +115,7 @@ public class AdminController {
         return RoutePaths.redirectTo(RoutePaths.ADMIN_USERS);
     }
 
-    @GetMapping("/users/toggle/{id}")
+    @PostMapping("/users/toggle/{id}")
     public String toggleUser(@PathVariable Long id, RedirectAttributes ra) {
         userRepository.findById(id).ifPresent(u -> {
             u.setEnabled(!u.getEnabled());
@@ -117,7 +125,7 @@ public class AdminController {
         return RoutePaths.redirectTo(RoutePaths.ADMIN_USERS);
     }
 
-    @GetMapping("/users/delete/{id}")
+    @PostMapping("/users/delete/{id}")
     public String deleteUser(@PathVariable Long id, RedirectAttributes ra) {
         Long currentId = securityUtils.getCurrentUserId();
         if (id.equals(currentId)) {
@@ -167,7 +175,7 @@ public class AdminController {
         return RoutePaths.redirectTo(RoutePaths.ADMIN_BRANCHES);
     }
 
-    @GetMapping("/branches/toggle/{id}")
+    @PostMapping("/branches/toggle/{id}")
     public String toggleBranch(@PathVariable Long id, RedirectAttributes ra) {
         branchService.toggleActive(id);
         ra.addFlashAttribute("success", "Branch status updated.");
@@ -200,9 +208,18 @@ public class AdminController {
             @RequestParam(defaultValue = "10") int maxUsers,
             @RequestParam(defaultValue = "5") int maxBranches,
             RedirectAttributes ra) {
-        subscriptionService.createOrUpdatePlan(ownerId, planType, LocalDate.parse(expiryDate), maxUsers, maxBranches);
-        String ownerName = userRepository.findById(ownerId).map(User::getUsername).orElse("Unknown");
-        ra.addFlashAttribute("success", "Subscription updated for owner: " + ownerName);
+        try {
+            if (expiryDate == null || expiryDate.isBlank()) {
+                ra.addFlashAttribute("error", "Expiry date is required.");
+                return RoutePaths.redirectTo(RoutePaths.ADMIN_SUBSCRIPTIONS);
+            }
+            LocalDate parsedDate = LocalDate.parse(expiryDate);
+            subscriptionService.createOrUpdatePlan(ownerId, planType, parsedDate, maxUsers, maxBranches);
+            String ownerName = userRepository.findById(ownerId).map(User::getUsername).orElse("Unknown");
+            ra.addFlashAttribute("success", "Subscription updated for owner: " + ownerName);
+        } catch (Exception e) {
+            ra.addFlashAttribute("error", "Failed to update subscription: " + e.getMessage());
+        }
         return RoutePaths.redirectTo(RoutePaths.ADMIN_SUBSCRIPTIONS);
     }
 }

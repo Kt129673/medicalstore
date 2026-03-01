@@ -130,7 +130,8 @@ public class PurchaseController {
         }
     }
 
-    @GetMapping("/delete/{id}")
+    @PostMapping("/delete/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public String deleteOrder(@PathVariable Long id, RedirectAttributes ra) {
         try {
             purchaseService.deleteOrder(id);

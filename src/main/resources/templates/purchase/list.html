@@ -112,12 +112,13 @@
                                         class="btn btn-sm btn-outline-secondary" title="Edit">
                                         <i class="bi bi-pencil"></i>
                                     </a>
-                                    <a th:if="${order.status == 'DRAFT'}"
-                                        th:href="@{/purchases/{id}/delete(id=${order.id})}"
-                                        class="btn btn-sm btn-outline-danger"
-                                        onclick="return confirmLink(event, this, 'This purchase order will be permanently deleted.')">
-                                        <i class="bi bi-trash"></i>
-                                    </a>
+                                    <form th:if="${order.status == 'DRAFT'}" method="post" th:action="@{/purchases/{id}/delete(id=${order.id})}" style="display:inline"
+                                          onsubmit="return confirm('This purchase order will be permanently deleted.')">
+                                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
                                 </div>
                             </td>
                         </tr>

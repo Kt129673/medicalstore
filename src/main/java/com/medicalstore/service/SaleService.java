@@ -27,7 +27,19 @@ public class SaleService {
     @Transactional(readOnly = true)
     public Optional<Sale> getSaleById(Long id) {
         // Single JOIN FETCH query — avoids N+1 on invoice/detail view
-        return saleRepository.findByIdWithDetails(id);
+        Optional<Sale> sale = saleRepository.findByIdWithDetails(id);
+        if (sale.isPresent() && sale.get().getBranch() != null) {
+            Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
+            if (tenantId != null && !tenantId.equals(sale.get().getBranch().getId())) {
+                return Optional.empty();
+            }
+            Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
+            if (ownerId != null && sale.get().getBranch().getOwner() != null
+                    && !ownerId.equals(sale.get().getBranch().getOwner().getId())) {
+                return Optional.empty();
+            }
+        }
+        return sale;
     }
 
     @Transactional(readOnly = true)

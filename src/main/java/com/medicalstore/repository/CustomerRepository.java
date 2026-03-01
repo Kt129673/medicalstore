@@ -32,8 +32,15 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
     @Query("SELECT COUNT(c) FROM Customer c WHERE c.branch.owner.id = :ownerId")
     long countByOwnerId(Long ownerId);
 
+    // --- owner name search ---
+    @Query("SELECT c FROM Customer c WHERE c.branch.owner.id = :ownerId AND LOWER(c.name) LIKE LOWER(CONCAT('%', :name, '%'))")
+    List<Customer> findByOwnerIdAndNameContainingIgnoreCase(Long ownerId, String name);
+
     // --- Recent Activity ---
     List<Customer> findTop5ByOrderByRegisteredDateDesc();
 
     List<Customer> findTop5ByBranchIdOrderByRegisteredDateDesc(Long branchId);
+
+    @Query("SELECT c FROM Customer c WHERE c.branch.owner.id = :ownerId ORDER BY c.registeredDate DESC")
+    List<Customer> findTop5ByOwnerIdOrderByRegisteredDateDesc(Long ownerId, org.springframework.data.domain.Pageable pageable);
 }

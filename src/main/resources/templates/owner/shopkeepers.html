@@ -48,10 +48,12 @@
                                 <span th:unless="${sk.enabled}" class="badge bg-danger">Inactive</span>
                             </td>
                             <td>
-                                <a th:href="@{/owner/shopkeepers/toggle/{id}(id=${sk.id})}"
-                                    class="btn btn-sm btn-outline-secondary">
-                                    <i class="bi bi-toggle-on"></i>
-                                </a>
+                                <form method="post" th:action="@{/owner/shopkeepers/toggle/{id}(id=${sk.id})}" style="display:inline">
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                    <button type="submit" class="btn btn-sm btn-outline-secondary" title="Toggle">
+                                        <i class="bi bi-toggle-on"></i>
+                                    </button>
+                                </form>
                             </td>
                         </tr>
                         <tr th:if="${#lists.isEmpty(shopkeepers)}">

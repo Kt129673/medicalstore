@@ -20,4 +20,7 @@ public interface SupplierRepository extends JpaRepository<Supplier, Long> {
     // --- owner-scoped (OWNER) ---
     @Query("SELECT s FROM Supplier s WHERE s.branch.owner.id = :ownerId")
     List<Supplier> findByOwnerId(Long ownerId);
+
+    @Query("SELECT s FROM Supplier s WHERE s.branch.owner.id = :ownerId AND LOWER(s.name) LIKE LOWER(CONCAT('%', :name, '%'))")
+    List<Supplier> findByOwnerIdAndNameContainingIgnoreCase(Long ownerId, String name);
 }

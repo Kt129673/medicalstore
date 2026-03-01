@@ -113,6 +113,10 @@ public interface SaleRepository extends JpaRepository<Sale, Long> {
                         "WHERE s.branch.id = ?1 ORDER BY s.saleDate DESC")
         List<Sale> findTop10WithDetailsByBranch(Long branchId);
 
+        @Query("SELECT s FROM Sale s LEFT JOIN FETCH s.customer " +
+                        "WHERE s.branch.owner.id = ?1 ORDER BY s.saleDate DESC")
+        List<Sale> findTop10WithDetailsByOwner(Long ownerId);
+
         // --- dashboard analytics (owner-scoped / OWNER) ---
         @Query("SELECT CAST(s.saleDate AS LocalDate), COALESCE(SUM(s.finalAmount), SUM(s.totalAmount)) " +
                         "FROM Sale s WHERE s.branch.owner.id = ?1 AND s.saleDate >= ?2 GROUP BY CAST(s.saleDate AS LocalDate) ORDER BY CAST(s.saleDate AS LocalDate)")
@@ -193,4 +197,63 @@ public interface SaleRepository extends JpaRepository<Sale, Long> {
                         "FROM Sale s JOIN s.items i JOIN i.medicine m WHERE s.saleDate BETWEEN ?1 AND ?2 " +
                         "GROUP BY m.id, m.name, m.category ORDER BY SUM(i.quantity) DESC")
         List<Object[]> getTopSellingMedicinesLimited(LocalDateTime start, LocalDateTime end,
-                        org.springframework.data.domain.Pageable pageable);}
+                        org.springframework.data.domain.Pageable pageable);
+
+        // --- Analytics: branch-scoped ---
+        @Query("SELECT m.id, m.name, m.category, " +
+                        "SUM(i.totalPrice), SUM(i.costPrice * i.quantity), " +
+                        "SUM(i.totalPrice - (i.costPrice * i.quantity)), SUM(i.quantity) " +
+                        "FROM Sale s JOIN s.items i JOIN i.medicine m " +
+                        "WHERE s.branch.id = ?1 AND s.saleDate BETWEEN ?2 AND ?3 " +
+                        "GROUP BY m.id, m.name, m.category ORDER BY SUM(i.totalPrice - (i.costPrice * i.quantity)) DESC")
+        List<Object[]> getProfitPerMedicineByBranch(Long branchId, LocalDateTime start, LocalDateTime end);
+
+        @Query("SELECT DISTINCT i.medicine.id FROM Sale s JOIN s.items i WHERE s.branch.id = ?1 AND s.saleDate >= ?2")
+        List<Long> getMedicineIdsWithSalesSinceByBranch(Long branchId, LocalDateTime since);
+
+        @Query("SELECT m.id, m.name, m.category, SUM(i.quantity), SUM(i.totalPrice) " +
+                        "FROM Sale s JOIN s.items i JOIN i.medicine m " +
+                        "WHERE s.branch.id = ?1 AND s.saleDate BETWEEN ?2 AND ?3 " +
+                        "GROUP BY m.id, m.name, m.category ORDER BY SUM(i.quantity) DESC")
+        List<Object[]> getTopSellingMedicinesLimitedByBranch(Long branchId, LocalDateTime start, LocalDateTime end,
+                        org.springframework.data.domain.Pageable pageable);
+
+        @Query("SELECT FUNCTION('DATE_FORMAT', s.saleDate, '%Y-%m'), " +
+                        "SUM(s.totalAmount - COALESCE(s.discountAmount, 0.0)), " +
+                        "SUM(COALESCE(s.gstAmount, 0.0)) / 2, " +
+                        "SUM(COALESCE(s.gstAmount, 0.0)) / 2, " +
+                        "SUM(COALESCE(s.gstAmount, 0.0)), COUNT(s) " +
+                        "FROM Sale s WHERE s.branch.id = ?1 AND s.saleDate BETWEEN ?2 AND ?3 " +
+                        "GROUP BY FUNCTION('DATE_FORMAT', s.saleDate, '%Y-%m') " +
+                        "ORDER BY FUNCTION('DATE_FORMAT', s.saleDate, '%Y-%m')")
+        List<Object[]> getMonthlyGstSummaryByBranch(Long branchId, LocalDateTime start, LocalDateTime end);
+
+        // --- Analytics: owner-scoped ---
+        @Query("SELECT m.id, m.name, m.category, " +
+                        "SUM(i.totalPrice), SUM(i.costPrice * i.quantity), " +
+                        "SUM(i.totalPrice - (i.costPrice * i.quantity)), SUM(i.quantity) " +
+                        "FROM Sale s JOIN s.items i JOIN i.medicine m " +
+                        "WHERE s.branch.owner.id = ?1 AND s.saleDate BETWEEN ?2 AND ?3 " +
+                        "GROUP BY m.id, m.name, m.category ORDER BY SUM(i.totalPrice - (i.costPrice * i.quantity)) DESC")
+        List<Object[]> getProfitPerMedicineByOwner(Long ownerId, LocalDateTime start, LocalDateTime end);
+
+        @Query("SELECT DISTINCT i.medicine.id FROM Sale s JOIN s.items i WHERE s.branch.owner.id = ?1 AND s.saleDate >= ?2")
+        List<Long> getMedicineIdsWithSalesSinceByOwner(Long ownerId, LocalDateTime since);
+
+        @Query("SELECT m.id, m.name, m.category, SUM(i.quantity), SUM(i.totalPrice) " +
+                        "FROM Sale s JOIN s.items i JOIN i.medicine m " +
+                        "WHERE s.branch.owner.id = ?1 AND s.saleDate BETWEEN ?2 AND ?3 " +
+                        "GROUP BY m.id, m.name, m.category ORDER BY SUM(i.quantity) DESC")
+        List<Object[]> getTopSellingMedicinesLimitedByOwner(Long ownerId, LocalDateTime start, LocalDateTime end,
+                        org.springframework.data.domain.Pageable pageable);
+
+        @Query("SELECT FUNCTION('DATE_FORMAT', s.saleDate, '%Y-%m'), " +
+                        "SUM(s.totalAmount - COALESCE(s.discountAmount, 0.0)), " +
+                        "SUM(COALESCE(s.gstAmount, 0.0)) / 2, " +
+                        "SUM(COALESCE(s.gstAmount, 0.0)) / 2, " +
+                        "SUM(COALESCE(s.gstAmount, 0.0)), COUNT(s) " +
+                        "FROM Sale s WHERE s.branch.owner.id = ?1 AND s.saleDate BETWEEN ?2 AND ?3 " +
+                        "GROUP BY FUNCTION('DATE_FORMAT', s.saleDate, '%Y-%m') " +
+                        "ORDER BY FUNCTION('DATE_FORMAT', s.saleDate, '%Y-%m')")
+        List<Object[]> getMonthlyGstSummaryByOwner(Long ownerId, LocalDateTime start, LocalDateTime end);
+}

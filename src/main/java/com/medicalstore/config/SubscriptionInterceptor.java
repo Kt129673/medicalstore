@@ -25,18 +25,26 @@ public class SubscriptionInterceptor implements HandlerInterceptor {
             return true;
         }
 
+        // Admin routes are never subject to subscription checks
+        if (uri.startsWith("/admin")) {
+            return true;
+        }
+
         // Only enforce for Owners and Shopkeepers
         if (securityUtils.isOwnerOrShopkeeper()) {
             Long userId = securityUtils.getCurrentUserId();
             if (userId != null) {
                 Long ownerId = securityUtils.getCurrentOwnerId();
-                if (ownerId != null) {
-                    var plan = subscriptionService.getPlanForOwner(ownerId);
-                    if (plan.isPresent() && plan.get().isExpired()) {
-                        // Redirect to billing wall
-                        response.sendRedirect(RoutePaths.SUBSCRIPTION_BILLING);
-                        return false;
-                    }
+                if (ownerId == null) {
+                    // Orphan shopkeeper with no owning branch — treat as expired
+                    response.sendRedirect(RoutePaths.SUBSCRIPTION_BILLING);
+                    return false;
+                }
+                var plan = subscriptionService.getPlanForOwner(ownerId);
+                if (plan.isEmpty() || plan.get().isExpired()) {
+                    // No plan or expired plan
+                    response.sendRedirect(RoutePaths.SUBSCRIPTION_BILLING);
+                    return false;
                 }
             }
         }

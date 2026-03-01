@@ -144,13 +144,23 @@ public class OwnerController {
                 return "redirect:/owner/shopkeepers";
         }
 
-        @GetMapping("/shopkeepers/toggle/{id}")
-        public String toggleShopkeeper(@PathVariable Long id, RedirectAttributes ra) {
-                userRepository.findById(id).ifPresent(u -> {
+    @PostMapping("/shopkeepers/toggle/{id}")
+    public String toggleShopkeeper(@PathVariable Long id, RedirectAttributes ra) {
+                Long ownerId = securityUtils.getCurrentUserId();
+                var myBranchIds = branchService.getBranchesByOwner(ownerId)
+                                .stream().map(Branch::getId).collect(java.util.stream.Collectors.toSet());
+
+                userRepository.findById(id).ifPresentOrElse(u -> {
+                        if (!u.getRoles().contains("SHOPKEEPER")
+                                || u.getBranch() == null
+                                || !myBranchIds.contains(u.getBranch().getId())) {
+                                ra.addFlashAttribute("error", "Access denied: shopkeeper not in your branches.");
+                                return;
+                        }
                         u.setEnabled(!u.getEnabled());
                         userRepository.save(u);
-                });
-                ra.addFlashAttribute("success", "Shopkeeper status updated.");
+                        ra.addFlashAttribute("success", "Shopkeeper status updated.");
+                }, () -> ra.addFlashAttribute("error", "Shopkeeper not found."));
                 return "redirect:/owner/shopkeepers";
         }
 }

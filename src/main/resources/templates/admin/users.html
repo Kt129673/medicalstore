@@ -58,15 +58,19 @@
                                     <span th:unless="${user.enabled}" class="badge bg-danger">Inactive</span>
                                 </td>
                                 <td>
-                                    <a th:href="@{/admin/users/toggle/{id}(id=${user.id})}"
-                                        class="btn btn-sm btn-outline-secondary me-1">
-                                        <i class="bi bi-toggle-on"></i>
-                                    </a>
-                                    <a th:href="@{/admin/users/delete/{id}(id=${user.id})}"
-                                        class="btn btn-sm btn-outline-danger"
-                                        onclick="return confirmLink(event, this, 'This user will be permanently deleted.')">
-                                        <i class="bi bi-trash"></i>
-                                    </a>
+                                    <form method="post" th:action="@{/admin/users/toggle/{id}(id=${user.id})}" style="display:inline">
+                                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                        <button type="submit" class="btn btn-sm btn-outline-secondary me-1" title="Toggle">
+                                            <i class="bi bi-toggle-on"></i>
+                                        </button>
+                                    </form>
+                                    <form method="post" th:action="@{/admin/users/delete/{id}(id=${user.id})}" style="display:inline"
+                                          onsubmit="return confirm('This user will be permanently deleted.')">
+                                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
                                 </td>
                             </tr>
                         </tbody>

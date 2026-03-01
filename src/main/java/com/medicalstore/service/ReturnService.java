@@ -20,11 +20,29 @@ public class ReturnService {
     private final MedicineRepository medicineRepository;
 
     public List<Return> getAllReturns() {
+        Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
+        Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
+        if (tenantId != null)
+            return returnRepository.findByBranchId(tenantId);
+        if (ownerId != null)
+            return returnRepository.findByOwnerId(ownerId);
         return returnRepository.findAll();
     }
 
     public Optional<Return> getReturnById(Long id) {
-        return returnRepository.findById(id);
+        Optional<Return> ret = returnRepository.findById(id);
+        if (ret.isPresent() && ret.get().getSale() != null && ret.get().getSale().getBranch() != null) {
+            Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
+            if (tenantId != null && !tenantId.equals(ret.get().getSale().getBranch().getId())) {
+                return Optional.empty();
+            }
+            Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
+            if (ownerId != null && ret.get().getSale().getBranch().getOwner() != null
+                    && !ownerId.equals(ret.get().getSale().getBranch().getOwner().getId())) {
+                return Optional.empty();
+            }
+        }
+        return ret;
     }
 
     @Transactional
