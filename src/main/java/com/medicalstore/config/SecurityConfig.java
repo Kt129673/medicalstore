@@ -17,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 
 @Configuration
 @EnableWebSecurity
@@ -62,7 +63,18 @@ public class SecurityConfig {
                                 "/suppliers/**", "/purchases/**")
                         .hasAnyRole("ADMIN", "SHOPKEEPER")
                         .anyRequest().authenticated())
-                .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**"))
+                .csrf(csrf -> {
+                    // Use non-deferred handler so the CSRF token is eagerly loaded.
+                    // The default XorCsrfTokenRequestAttributeHandler defers token generation
+                    // until CsrfToken.getToken() is called. On pages whose template exceeds
+                    // Tomcat's 8 KB response buffer (e.g. login.html with 640 lines of CSS),
+                    // the response is already committed by the time th:action triggers
+                    // token resolution, causing:
+                    //   IllegalStateException: Cannot create a session after the
+                    //   response has been committed
+                    csrf.csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler());
+                    csrf.ignoringRequestMatchers("/api/**");
+                })
                 .formLogin(form -> form
                         .loginPage("/login")
                         .loginProcessingUrl("/login")
@@ -89,7 +101,10 @@ public class SecurityConfig {
                         .maxSessionsPreventsLogin(false))
                 .authenticationProvider(authenticationProvider())
                 .addFilterAfter(tenantFilter,
-                        org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class);
+                        org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class)
+                // Eagerly materialise the CSRF token before any template bytes are flushed
+                .addFilterAfter(new CsrfCookieFilter(),
+                        org.springframework.security.web.csrf.CsrfFilter.class);
 
         return http.build();
     }
