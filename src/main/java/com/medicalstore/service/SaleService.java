@@ -67,6 +67,57 @@ public class SaleService {
         return saleRepository.findAllByOrderBySaleDateDesc(pageable);
     }
 
+    @Transactional(readOnly = true)
+    public org.springframework.data.domain.Page<Sale> getFilteredSalesPaginated(
+            String search, LocalDateTime startDate, LocalDateTime endDate,
+            String paymentMethod, org.springframework.data.domain.Pageable pageable) {
+
+        Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
+        Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
+
+        org.springframework.data.jpa.domain.Specification<Sale> spec = (root, query, cb) -> {
+            java.util.List<jakarta.persistence.criteria.Predicate> predicates = new java.util.ArrayList<>();
+
+            // Tenant isolation
+            if (tenantId != null) {
+                predicates.add(cb.equal(root.get("branch").get("id"), tenantId));
+            } else if (ownerId != null) {
+                predicates.add(cb.equal(root.get("branch").get("owner").get("id"), ownerId));
+            }
+
+            // Customer name search — only join when actually filtering
+            if (search != null && !search.trim().isEmpty()) {
+                String like = "%" + search.toLowerCase() + "%";
+                jakarta.persistence.criteria.Join<?, ?> customerJoin = root.join("customer",
+                        jakarta.persistence.criteria.JoinType.LEFT);
+                predicates.add(cb.like(cb.lower(customerJoin.get("name")), like));
+                query.distinct(true);
+            }
+
+            // Date range
+            if (startDate != null) {
+                predicates.add(cb.greaterThanOrEqualTo(root.get("saleDate"), startDate));
+            }
+            if (endDate != null) {
+                predicates.add(cb.lessThanOrEqualTo(root.get("saleDate"), endDate));
+            }
+
+            // Payment method
+            if (paymentMethod != null && !paymentMethod.trim().isEmpty()) {
+                predicates.add(cb.equal(cb.lower(root.get("paymentMethod")), paymentMethod.toLowerCase()));
+            }
+
+            // Only add ORDER BY for the select query (not the count query)
+            if (query.getResultType() != Long.class && query.getResultType() != long.class) {
+                query.orderBy(cb.desc(root.get("saleDate")));
+            }
+
+            return cb.and(predicates.toArray(new jakarta.persistence.criteria.Predicate[0]));
+        };
+
+        return saleRepository.findAll(spec, pageable);
+    }
+
     @Transactional
     public Sale createSale(Sale sale) {
         if (sale.getItems() == null || sale.getItems().isEmpty()) {

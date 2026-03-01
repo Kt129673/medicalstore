@@ -1,6 +1,25 @@
 /* Sidebar close btn (mobile only) */
 .sidebar-close-btn {
     display: none;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #94a3b8;
+    border-radius: 8px;
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.sidebar-close-btn:hover {
+    background: rgba(255, 255, 255, 0.14);
+    color: #e2e8f0;
 }
 
 /* Desktop mini-collapse */
@@ -8,25 +27,27 @@
     .mobile-toggle {
         display: block;
         position: fixed;
-        top: 14px;
+        top: 12px;
         left: 14px;
         z-index: 1100;
-        background: transparent;
-        color: var(--text-secondary);
-        border: none;
-        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.08);
+        color: #94a3b8;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
         width: 36px;
         height: 36px;
-        font-size: 20px;
+        font-size: 19px;
         cursor: pointer;
-        transition: color 0.2s;
+        transition: all 0.2s;
         padding: 0;
         line-height: 36px;
         text-align: center;
     }
 
     .mobile-toggle:hover {
-        color: var(--primary-color);
+        background: rgba(255, 255, 255, 0.14);
+        color: #e2e8f0;
+        border-color: rgba(255, 255, 255, 0.2);
     }
 
     .sidebar-overlay {
@@ -84,13 +105,14 @@
     .sidebar.mini .nav-link::after {
         content: attr(data-label);
         position: absolute;
-        left: calc(var(--sidebar-collapsed-width) - 4px);
+        left: calc(var(--sidebar-collapsed-width) + 6px);
         top: 50%;
         transform: translateY(-50%);
-        background: var(--text-primary);
-        color: var(--bg-primary);
-        padding: 4px 10px;
-        border-radius: 6px;
+        background: #1e293b;
+        color: #e2e8f0;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 5px 12px;
+        border-radius: 8px;
         font-size: 12px;
         font-weight: 600;
         white-space: nowrap;
@@ -98,6 +120,7 @@
         pointer-events: none;
         transition: opacity 0.15s;
         z-index: 100;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
     }
 
     .sidebar.mini .nav-link:hover::after {
@@ -135,24 +158,6 @@
 @media (max-width: 992px) {
     .sidebar-close-btn {
         display: flex;
-        align-items: center;
-        justify-content: center;
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        background: rgba(255, 255, 255, 0.15);
-        border: none;
-        color: white;
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        font-size: 16px;
-        cursor: pointer;
-        z-index: 10;
-    }
-
-    .sidebar-close-btn:hover {
-        background: rgba(255, 255, 255, 0.3);
     }
 
     .sidebar {
@@ -167,7 +172,7 @@
 
     .sidebar.active {
         transform: translateX(0);
-        box-shadow: 4px 0 24px rgba(0, 0, 0, 0.25);
+        box-shadow: 8px 0 32px rgba(0, 0, 0, 0.4);
     }
 
     .sidebar-overlay {
@@ -334,19 +339,10 @@
     }
 }
 
-.table-responsive {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-}
-
-.table-responsive .table thead th {
-    position: sticky;
-    top: 0;
-    z-index: 2;
-}
+/* Table-responsive scrollbar & sticky header — see components.css */
 
 .table tbody tr:nth-child(even) {
-    background: rgba(148, 163, 184, 0.03);
+    background: rgba(148, 163, 184, 0.04);
 }
 
 .empty-state-icon {

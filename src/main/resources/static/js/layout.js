@@ -320,6 +320,63 @@ window.entInitTableSort = function (tableId) {
 };
 
 /* ─────────────────────────────────────────────────
+   4a. ROW ANIMATE  (staggered fade-in on load)
+   Usage:  entInitTableAnimateRows('myTableId')
+   Or auto-trigger by adding class "table-animate-rows" to <table>.
+   CSS keyframe lives in components.css.
+───────────────────────────────────────────────── */
+window.entInitTableAnimateRows = function (tableId) {
+    const table = tableId ? document.getElementById(tableId) : null;
+    const target = table || document.querySelectorAll('.table-animate-rows');
+    const apply = (t) => {
+        t.classList.add('table-animate-rows');
+        // Re-trigger animation after a sort/filter
+        t._entAnimRows = () => {
+            const rows = t.querySelectorAll('tbody tr');
+            rows.forEach((r, i) => {
+                r.style.animation = 'none';
+                void r.offsetHeight; // reflow
+                r.style.animation = '';
+            });
+        };
+    };
+    if (table) { apply(table); }
+    else { document.querySelectorAll('.table-animate-rows').forEach(apply); }
+};
+
+/* Auto-init on DOMContentLoaded for any table that already has the class */
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('table.table-animate-rows').forEach(t => {
+        window.entInitTableAnimateRows && window.entInitTableAnimateRows(t.id || null);
+    });
+});
+
+/* ─────────────────────────────────────────────────
+   4b. ROW CLICK HIGHLIGHT
+   Usage: entInitRowHighlight('myTableId')
+   Clicking a body row toggles .table-active on it and fires a
+   custom 'ent:rowselect' event with { row, id }.
+───────────────────────────────────────────────── */
+window.entInitRowHighlight = function (tableId, opts) {
+    const table = document.getElementById(tableId);
+    if (!table) return;
+    const o = Object.assign({ single: true, activeClass: 'table-active' }, opts);
+    table.addEventListener('click', (e) => {
+        const row = e.target.closest('tbody tr');
+        if (!row) return;
+        if (o.single) {
+            table.querySelectorAll(`tbody tr.${o.activeClass}`)
+                 .forEach(r => r !== row && r.classList.remove(o.activeClass));
+        }
+        row.classList.toggle(o.activeClass);
+        row.dispatchEvent(new CustomEvent('ent:rowselect', {
+            bubbles: true,
+            detail: { row, id: row.dataset.id }
+        }));
+    });
+};
+
+/* ─────────────────────────────────────────────────
    4. BULK ROW SELECT
    Call entInitBulkSelect('tableId') after page load.
    Requires: table has a checkbox in col 0 with class "ent-row-check",
@@ -569,12 +626,48 @@ window.entToggleDark = function () {
     const next = current === 'dark' ? 'light' : 'dark';
     document.documentElement.setAttribute('data-theme', next);
     localStorage.setItem('theme', next);
+    _syncThemeIcon();
 };
+
+function _syncThemeIcon() {
+    const icon = document.getElementById('themeIcon');
+    if (!icon) return;
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    icon.className = isDark ? 'bi bi-sun-fill' : 'bi bi-moon-stars-fill';
+}
 
 // Restore on load
 (function () {
     const saved = localStorage.getItem('theme');
     if (saved) document.documentElement.setAttribute('data-theme', saved);
 })();
+
+// Wire theme toggle button
+onDomReady(() => {
+    _syncThemeIcon();
+    const toggleBtn = document.getElementById('themeToggle');
+    if (toggleBtn) {
+        toggleBtn.addEventListener('click', window.entToggleDark);
+    }
+});
+
+/* ─────────────────────────────────────────────────
+   13. DATA-CONFIRM-DELETE  (auto-wire delete forms)
+   Add data-confirm-delete="Message here" to any <form>
+   to replace the native confirm() with SweetAlert2.
+───────────────────────────────────────────────── */
+document.addEventListener('submit', function (e) {
+    const form = e.target;
+    if (!form.hasAttribute('data-confirm-delete')) return;
+    if (form.dataset.confirmed === '1') { delete form.dataset.confirmed; return; }
+    e.preventDefault();
+    const msg = form.getAttribute('data-confirm-delete');
+    confirmAction('Are you sure?', msg, 'Delete').then(result => {
+        if (result.isConfirmed) {
+            form.dataset.confirmed = '1';
+            form.submit();
+        }
+    });
+});
 
 

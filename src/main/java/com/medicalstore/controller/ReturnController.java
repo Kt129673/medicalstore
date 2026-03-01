@@ -46,4 +46,16 @@ public class ReturnController {
         }
         return "redirect:/returns";
     }
+
+    @PostMapping("/delete/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String deleteReturn(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            returnService.deleteReturn(id);
+            redirectAttributes.addFlashAttribute("success", "Return cancelled and stock adjustment reversed.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Cannot delete return: " + e.getMessage());
+        }
+        return "redirect:/returns";
+    }
 }

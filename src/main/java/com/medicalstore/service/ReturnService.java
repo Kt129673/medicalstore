@@ -73,4 +73,26 @@ public class ReturnService {
     public List<Return> getReturnsBySale(Long saleId) {
         return returnRepository.findBySaleId(saleId);
     }
+
+    @Transactional
+    public void deleteReturn(Long id) {
+        Return returnItem = returnRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Return record not found: " + id));
+
+        // Reverse the stock restoration that was done when return was created
+        com.medicalstore.model.SaleItem item = returnItem.getSaleItem();
+        if (item != null && item.getMedicine() != null) {
+            Medicine medicine = medicineRepository.findById(item.getMedicine().getId())
+                    .orElse(null);
+            if (medicine != null) {
+                int currentQty = medicine.getQuantity();
+                int returnedQty = returnItem.getReturnQuantity();
+                // Deduct the previously restored quantity (undo the return)
+                medicine.setQuantity(Math.max(0, currentQty - returnedQty));
+                medicineRepository.save(medicine);
+            }
+        }
+
+        returnRepository.deleteById(id);
+    }
 }

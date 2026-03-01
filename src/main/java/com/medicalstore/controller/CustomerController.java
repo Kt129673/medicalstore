@@ -4,6 +4,7 @@ import com.medicalstore.config.RoutePaths;
 import com.medicalstore.model.Customer;
 import com.medicalstore.service.BranchService;
 import com.medicalstore.service.CustomerService;
+import com.medicalstore.service.SaleService;
 import com.medicalstore.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,6 +22,7 @@ public class CustomerController {
     private final CustomerService customerService;
     private final SecurityUtils securityUtils;
     private final BranchService branchService;
+    private final SaleService saleService;
     
     @GetMapping
     public String listCustomers(@RequestParam(required = false) String search, Model model) {
@@ -32,6 +34,15 @@ public class CustomerController {
         return "customers/list";
     }
     
+    @GetMapping("/{id}")
+    public String viewCustomer(@PathVariable Long id, Model model) {
+        Customer customer = customerService.getCustomerById(id)
+                .orElseThrow(() -> new RuntimeException("Customer not found"));
+        model.addAttribute("customer", customer);
+        model.addAttribute("purchases", saleService.getSalesByCustomer(id));
+        return "customers/view";
+    }
+
     @GetMapping("/new")
     public String showAddForm(Model model) {
         model.addAttribute("customer", new Customer());
