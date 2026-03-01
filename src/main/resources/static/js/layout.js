@@ -195,30 +195,35 @@ if (sidebarOverlay) {
     sidebarOverlay.addEventListener('click', closeSidebarMobile);
 }
 
-/* Close on nav-link click (mobile) */
-document.querySelectorAll('.sidebar .nav-link').forEach(link => {
-    link.addEventListener('click', () => {
-        if (isMobile()) closeSidebarMobile();
+/* Close on nav-link click (mobile) — use event delegation instead of per-link listeners */
+if (sidebar) {
+    sidebar.addEventListener('click', (e) => {
+        if (isMobile() && e.target.closest('.nav-link')) closeSidebarMobile();
     });
-});
+}
 
-/* Reset mobile state on resize to desktop */
+/* Reset mobile state on resize to desktop (debounced to avoid thrashing) */
+let _resizeTimer = null;
 window.addEventListener('resize', () => {
-    if (!isMobile()) closeSidebarMobile();
+    if (_resizeTimer) return;
+    _resizeTimer = setTimeout(() => {
+        _resizeTimer = null;
+        if (!isMobile()) closeSidebarMobile();
+    }, 150);
 });
 
-/* ---- Live clock ---- */
+/* ---- Live clock (DOM elements cached once to avoid repeated getElementById) ---- */
+const _clockTimeEl = document.getElementById('liveClock');
+const _clockDateEl = document.getElementById('liveDate');
+const _clockMonths  = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const _clockDays    = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 function updateClock() {
     const now = new Date();
     const hh = String(now.getHours()).padStart(2, '0');
     const mm = String(now.getMinutes()).padStart(2, '0');
     const ss = String(now.getSeconds()).padStart(2, '0');
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-    const timeEl = document.getElementById('liveClock');
-    const dateEl = document.getElementById('liveDate');
-    if (timeEl) timeEl.textContent = hh + ':' + mm + ':' + ss;
-    if (dateEl) dateEl.textContent = days[now.getDay()] + ', ' + now.getDate() + ' ' + months[now.getMonth()] + ' ' + now.getFullYear();
+    if (_clockTimeEl) _clockTimeEl.textContent = hh + ':' + mm + ':' + ss;
+    if (_clockDateEl) _clockDateEl.textContent = _clockDays[now.getDay()] + ', ' + now.getDate() + ' ' + _clockMonths[now.getMonth()] + ' ' + now.getFullYear();
 }
 updateClock();
 setInterval(updateClock, 1000);
@@ -262,8 +267,13 @@ if (globalSearchInput) {
         }
     });
 
+    /* Debounce localStorage writes — no need to persist on every keystroke */
+    let _searchSaveTimer = null;
     globalSearchInput.addEventListener('input', () => {
-        localStorage.setItem('globalSearchQuery', globalSearchInput.value);
+        clearTimeout(_searchSaveTimer);
+        _searchSaveTimer = setTimeout(() => {
+            localStorage.setItem('globalSearchQuery', globalSearchInput.value);
+        }, 300);
     });
 }
 
@@ -806,6 +816,8 @@ function _entBumpRowCount(delta) {
     el.innerHTML = '<div class="bar"></div>';
     document.body.appendChild(el);
     const bar = el.querySelector('.bar');
+    /* Hint to the compositor: this element's width/opacity will change frequently */
+    bar.style.willChange = 'width, opacity';
 
     let _current = 0;
     let _timer    = null;

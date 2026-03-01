@@ -83,6 +83,10 @@
     height: calc(100vh - var(--header-height));
     overflow-y: auto;
     position: relative;
+    /* Isolate layout recalculations to this subtree */
+    contain: layout;
+    /* Hint to compositing engine (removed after animation via animation-fill-mode) */
+    will-change: transform, opacity;
 }
 
 /* Premium styled scrollbar for main-body & sidebar */
@@ -172,6 +176,8 @@ summary:focus-visible,
     height: 100vh;
     width: 100vw;
     overflow: hidden;
+    /* Contain layout to this root; prevents ancestor reflows from page content */
+    contain: strict;
 }
 
 /* Premium Global UI Elements */
