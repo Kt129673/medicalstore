@@ -3,97 +3,97 @@
     th:replace="~{layout :: layout(title='Reports', page='reports', content=~{::#content}, pageIcon='bi bi-graph-up-arrow')}">
 
 <head>
-    <style>
-        .page-header {
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-            color: white;
-            border-radius: 16px;
-            padding: 35px 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.4);
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .page-header::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0) 60%);
-            transform: rotate(30deg);
-            pointer-events: none;
-        }
-
-        .page-header h2 {
-            margin: 0;
-            font-weight: 700;
-            color: white;
-        }
-
-        .page-header p {
-            margin: 4px 0 0;
-            opacity: 0.8;
-            color: rgba(255, 255, 255, 0.8) !important;
-        }
-
-        .card {
-            border: none;
-            border-radius: 16px;
-            background: rgba(255, 255, 255, 0.95);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            overflow: hidden;
-            position: relative;
-        }
-
-        .card:hover {
-            transform: translateY(-8px) scale(1.02);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-        }
-
-        .card::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            bottom: 0;
-            left: 0;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 100%);
-            pointer-events: none;
-        }
-
-        .btn {
-            border-radius: 8px;
-            font-weight: 500;
-            letter-spacing: 0.5px;
-            transition: all 0.2s ease;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
-
-        .icon-box {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        }
-    </style>
 </head>
 
 <body>
     <div id="content">
+        <style>
+            .page-header {
+                background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+                color: white;
+                border-radius: 16px;
+                padding: 35px 30px;
+                margin-bottom: 30px;
+                box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.4);
+                position: relative;
+                overflow: hidden;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .page-header::after {
+                content: '';
+                position: absolute;
+                top: -50%;
+                left: -50%;
+                width: 200%;
+                height: 200%;
+                background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0) 60%);
+                transform: rotate(30deg);
+                pointer-events: none;
+            }
+
+            .page-header h2 {
+                margin: 0;
+                font-weight: 700;
+                color: white;
+            }
+
+            .page-header p {
+                margin: 4px 0 0;
+                opacity: 0.8;
+                color: rgba(255, 255, 255, 0.8) !important;
+            }
+
+            .card {
+                border: none;
+                border-radius: 16px;
+                background: rgba(255, 255, 255, 0.95);
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                overflow: hidden;
+                position: relative;
+            }
+
+            .card:hover {
+                transform: translateY(-8px) scale(1.02);
+                box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            }
+
+            .card::after {
+                content: '';
+                position: absolute;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                left: 0;
+                background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 100%);
+                pointer-events: none;
+            }
+
+            .btn {
+                border-radius: 8px;
+                font-weight: 500;
+                letter-spacing: 0.5px;
+                transition: all 0.2s ease;
+            }
+
+            .btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            }
+
+            .icon-box {
+                width: 48px;
+                height: 48px;
+                border-radius: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            }
+        </style>
         <div class="page-header mb-4">
             <div>
                 <h2><i class="bi bi-graph-up-arrow text-primary"></i> Reports & Analytics</h2>

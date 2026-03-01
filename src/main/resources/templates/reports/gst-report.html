@@ -3,154 +3,154 @@
     th:replace="~{layout :: layout(title='GST / Tax Report', page='gst', content=~{::#content}, pageIcon='bi bi-file-earmark-ruled')}">
 
 <head>
-    <style>
-        /* Top Notch Premium UI Adjustments */
-        .govt-header {
-            background: linear-gradient(135deg, #1e3a8a 0%, #312e81 100%);
-            color: white;
-            border-radius: 16px;
-            padding: 35px 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 25px -5px rgba(30, 58, 138, 0.4);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .govt-header::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 60%);
-            transform: rotate(30deg);
-            pointer-events: none;
-        }
-
-        .govt-header h4 {
-            margin: 0;
-            font-weight: 700;
-        }
-
-        .govt-header p {
-            margin: 4px 0 0;
-            opacity: 0.8;
-            font-size: 14px;
-        }
-
-        .gst-summary-card {
-            border-radius: 16px;
-            padding: 24px;
-            color: white;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            border: none;
-        }
-
-        .gst-summary-card:hover {
-            transform: translateY(-8px) scale(1.02);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-        }
-
-        .gst-summary-card::after {
-            content: '';
-            position: absolute;
-            top: -20px;
-            right: -20px;
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .gst-card-1 {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-
-        .gst-card-2 {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-        }
-
-        .gst-card-3 {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-        }
-
-        .gst-card-4 {
-            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-        }
-
-        .gst-value {
-            font-size: 28px;
-            font-weight: 700;
-        }
-
-        .gst-label {
-            font-size: 13px;
-            opacity: 0.85;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .slab-badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-weight: 600;
-            font-size: 13px;
-        }
-
-        .slab-0 {
-            background: #e8f5e9;
-            color: #2e7d32;
-        }
-
-        .slab-5 {
-            background: #e3f2fd;
-            color: #1565c0;
-        }
-
-        .slab-12 {
-            background: #fff3e0;
-            color: #e65100;
-        }
-
-        .slab-18 {
-            background: #fce4ec;
-            color: #c62828;
-        }
-
-        .slab-28 {
-            background: #f3e5f5;
-            color: #6a1b9a;
-        }
-
-        .modern-card {
-            border: none;
-            border-radius: 12px;
-            background: rgba(255, 255, 255, 0.9);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            overflow: hidden;
-        }
-
-        .modern-card:hover {
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        }
-
-        .modern-card .card-header {
-            background-color: transparent;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-            padding: 1.25rem 1.5rem;
-            font-weight: 600;
-        }
-    </style>
 </head>
 
 <body>
     <div id="content">
+        <style>
+            /* Top Notch Premium UI Adjustments */
+            .govt-header {
+                background: linear-gradient(135deg, #1e3a8a 0%, #312e81 100%);
+                color: white;
+                border-radius: 16px;
+                padding: 35px 30px;
+                margin-bottom: 30px;
+                box-shadow: 0 10px 25px -5px rgba(30, 58, 138, 0.4);
+                position: relative;
+                overflow: hidden;
+            }
+
+            .govt-header::after {
+                content: '';
+                position: absolute;
+                top: -50%;
+                left: -50%;
+                width: 200%;
+                height: 200%;
+                background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 60%);
+                transform: rotate(30deg);
+                pointer-events: none;
+            }
+
+            .govt-header h4 {
+                margin: 0;
+                font-weight: 700;
+            }
+
+            .govt-header p {
+                margin: 4px 0 0;
+                opacity: 0.8;
+                font-size: 14px;
+            }
+
+            .gst-summary-card {
+                border-radius: 16px;
+                padding: 24px;
+                color: white;
+                position: relative;
+                overflow: hidden;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                border: none;
+            }
+
+            .gst-summary-card:hover {
+                transform: translateY(-8px) scale(1.02);
+                box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            }
+
+            .gst-summary-card::after {
+                content: '';
+                position: absolute;
+                top: -20px;
+                right: -20px;
+                width: 100px;
+                height: 100px;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.1);
+            }
+
+            .gst-card-1 {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            }
+
+            .gst-card-2 {
+                background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            }
+
+            .gst-card-3 {
+                background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            }
+
+            .gst-card-4 {
+                background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            }
+
+            .gst-value {
+                font-size: 28px;
+                font-weight: 700;
+            }
+
+            .gst-label {
+                font-size: 13px;
+                opacity: 0.85;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            .slab-badge {
+                display: inline-block;
+                padding: 4px 12px;
+                border-radius: 20px;
+                font-weight: 600;
+                font-size: 13px;
+            }
+
+            .slab-0 {
+                background: #e8f5e9;
+                color: #2e7d32;
+            }
+
+            .slab-5 {
+                background: #e3f2fd;
+                color: #1565c0;
+            }
+
+            .slab-12 {
+                background: #fff3e0;
+                color: #e65100;
+            }
+
+            .slab-18 {
+                background: #fce4ec;
+                color: #c62828;
+            }
+
+            .slab-28 {
+                background: #f3e5f5;
+                color: #6a1b9a;
+            }
+
+            .modern-card {
+                border: none;
+                border-radius: 12px;
+                background: rgba(255, 255, 255, 0.9);
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                overflow: hidden;
+            }
+
+            .modern-card:hover {
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            }
+
+            .modern-card .card-header {
+                background-color: transparent;
+                border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+                padding: 1.25rem 1.5rem;
+                font-weight: 600;
+            }
+        </style>
         <!-- Government Style Header -->
         <div class="govt-header">
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
