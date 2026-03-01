@@ -50,11 +50,63 @@ window.confirmLink = function (event, element, text, confirmBtnText = 'Delete', 
     return false;
 };
 
+function normalizePath(path) {
+    if (!path) return '/';
+    if (path.length > 1 && path.endsWith('/')) return path.slice(0, -1);
+    return path;
+}
+
+function syncSidebarActiveState() {
+    const sidebarRoot = document.getElementById('sidebar');
+    if (!sidebarRoot) return null;
+
+    const currentPath = normalizePath(window.location.pathname || '/');
+    const links = Array.from(sidebarRoot.querySelectorAll('.nav-link[href]'))
+        .filter(link => {
+            const href = link.getAttribute('href') || '';
+            return href.startsWith('/') && !href.startsWith('//') && href !== '/logout';
+        });
+
+    if (!links.length) return null;
+
+    const byPath = links.map(link => {
+        const rawHref = link.getAttribute('href') || '/';
+        return {
+            link,
+            path: normalizePath(rawHref.split('?')[0] || '/'),
+            isRoot: rawHref === '/'
+        };
+    });
+
+    let bestMatch = byPath.find(item => item.path === currentPath) || null;
+
+    if (!bestMatch) {
+        bestMatch = byPath
+            .filter(item => !item.isRoot && currentPath.startsWith(item.path + '/'))
+            .sort((a, b) => b.path.length - a.path.length)[0] || null;
+    }
+
+    if (!bestMatch) return null;
+
+    links.forEach(link => {
+        link.classList.remove('active');
+        link.removeAttribute('aria-current');
+    });
+
+    bestMatch.link.classList.add('active');
+    bestMatch.link.setAttribute('aria-current', 'page');
+
+    const parentGroup = bestMatch.link.closest('details.nav-group');
+    if (parentGroup) parentGroup.open = true;
+
+    return bestMatch.link;
+}
+
 /* ---- Check Flash Messages ---- */
 onDomReady(() => {
     const successAlert = document.querySelector('.alert-success');
     const errorAlert = document.querySelector('.alert-danger');
-    const activeNavLink = document.querySelector('.sidebar .nav-link.active');
+    const activeNavLink = syncSidebarActiveState() || document.querySelector('.sidebar .nav-link.active');
 
     if (successAlert) {
         successAlert.style.display = 'none'; // hide native alert

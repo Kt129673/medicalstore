@@ -19,7 +19,7 @@
         </div>
 
         <!-- Activity Summary Cards -->
-        <div class="row g-3 mb-4" th:if="${not #lists.isEmpty(shopkeepers)}">
+        <div class="row g-3 mb-4">
             <div class="col-6 col-md-3">
                 <div class="card border-0 shadow-sm text-center py-3">
                     <div class="fs-3 fw-bold text-primary" th:text="${shopkeepers.size()}">0</div>
@@ -29,14 +29,14 @@
             <div class="col-6 col-md-3">
                 <div class="card border-0 shadow-sm text-center py-3">
                     <div class="fs-3 fw-bold text-success"
-                         th:text="${shopkeepers.stream().filter(s -> s.enabled).count()}">0</div>
+                         th:text="${shopkeepers.?[enabled == true].size()}">0</div>
                     <div class="text-muted small">Active</div>
                 </div>
             </div>
             <div class="col-6 col-md-3">
                 <div class="card border-0 shadow-sm text-center py-3">
                     <div class="fs-3 fw-bold text-danger"
-                         th:text="${shopkeepers.stream().filter(s -> !s.enabled).count()}">0</div>
+                         th:text="${shopkeepers.?[enabled == false].size()}">0</div>
                     <div class="text-muted small">Deactivated</div>
                 </div>
             </div>
@@ -47,15 +47,6 @@
                     <div class="text-muted small">Branches</div>
                 </div>
             </div>
-        </div>
-
-        <div th:if="${success}" class="alert alert-success alert-dismissible fade show">
-            <span th:text="${success}"></span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show">
-            <span th:text="${error}"></span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
 
         <div th:if="${success}" class="alert alert-success alert-dismissible fade show">

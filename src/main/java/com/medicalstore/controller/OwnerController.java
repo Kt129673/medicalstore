@@ -101,13 +101,23 @@ public class OwnerController {
         @GetMapping("/compare")
         public String compareBranches(Model model) {
                 Long ownerId = securityUtils.getCurrentUserId();
+                if (ownerId == null) {
+                        return "redirect:/login";
+                }
+
                 List<Branch> branches = branchService.getBranchesByOwner(ownerId);
+                if (branches == null) {
+                        branches = new ArrayList<>();
+                }
 
                 // Build per-branch KPI summary for comparison table
                 List<Map<String, Object>> branchStats = new ArrayList<>();
                 for (Branch b : branches) {
                         Map<String, Object> stats = new LinkedHashMap<>();
                         Map<String, Object> kpis = dashboardService.buildBranchDashboard(b.getId());
+                        if (kpis == null) {
+                                kpis = new LinkedHashMap<>();
+                        }
                         stats.put("branch", b);
                         stats.put("todaySales", kpis.getOrDefault("todaySales", 0.0));
                         stats.put("monthlyRevenue", kpis.getOrDefault("monthlyRevenue", 0.0));
@@ -127,12 +137,19 @@ public class OwnerController {
                 List<Long>   totalMedicinesData = new ArrayList<>();
                 for (Map<String, Object> s : branchStats) {
                         Branch b = (Branch) s.get("branch");
-                        branchLabels.add(b.getName());
-                        todaySalesData.add(((Number) s.get("todaySales")).doubleValue());
-                        monthlyData.add(((Number) s.get("monthlyRevenue")).doubleValue());
-                        medicinesData.add(((Number) s.get("totalMedicines")).longValue());
-                        lowStockData.add(((Number) s.get("lowStockCount")).longValue());
-                        totalMedicinesData.add(((Number) s.get("totalMedicines")).longValue());
+                        if (b != null) {
+                                branchLabels.add(b.getName());
+                                Object todaySalesObj = s.get("todaySales");
+                                Object monthlyObj = s.get("monthlyRevenue");
+                                Object medicinesObj = s.get("totalMedicines");
+                                Object lowStockObj = s.get("lowStockCount");
+                                
+                                todaySalesData.add(todaySalesObj != null ? ((Number) todaySalesObj).doubleValue() : 0.0);
+                                monthlyData.add(monthlyObj != null ? ((Number) monthlyObj).doubleValue() : 0.0);
+                                medicinesData.add(medicinesObj != null ? ((Number) medicinesObj).longValue() : 0L);
+                                lowStockData.add(lowStockObj != null ? ((Number) lowStockObj).longValue() : 0L);
+                                totalMedicinesData.add(medicinesObj != null ? ((Number) medicinesObj).longValue() : 0L);
+                        }
                 }
 
                 model.addAttribute("title", "Branch Comparison");
