@@ -16,14 +16,44 @@
 </div>
 
 <!-- Reusable Empty State Fragment -->
-<div th:fragment="empty-state(emptyIcon, emptyTitle, emptyMessage, emptyActionUrl, emptyActionText)"
-    class="empty-state">
-    <i th:class="${emptyIcon}"></i>
-    <h5 th:text="${emptyTitle}">No Items</h5>
-    <p th:text="${emptyMessage}">No items found</p>
-    <a th:if="${emptyActionUrl}" th:href="${emptyActionUrl}" class="btn btn-primary mt-2">
-        <i class="bi bi-plus-circle"></i> <span th:text="${emptyActionText}">Add</span>
-    </a>
+<div th:fragment="empty-state(iconClass, title, message, actionUrl, actionText)">
+    <style>
+        @keyframes floatUpDown {
+            0% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+
+            100% {
+                transform: translateY(0);
+            }
+        }
+
+        .empty-state-icon {
+            display: inline-block;
+            font-size: 4rem;
+            animation: floatUpDown 3s ease-in-out infinite;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.05) 0%, rgba(0, 0, 0, 0) 100%);
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            line-height: 120px;
+        }
+    </style>
+    <div class="text-center py-5">
+        <div class="empty-state-icon">
+            <i th:class="${iconClass}"></i>
+        </div>
+        <h4 class="fw-bold mb-3" th:text="${title}">No Data Found</h4>
+        <p th:text="${message}">No items found</p>
+        <a th:if="${actionUrl}" th:href="${actionUrl}" class="btn btn-primary mt-2">
+            <i class="bi bi-plus-circle"></i> <span th:text="${actionText}">Add</span>
+        </a>
+    </div>
 </div>
 
 <!-- Reusable Search Bar Fragment -->
