@@ -1420,7 +1420,8 @@ tbody tr {
 tbody tr.ent-row-deleting td {
     opacity: 0.42;
     pointer-events: none;
-    background: rgba(239,68,68,0.04) !important;
+    /* !important required: overrides .table-striped / .table-hover td background rules */
+    background: rgba(220, 38, 38, 0.04) !important;
 }
 /* State 2 — confirmed, collapse the row */
 @keyframes rowCollapse {

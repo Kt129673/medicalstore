@@ -216,11 +216,11 @@
     }
 
     .mobile-toggle:hover {
-        background: var(--primary-dark, #4f46e5);
+        background: var(--primary-dark, #1E3A8A);
     }
 
     .mobile-toggle.open {
-        background: #ef4444;
+        background: var(--danger-color, #DC2626);
     }
 
     .main-header {

@@ -491,6 +491,7 @@
     font-weight: 600;
 }
 
+/* Bootstrap .text-* utilities declare color !important — these overrides require !important to win */
 .user-details .text-warning  { color: #fbbf24 !important; }
 .user-details .text-info     { color: #38bdf8 !important; }
 .user-details .text-success  { color: #34d399 !important; }
