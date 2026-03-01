@@ -1,35 +1,71 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 
-<!-- Reusable Page Header Fragment -->
+<!--
+  ╔══════════════════════════════════════════════════════════════╗
+  ║  ENTERPRISE FRAGMENT LIBRARY  –  fragments.html             ║
+  ║  All new shared UI blocks must live here (per structure guide)║
+  ╚══════════════════════════════════════════════════════════════╝
+
+  FRAGMENT INDEX
+  ──────────────────────────────────────────────────────────────
+  1.  page-header          – page title + optional primary action button
+  2.  empty-state          – centred empty/no-data placeholder
+  3.  search-bar           – simple search form  (legacy / simple pages)
+  4.  ent-action-row       – enterprise header bar: search + action buttons
+  5.  ent-kpi-card         – single KPI gradient card
+  6.  ent-status-badge     – semantic status pill (active/pending/expired…)
+  7.  ent-alert-banner     – severity alert strip (success/warning/danger/info)
+  8.  ent-form-section     – form group divider with title + hint
+  9.  ent-table-toolbar    – row count info + bulk-action bar + export button
+  10. ent-bulk-bar         – animated bulk-selection bar (shown via JS)
+  11. ent-filter-chip-bar  – active-filter chip row with clear-all
+  12. ent-pagination-bar   – full pagination row with result range info
+  13. ent-skeleton-rows    – table skeleton loader (AJAX page loads)
+  14. ent-confirm-modal    – reusable Bootstrap confirm-dialog
+-->
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     1. PAGE HEADER
+     th:insert="~{fragments :: page-header('Medicines', 'Manage inventory', 'bi bi-capsule', '/medicines/new', 'Add Medicine', null)}"
+═══════════════════════════════════════════════════════════ -->
 <div th:fragment="page-header(headerTitle, headerDescription, headerIcon, actionUrl, actionText, actionClass)"
     class="page-header mb-4">
     <div>
         <h2>
-            <i th:class="${headerIcon}"></i> <span th:text="${headerTitle}">Title</span>
+            <i th:class="${headerIcon}"></i>
+            <span th:text="${headerTitle}">Title</span>
         </h2>
         <p class="text-muted mb-0" th:text="${headerDescription}">Description</p>
     </div>
     <a th:if="${actionUrl}" th:href="${actionUrl}" th:class="${actionClass ?: 'btn btn-primary'}">
-        <i class="bi bi-plus-circle"></i> <span th:text="${actionText}">Action</span>
+        <i class="bi bi-plus-circle"></i>
+        <span th:text="${actionText}">Action</span>
     </a>
 </div>
 
-<!-- Reusable Empty State Fragment -->
+
+<!-- ═══════════════════════════════════════════════════════════
+     2. EMPTY STATE
+     th:insert="~{fragments :: empty-state('bi bi-inbox', 'No records found', 'Add your first item to get started.', '/path/new', 'Add Item')}"
+═══════════════════════════════════════════════════════════ -->
 <div th:fragment="empty-state(iconClass, title, message, actionUrl, actionText)">
-    <div class="text-center py-5">
-        <div class="empty-state-icon">
-            <i th:class="${iconClass}"></i>
-        </div>
-        <h4 class="fw-bold mb-3" th:text="${title}">No Data Found</h4>
-        <p th:text="${message}">No items found</p>
-        <a th:if="${actionUrl}" th:href="${actionUrl}" class="btn btn-primary mt-2">
-            <i class="bi bi-plus-circle"></i> <span th:text="${actionText}">Add</span>
+    <div class="empty-state text-center py-5">
+        <i th:class="${iconClass}" class="empty-state__icon"></i>
+        <h5 class="fw-bold mt-3 mb-2" th:text="${title}">No Data Found</h5>
+        <p class="text-muted mb-3" th:text="${message}">No items found.</p>
+        <a th:if="${actionUrl}" th:href="${actionUrl}" class="btn btn-primary">
+            <i class="bi bi-plus-circle me-1"></i>
+            <span th:text="${actionText}">Add</span>
         </a>
     </div>
 </div>
 
-<!-- Reusable Search Bar Fragment -->
+
+<!-- ═══════════════════════════════════════════════════════════
+     3. SIMPLE SEARCH BAR  (legacy; prefer ent-action-row for new pages)
+═══════════════════════════════════════════════════════════ -->
 <div th:fragment="search-bar(searchAction, searchPlaceholder)">
     <form th:action="${searchAction}" method="get" class="mb-4">
         <div class="input-group search-group-transition search-inline-max">
@@ -37,10 +73,376 @@
                 <i class="bi bi-search text-muted"></i>
             </span>
             <input type="text" name="search" class="form-control border-start-0 ps-0 shadow-none"
-                th:placeholder="${searchPlaceholder}" th:value="${param.search}">
+                th:placeholder="${searchPlaceholder}" th:value="${param.search}"
+                aria-label="Search">
             <button class="btn btn-primary px-4" type="submit">Search</button>
         </div>
     </form>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     4. ENTERPRISE ACTION ROW
+     Parameters:
+       searchAction      – form action URL (e.g. /medicines)
+       searchPlaceholder – input placeholder text
+       primaryUrl        – primary button href  (null = hide)
+       primaryLabel      – primary button text
+       secondaryUrl      – secondary/outline button href (null = hide)
+       secondaryLabel    – secondary button label
+       tableId           – id of the <table> to enable CSV export on
+
+     Usage:
+       th:insert="~{fragments :: ent-action-row('/medicines','Search medicines…','/medicines/new','Add Medicine',null,null,'inventoryTable')}"
+═══════════════════════════════════════════════════════════ -->
+<div th:fragment="ent-action-row(searchAction, searchPlaceholder, primaryUrl, primaryLabel, secondaryUrl, secondaryLabel, tableId)">
+    <div class="ent-action-row">
+        <!-- Left: search -->
+        <div class="ent-action-row__left">
+            <form th:action="${searchAction}" method="get" class="ent-search" role="search">
+                <i class="bi bi-search ent-search__icon" aria-hidden="true"></i>
+                <input type="text" name="search"
+                       th:placeholder="${searchPlaceholder ?: 'Search…'}"
+                       th:value="${param.search}"
+                       autocomplete="off"
+                       aria-label="Search">
+                <button type="button" class="ent-search__clear" aria-label="Clear search"
+                        onclick="this.previousElementSibling.previousElementSibling.value='';this.closest('form').submit();">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </form>
+        </div>
+        <!-- Right: actions -->
+        <div class="ent-action-row__right">
+            <!-- Export dropdown -->
+            <div th:if="${tableId}" class="ent-export-btn">
+                <button type="button" class="btn btn-sm btn-outline-secondary"
+                        th:attr="onclick='entExportMenu(this)'"
+                        aria-label="Export options" aria-expanded="false">
+                    <i class="bi bi-download me-1"></i>Export
+                    <i class="bi bi-chevron-down ms-1" style="font-size:11px;"></i>
+                </button>
+                <div class="ent-export-menu" role="menu">
+                    <button type="button" role="menuitem"
+                            th:attr="onclick=|entExportCSV('${tableId}')|">
+                        <i class="bi bi-filetype-csv text-success"></i> Export CSV
+                    </button>
+                    <button type="button" role="menuitem" onclick="window.print()">
+                        <i class="bi bi-printer text-primary"></i> Print
+                    </button>
+                </div>
+            </div>
+            <!-- Secondary button -->
+            <a th:if="${secondaryUrl}" th:href="${secondaryUrl}"
+               class="btn btn-sm btn-outline-primary">
+                <span th:text="${secondaryLabel}">Action</span>
+            </a>
+            <!-- Primary button -->
+            <a th:if="${primaryUrl}" th:href="${primaryUrl}"
+               class="btn btn-sm btn-primary">
+                <i class="bi bi-plus-circle me-1"></i>
+                <span th:text="${primaryLabel}">Add</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     5. KPI STAT CARD
+     Parameters:
+       value      – main numeric value (String or number)
+       label      – card label (uppercase)
+       icon       – Bootstrap icon class  e.g. "bi bi-capsule"
+       sub        – small sub-text below value (null = hide)
+       linkUrl    – "View all →" link  (null = hide)
+       linkLabel  – link text
+       colorClass – ent-kpi variant: ent-kpi--blue | green | purple | amber | red | cyan | rose | teal
+
+     Usage:
+       th:insert="~{fragments :: ent-kpi-card(${totalMedicines},'Total Medicines','bi bi-capsule',null,'/medicines','View all','ent-kpi--blue')}"
+═══════════════════════════════════════════════════════════ -->
+<div th:fragment="ent-kpi-card(value, label, icon, sub, linkUrl, linkLabel, colorClass)">
+    <div th:class="'ent-kpi ' + (${colorClass} ?: 'ent-kpi--blue')">
+        <i th:class="${icon} + ' ent-kpi__icon'" aria-hidden="true"></i>
+        <div>
+            <div class="ent-kpi__label" th:text="${label}">Label</div>
+            <div class="ent-kpi__value" th:text="${value}">0</div>
+            <div th:if="${sub}" class="ent-kpi__sub" th:text="${sub}"></div>
+            <a th:if="${linkUrl}" th:href="${linkUrl}" class="ent-kpi__link">
+                <span th:text="${linkLabel ?: 'View all'}">View all</span>
+                <i class="bi bi-arrow-right" aria-hidden="true"></i>
+            </a>
+        </div>
+    </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     6. STATUS BADGE
+     Parameters:
+       status     – one of: active | inactive | pending | expired | info | critical | warning
+       label      – display text (null = capitalised status)
+       icon       – optional icon class  (null = default per status)
+
+     Usage:
+       th:insert="~{fragments :: ent-status-badge('active', null, null)}"
+       th:insert="~{fragments :: ent-status-badge('pending', 'Awaiting Payment', 'bi bi-hourglass-split')}"
+═══════════════════════════════════════════════════════════ -->
+<span th:fragment="ent-status-badge(status, label, icon)">
+    <span th:class="'ent-badge ent-badge--' + ${status?.toLowerCase() ?: 'inactive'}">
+        <!-- default icons per status when none supplied -->
+        <th:block th:if="${icon}" ><i th:class="${icon}" aria-hidden="true"></i></th:block>
+        <th:block th:unless="${icon}">
+            <i class="bi bi-check-circle-fill"   aria-hidden="true" th:if="${status == 'active'}"></i>
+            <i class="bi bi-x-circle-fill"        aria-hidden="true" th:if="${status == 'inactive'}"></i>
+            <i class="bi bi-hourglass-split"      aria-hidden="true" th:if="${status == 'pending'}"></i>
+            <i class="bi bi-calendar-x-fill"      aria-hidden="true" th:if="${status == 'expired'}"></i>
+            <i class="bi bi-info-circle-fill"     aria-hidden="true" th:if="${status == 'info'}"></i>
+            <i class="bi bi-exclamation-triangle-fill" aria-hidden="true" th:if="${status == 'warning'}"></i>
+            <i class="bi bi-exclamation-octagon-fill"  aria-hidden="true" th:if="${status == 'critical'}"></i>
+        </th:block>
+        <span th:text="${label ?: #strings.capitalize(status ?: 'Unknown')}">Status</span>
+    </span>
+</span>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     7. SEVERITY ALERT BANNER
+     Parameters:
+       severity   – success | warning | danger | info
+       title      – bold heading  (null = hide)
+       message    – body text
+       dismissible – true | false
+
+     Usage:
+       th:insert="~{fragments :: ent-alert-banner('warning', 'Low Stock', '5 medicines below reorder level.', true)}"
+═══════════════════════════════════════════════════════════ -->
+<div th:fragment="ent-alert-banner(severity, title, message, dismissible)">
+    <div th:class="'ent-alert ent-alert--' + ${severity ?: 'info'}" role="alert">
+        <!-- icon per severity -->
+        <i class="bi bi-check-circle-fill"            aria-hidden="true" th:if="${severity == 'success'}"></i>
+        <i class="bi bi-exclamation-triangle-fill"    aria-hidden="true" th:if="${severity == 'warning'}"></i>
+        <i class="bi bi-x-octagon-fill"               aria-hidden="true" th:if="${severity == 'danger'}"></i>
+        <i class="bi bi-info-circle-fill"             aria-hidden="true" th:if="${severity == 'info' or severity == null}"></i>
+        <div>
+            <strong th:if="${title}" th:text="${title}">Title</strong>
+            <span th:text="${message}">Message</span>
+        </div>
+        <button th:if="${dismissible}" type="button" class="ent-alert__dismiss"
+                aria-label="Dismiss" onclick="this.closest('.ent-alert').remove()">
+            <i class="bi bi-x-lg" aria-hidden="true"></i>
+        </button>
+    </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     8. FORM SECTION HEADER
+     Parameters:
+       icon   – Bootstrap icon class  e.g. "bi bi-person"
+       title  – section heading (uppercase)
+       hint   – optional small description below title
+
+     Usage:
+       th:insert="~{fragments :: ent-form-section('bi bi-geo-alt','Address Details','Where deliveries are sent.')}"
+═══════════════════════════════════════════════════════════ -->
+<div th:fragment="ent-form-section(icon, title, hint)">
+    <div class="ent-form-section">
+        <h6 class="ent-form-section__title">
+            <i th:class="${icon}" aria-hidden="true"></i>
+            <span th:text="${title}">Section</span>
+        </h6>
+        <p th:if="${hint}" class="ent-form-section__hint" th:text="${hint}"></p>
+    </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     9. TABLE TOOLBAR  (result count + export shortcut)
+     Note: bulk bar is separate (fragment #10) and toggled by JS.
+     Parameters:
+       totalCount  – total rows (Integer / Long)
+       entityName  – singular entity name e.g. "medicine"
+       tableId     – id of <table> for CSV export
+
+     Usage:
+       th:insert="~{fragments :: ent-table-toolbar(${medicinePage.totalElements}, 'medicine', 'inventoryTable')}"
+═══════════════════════════════════════════════════════════ -->
+<div th:fragment="ent-table-toolbar(totalCount, entityName, tableId)">
+    <div class="ent-table-toolbar">
+        <div class="ent-table-toolbar__info">
+            <i class="bi bi-table text-secondary" aria-hidden="true"></i>
+            <span>
+                <strong th:text="${totalCount ?: 0}">0</strong>
+                <span th:text="' ' + (${entityName} ?: 'record') + (${totalCount != 1} ? 's' : '')"> records</span>
+            </span>
+        </div>
+        <div class="ent-table-toolbar__actions">
+            <button th:if="${tableId}" type="button" class="btn btn-sm btn-outline-secondary"
+                    th:attr="onclick=|entExportCSV('${tableId}')|"
+                    title="Export as CSV" aria-label="Export table as CSV">
+                <i class="bi bi-download me-1" aria-hidden="true"></i>CSV
+            </button>
+        </div>
+    </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     10. BULK ACTION BAR
+     Place directly below ent-table-toolbar. Hidden until JS activates it.
+     Parameters:
+       entityName  – e.g. "medicine"
+       deleteUrl   – bulk delete endpoint  (null = hide delete btn)
+
+     Usage:
+       th:insert="~{fragments :: ent-bulk-bar('medicine', '/medicines/bulk-delete')}"
+       Then call  entInitBulkSelect('inventoryTable')  in page script.
+═══════════════════════════════════════════════════════════ -->
+<div th:fragment="ent-bulk-bar(entityName, deleteUrl)">
+    <div class="ent-bulk-bar" id="entBulkBar" role="toolbar" aria-label="Bulk actions">
+        <span class="ent-bulk-bar__count">
+            <span id="entBulkCount">0</span>
+            <span th:text="' ' + (${entityName} ?: 'item') + 's selected'"> items selected</span>
+        </span>
+        <div class="ent-bulk-bar__divider" aria-hidden="true"></div>
+        <button th:if="${deleteUrl}" type="button" class="btn btn-sm btn-danger"
+                th:attr="onclick=|entBulkDelete('${deleteUrl}')|">
+            <i class="bi bi-trash3 me-1" aria-hidden="true"></i>Delete selected
+        </button>
+        <button type="button" class="btn btn-sm btn-outline-secondary"
+                onclick="entClearBulkSelect()">
+            <i class="bi bi-x-lg me-1" aria-hidden="true"></i>Clear
+        </button>
+    </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     11. ACTIVE FILTER CHIP BAR
+     Parameters:
+       filters – List of Maps with keys: label, removeParam, baseUrl
+                  (Each chip is a link that removes that one filter)
+       clearUrl  – href to clear ALL filters
+
+     Usage (controller adds 'activeFilters' to model):
+       th:insert="~{fragments :: ent-filter-chip-bar(${activeFilters}, '/medicines')}"
+═══════════════════════════════════════════════════════════ -->
+<div th:fragment="ent-filter-chip-bar(filters, clearUrl)">
+    <div th:if="${filters != null and !filters.isEmpty()}" class="ent-filter-bar">
+        <i class="bi bi-funnel text-secondary me-1" aria-label="Active filters" title="Active filters"></i>
+        <span th:each="f : ${filters}">
+            <span class="ent-filter-chip">
+                <span th:text="${f.label}">Filter</span>
+                <a th:href="${f.removeUrl}" aria-label="Remove filter">
+                    <i class="bi bi-x-lg" aria-hidden="true"></i>
+                </a>
+            </span>
+        </span>
+        <a th:if="${clearUrl}" th:href="${clearUrl}" class="ent-filter-bar__clear">
+            <i class="bi bi-x-circle me-1" aria-hidden="true"></i>Clear all
+        </a>
+    </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     12. PAGINATION INFO BAR
+     Parameters:
+       page        – Spring Page object (or compatible, has totalElements, number, size, totalPages)
+       baseUrl     – base URL for page links e.g. /medicines
+       extraParams – extra query string params preserved in links e.g. &search=xyz&category=tab
+
+     Usage:
+       th:insert="~{fragments :: ent-pagination-bar(${medicinePage}, '/medicines', ${extraParams})}"
+═══════════════════════════════════════════════════════════ -->
+<div th:fragment="ent-pagination-bar(page, baseUrl, extraParams)">
+    <div th:if="${page != null and page.totalPages > 0}" class="ent-pagination">
+        <!-- range info -->
+        <div class="ent-pagination__info">
+            <span>Showing
+                <strong th:text="${page.number * page.size + 1}">1</strong>
+                –
+                <strong th:text="${T(java.lang.Math).min((page.number + 1) * page.size, page.totalElements)}">10</strong>
+                of
+                <strong th:text="${page.totalElements}">0</strong>
+            </span>
+        </div>
+        <!-- page links -->
+        <nav class="ent-pagination__nav" aria-label="Pagination">
+            <a th:href="${baseUrl + '?page=0' + (extraParams ?: '')}"
+               th:class="${page.first} ? 'disabled' : ''"
+               aria-label="First page"><i class="bi bi-chevron-double-left"></i></a>
+            <a th:href="${baseUrl + '?page=' + (page.number - 1) + (extraParams ?: '')}"
+               th:class="${page.first} ? 'disabled' : ''"
+               aria-label="Previous page"><i class="bi bi-chevron-left"></i></a>
+
+            <th:block th:each="i : ${#numbers.sequence(T(java.lang.Math).max(0, page.number - 2),
+                                                        T(java.lang.Math).min(page.totalPages - 1, page.number + 2))}">
+                <a th:href="${baseUrl + '?page=' + i + (extraParams ?: '')}"
+                   th:class="${i == page.number} ? 'active' : ''"
+                   th:text="${i + 1}"
+                   th:attr="aria-current=${i == page.number} ? 'page' : null">1</a>
+            </th:block>
+
+            <a th:href="${baseUrl + '?page=' + (page.number + 1) + (extraParams ?: '')}"
+               th:class="${page.last} ? 'disabled' : ''"
+               aria-label="Next page"><i class="bi bi-chevron-right"></i></a>
+            <a th:href="${baseUrl + '?page=' + (page.totalPages - 1) + (extraParams ?: '')}"
+               th:class="${page.last} ? 'disabled' : ''"
+               aria-label="Last page"><i class="bi bi-chevron-double-right"></i></a>
+        </nav>
+    </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     13. SKELETON LOADER ROWS
+     Drop inside a <tbody> while data loads via AJAX.
+     Parameters:
+       cols   – number of columns (Integer)
+       rows   – number of skeleton rows to show
+
+     Usage:
+       th:insert="~{fragments :: ent-skeleton-rows(7, 5)}"
+═══════════════════════════════════════════════════════════ -->
+<tbody th:fragment="ent-skeleton-rows(cols, rows)">
+    <tr class="ent-skeleton--row" th:each="r : ${#numbers.sequence(1, rows ?: 5)}"
+        aria-hidden="true">
+        <td th:each="c : ${#numbers.sequence(1, cols ?: 4)}">
+            <span class="ent-skeleton ent-skeleton--text"
+                  th:style="'width:' + (${75 + c * 5 > 95 ? 95 : 75 + c * 5}) + '%'">&nbsp;</span>
+        </td>
+    </tr>
+</tbody>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     14. CONFIRM DIALOG MODAL  (single shared modal per page)
+     Include once per layout. Triggered by  entConfirm(options).
+     This adds a standard Bootstrap modal; the JS in layout.js
+     populates its title/message at runtime.
+═══════════════════════════════════════════════════════════ -->
+<div th:fragment="ent-confirm-modal">
+    <div class="modal fade" id="entConfirmModal" tabindex="-1"
+         aria-labelledby="entConfirmModalLabel" aria-modal="true" role="dialog">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header border-0 pb-0">
+                    <h6 class="modal-title fw-bold" id="entConfirmModalLabel">Confirm</h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body pt-2">
+                    <p class="text-secondary mb-0" id="entConfirmModalBody">Are you sure?</p>
+                </div>
+                <div class="modal-footer border-0 pt-1">
+                    <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <a href="#" id="entConfirmModalOk" class="btn btn-sm btn-danger">Confirm</a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 </html>
