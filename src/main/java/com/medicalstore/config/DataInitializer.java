@@ -94,6 +94,21 @@ public class DataInitializer implements CommandLineRunner {
             defaultBranch = existing.get(0);
         }
 
+        // 3b. Ensure default shopkeeper assigned to Default Branch
+        if (!userRepository.existsByUsername("shop1")) {
+            User shopkeeper = new User();
+            shopkeeper.setUsername("shop1");
+            shopkeeper.setPassword(passwordEncoder.encode("shop123"));
+            shopkeeper.setFullName("Demo Shopkeeper");
+            shopkeeper.setEmail("shop1@medicalstore.com");
+            shopkeeper.setEnabled(true);
+            shopkeeper.setAccountNonLocked(true);
+            shopkeeper.setRoles(Set.of("SHOPKEEPER"));
+            shopkeeper.setBranch(defaultBranch);
+            userRepository.save(shopkeeper);
+            log.info("Default shopkeeper created: shop1 / shop123 (branch={})", defaultBranch.getName());
+        }
+
         // 4. Migrate existing data (null branch_id => Default Branch)
         final Branch branch = defaultBranch;
         int migrated = 0;

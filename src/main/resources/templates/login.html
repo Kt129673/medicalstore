@@ -526,8 +526,23 @@
                             Sign In <i class="bi bi-arrow-right ms-2 mt-1"></i>
                         </button>
 
-
                     </form>
+
+                    <!-- Quick Role Login -->
+                    <div class="dev-quick-login">
+                        <p>Quick Login as Role</p>
+                        <div class="dev-quick-login-btns">
+                            <button type="button" class="btn-dev-role" onclick="quickLogin('admin','admin123')">
+                                <i class="bi bi-shield-fill me-1" style="color:#dc2626;"></i> Admin
+                            </button>
+                            <button type="button" class="btn-dev-role" onclick="quickLogin('default_owner','Owner@123')">
+                                <i class="bi bi-person-badge-fill me-1" style="color:#1d4ed8;"></i> Owner
+                            </button>
+                            <button type="button" class="btn-dev-role" onclick="quickLogin('shop1','shop123')">
+                                <i class="bi bi-shop me-1" style="color:#065f46;"></i> Shopkeeper
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -539,6 +554,15 @@
         const passwordInput = document.getElementById('password');
         const passwordToggle = document.getElementById('passwordToggle');
         const capsLockHint = document.getElementById('capsLockHint');
+
+        function quickLogin(user, pass) {
+            document.getElementById('username').value = user;
+            document.getElementById('password').value = pass;
+            loginBtn.classList.add('loading');
+            loginBtn.setAttribute('aria-busy', 'true');
+            loginBtn.disabled = true;
+            loginForm.submit();
+        }
 
         if (loginForm && loginBtn) {
             loginForm.addEventListener('submit', function () {
