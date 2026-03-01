@@ -1,8 +1,8 @@
 /* ═══════════════ SIDEBAR (Dark Premium) ═══════════════ */
 .sidebar {
     width: var(--sidebar-width);
-    background: linear-gradient(180deg, #0a0e1a 0%, #0f1419 30%, #111827 60%, #0f1419 90%, #0a0e1a 100%);
-    border-right: 1px solid rgba(96, 165, 250, 0.08);
+    background: linear-gradient(180deg, #08101f 0%, #0c1525 25%, #0f172a 60%, #0c1525 85%, #08101f 100%);
+    border-right: 1px solid rgba(96, 165, 250, 0.07);
     display: flex;
     flex-direction: column;
     height: 100vh;
@@ -10,7 +10,7 @@
     flex-shrink: 0;
     will-change: width;
     transition: width 0.25s cubic-bezier(.4, 0, .2, 1);
-    box-shadow: 4px 0 32px rgba(0, 0, 0, 0.25), inset -1px 0 0 rgba(96, 165, 250, 0.03);
+    box-shadow: 4px 0 40px rgba(0, 0, 0, 0.28), inset -1px 0 0 rgba(96, 165, 250, 0.04);
     position: relative;
 }
 
@@ -57,9 +57,9 @@
 }
 
 .sidebar-brand h4 {
-    font-size: 20px;
+    font-size: 17px;
     font-weight: 800;
-    letter-spacing: -0.3px;
+    letter-spacing: -0.4px;
     background: linear-gradient(135deg, #60a5fa 0%, #818cf8 50%, #a78bfa 100%);
     -webkit-background-clip: text;
     background-clip: text;
@@ -69,11 +69,11 @@
     align-items: center;
     gap: 12px;
     white-space: nowrap;
-    filter: drop-shadow(0 2px 8px rgba(96, 165, 250, 0.25));
+    filter: drop-shadow(0 2px 8px rgba(96, 165, 250, 0.2));
 }
 
 .sidebar-brand h4 i {
-    font-size: 24px;
+    font-size: 22px;
     flex-shrink: 0;
     background: linear-gradient(135deg, #60a5fa 0%, #818cf8 50%, #a78bfa 100%);
     -webkit-background-clip: text;
@@ -147,16 +147,16 @@
 .nav-link {
     color: #94a3b8;
     text-decoration: none;
-    padding: 11px 16px;
-    margin-bottom: 4px;
-    border-radius: 11px;
+    padding: 10px 14px;
+    margin-bottom: 3px;
+    border-radius: 10px;
     display: flex;
     align-items: center;
-    font-size: 14px;
+    font-size: 13.5px;
     font-weight: 500;
     line-height: 1.5;
     letter-spacing: 0.01em;
-    transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     white-space: nowrap;
     overflow: hidden;
@@ -231,12 +231,13 @@
 }
 
 .nav-link.active {
-    color: #fff;
-    background: linear-gradient(90deg, rgba(59, 130, 246, 0.18) 0%, rgba(59, 130, 246, 0.06) 100%);
-    border: 1px solid rgba(59, 130, 246, 0.3);
-    box-shadow: 0 2px 12px rgba(37, 99, 235, 0.2), 
-                0 1px 3px rgba(0, 0, 0, 0.3),
-                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    color: #e2e8f0;
+    background: linear-gradient(90deg, rgba(59, 130, 246, 0.22) 0%, rgba(59, 130, 246, 0.08) 100%);
+    border: 1px solid rgba(59, 130, 246, 0.28);
+    box-shadow:
+        0 2px 16px rgba(37, 99, 235, 0.22),
+        0 1px 3px rgba(0, 0, 0, 0.25),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
     font-weight: 600;
 }
 
@@ -456,18 +457,19 @@
 }
 
 .user-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 11px;
-    background: linear-gradient(135deg, #3b82f6 0%, #6366f1 50%, #8b5cf6 100%);
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #2563eb 0%, #4f46e5 50%, #7c3aed 100%);
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
-    font-size: 18px;
+    font-size: 17px;
     flex-shrink: 0;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2),
-                0 4px 12px rgba(59, 130, 246, 0.3);
+    box-shadow:
+        0 0 0 2px rgba(59, 130, 246, 0.25),
+        0 3px 10px rgba(59, 130, 246, 0.28);
 }
 
 .user-details h6 {

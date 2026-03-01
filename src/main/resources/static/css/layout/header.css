@@ -51,23 +51,24 @@
 }
 
 .header-search input {
-    width: 300px;
+    width: 280px;
     padding: 9px 40px 9px 38px;
     border: 1.5px solid #e2e8f0;
     border-radius: 12px;
-    font-size: 13.5px;
+    font-size: 13px;
     background: #f8fafc;
     color: var(--text-primary);
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+    font-family: inherit;
 }
 
 .header-search input:focus {
     outline: none;
-    width: 400px;
+    width: 380px;
     background: #ffffff;
     border-color: #93c5fd;
-    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1), 0 4px 12px rgba(37, 99, 235, 0.07);
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1), 0 2px 8px rgba(37, 99, 235, 0.07);
 }
 
 /* Page-Specific Search Transition Classes */
@@ -114,8 +115,8 @@
 }
 
 .header-notif-btn {
-    background: #f1f5f9;
-    border: 1.5px solid #e2e8f0;
+    background: #f8fafc;
+    border: 1.5px solid #e8edf3;
     color: #64748b;
     width: 38px;
     height: 38px;
@@ -133,7 +134,7 @@
     color: var(--primary-color);
     background: #eff6ff;
     border-color: #bfdbfe;
-    box-shadow: 0 4px 10px rgba(59, 130, 246, 0.12);
+    box-shadow: 0 3px 10px rgba(59, 130, 246, 0.14);
     transform: translateY(-1px);
 }
 
@@ -238,20 +239,23 @@
     flex-direction: column;
     height: 100vh;
     overflow: hidden;
-    background: #f1f5f9;
+    background: var(--bg-tertiary, #f1f5f9);
 }
 
 .main-header {
-    height: 60px;
-    background: rgba(255, 255, 255, 0.92);
-    backdrop-filter: blur(18px) saturate(160%);
-    -webkit-backdrop-filter: blur(18px) saturate(160%);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.07);
-    box-shadow: 0 1px 0 rgba(0,0,0,0.04), 0 4px 20px rgba(0, 0, 0, 0.05);
+    height: 62px;
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    box-shadow:
+        0 1px 0 rgba(0,0,0,0.03),
+        0 2px 12px rgba(0,0,0,0.04),
+        0 8px 24px rgba(0,0,0,0.025);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 20px 0 24px;
+    padding: 0 22px 0 28px;
     flex-shrink: 0;
     gap: 16px;
     z-index: 10;
@@ -286,14 +290,27 @@
 }
 
 .page-title {
-    font-size: 17px;
-    font-weight: 700;
-    color: var(--primary-color);
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--text-primary);
     margin: 0;
-    letter-spacing: -0.3px;
+    letter-spacing: -0.4px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    position: relative;
+    padding-left: 12px;
+}
+
+.page-title::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 15%;
+    bottom: 15%;
+    width: 3px;
+    background: linear-gradient(180deg, var(--primary-color), var(--primary-light));
+    border-radius: 2px;
 }
 
 /* Header right side: clock + role badge */
@@ -305,12 +322,12 @@
 }
 
 .theme-toggle-btn {
-    background: rgba(100, 116, 139, 0.1);
-    border: 1px solid var(--border-color);
+    background: #f8fafc;
+    border: 1.5px solid #e8edf3;
     color: var(--text-secondary);
     width: 36px;
     height: 36px;
-    border-radius: 50%;
+    border-radius: 9px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -321,7 +338,9 @@
 
 .theme-toggle-btn:hover {
     color: var(--text-primary);
-    background: rgba(100, 116, 139, 0.2);
+    background: var(--hover-bg);
+    border-color: #cbd5e1;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
 }
 
 .header-clock {
@@ -329,20 +348,22 @@
     flex-direction: column;
     align-items: flex-end;
     line-height: 1.2;
+    min-width: 80px;
 }
 
 .header-clock .clock-time {
-    font-size: 15px;
-    font-weight: 700;
+    font-size: 14.5px;
+    font-weight: 800;
     color: var(--text-primary);
     font-variant-numeric: tabular-nums;
-    letter-spacing: -0.5px;
+    letter-spacing: -0.4px;
 }
 
 .header-clock .clock-date {
     font-size: 11px;
     color: var(--text-secondary);
     font-weight: 500;
+    white-space: nowrap;
 }
 
 .header-role-badge {
@@ -353,36 +374,40 @@
     border-radius: 20px;
     font-size: 11px;
     font-weight: 700;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.6px;
     text-transform: uppercase;
     white-space: nowrap;
+    border: 1.5px solid transparent;
 }
 
 .role-admin {
-    background: #fee2e2;
+    background: #fef2f2;
     color: #dc2626;
+    border-color: #fecaca;
 }
 
 .role-owner {
-    background: #dbeafe;
+    background: #eff6ff;
     color: #1d4ed8;
+    border-color: #bfdbfe;
 }
 
 .role-shopkeeper {
-    background: #d1fae5;
-    color: #065f46;
+    background: #f0fdf4;
+    color: #15803d;
+    border-color: #bbf7d0;
 }
 
 .main-body {
     flex: 1;
     overflow-y: auto;
     overflow-x: hidden;
-    padding: 22px 26px;
-    background: #f1f5f9;
+    padding: 24px 28px;
+    background: var(--bg-tertiary, #f1f5f9);
 }
 
 .main-body::-webkit-scrollbar {
-    width: 8px;
+    width: 6px;
 }
 
 .main-body::-webkit-scrollbar-track {
@@ -391,11 +416,14 @@
 
 .main-body::-webkit-scrollbar-thumb {
     background: #cbd5e1;
-    border-radius: 4px;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    background-clip: padding-box;
 }
 
 .main-body::-webkit-scrollbar-thumb:hover {
     background: #94a3b8;
+    background-clip: padding-box;
 }
 
 /* ── Dark Mode Overrides ── */
