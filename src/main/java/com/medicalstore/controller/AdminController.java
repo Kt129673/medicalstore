@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import com.medicalstore.service.RoleAuditService;
 
 /**
  * Platform Admin panel — manage owners, branches, shopkeepers.
@@ -41,6 +42,7 @@ public class AdminController {
     private final PasswordEncoder passwordEncoder;
     private final SubscriptionService subscriptionService;
     private final DashboardService dashboardService;
+    private final RoleAuditService roleAuditService;
 
     // ─── Admin Dashboard ───────────────────────────────────────────────────
     @GetMapping
@@ -170,6 +172,8 @@ public class AdminController {
         userRepository.findById(id).ifPresent(user -> {
             user.setPassword(passwordEncoder.encode(newPassword));
             userRepository.save(user);
+            // Log password reset for audit trail
+            roleAuditService.logPasswordReset(user.getUsername());
         });
         ra.addFlashAttribute("success", "Password reset successfully.");
         return RoutePaths.redirectTo(RoutePaths.ADMIN_USERS);

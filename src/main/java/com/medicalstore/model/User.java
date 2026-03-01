@@ -56,7 +56,7 @@ public class User {
      * Assigned branch — only set for SHOPKEEPER role.
      * ADMIN and OWNER users have this null.
      */
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "branch_id")
     @com.fasterxml.jackson.annotation.JsonIgnore
     private Branch branch;

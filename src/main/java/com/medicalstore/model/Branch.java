@@ -41,7 +41,7 @@ public class Branch {
     private LocalDate createdDate;
 
     /** Owner of this branch (User with ROLE_OWNER) */
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "owner_id", nullable = false)
     @com.fasterxml.jackson.annotation.JsonIgnore
     private User owner;

@@ -415,7 +415,8 @@
         .role-cards {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 0;
+            gap: 1px;
+            background: var(--border-light);
         }
 
         .role-card {
@@ -430,10 +431,7 @@
             cursor: pointer;
             transition: background 0.2s, transform 0.15s;
             position: relative;
-            border-right: 1px solid var(--border-light);
         }
-
-        .role-card:last-child { border-right: none; }
 
         .role-card:hover {
             background: #f8fafc;
@@ -480,6 +478,10 @@
             color: #15803d;
         }
         .role-card.shopkeeper:hover { background: #f0fdf8; }
+
+        .role-card-info {
+            text-align: center;
+        }
 
         .role-card-name {
             font-size: 12.5px;
@@ -563,11 +565,12 @@
             .login-container { max-width: 100%; }
             .role-cards {
                 grid-template-columns: 1fr;
+                gap: 0;
+                background: transparent;
             }
             .role-card {
                 flex-direction: row;
                 justify-content: flex-start;
-                border-right: none;
                 border-bottom: 1px solid var(--border-light);
                 padding: 14px 16px;
                 gap: 12px;
@@ -868,7 +871,7 @@
         });
     }
 
-    /* ── Auto-dismiss alerts after 6 s ────────────── */
+    /* ── Auto-dismiss alerts after 8 s ────────────── */
     setTimeout(function () {
         document.querySelectorAll('.alert').forEach(function (el) {
             el.style.transition = 'opacity 0.5s, transform 0.5s';
@@ -876,7 +879,7 @@
             el.style.transform = 'translateY(-6px)';
             setTimeout(function () { el.remove(); }, 520);
         });
-    }, 6000);
+    }, 8000);
 
     /* ── Shake error alert on page load if error exists ── */
     const errorAlert = document.getElementById('errorAlert');

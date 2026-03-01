@@ -74,7 +74,9 @@ public class SecurityConfig {
                         .logoutSuccessUrl("/login?logout=true")
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID", "remember-me")
+                        .clearAuthentication(true)
                         .permitAll())
+                .requestCache(cache -> cache.requestCache(new org.springframework.security.web.savedrequest.NullRequestCache()))
                 .rememberMe(rm -> rm
                         .key("medicalStoreRememberMeKey2024")
                         .tokenValiditySeconds(60 * 60 * 24 * 7)  // 7 days
