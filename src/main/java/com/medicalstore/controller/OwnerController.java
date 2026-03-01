@@ -44,7 +44,7 @@ public class OwnerController {
         private final DashboardService dashboardService;
 
         // â”€â”€â”€ Owner Dashboard â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-        @GetMapping
+        @GetMapping({"", "/dashboard"})
         public String dashboard(Model model) {
                 Long ownerId = securityUtils.getCurrentUserId();
                 List<Branch> branches = branchService.getBranchesByOwner(ownerId);

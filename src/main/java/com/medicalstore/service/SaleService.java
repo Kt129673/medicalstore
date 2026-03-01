@@ -146,6 +146,22 @@ public class SaleService {
         return saleRepository.save(sale);
     }
 
+    @Transactional
+    public void deleteSale(Long id) {
+        Sale sale = saleRepository.findByIdWithDetails(id)
+                .orElseThrow(() -> new RuntimeException("Sale not found: " + id));
+
+        // Restore stock for each item before deleting
+        for (com.medicalstore.model.SaleItem item : sale.getItems()) {
+            medicineRepository.findById(item.getMedicine().getId()).ifPresent(medicine -> {
+                medicine.setQuantity(medicine.getQuantity() + item.getQuantity());
+                medicineRepository.save(medicine);
+            });
+        }
+
+        saleRepository.delete(sale);
+    }
+
     public List<Sale> getSalesByCustomer(Long customerId) {
         // Assuming customer data is global or handled by branch. If strictly isolated,
         // filter it.

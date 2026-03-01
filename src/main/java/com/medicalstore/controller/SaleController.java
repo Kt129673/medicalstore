@@ -15,6 +15,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/sales")
@@ -161,5 +162,17 @@ public class SaleController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    @PostMapping("/delete/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String deleteSale(@PathVariable Long id, RedirectAttributes ra) {
+        try {
+            saleService.deleteSale(id);
+            ra.addFlashAttribute("success", "Sale deleted and stock restored successfully.");
+        } catch (Exception e) {
+            ra.addFlashAttribute("error", "Failed to delete sale: " + e.getMessage());
+        }
+        return "redirect:/sales";
     }
 }
