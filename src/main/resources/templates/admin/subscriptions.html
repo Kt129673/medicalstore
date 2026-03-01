@@ -97,15 +97,14 @@
 
                                 <div class="mb-3">
                                     <label class="form-label fw-semibold">Plan Type</label>
-                                    <select name="planType" class="form-select" required>
-                                        <th:block th:with="plan=${plansByOwner[owner.id]}">
-                                            <option value="FREE"
-                                                th:selected="${plan == null or plan.planType == 'FREE'}">FREE</option>
-                                            <option value="PRO"
-                                                th:selected="${plan != null and plan.planType == 'PRO'}">PRO</option>
-                                            <option value="ENTERPRISE"
-                                                th:selected="${plan != null and plan.planType == 'ENTERPRISE'}">ENTERPRISE</option>
-                                        </th:block>
+                                    <select name="planType" class="form-select" required
+                                        th:with="plan=${plansByOwner[owner.id]}">
+                                        <option value="FREE"
+                                            th:selected="${plan == null or plan.planType == 'FREE'}">FREE</option>
+                                        <option value="PRO"
+                                            th:selected="${plan != null and plan.planType == 'PRO'}">PRO</option>
+                                        <option value="ENTERPRISE"
+                                            th:selected="${plan != null and plan.planType == 'ENTERPRISE'}">ENTERPRISE</option>
                                     </select>
                                 </div>
 
