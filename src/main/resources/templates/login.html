@@ -155,17 +155,16 @@
             background-color: #ffffff;
             padding: 2.5rem 2rem;
             overflow-y: auto;
-            /* Fix: override Bootstrap's align-items-center which clips overflowing
-               content in a scrollable flex container. flex-start lets the browser
-               expand the content height naturally so the full form is always visible. */
-            align-items: flex-start !important;
+            /* Let .login-container use margin:auto for safe centering
+               (auto margins collapse when the child overflows, so
+               scrolling still works—unlike align-items:center). */
         }
 
         .login-container {
             max-width: 440px;
             width: 100%;
-            margin: 0 auto;
-            padding-top: 0.5rem;
+            margin: auto;
+            padding-top: 1.5rem;
             padding-bottom: 2rem;
             animation: slideIn 0.45s cubic-bezier(0.22, 1, 0.36, 1);
         }
@@ -279,7 +278,6 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 20px;
         }
 
         .form-check-input:checked {
@@ -314,6 +312,10 @@
             inset: 0;
             background: rgba(255,255,255,0);
             transition: background 0.25s;
+        }
+
+        .btn-login:hover::before {
+            background: rgba(255,255,255,0.12);
         }
 
         .btn-login:hover {
@@ -560,10 +562,19 @@
             .right-panel {
                 min-height: 100vh;
                 overflow-y: auto;
-                align-items: flex-start;
                 padding-top: 2rem;
                 padding-bottom: 2rem;
             }
+        }
+
+        @media (max-width: 767px) {
+            .role-cards {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .role-card { padding: 12px 6px; }
+            .role-card-name { font-size: 11.5px; }
+            .role-card-user { font-size: 10px; }
+            .role-icon-wrap { width: 36px; height: 36px; font-size: 17px; }
         }
 
         @media (max-width: 576px) {
@@ -629,10 +640,7 @@
         /* Bootstrap form-check fallback */
         .form-check { display: flex; align-items: center; gap: .4rem; }
         .form-check-input { width: 1em; height: 1em; cursor: pointer; }
-        /* Bootstrap alert fallback */
-        .alert { display: flex; border-radius: 14px; padding: 13px 16px; margin-bottom: 20px; }
-        .alert-danger  { background: #fef2f2; color: #991b1b; border-left: 4px solid #ef4444; }
-        .alert-success { background: #ecfdf5; color: #065f46; border-left: 4px solid #10b981; }
+        /* Bootstrap alert fallback – inherits from main styles above */
     </style>
 </head>
 
@@ -688,7 +696,7 @@
         </div>
 
         <!-- ── Right Panel ─────────────────────────────────── -->
-        <div class="col-12 col-lg-7 col-xl-8 d-flex align-items-center justify-content-center right-panel">
+        <div class="col-12 col-lg-7 col-xl-8 d-flex justify-content-center right-panel">
             <div class="login-container">
 
                 <!-- Mobile header -->
