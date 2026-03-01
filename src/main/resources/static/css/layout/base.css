@@ -297,8 +297,17 @@ summary:focus-visible,
     height: 100vh;
     width: 100vw;
     overflow: hidden;
-    /* Contain layout to this root; prevents ancestor reflows from page content */
-    contain: strict;
+    /*
+     * NOTE: Do NOT use contain:strict or contain:paint here.
+     * Both create a new CSS stacking context (same effect as will-change:transform).
+     * Bootstrap appends .modal-backdrop directly to <body> with z-index:1040.
+     * If .app-container forms a stacking context at z-index:auto, the backdrop
+     * renders ABOVE the container in the root stacking order, meaning the modal
+     * (z-index:1055 trapped inside the container's context) is beneath the backdrop
+     * — visible through the 50% opacity overlay but completely unclickable.
+     * .app-container does not need contain at all; overflow:hidden + explicit
+     * height/width already prevent content escape without a stacking side-effect.
+     */
 }
 
 /* Premium Global UI Elements */

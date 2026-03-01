@@ -873,3 +873,21 @@ function _entBumpRowCount(delta) {
     });
 })();
 
+/*
+ * Bootstrap Modal Stacking-Context Fix
+ * ─────────────────────────────────────
+ * .app-container (and any ancestor with contain:paint / will-change:transform /
+ * transform / opacity<1) creates a new CSS stacking context. Bootstrap 5 appends
+ * .modal-backdrop directly to <body>, so it lives in the root stacking context
+ * at z-index:1040. Any modal whose DOM node is inside a stacking-context ancestor
+ * with z-index:auto is considered BELOW the backdrop, making the form unclickable
+ * (visible through the 50%-opacity overlay but pointer events captured by the
+ * backdrop). Fix: move every Bootstrap modal to a direct child of <body> so it
+ * participates in the root stacking context alongside the backdrop.
+ */
+onDomReady(function () {
+    document.querySelectorAll('.modal').forEach(function (modal) {
+        document.body.appendChild(modal);
+    });
+});
+
