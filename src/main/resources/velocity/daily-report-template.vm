@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Daily Report</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Helvetica', 'Arial', sans-serif; font-size: 11pt; line-height: 1.6; color: #333; }
+        .container { padding: 30px; }
+        .header { text-align: center; border-bottom: 3px solid #667eea; padding-bottom: 15px; margin-bottom: 25px; }
+        .header h1 { color: #667eea; font-size: 24pt; font-weight: bold; margin-bottom: 8px; }
+        .header p { font-size: 10pt; margin: 3px 0; color: #555; }
+        .report-title { text-align: center; font-size: 18pt; font-weight: bold; margin-bottom: 20px; color: #333; }
+        
+        .summary-boxes { width: 100%; margin-bottom: 30px; display: table; border-collapse: separate; border-spacing: 10px; }
+        .box { display: table-cell; background-color: #f8f9fa; border: 1px solid #e0e0e0; padding: 15px; text-align: center; border-radius: 8px; width: 25%; }
+        .box .label { font-size: 10pt; color: #666; font-weight: bold; text-transform: uppercase; margin-bottom: 5px; }
+        .box .val { font-size: 16pt; color: #667eea; font-weight: bold; }
+        
+        .section-title { font-size: 14pt; font-weight: bold; color: #667eea; margin-bottom: 15px; border-bottom: 2px solid #e0e0e0; padding-bottom: 5px; margin-top: 30px; }
+        
+        .data-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        .data-table th { background-color: #f1f3f5; color: #333; padding: 10px; text-align: left; font-size: 10pt; font-weight: bold; border-bottom: 2px solid #ddd; }
+        .data-table td { padding: 8px 10px; border-bottom: 1px solid #e0e0e0; font-size: 10pt; }
+        .data-table tr:nth-child(even) { background-color: #f8f9fa; }
+        .text-right { text-align: right !important; }
+        .text-center { text-align: center !important; }
+        
+        .footer { clear: both; margin-top: 40px; padding-top: 15px; border-top: 2px solid #e0e0e0; text-align: center; }
+        .footer p { font-size: 9pt; color: #666; margin: 3px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>${companyName}</h1>
+            <p>${companyAddress}</p>
+            <p>Phone: ${companyPhone} | Email: ${companyEmail}</p>
+            <p>GSTIN: ${companyGstin}</p>
+        </div>
+
+        <div class="report-title">Daily Sales Report: ${reportDate}</div>
+
+        <!-- KPI Boxes -->
+        <div class="summary-boxes">
+            <div class="box">
+                <div class="label">Gross Revenue</div>
+                <div class="val">&#8377;${df.format($r.grossRevenue)}</div>
+            </div>
+            <div class="box">
+                <div class="label">Net Revenue</div>
+                <div class="val">&#8377;${df.format($r.netRevenue)}</div>
+            </div>
+            <div class="box">
+                <div class="label">Transactions</div>
+                <div class="val">${r.totalTransactions}</div>
+            </div>
+            <div class="box">
+                <div class="label">Total Discount</div>
+                <div class="val">&#8377;${df.format($r.totalDiscount)}</div>
+            </div>
+        </div>
+        
+        <!-- Secondary Metrics -->
+        <table class="data-table" style="width: 50%; float: left; margin-bottom: 0;">
+            <tr><td>Total Items Sold</td><td class="text-right"><b>${r.totalItemsSold}</b></td></tr>
+            <tr><td>Avg Transaction Value</td><td class="text-right"><b>&#8377;${df.format($r.avgTransactionValue)}</b></td></tr>
+            <tr><td>Avg Items Per Tx</td><td class="text-right"><b>${df.format($r.avgItemsPerTransaction)}</b></td></tr>
+        </table>
+        <table class="data-table" style="width: 48%; float: right; margin-bottom: 0;">
+            <tr><td>Unique Customers</td><td class="text-right"><b>${r.uniqueCustomers}</b></td></tr>
+            <tr><td>Total GST Collected</td><td class="text-right"><b>&#8377;${df.format($r.totalGST)}</b></td></tr>
+            <tr><td>Avg Discount %</td><td class="text-right"><b>${df.format($r.avgDiscountPercentage)}%</b></td></tr>
+        </table>
+        <div style="clear: both; margin-bottom: 20px;"></div>
+
+        <!-- Payment Breakdown -->
+        <div class="section-title">Payment Methods Breakdown</div>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Method</th>
+                    <th class="text-right">Transactions</th>
+                    <th class="text-right">Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                #foreach($pm in $r.paymentBreakdown)
+                <tr>
+                    <td>${pm.method}</td>
+                    <td class="text-right">${pm.count}</td>
+                    <td class="text-right">&#8377;${df.format($pm.amount)}</td>
+                </tr>
+                #end
+                #if($r.paymentBreakdown.isEmpty())
+                <tr><td colspan="3" class="text-center">No transactions recorded.</td></tr>
+                #end
+            </tbody>
+        </table>
+
+        <!-- Top Medicines -->
+        <div class="section-title">Top Selling Medicines</div>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Medicine Name</th>
+                    <th>Category</th>
+                    <th class="text-right">Qty Sold</th>
+                    <th class="text-right">Revenue</th>
+                </tr>
+            </thead>
+            <tbody>
+                #foreach($tm in $r.topMedicines)
+                <tr>
+                    <td>${tm.name}</td>
+                    <td>${tm.category}</td>
+                    <td class="text-right">${tm.quantitySold}</td>
+                    <td class="text-right">&#8377;${df.format($tm.revenue)}</td>
+                </tr>
+                #end
+                #if($r.topMedicines.isEmpty())
+                <tr><td colspan="4" class="text-center">No medicines sold.</td></tr>
+                #end
+            </tbody>
+        </table>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>Generated on ${generatedDate} by Medical Store Management System</p>
+        </div>
+    </div>
+</body>
+</html>

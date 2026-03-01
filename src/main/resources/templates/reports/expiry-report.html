@@ -2,8 +2,151 @@
 <html xmlns:th="http://www.thymeleaf.org"
     th:replace="~{layout :: layout(title='Expiry Report', page='reports', content=~{::#content}, pageIcon='bi bi-exclamation-triangle-fill')}">
 
+<head>
+</head>
+
 <body>
     <div id="content">
+        <style>
+            .page-header {
+                background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+                color: white;
+                border-radius: 16px;
+                padding: 35px 30px;
+                margin-bottom: 30px;
+                box-shadow: 0 10px 25px -5px rgba(185, 28, 28, 0.4);
+                position: relative;
+                overflow: hidden;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .page-header::after {
+                content: '';
+                position: absolute;
+                top: -50%;
+                left: -50%;
+                width: 200%;
+                height: 200%;
+                background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 60%);
+                transform: rotate(30deg);
+                pointer-events: none;
+            }
+
+            .page-header h2 {
+                margin: 0;
+                font-weight: 700;
+                color: white;
+            }
+
+            .page-header h2 i {
+                color: #fca5a5 !important;
+            }
+
+            .page-header p {
+                margin: 4px 0 0;
+                opacity: 0.9;
+                color: rgba(255, 255, 255, 0.9) !important;
+            }
+
+            .page-header .btn-outline-secondary {
+                border-color: rgba(255, 255, 255, 0.5);
+                color: white;
+            }
+
+            .page-header .btn-outline-secondary:hover {
+                background-color: rgba(255, 255, 255, 0.2);
+                border-color: white;
+                color: white;
+            }
+
+            .stat-card {
+                padding: 20px;
+                border-radius: 12px;
+                color: white;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                position: relative;
+                overflow: hidden;
+                border: none;
+                height: 100%;
+            }
+
+            .stat-card:hover {
+                transform: translateY(-8px) scale(1.02);
+                box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            }
+
+            .stat-card::after {
+                content: '';
+                position: absolute;
+                top: -10px;
+                right: -10px;
+                width: 60px;
+                height: 60px;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.15);
+            }
+
+            .stat-label {
+                font-size: 13px;
+                opacity: 0.9;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                margin-bottom: 5px;
+            }
+
+            .stat-value {
+                font-size: 28px;
+                font-weight: 700;
+            }
+
+            .modern-card {
+                border: none;
+                border-radius: 12px;
+                background: rgba(255, 255, 255, 0.9);
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                overflow: hidden;
+            }
+
+            .modern-card:hover {
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            }
+
+            .nav-tabs {
+                border-bottom: 2px solid #f1f5f9;
+            }
+
+            .nav-tabs .nav-link {
+                border: none;
+                color: #64748b;
+                font-weight: 600;
+                padding: 1rem 1.5rem;
+                position: relative;
+            }
+
+            .nav-tabs .nav-link:hover {
+                color: #0f172a;
+                background: transparent;
+            }
+
+            .nav-tabs .nav-link.active {
+                color: #0f172a;
+                background: transparent;
+            }
+
+            .nav-tabs .nav-link.active::after {
+                content: '';
+                position: absolute;
+                bottom: -2px;
+                left: 0;
+                right: 0;
+                height: 2px;
+                background-color: #3b82f6;
+            }
+        </style>
         <!-- Page Header -->
         <div class="page-header mb-4">
             <div>
@@ -88,9 +231,9 @@
                 <!-- Expired Tab -->
                 <div class="tab-pane fade show active" id="expired">
                     <div th:if="${#lists.isEmpty(expired)}" class="empty-state py-4">
-                        <i class="bi bi-check-circle text-success"></i>
-                        <h5>No Expired Medicines</h5>
-                        <p>Great! All medicines are within their expiry date.</p>
+                        <i class="bi bi-shield-check text-success opacity-75" style="font-size: 3.5rem;"></i>
+                        <h5 class="mt-3">No expired medicines - great job!</h5>
+                        <p class="text-muted">Your inventory is fresh, safe, and up-to-date.</p>
                     </div>
                     <div class="table-responsive" th:if="${!#lists.isEmpty(expired)}">
                         <table class="table modern-table mb-0">
@@ -124,8 +267,8 @@
                 <!-- 30-Day Tab -->
                 <div class="tab-pane fade" id="exp30">
                     <div th:if="${#lists.isEmpty(expiring30)}" class="empty-state py-4">
-                        <i class="bi bi-check-circle text-success"></i>
-                        <h5>No Medicines Expiring in 30 Days</h5>
+                        <i class="bi bi-shield-check text-success opacity-75" style="font-size: 3.5rem;"></i>
+                        <h5 class="mt-3">No expiring medicines this month - great job!</h5>
                     </div>
                     <div class="table-responsive" th:if="${!#lists.isEmpty(expiring30)}">
                         <table class="table modern-table mb-0">
@@ -164,8 +307,8 @@
                 <!-- 60-Day Tab -->
                 <div class="tab-pane fade" id="exp60">
                     <div th:if="${#lists.isEmpty(expiring60)}" class="empty-state py-4">
-                        <i class="bi bi-check-circle text-success"></i>
-                        <h5>No Medicines Expiring in 60 Days</h5>
+                        <i class="bi bi-shield-check text-success opacity-75" style="font-size: 3.5rem;"></i>
+                        <h5 class="mt-3">No medicines expiring in the next 60 days - great job!</h5>
                     </div>
                     <div class="table-responsive" th:if="${!#lists.isEmpty(expiring60)}">
                         <table class="table modern-table mb-0">
@@ -203,8 +346,8 @@
                 <!-- 90-Day Tab -->
                 <div class="tab-pane fade" id="exp90">
                     <div th:if="${#lists.isEmpty(expiring90)}" class="empty-state py-4">
-                        <i class="bi bi-check-circle text-success"></i>
-                        <h5>No Medicines Expiring in 90 Days</h5>
+                        <i class="bi bi-shield-check text-success opacity-75" style="font-size: 3.5rem;"></i>
+                        <h5 class="mt-3">No medicines expiring in the next 90 days - great job!</h5>
                     </div>
                     <div class="table-responsive" th:if="${!#lists.isEmpty(expiring90)}">
                         <table class="table modern-table mb-0">

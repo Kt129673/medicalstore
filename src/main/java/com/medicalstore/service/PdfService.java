@@ -142,18 +142,33 @@ public class PdfService {
     }
 
     /**
+     * Build a common context for reports
+     */
+    private VelocityContext buildReportContext() {
+        VelocityContext ctx = new VelocityContext();
+        ctx.put("companyName", COMPANY_NAME);
+        ctx.put("companyAddress", COMPANY_ADDRESS);
+        ctx.put("companyPhone", COMPANY_PHONE);
+        ctx.put("companyEmail", COMPANY_EMAIL);
+        ctx.put("companyGstin", COMPANY_GSTIN);
+
+        DateTimeFormatter fullFmt = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+        ctx.put("generatedDate", LocalDateTime.now().format(fullFmt));
+        ctx.put("df", DF); // Expose DecimalFormat to templates
+        return ctx;
+    }
+
+    /**
      * Generate daily report PDF.
      */
     public byte[] generateDailyReportPdf(String reportDate, Object reportData) {
         try {
-            VelocityContext ctx = new VelocityContext();
+            VelocityContext ctx = buildReportContext();
             ctx.put("reportDate", reportDate);
-            ctx.put("reportData", reportData);
-            ctx.put("companyName", COMPANY_NAME);
-            // Use a simple fallback if no velocity template exists yet
-            String html = "<html><body><h1>" + COMPANY_NAME + " - Daily Report</h1><p>Date: " + reportDate
-                    + "</p></body></html>";
-            return convertHtmlToPdf(html, "Daily Report - " + reportDate);
+            ctx.put("r", reportData);
+
+            String htmlContent = renderTemplate("velocity/daily-report-template.vm", ctx);
+            return convertHtmlToPdf(htmlContent, "Daily Report - " + reportDate);
         } catch (Exception e) {
             throw new RuntimeException("Failed to generate daily report PDF: " + e.getMessage(), e);
         }
@@ -164,9 +179,12 @@ public class PdfService {
      */
     public byte[] generateMonthlyReportPdf(String month, String year, Object reportData) {
         try {
-            String html = "<html><body><h1>" + COMPANY_NAME + " - Monthly Report</h1><p>" + month + " " + year
-                    + "</p></body></html>";
-            return convertHtmlToPdf(html, "Monthly Report - " + month + " " + year);
+            VelocityContext ctx = buildReportContext();
+            ctx.put("reportMonth", month + " " + year);
+            ctx.put("r", reportData);
+
+            String htmlContent = renderTemplate("velocity/monthly-report-template.vm", ctx);
+            return convertHtmlToPdf(htmlContent, "Monthly Report - " + month + " " + year);
         } catch (Exception e) {
             throw new RuntimeException("Failed to generate monthly report PDF: " + e.getMessage(), e);
         }
@@ -177,9 +195,14 @@ public class PdfService {
      */
     public byte[] generateSalesReportPdf(String reportType, String startDate, String endDate, Object reportData) {
         try {
-            String html = "<html><body><h1>" + COMPANY_NAME + " - " + reportType + "</h1><p>" + startDate + " to "
-                    + endDate + "</p></body></html>";
-            return convertHtmlToPdf(html, reportType + " Sales Report");
+            VelocityContext ctx = buildReportContext();
+            ctx.put("reportType", reportType);
+            ctx.put("startDate", startDate);
+            ctx.put("endDate", endDate);
+            ctx.put("sales", reportData);
+
+            String htmlContent = renderTemplate("velocity/sales-report-template.vm", ctx);
+            return convertHtmlToPdf(htmlContent, reportType + " Sales Report");
         } catch (Exception e) {
             throw new RuntimeException("Failed to generate sales report PDF: " + e.getMessage(), e);
         }

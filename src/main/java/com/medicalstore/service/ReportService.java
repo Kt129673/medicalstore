@@ -683,11 +683,20 @@ public class ReportService {
                                         row.createCell(0).setCellValue(sale.getId());
                                         row.createCell(1).setCellValue(sale.getSaleDate()
                                                         .format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")));
-                                        row.createCell(2).setCellValue(item.getMedicine().getName());
-                                        row.createCell(3).setCellValue(item.getMedicine().getCategory());
-                                        row.createCell(4).setCellValue(item.getQuantity());
-                                        row.createCell(5).setCellValue(item.getUnitPrice());
-                                        row.createCell(6).setCellValue(item.getTotalPrice());
+                                        row.createCell(2)
+                                                        .setCellValue(item.getMedicine() != null
+                                                                        ? item.getMedicine().getName()
+                                                                        : "Unknown");
+                                        row.createCell(3)
+                                                        .setCellValue(item.getMedicine() != null
+                                                                        ? item.getMedicine().getCategory()
+                                                                        : "Unknown");
+                                        row.createCell(4).setCellValue(
+                                                        item.getQuantity() != null ? item.getQuantity() : 0);
+                                        row.createCell(5).setCellValue(
+                                                        item.getUnitPrice() != null ? item.getUnitPrice() : 0.0);
+                                        row.createCell(6).setCellValue(
+                                                        item.getTotalPrice() != null ? item.getTotalPrice() : 0.0);
 
                                         // Headers are total per SALE, putting it on each row might inflate sums,
                                         // but it's okay for a flat export format
@@ -699,7 +708,9 @@ public class ReportService {
                                         row.createCell(9)
                                                         .setCellValue(sale.getFinalAmount() != null
                                                                         ? sale.getFinalAmount()
-                                                                        : sale.getTotalAmount());
+                                                                        : (sale.getTotalAmount() != null
+                                                                                        ? sale.getTotalAmount()
+                                                                                        : 0.0));
                                         row.createCell(10).setCellValue(
                                                         sale.getPaymentMethod() != null ? sale.getPaymentMethod()
                                                                         : "Cash");
@@ -709,9 +720,13 @@ public class ReportService {
                                 }
                         }
 
-                        // Auto-size columns
-                        for (int i = 0; i < headers.length; i++) {
-                                sheet.autoSizeColumn(i);
+                        // Auto-size columns (with safety fallback for headless servers)
+                        try {
+                                for (int i = 0; i < headers.length; i++) {
+                                        sheet.autoSizeColumn(i);
+                                }
+                        } catch (Throwable t) {
+                                // Ignore font manager errors in environments without AWT support
                         }
 
                         ByteArrayOutputStream bos = new ByteArrayOutputStream();

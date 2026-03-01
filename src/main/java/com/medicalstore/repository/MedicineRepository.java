@@ -48,6 +48,7 @@ public interface MedicineRepository extends JpaRepository<Medicine, Long>, JpaSp
         long countByQuantityLessThan(Integer quantity);
 
         // --- branch-scoped (SHOPKEEPER) ---
+        @org.springframework.data.jpa.repository.EntityGraph(attributePaths = { "supplier", "branch" })
         List<Medicine> findByBranchId(Long branchId);
 
         @Query("SELECT DISTINCT m.category FROM Medicine m WHERE m.branch.id = ?1 AND m.category IS NOT NULL ORDER BY m.category")
@@ -82,6 +83,7 @@ public interface MedicineRepository extends JpaRepository<Medicine, Long>, JpaSp
                         org.springframework.data.domain.Pageable pageable);
 
         // --- owner-scoped (OWNER sees all their branches) ---
+        @org.springframework.data.jpa.repository.EntityGraph(attributePaths = { "supplier", "branch" })
         @Query("SELECT m FROM Medicine m WHERE m.branch.owner.id = :ownerId")
         List<Medicine> findByOwnerId(Long ownerId);
 
