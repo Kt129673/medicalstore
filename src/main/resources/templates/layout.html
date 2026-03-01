@@ -30,8 +30,7 @@
     <!-- SweetAlert2 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.min.css" rel="stylesheet" media="print" onload="this.media='all'">
     <noscript><link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.min.css" rel="stylesheet"></noscript>
-    <!-- Inline theme: apply immediately to prevent dark-mode flash (FOUC) -->
-    <script>(function(){var t=localStorage.getItem('theme');if(t)document.documentElement.setAttribute('data-theme',t);})()</script>
+
 </head>
 
 <body>
@@ -247,11 +246,6 @@
                     <span class="header-role-badge role-shopkeeper" sec:authorize="hasRole('SHOPKEEPER')">
                         <i class="bi bi-shop"></i> Shopkeeper
                     </span>
-
-                    <!-- Theme Toggle -->
-                    <button class="theme-toggle-btn" id="themeToggle" title="Toggle dark mode" aria-label="Toggle dark mode">
-                        <i class="bi bi-moon-stars-fill" id="themeIcon"></i>
-                    </button>
 
                     <!-- Notification Bell -->
                     <div class="header-notif" id="notifContainer" sec:authorize="hasAnyRole('ADMIN','SHOPKEEPER')">

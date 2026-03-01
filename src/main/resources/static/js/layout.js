@@ -681,40 +681,7 @@ document.addEventListener('click', (e) => {
 });
 
 /* ─────────────────────────────────────────────────
-   12. DARK MODE TOGGLE  (already wired in layout.html; expose toggle globally)
-───────────────────────────────────────────────── */
-window.entToggleDark = function () {
-    const current = document.documentElement.getAttribute('data-theme');
-    const next = current === 'dark' ? 'light' : 'dark';
-    document.documentElement.setAttribute('data-theme', next);
-    localStorage.setItem('theme', next);
-    _syncThemeIcon();
-};
-
-function _syncThemeIcon() {
-    const icon = document.getElementById('themeIcon');
-    if (!icon) return;
-    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-    icon.className = isDark ? 'bi bi-sun-fill' : 'bi bi-moon-stars-fill';
-}
-
-// Restore on load
-(function () {
-    const saved = localStorage.getItem('theme');
-    if (saved) document.documentElement.setAttribute('data-theme', saved);
-})();
-
-// Wire theme toggle button
-onDomReady(() => {
-    _syncThemeIcon();
-    const toggleBtn = document.getElementById('themeToggle');
-    if (toggleBtn) {
-        toggleBtn.addEventListener('click', window.entToggleDark);
-    }
-});
-
-/* ─────────────────────────────────────────────────
-   13. DATA-CONFIRM-DELETE  (auto-wire delete forms)
+   12. DATA-CONFIRM-DELETE  (auto-wire delete forms)
    Add data-confirm-delete="Message here" to any <form>
    to replace the native confirm() with SweetAlert2.
    Optimistic UI: the table row collapses immediately on confirm,
