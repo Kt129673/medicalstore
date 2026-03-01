@@ -70,6 +70,7 @@
             /* Medicine search with typeahead */
             .med-search-wrap {
                 position: relative;
+                z-index: 1050;
             }
 
             .med-search-wrap .form-control {
@@ -261,7 +262,7 @@
                                 <input type="text" class="form-control" id="medicineSearchInput"
                                     placeholder="Search name, barcode, or batch..." autocomplete="off">
                                 <div id="typeaheadDropdown" class="list-group position-absolute w-100 shadow-sm"
-                                    style="display:none; z-index:1000; max-height: 250px; overflow-y: auto;">
+                                    style="display:none; z-index:1050; max-height: 250px; overflow-y: auto; background:#fff;">
                                 </div>
                             </div>
                         </div>
