@@ -5,6 +5,7 @@ import com.medicalstore.model.Branch;
 import com.medicalstore.model.User;
 import com.medicalstore.repository.UserRepository;
 import com.medicalstore.service.BranchService;
+import com.medicalstore.service.SubscriptionService;
 import com.medicalstore.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -14,7 +15,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Platform Admin panel — manage owners, branches, shopkeepers.
@@ -30,6 +35,7 @@ public class AdminController {
     private final BranchService branchService;
     private final SecurityUtils securityUtils;
     private final PasswordEncoder passwordEncoder;
+    private final SubscriptionService subscriptionService;
 
     // ─── Admin Dashboard ───────────────────────────────────────────────────
     @GetMapping
@@ -166,5 +172,37 @@ public class AdminController {
         branchService.toggleActive(id);
         ra.addFlashAttribute("success", "Branch status updated.");
         return RoutePaths.redirectTo(RoutePaths.ADMIN_BRANCHES);
+    }
+
+    // ─── Subscription Management ───────────────────────────────────────────
+    @GetMapping("/subscriptions")
+    public String listSubscriptions(Model model) {
+        List<User> owners = userRepository.findAll().stream()
+                .filter(u -> u.getRoles().contains("OWNER")).toList();
+
+        Map<Long, com.medicalstore.model.SubscriptionPlan> plansByOwner = owners.stream()
+                .map(o -> Map.entry(o.getId(), subscriptionService.getPlanForOwner(o.getId())))
+                .filter(e -> e.getValue().isPresent())
+                .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().get()));
+
+        model.addAttribute("title", "Subscription Management");
+        model.addAttribute("page", "admin");
+        model.addAttribute("owners", owners);
+        model.addAttribute("plansByOwner", plansByOwner);
+        return "admin/subscriptions";
+    }
+
+    @PostMapping("/subscriptions/update")
+    public String updateSubscription(
+            @RequestParam Long ownerId,
+            @RequestParam String planType,
+            @RequestParam String expiryDate,
+            @RequestParam(defaultValue = "10") int maxUsers,
+            @RequestParam(defaultValue = "5") int maxBranches,
+            RedirectAttributes ra) {
+        subscriptionService.createOrUpdatePlan(ownerId, planType, LocalDate.parse(expiryDate), maxUsers, maxBranches);
+        String ownerName = userRepository.findById(ownerId).map(User::getUsername).orElse("Unknown");
+        ra.addFlashAttribute("success", "Subscription updated for owner: " + ownerName);
+        return RoutePaths.redirectTo(RoutePaths.ADMIN_SUBSCRIPTIONS);
     }
 }

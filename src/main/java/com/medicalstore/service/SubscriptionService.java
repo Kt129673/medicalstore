@@ -5,6 +5,7 @@ import com.medicalstore.model.User;
 import com.medicalstore.repository.SubscriptionPlanRepository;
 import com.medicalstore.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +28,7 @@ public class SubscriptionService {
     }
 
     @Transactional
+    @CacheEvict(value = "subscription_plan", key = "#ownerId")
     public SubscriptionPlan createOrUpdatePlan(Long ownerId, String planType, LocalDate expiryDate, int maxUsers,
             int maxBranches) {
         User owner = userRepository.findById(ownerId)
