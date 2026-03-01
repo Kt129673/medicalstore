@@ -1,5 +1,6 @@
 package com.medicalstore.controller;
 
+import com.medicalstore.config.RoutePaths;
 import com.medicalstore.model.Medicine;
 import com.medicalstore.service.BranchService;
 import com.medicalstore.service.MedicineService;
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
-@RequestMapping("/medicines")
+@RequestMapping(RoutePaths.MEDICINES)
 @RequiredArgsConstructor
 public class MedicineController {
 
@@ -78,7 +79,7 @@ public class MedicineController {
             }
             medicineService.saveMedicine(medicine);
             ra.addFlashAttribute("success", "Medicine saved successfully!");
-            return "redirect:/medicines";
+            return RoutePaths.redirectTo(RoutePaths.MEDICINES);
         } catch (IllegalArgumentException e) {
             model.addAttribute("error", e.getMessage());
             model.addAttribute("medicine", medicine);
@@ -98,7 +99,7 @@ public class MedicineController {
         } catch (Exception e) {
             ra.addFlashAttribute("error", "Cannot delete medicine: it may be linked to sales or purchases.");
         }
-        return "redirect:/medicines";
+        return RoutePaths.redirectTo(RoutePaths.MEDICINES);
     }
 
     @PostMapping("/bulk-delete")
@@ -111,7 +112,7 @@ public class MedicineController {
             }
         }
         ra.addFlashAttribute("success", count + " medicines deleted successfully!");
-        return "redirect:/medicines";
+        return RoutePaths.redirectTo(RoutePaths.MEDICINES);
     }
 
     @GetMapping("/low-stock")

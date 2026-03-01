@@ -1,5 +1,6 @@
 package com.medicalstore.controller;
 
+import com.medicalstore.config.RoutePaths;
 import com.medicalstore.model.Customer;
 import com.medicalstore.service.CustomerService;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
-@RequestMapping("/customers")
+@RequestMapping(RoutePaths.CUSTOMERS)
 @RequiredArgsConstructor
 public class CustomerController {
     
@@ -43,7 +44,7 @@ public class CustomerController {
     public String saveCustomer(@ModelAttribute Customer customer, RedirectAttributes redirectAttributes) {
         customerService.saveCustomer(customer);
         redirectAttributes.addFlashAttribute("success", "Customer saved successfully!");
-        return "redirect:/customers";
+        return RoutePaths.redirectTo(RoutePaths.CUSTOMERS);
     }
     
     @GetMapping("/delete/{id}")
@@ -54,6 +55,6 @@ public class CustomerController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Cannot delete customer: it may be linked to sales records.");
         }
-        return "redirect:/customers";
+        return RoutePaths.redirectTo(RoutePaths.CUSTOMERS);
     }
 }

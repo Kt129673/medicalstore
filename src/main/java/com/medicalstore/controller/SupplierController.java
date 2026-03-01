@@ -1,5 +1,6 @@
 package com.medicalstore.controller;
 
+import com.medicalstore.config.RoutePaths;
 import com.medicalstore.model.Supplier;
 import com.medicalstore.service.SupplierService;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
-@RequestMapping("/suppliers")
+@RequestMapping(RoutePaths.SUPPLIERS)
 @RequiredArgsConstructor
 public class SupplierController {
     
@@ -43,7 +44,7 @@ public class SupplierController {
     public String saveSupplier(@ModelAttribute Supplier supplier, RedirectAttributes redirectAttributes) {
         supplierService.saveSupplier(supplier);
         redirectAttributes.addFlashAttribute("success", "Supplier saved successfully!");
-        return "redirect:/suppliers";
+        return RoutePaths.redirectTo(RoutePaths.SUPPLIERS);
     }
     
     @GetMapping("/delete/{id}")
@@ -54,6 +55,6 @@ public class SupplierController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Cannot delete supplier: it may be linked to purchase records.");
         }
-        return "redirect:/suppliers";
+        return RoutePaths.redirectTo(RoutePaths.SUPPLIERS);
     }
 }

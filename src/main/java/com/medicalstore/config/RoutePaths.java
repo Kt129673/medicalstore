@@ -9,6 +9,11 @@ public final class RoutePaths {
     public static final String LOGOUT = "/logout";
     public static final String ERROR = "/error";
     public static final String SUBSCRIPTION_BILLING = "/subscription/billing";
+    public static final String MEDICINES = "/medicines";
+    public static final String CUSTOMERS = "/customers";
+    public static final String SUPPLIERS = "/suppliers";
+
+    public static final String REDIRECT_PREFIX = "redirect:";
 
     public static final String[] STATIC_PREFIXES = { "/css", "/js", "/images" };
 
@@ -37,5 +42,9 @@ public final class RoutePaths {
                 || uri.equals(LOGOUT)
                 || uri.equals(ERROR)
                 || uri.startsWith(SUBSCRIPTION_BILLING);
+    }
+
+    public static String redirectTo(String path) {
+        return REDIRECT_PREFIX + path;
     }
 }
