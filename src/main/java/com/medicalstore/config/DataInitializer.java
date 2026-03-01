@@ -46,36 +46,39 @@ public class DataInitializer implements CommandLineRunner {
     @Transactional
     public void run(String... args) {
 
-        // 1. Ensure platform admin
+        // 1. Ensure platform admin — reset password every startup
+        User adminUser;
         if (!userRepository.existsByUsername("admin")) {
-            User admin = new User();
-            admin.setUsername("admin");
-            admin.setPassword(passwordEncoder.encode("admin123"));
-            admin.setFullName("Platform Administrator");
-            admin.setEmail("admin@medicalstore.com");
-            admin.setEnabled(true);
-            admin.setAccountNonLocked(true);
-            admin.setRoles(Set.of("ADMIN"));
-            userRepository.save(admin);
+            adminUser = new User();
+            adminUser.setUsername("admin");
+            adminUser.setFullName("Platform Administrator");
+            adminUser.setEmail("admin@medicalstore.com");
+            adminUser.setRoles(Set.of("ADMIN"));
             log.info("Platform admin created: admin / admin123");
+        } else {
+            adminUser = userRepository.findByUsername("admin").orElseThrow();
         }
+        adminUser.setPassword(passwordEncoder.encode("admin123"));
+        adminUser.setEnabled(true);
+        adminUser.setAccountNonLocked(true);
+        userRepository.save(adminUser);
 
-        // 2. Ensure default owner
+        // 2. Ensure default owner — reset password every startup
         User defaultOwner;
         if (!userRepository.existsByUsername("default_owner")) {
-            User owner = new User();
-            owner.setUsername("default_owner");
-            owner.setPassword(passwordEncoder.encode("Owner@123"));
-            owner.setFullName("Default Owner");
-            owner.setEmail("defaultowner@medicalstore.com");
-            owner.setEnabled(true);
-            owner.setAccountNonLocked(true);
-            owner.setRoles(Set.of("OWNER"));
-            defaultOwner = userRepository.save(owner);
+            defaultOwner = new User();
+            defaultOwner.setUsername("default_owner");
+            defaultOwner.setFullName("Default Owner");
+            defaultOwner.setEmail("defaultowner@medicalstore.com");
+            defaultOwner.setRoles(Set.of("OWNER"));
             log.info("Default owner created: default_owner / Owner@123");
         } else {
             defaultOwner = userRepository.findByUsername("default_owner").orElseThrow();
         }
+        defaultOwner.setPassword(passwordEncoder.encode("Owner@123"));
+        defaultOwner.setEnabled(true);
+        defaultOwner.setAccountNonLocked(true);
+        defaultOwner = userRepository.save(defaultOwner);
 
         // 3. Ensure Default Branch
         Branch defaultBranch;
@@ -94,20 +97,23 @@ public class DataInitializer implements CommandLineRunner {
             defaultBranch = existing.get(0);
         }
 
-        // 3b. Ensure default shopkeeper assigned to Default Branch
+        // 3b. Ensure default shopkeeper assigned to Default Branch — reset password every startup
+        User shopkeeper;
         if (!userRepository.existsByUsername("shop1")) {
-            User shopkeeper = new User();
+            shopkeeper = new User();
             shopkeeper.setUsername("shop1");
-            shopkeeper.setPassword(passwordEncoder.encode("shop123"));
             shopkeeper.setFullName("Demo Shopkeeper");
             shopkeeper.setEmail("shop1@medicalstore.com");
-            shopkeeper.setEnabled(true);
-            shopkeeper.setAccountNonLocked(true);
             shopkeeper.setRoles(Set.of("SHOPKEEPER"));
-            shopkeeper.setBranch(defaultBranch);
-            userRepository.save(shopkeeper);
             log.info("Default shopkeeper created: shop1 / shop123 (branch={})", defaultBranch.getName());
+        } else {
+            shopkeeper = userRepository.findByUsername("shop1").orElseThrow();
         }
+        shopkeeper.setPassword(passwordEncoder.encode("shop123"));
+        shopkeeper.setEnabled(true);
+        shopkeeper.setAccountNonLocked(true);
+        shopkeeper.setBranch(defaultBranch); // always ensure branch is set
+        userRepository.save(shopkeeper);
 
         // 4. Migrate existing data (null branch_id => Default Branch)
         final Branch branch = defaultBranch;
