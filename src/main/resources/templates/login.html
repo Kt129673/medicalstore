@@ -1,338 +1,99 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign In - Medical Store Management</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <style>
-        :root {
-            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --primary-color: #667eea;
-            --secondary-color: #764ba2;
-            --text-dark: #0f172a;
-            --text-muted: #64748b;
-            --surface: #f8fafc;
-            --border-light: #e2e8f0;
-        }
-
-        * { box-sizing: border-box; }
-
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background-color: var(--surface);
-            margin: 0;
+            background-color: #f1f5f9;
             min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        a:focus-visible,
-        button:focus-visible,
-        input:focus-visible {
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3) !important;
-        }
-
-        /* ── Left Panel ─────────────────────────────────── */
-        .left-panel {
-            background: var(--primary-gradient);
-            padding: 3rem 2.5rem;
-            color: white;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .brand-decorative-circle {
-            position: absolute;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.06);
-            pointer-events: none;
-        }
-        .circle-1 { width: 420px; height: 420px; top: -120px; right: -120px; }
-        .circle-2 { width: 280px; height: 280px; bottom: -60px; left: -80px; }
-        .circle-3 { width: 160px; height: 160px; top: 45%; left: 10%; background: rgba(255,255,255,0.04); }
-
-        .brand-logo {
-            font-size: 52px;
-            margin-bottom: 20px;
-            display: inline-block;
-            animation: float 6s ease-in-out infinite;
-            filter: drop-shadow(0 8px 24px rgba(255,255,255,0.25));
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50%       { transform: translateY(-10px); }
-        }
-
-        .brand-header h2 {
-            font-size: 34px;
-            font-weight: 800;
-            line-height: 1.15;
-            letter-spacing: -1px;
-            margin-bottom: 10px;
-        }
-
-        .brand-header p {
-            font-size: 15px;
-            opacity: 0.85;
-            font-weight: 500;
-            margin-bottom: 0;
-        }
-
-        .glass-card {
-            background: rgba(255,255,255,0.1);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255,255,255,0.18);
-            border-radius: 20px;
-            padding: 28px 28px 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.12);
-        }
-
-        .glass-card h5 {
-            font-weight: 700;
-            margin-bottom: 18px;
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-size: 15px;
+            justify-content: center;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
         }
 
-        .feature-list { list-style: none; padding: 0; margin: 0; }
-        .feature-list li {
-            margin-bottom: 14px;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            opacity: 0.93;
-            font-weight: 500;
-        }
-        .feature-list li:last-child { margin-bottom: 0; }
-        .feature-list li i { font-size: 18px; color: #a7f3d0; flex-shrink: 0; }
-
-        /* Stat badges on left panel */
-        .stat-row {
-            display: flex;
-            gap: 12px;
-            margin-top: 20px;
-        }
-        .stat-badge {
-            flex: 1;
-            background: rgba(255,255,255,0.12);
-            border: 1px solid rgba(255,255,255,0.15);
-            border-radius: 12px;
-            padding: 12px 10px;
-            text-align: center;
-        }
-        .stat-badge .stat-value {
-            font-size: 20px;
-            font-weight: 800;
-            line-height: 1;
-            margin-bottom: 2px;
-        }
-        .stat-badge .stat-label {
-            font-size: 10px;
-            opacity: 0.75;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.4px;
-        }
-
-        .brand-footer {
-            font-size: 12px;
-            opacity: 0.65;
-        }
-
-        /* ── Right Panel ─────────────────────────────────── */
-        .right-panel {
-            background-color: #ffffff;
-            padding: 2.5rem 2rem;
-            overflow-y: auto;
-            /* Let .login-container use margin:auto for safe centering
-               (auto margins collapse when the child overflows, so
-               scrolling still works—unlike align-items:center). */
-        }
-
-        .login-container {
-            max-width: 440px;
+        .login-card {
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+            padding: 2.5rem;
             width: 100%;
-            margin: auto;
-            padding-top: 1.5rem;
-            padding-bottom: 2rem;
-            animation: slideIn 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+            max-width: 420px;
         }
 
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(16px); }
-            to   { opacity: 1; transform: translateY(0); }
+        .brand-icon {
+            font-size: 42px;
+            color: #667eea;
         }
 
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            15%       { transform: translateX(-6px); }
-            30%       { transform: translateX(6px); }
-            45%       { transform: translateX(-5px); }
-            60%       { transform: translateX(5px); }
-            75%       { transform: translateX(-3px); }
-            90%       { transform: translateX(3px); }
+        .form-control {
+            border-radius: 10px;
+            padding: 10px 14px 10px 42px;
+            border: 1.5px solid #e2e8f0;
+            font-size: 14.5px;
         }
 
-        .shake { animation: shake 0.5s ease; }
-
-        /* Form Elements */
-        .form-label {
-            font-weight: 600;
-            color: var(--text-muted);
-            font-size: 11.5px;
-            text-transform: uppercase;
-            letter-spacing: 0.6px;
-            margin-bottom: 6px;
-            margin-left: 4px;
-        }
-
-        .input-wrapper {
-            position: relative;
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.15);
         }
 
         .input-icon {
             position: absolute;
-            left: 16px;
+            left: 13px;
             top: 50%;
             transform: translateY(-50%);
             color: #94a3b8;
-            font-size: 17px;
-            z-index: 5;
+            font-size: 16px;
             pointer-events: none;
-            transition: color 0.25s;
+            z-index: 5;
         }
 
-        .form-control {
-            background-color: #f1f5f9;
-            border: 2px solid transparent;
-            border-radius: 14px;
-            padding: 12px 18px 12px 46px;
-            font-size: 14.5px;
-            font-weight: 500;
-            color: var(--text-dark);
-            transition: background 0.25s, border-color 0.25s, box-shadow 0.25s, transform 0.2s;
-            width: 100%;
-        }
-
-        .form-control:focus {
-            background-color: #ffffff;
-            border-color: var(--primary-color);
-            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.12);
-            transform: translateY(-1px);
-            outline: none;
-        }
-
-        .form-control:focus ~ .input-icon { color: var(--primary-color); }
-
-        .form-control.is-invalid-custom {
-            border-color: #ef4444;
-            background-color: #fff5f5;
-        }
+        .input-wrapper { position: relative; }
 
         .password-toggle-btn {
             position: absolute;
-            right: 8px;
+            right: 6px;
             top: 50%;
             transform: translateY(-50%);
             border: none;
             background: transparent;
             color: #64748b;
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             z-index: 6;
             cursor: pointer;
-            transition: color 0.2s, background 0.2s;
         }
 
-        .password-toggle-btn:hover {
-            color: var(--text-dark);
-            background: rgba(15,23,42,0.06);
-        }
+        .password-toggle-btn:hover { background: #f1f5f9; }
 
-        .caps-lock-hint {
-            display: none;
-            margin-top: 5px;
-            font-size: 11.5px;
-            color: #b45309;
-            font-weight: 600;
-        }
-        .caps-lock-hint.show { display: flex; align-items: center; gap: 4px; }
-
-        /* Remember & Forgot row */
-        .auth-options {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .form-check-input:checked {
-            background-color: var(--primary-color);
-            border-color: var(--primary-color);
-        }
-
-        /* Sign In Button */
         .btn-login {
-            background: var(--primary-gradient);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border: none;
-            border-radius: 14px;
-            padding: 13px;
-            font-size: 15.5px;
-            font-weight: 700;
-            letter-spacing: 0.3px;
-            color: white;
+            border-radius: 10px;
+            padding: 11px;
+            font-size: 15px;
+            font-weight: 600;
+            color: #fff;
             width: 100%;
-            transition: transform 0.25s cubic-bezier(0.4,0,0.2,1), box-shadow 0.25s;
-            box-shadow: 0 8px 20px -4px rgba(102, 126, 234, 0.55);
             position: relative;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
         }
 
-        .btn-login::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: rgba(255,255,255,0);
-            transition: background 0.25s;
-        }
-
-        .btn-login:hover::before {
-            background: rgba(255,255,255,0.12);
-        }
-
-        .btn-login:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 14px 28px -4px rgba(102, 126, 234, 0.65);
-            color: white;
-        }
-
-        .btn-login:active { transform: translateY(0px); }
+        .btn-login:hover { opacity: 0.92; color: #fff; }
+        .btn-login:active { opacity: 1; }
 
         .btn-login.loading {
-            pointer-events: none;
             color: transparent !important;
-        }
-
-        .btn-login.loading .btn-spinner {
-            display: flex !important;
+            pointer-events: none;
         }
 
         .btn-spinner {
@@ -343,71 +104,64 @@
             justify-content: center;
         }
 
+        .btn-login.loading .btn-spinner { display: flex; }
+
         .btn-spinner::after {
             content: '';
-            width: 20px;
-            height: 20px;
+            width: 19px; height: 19px;
             border: 2.5px solid rgba(255,255,255,0.35);
-            border-top-color: white;
+            border-top-color: #fff;
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
         }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* Alerts */
         .alert {
-            border-radius: 14px;
+            border-radius: 10px;
             border: none;
-            padding: 13px 16px;
             font-size: 13.5px;
-            margin-bottom: 20px;
+            padding: 12px 14px;
             display: flex;
             align-items: flex-start;
+            gap: 9px;
+        }
+
+        .alert-danger  { background: #fef2f2; color: #991b1b; border-left: 4px solid #ef4444; }
+        .alert-success { background: #ecfdf5; color: #065f46; border-left: 4px solid #10b981; }
+
+        .caps-lock-hint {
+            display: none;
+            font-size: 11.5px;
+            color: #b45309;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+        .caps-lock-hint.show { display: flex; align-items: center; gap: 4px; }
+
+        .divider {
+            display: flex;
+            align-items: center;
             gap: 10px;
-            animation: alertIn 0.3s ease;
+            margin: 20px 0;
         }
+        .divider hr { flex: 1; border: none; border-top: 1.5px solid #e2e8f0; margin: 0; }
+        .divider span { font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.6px; }
 
-        @keyframes alertIn {
-            from { opacity: 0; transform: translateY(-6px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-
-        .alert-danger {
-            background: #fef2f2;
-            color: #991b1b;
-            border-left: 4px solid #ef4444;
-        }
-
-        .alert-success {
-            background: #ecfdf5;
-            color: #065f46;
-            border-left: 4px solid #10b981;
-        }
-
-        .alert i { margin-top: 1px; flex-shrink: 0; }
-
-        /* ── Quick Login as Role ─────────────────────────── */
-        .quick-login-section {
-            margin-top: 24px;
-            border: 1.5px solid var(--border-light);
-            border-radius: 18px;
+        .quick-login-box {
+            border: 1.5px solid #e2e8f0;
+            border-radius: 14px;
             overflow: hidden;
         }
 
         .quick-login-header {
+            background: #f8fafc;
+            border-bottom: 1.5px solid #e2e8f0;
+            padding: 9px 14px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 7px;
-            padding: 10px 16px;
-            background: #f8fafc;
-            border-bottom: 1.5px solid var(--border-light);
-        }
-
-        .quick-login-header span {
+            gap: 6px;
             font-size: 11px;
             font-weight: 700;
             color: #64748b;
@@ -415,93 +169,43 @@
             letter-spacing: 0.8px;
         }
 
-        .quick-login-header i {
-            font-size: 14px;
-            color: #94a3b8;
-        }
-
         .role-cards {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(3,1fr);
             gap: 1px;
-            background: var(--border-light);
+            background: #e2e8f0;
         }
 
         .role-card {
+            background: #fff;
+            border: none;
+            padding: 16px 10px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
             gap: 6px;
-            padding: 16px 10px;
-            border: none;
-            background: white;
             cursor: pointer;
-            transition: background 0.2s, transform 0.15s;
+            transition: background 0.15s;
             position: relative;
         }
 
-        .role-card:hover {
-            background: #f8fafc;
-        }
-
-        .role-card:active { transform: scale(0.97); }
-
-        .role-card.loading-role {
-            pointer-events: none;
-            opacity: 0.7;
-        }
+        .role-card:hover { background: #f8fafc; }
+        .role-card:active { background: #f1f5f9; }
 
         .role-icon-wrap {
-            width: 42px;
-            height: 42px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            transition: transform 0.2s;
+            width: 40px; height: 40px;
+            border-radius: 11px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px;
             position: relative;
         }
 
-        .role-card:hover .role-icon-wrap { transform: scale(1.08); }
+        .role-card.admin   .role-icon-wrap { background: #fef2f2; color: #dc2626; }
+        .role-card.owner   .role-icon-wrap { background: #eff6ff; color: #1d4ed8; }
+        .role-card.shopkeeper .role-icon-wrap { background: #f0fdf4; color: #15803d; }
 
-        /* Admin */
-        .role-card.admin .role-icon-wrap {
-            background: #fef2f2;
-            color: #dc2626;
-        }
-        .role-card.admin:hover { background: #fff5f5; }
-
-        /* Owner */
-        .role-card.owner .role-icon-wrap {
-            background: #eff6ff;
-            color: #1d4ed8;
-        }
-        .role-card.owner:hover { background: #f0f7ff; }
-
-        /* Shopkeeper */
-        .role-card.shopkeeper .role-icon-wrap {
-            background: #f0fdf4;
-            color: #15803d;
-        }
-        .role-card.shopkeeper:hover { background: #f0fdf8; }
-
-        .role-card-info {
-            text-align: center;
-        }
-
-        .role-card-name {
-            font-size: 12.5px;
-            font-weight: 700;
-            color: var(--text-dark);
-        }
-
-        .role-card-user {
-            font-size: 10.5px;
-            color: #94a3b8;
-            font-weight: 500;
-        }
+        .role-card-name { font-size: 12.5px; font-weight: 700; color: #0f172a; }
+        .role-card-user { font-size: 10.5px; color: #94a3b8; }
 
         .role-spinner {
             display: none;
@@ -512,368 +216,189 @@
             align-items: center;
             justify-content: center;
         }
-
         .role-spinner::after {
             content: '';
-            width: 16px;
-            height: 16px;
+            width: 14px; height: 14px;
             border: 2px solid #e2e8f0;
             border-top-color: #667eea;
             border-radius: 50%;
             animation: spin 0.7s linear infinite;
         }
-
         .role-card.loading-role .role-spinner { display: flex; }
+        .role-card.loading-role { pointer-events: none; opacity: 0.7; }
 
-        /* Divider */
-        .or-divider {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin: 20px 0;
+        @keyframes shake {
+            0%,100% { transform: translateX(0); }
+            20% { transform: translateX(-6px); }
+            40% { transform: translateX(6px); }
+            60% { transform: translateX(-4px); }
+            80% { transform: translateX(4px); }
         }
-
-        .or-divider hr {
-            flex: 1;
-            border: none;
-            border-top: 1.5px solid var(--border-light);
-            margin: 0;
-        }
-
-        .or-divider span {
-            font-size: 11px;
-            font-weight: 700;
-            color: #94a3b8;
-            text-transform: uppercase;
-            letter-spacing: 0.6px;
-        }
-
-        /* Mobile header */
-        .mobile-header i {
-            background: var(--primary-gradient);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        /* ── Responsive ───────────────────────────────────── */
-        @media (max-width: 991px) {
-            body { overflow-y: auto; }
-            .right-panel {
-                min-height: 100vh;
-                overflow-y: auto;
-                padding-top: 2rem;
-                padding-bottom: 2rem;
-            }
-        }
-
-        @media (max-width: 767px) {
-            .role-cards {
-                grid-template-columns: repeat(3, 1fr);
-            }
-            .role-card { padding: 12px 6px; }
-            .role-card-name { font-size: 11.5px; }
-            .role-card-user { font-size: 10px; }
-            .role-icon-wrap { width: 36px; height: 36px; font-size: 17px; }
-        }
-
-        @media (max-width: 576px) {
-            .right-panel { padding: 1.5rem; }
-            .login-container { max-width: 100%; }
-            .role-cards {
-                grid-template-columns: 1fr;
-                gap: 0;
-                background: transparent;
-            }
-            .role-card {
-                flex-direction: row;
-                justify-content: flex-start;
-                border-bottom: 1px solid var(--border-light);
-                padding: 14px 16px;
-                gap: 12px;
-            }
-            .role-card:last-child { border-bottom: none; }
-            .role-card-info { text-align: left; }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            *, *::before, *::after {
-                animation-duration: 0.01ms !important;
-                transition-duration: 0.01ms !important;
-            }
-        }
-
-        /* ── Bootstrap critical fallbacks (layout still works if CDN is unavailable) ── */
-        .container-fluid { width: 100%; padding-right: 0; padding-left: 0; margin-right: auto; margin-left: auto; }
-        .row           { display: flex !important; flex-wrap: wrap; }
-        .g-0 > *       { padding-right: 0; padding-left: 0; }
-        .col-12        { flex: 0 0 auto; width: 100%; }
-        .d-none        { display: none !important; }
-        .d-flex        { display: flex !important; }
-        .flex-column   { flex-direction: column !important; }
-        .align-items-center   { align-items: center !important; }
-        .justify-content-center  { justify-content: center !important; }
-        .justify-content-between { justify-content: space-between !important; }
-        .p-0  { padding: 0 !important; }
-        .mb-0 { margin-bottom: 0 !important; }
-        .mb-1 { margin-bottom: .25rem !important; }
-        .mb-3 { margin-bottom: 1rem !important; }
-        .mb-4 { margin-bottom: 1.5rem !important; }
-        .mt-1 { margin-top: .25rem !important; }
-        .ms-2 { margin-left: .5rem !important; }
-        .fw-bold    { font-weight: 700 !important; }
-        .fw-medium  { font-weight: 500 !important; }
-        .fw-semibold{ font-weight: 600 !important; }
-        .text-muted  { color: var(--text-muted) !important; }
-        .text-center { text-align: center !important; }
-        .position-relative { position: relative !important; }
-        .w-100 { width: 100% !important; }
-        @media (min-width: 992px) {
-            .d-none.d-lg-flex { display: flex !important; }
-            .col-lg-5 { flex: 0 0 auto; width: 41.66667%; }
-            .col-lg-7 { flex: 0 0 auto; width: 58.33333%; }
-        }
-        @media (min-width: 1200px) {
-            .col-xl-4 { flex: 0 0 auto; width: 33.33333%; }
-            .col-xl-8 { flex: 0 0 auto; width: 66.66667%; }
-        }
-        /* Bootstrap form-check fallback */
-        .form-check { display: flex; align-items: center; gap: .4rem; }
-        .form-check-input { width: 1em; height: 1em; cursor: pointer; }
-        /* Bootstrap alert fallback – inherits from main styles above */
+        .shake { animation: shake 0.45s ease; }
     </style>
 </head>
 
 <body>
-<div class="container-fluid p-0">
-    <div class="row g-0" style="min-height:100vh;">
 
-        <!-- ── Left Panel ──────────────────────────────────── -->
-        <div class="col-lg-5 col-xl-4 d-none d-lg-flex flex-column justify-content-between left-panel">
-            <div class="brand-decorative-circle circle-1"></div>
-            <div class="brand-decorative-circle circle-2"></div>
-            <div class="brand-decorative-circle circle-3"></div>
+<div class="login-card">
 
-            <!-- Brand Header -->
-            <div class="brand-header position-relative" style="z-index:1;">
-                <i class="bi bi-capsule-pill brand-logo"></i>
-                <h2>Medical Store<br>Management</h2>
-                <p>Your all-in-one pharmacy operations platform</p>
-            </div>
+    <!-- Header -->
+    <div class="text-center mb-4">
+        <i class="bi bi-capsule-pill brand-icon"></i>
+        <h4 class="fw-bold mt-2 mb-0" style="color:#0f172a;">Medical Store Management</h4>
+        <p class="text-muted mt-1 mb-0" style="font-size:14px;">Sign in to your account to continue</p>
+    </div>
 
-            <!-- Features Card -->
-            <div class="brand-features position-relative" style="z-index:1;">
-                <div class="glass-card">
-                    <h5><i class="bi bi-stars text-warning"></i> Platform Highlights</h5>
-                    <ul class="feature-list">
-                        <li><i class="bi bi-box-seam-fill"></i> Real-time Inventory Management</li>
-                        <li><i class="bi bi-receipt-cutoff"></i> Sales, Billing &amp; Invoicing</li>
-                        <li><i class="bi bi-bell-fill"></i> Expiry &amp; Low-Stock Alerts</li>
-                        <li><i class="bi bi-people-fill"></i> Role-based Access Control</li>
-                    </ul>
-                    <div class="stat-row">
-                        <div class="stat-badge">
-                            <div class="stat-value">3</div>
-                            <div class="stat-label">Roles</div>
-                        </div>
-                        <div class="stat-badge">
-                            <div class="stat-value">∞</div>
-                            <div class="stat-label">Products</div>
-                        </div>
-                        <div class="stat-badge">
-                            <div class="stat-value">24/7</div>
-                            <div class="stat-label">Access</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <!-- Error Alert -->
+    <div th:if="${error}" class="alert alert-danger mb-3" id="errorAlert" role="alert">
+        <i class="bi bi-shield-exclamation"></i>
+        <div>
+            <div class="fw-semibold" th:text="${error}">Error message</div>
+            <div style="font-size:12px; opacity:0.8; margin-top:2px;">Check your credentials and try again.</div>
+        </div>
+    </div>
 
-            <!-- Footer -->
-            <div class="brand-footer position-relative" style="z-index:1;">
-                <p class="mb-0">&copy; <span id="footerYear">2026</span>
-                    Medical Store Management System &bull; v1.0.0</p>
+    <!-- Success Alert -->
+    <div th:if="${message}" class="alert alert-success mb-3" role="alert">
+        <i class="bi bi-check-circle-fill"></i>
+        <span th:text="${message}">Success message</span>
+    </div>
+
+    <!-- Login Form -->
+    <form th:action="@{/login}" method="post" id="loginForm" novalidate>
+
+        <!-- Username -->
+        <div class="mb-3">
+            <label for="username" class="form-label fw-semibold" style="font-size:13px;">Username</label>
+            <div class="input-wrapper">
+                <input type="text" class="form-control" id="username" name="username"
+                       placeholder="Enter your username"
+                       required autofocus autocomplete="username">
+                <i class="bi bi-person-fill input-icon"></i>
             </div>
         </div>
 
-        <!-- ── Right Panel ─────────────────────────────────── -->
-        <div class="col-12 col-lg-7 col-xl-8 d-flex justify-content-center right-panel">
-            <div class="login-container">
+        <!-- Password -->
+        <div class="mb-3">
+            <label for="password" class="form-label fw-semibold" style="font-size:13px;">Password</label>
+            <div class="input-wrapper">
+                <input type="password" class="form-control" id="password" name="password"
+                       placeholder="Enter your password"
+                       required autocomplete="current-password"
+                       style="padding-right:44px;">
+                <i class="bi bi-lock-fill input-icon"></i>
+                <button type="button" class="password-toggle-btn" id="passwordToggle"
+                        aria-label="Show password" aria-pressed="false">
+                    <i class="bi bi-eye" id="eyeIcon"></i>
+                </button>
+            </div>
+            <div class="caps-lock-hint" id="capsLockHint">
+                <i class="bi bi-exclamation-triangle-fill"></i> Caps Lock is on
+            </div>
+        </div>
 
-                <!-- Mobile header -->
-                <div class="d-lg-none mobile-header text-center mb-4">
-                    <i class="bi bi-capsule-pill" style="font-size:44px;"></i>
-                    <h3 class="mt-1 fw-bold text-dark" style="font-size:19px;">Medical Store</h3>
-                </div>
+        <!-- Remember Me -->
+        <div class="form-check mb-3">
+            <input class="form-check-input" type="checkbox" id="remember" name="remember-me">
+            <label class="form-check-label text-muted" for="remember" style="font-size:13.5px;">
+                Remember me
+            </label>
+        </div>
 
-                <!-- Login Heading -->
-                <div class="mb-4">
-                    <h1 class="fw-bold mb-1" style="letter-spacing:-0.5px; color:var(--text-dark); font-size:27px;">
-                        Welcome Back! <span style="font-size:26px;">👋</span>
-                    </h1>
-                    <p class="text-muted fw-medium mb-0" style="font-size:14px;">
-                        Sign in to your account to continue
-                    </p>
-                </div>
+        <!-- Sign In Button -->
+        <button type="submit" class="btn btn-login" id="loginBtn">
+            <span class="btn-text">Sign In &nbsp;<i class="bi bi-arrow-right"></i></span>
+            <span class="btn-spinner"></span>
+        </button>
 
-                <!-- Error Alert -->
-                <div th:if="${error}" class="alert alert-danger" id="errorAlert" role="alert">
-                    <i class="bi bi-shield-exclamation fs-6"></i>
-                    <div>
-                        <div class="fw-semibold" style="font-size:13.5px;" th:text="${error}">Error message</div>
-                        <div style="font-size:12px; margin-top:2px; opacity:0.8;">Check your credentials and try again.</div>
-                    </div>
-                </div>
+    </form>
 
-                <!-- Success Alert -->
-                <div th:if="${message}" class="alert alert-success" role="alert">
-                    <i class="bi bi-check-circle-fill fs-6"></i>
-                    <span th:text="${message}">Success message</span>
-                </div>
-
-                <!-- ── Login Form ──────────────────────────── -->
-                <form th:action="@{/login}" method="post" id="loginForm" novalidate>
-
-                    <!-- Username -->
-                    <div class="mb-3">
-                        <label for="username" class="form-label">Username</label>
-                        <div class="input-wrapper">
-                            <input type="text" class="form-control" id="username" name="username"
-                                   placeholder="Enter your username"
-                                   required autofocus autocomplete="username">
-                            <i class="bi bi-person-fill input-icon"></i>
-                        </div>
-                    </div>
-
-                    <!-- Password -->
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Password</label>
-                        <div class="input-wrapper">
-                            <input type="password" class="form-control" id="password" name="password"
-                                   placeholder="Enter your password"
-                                   required autocomplete="current-password"
-                                   style="padding-right:48px;">
-                            <i class="bi bi-lock-fill input-icon"></i>
-                            <button type="button" class="password-toggle-btn" id="passwordToggle"
-                                    aria-label="Show password" aria-pressed="false">
-                                <i class="bi bi-eye" id="eyeIcon"></i>
-                            </button>
-                        </div>
-                        <div class="caps-lock-hint" id="capsLockHint">
-                            <i class="bi bi-exclamation-triangle-fill"></i> Caps Lock is on
-                        </div>
-                    </div>
-
-                    <!-- Remember Me -->
-                    <div class="auth-options mb-3 mt-1">
-                        <div class="form-check mb-0">
-                            <input class="form-check-input" type="checkbox" id="remember" name="remember-me">
-                            <label class="form-check-label fw-medium" for="remember" style="font-size:13.5px; color:var(--text-muted);">
-                                Remember me
-                            </label>
-                        </div>
-                    </div>
-
-                    <!-- Sign In Button -->
-                    <button type="submit" class="btn btn-login" id="loginBtn">
-                        <span class="btn-text">Sign In</span>
-                        <i class="bi bi-arrow-right btn-icon" style="font-size:15px;"></i>
-                        <span class="btn-spinner"></span>
-                    </button>
-
-                </form>
-
-                <!-- ── Quick Login as Role ─────────────────── -->
-                <div class="or-divider">
-                    <hr><span>or sign in as</span><hr>
-                </div>
-
-                <div class="quick-login-section">
-                    <div class="quick-login-header">
-                        <i class="bi bi-lightning-charge-fill"></i>
-                        <span>Quick Login as Role</span>
-                    </div>
-                    <div class="role-cards">
-
-                        <!-- Admin -->
-                        <button type="button" class="role-card admin" id="btn-admin"
-                                onclick="quickLogin(this,'admin','admin123')"
-                                title="Login as Admin">
-                            <div class="role-icon-wrap">
-                                <i class="bi bi-shield-fill-check"></i>
-                                <span class="role-spinner"></span>
-                            </div>
-                            <div class="role-card-info">
-                                <div class="role-card-name">Admin</div>
-                                <div class="role-card-user">admin</div>
-                            </div>
-                        </button>
-
-                        <!-- Owner -->
-                        <button type="button" class="role-card owner" id="btn-owner"
-                                onclick="quickLogin(this,'default_owner','Owner@123')"
-                                title="Login as Owner">
-                            <div class="role-icon-wrap">
-                                <i class="bi bi-person-badge-fill"></i>
-                                <span class="role-spinner"></span>
-                            </div>
-                            <div class="role-card-info">
-                                <div class="role-card-name">Owner</div>
-                                <div class="role-card-user">default_owner</div>
-                            </div>
-                        </button>
-
-                        <!-- Shopkeeper -->
-                        <button type="button" class="role-card shopkeeper" id="btn-shop"
-                                onclick="quickLogin(this,'shop1','shop123')"
-                                title="Login as Shopkeeper">
-                            <div class="role-icon-wrap">
-                                <i class="bi bi-shop-window"></i>
-                                <span class="role-spinner"></span>
-                            </div>
-                            <div class="role-card-info">
-                                <div class="role-card-name">Shopkeeper</div>
-                                <div class="role-card-user">shop1</div>
-                            </div>
-                        </button>
-
-                    </div>
-                </div>
-                <!-- end quick login -->
-
-            </div><!-- /login-container -->
-        </div><!-- /right-panel -->
-
+    <!-- Quick Login as Role -->
+    <div class="divider mt-4">
+        <hr><span>or sign in as</span><hr>
     </div>
+
+    <div class="quick-login-box">
+        <div class="quick-login-header">
+            <i class="bi bi-lightning-charge-fill"></i>
+            Quick Login as Role
+        </div>
+        <div class="role-cards">
+
+            <!-- Admin -->
+            <button type="button" class="role-card admin" id="btn-admin"
+                    onclick="quickLogin(this,'admin','admin123')"
+                    title="Login as Admin">
+                <div class="role-icon-wrap">
+                    <i class="bi bi-shield-fill-check"></i>
+                    <span class="role-spinner"></span>
+                </div>
+                <div>
+                    <div class="role-card-name">Admin</div>
+                    <div class="role-card-user">admin</div>
+                </div>
+            </button>
+
+            <!-- Owner -->
+            <button type="button" class="role-card owner" id="btn-owner"
+                    onclick="quickLogin(this,'default_owner','Owner@123')"
+                    title="Login as Owner">
+                <div class="role-icon-wrap">
+                    <i class="bi bi-person-badge-fill"></i>
+                    <span class="role-spinner"></span>
+                </div>
+                <div>
+                    <div class="role-card-name">Owner</div>
+                    <div class="role-card-user">default_owner</div>
+                </div>
+            </button>
+
+            <!-- Shopkeeper -->
+            <button type="button" class="role-card shopkeeper" id="btn-shop"
+                    onclick="quickLogin(this,'shop1','shop123')"
+                    title="Login as Shopkeeper">
+                <div class="role-icon-wrap">
+                    <i class="bi bi-shop-window"></i>
+                    <span class="role-spinner"></span>
+                </div>
+                <div>
+                    <div class="role-card-name">Shopkeeper</div>
+                    <div class="role-card-user">shop1</div>
+                </div>
+            </button>
+
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <p class="text-center text-muted mt-4 mb-0" style="font-size:12px;">
+        &copy; <span id="footerYear">2026</span> Medical Store Management System &bull; v1.0.0
+    </p>
+
 </div>
 
 <script>
 (function () {
     'use strict';
 
-    const loginForm    = document.getElementById('loginForm');
-    const loginBtn     = document.getElementById('loginBtn');
+    const loginForm     = document.getElementById('loginForm');
+    const loginBtn      = document.getElementById('loginBtn');
     const usernameInput = document.getElementById('username');
     const passwordInput = document.getElementById('password');
     const passwordToggle = document.getElementById('passwordToggle');
-    const eyeIcon      = document.getElementById('eyeIcon');
-    const capsLockHint = document.getElementById('capsLockHint');
+    const eyeIcon       = document.getElementById('eyeIcon');
+    const capsLockHint  = document.getElementById('capsLockHint');
 
-    /* ── Quick Login ───────────────────────────────── */
+    /* Quick Login */
     window.quickLogin = function (btn, user, pass) {
-        // Mark button as loading
         btn.classList.add('loading-role');
-
-        // Fill credentials
         usernameInput.value = user;
         passwordInput.value = pass;
-
-        // Trigger main form submit spinner
         loginBtn.classList.add('loading');
-
         loginForm.submit();
     };
 
-    /* ── Form Submit ────────────────────────────────── */
+    /* Form Submit */
     if (loginForm) {
         loginForm.addEventListener('submit', function (e) {
             const u = usernameInput.value.trim();
@@ -883,7 +408,7 @@
                 e.preventDefault();
                 [usernameInput, passwordInput].forEach(function (inp) {
                     if (!inp.value.trim()) {
-                        inp.classList.add('is-invalid-custom');
+                        inp.style.borderColor = '#ef4444';
                         inp.classList.add('shake');
                         inp.addEventListener('animationend', function () {
                             inp.classList.remove('shake');
@@ -897,27 +422,26 @@
             loginBtn.disabled = true;
         });
 
-        // Clear error styling on input
         [usernameInput, passwordInput].forEach(function (inp) {
             inp.addEventListener('input', function () {
-                inp.classList.remove('is-invalid-custom');
+                inp.style.borderColor = '';
             });
         });
     }
 
-    /* ── Password Toggle ───────────────────────────── */
+    /* Password Toggle */
     if (passwordToggle && passwordInput) {
         passwordToggle.addEventListener('click', function () {
-            const isPassword = passwordInput.type === 'password';
-            passwordInput.type = isPassword ? 'text' : 'password';
-            eyeIcon.className = isPassword ? 'bi bi-eye-slash' : 'bi bi-eye';
-            passwordToggle.setAttribute('aria-label', isPassword ? 'Hide password' : 'Show password');
-            passwordToggle.setAttribute('aria-pressed', String(isPassword));
+            var isPwd = passwordInput.type === 'password';
+            passwordInput.type = isPwd ? 'text' : 'password';
+            eyeIcon.className  = isPwd ? 'bi bi-eye-slash' : 'bi bi-eye';
+            passwordToggle.setAttribute('aria-label',   isPwd ? 'Hide password' : 'Show password');
+            passwordToggle.setAttribute('aria-pressed', String(isPwd));
             passwordInput.focus();
         });
     }
 
-    /* ── Caps Lock Detection ───────────────────────── */
+    /* Caps Lock Detection */
     if (passwordInput && capsLockHint) {
         passwordInput.addEventListener('keydown', function (e) {
             capsLockHint.classList.toggle('show', e.getModifierState('CapsLock'));
@@ -927,29 +451,29 @@
         });
     }
 
-    /* ── Auto-dismiss alerts after 8 s ────────────── */
+    /* Auto-dismiss alerts after 8 s */
     setTimeout(function () {
         document.querySelectorAll('.alert').forEach(function (el) {
-            el.style.transition = 'opacity 0.5s, transform 0.5s';
+            el.style.transition = 'opacity 0.5s';
             el.style.opacity = '0';
-            el.style.transform = 'translateY(-6px)';
             setTimeout(function () { el.remove(); }, 520);
         });
     }, 8000);
 
-    /* ── Shake error alert on page load if error exists ── */
-    const errorAlert = document.getElementById('errorAlert');
-    if (errorAlert) {
+    /* Shake form if error on load */
+    var errorAlert = document.getElementById('errorAlert');
+    if (errorAlert && loginForm) {
         loginForm.classList.add('shake');
         loginForm.addEventListener('animationend', function () {
             loginForm.classList.remove('shake');
         }, { once: true });
     }
 
-    /* ── Footer year (replaces broken #temporals.year Thymeleaf call) ── */
-    const footerYear = document.getElementById('footerYear');
-    if (footerYear) { footerYear.textContent = new Date().getFullYear(); }
+    /* Footer year */
+    var fy = document.getElementById('footerYear');
+    if (fy) { fy.textContent = new Date().getFullYear(); }
 })();
 </script>
+
 </body>
 </html>
