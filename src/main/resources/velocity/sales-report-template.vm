@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Sales Report</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Helvetica', 'Arial', sans-serif; font-size: 10pt; line-height: 1.5; color: #333; }
+        .container { padding: 30px; }
+        .header { text-align: center; border-bottom: 3px solid #667eea; padding-bottom: 15px; margin-bottom: 20px; }
+        .header h1 { color: #667eea; font-size: 20pt; font-weight: bold; margin-bottom: 5px; }
+        .report-title { text-align: center; font-size: 16pt; font-weight: bold; margin-bottom: 10px; color: #333; }
+        .report-meta { text-align: center; font-size: 11pt; margin-bottom: 30px; color: #555; }
+        
+        .data-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 9pt; }
+        .data-table th { background-color: #667eea; color: white; padding: 8px; text-align: left; font-weight: bold; }
+        .data-table td { padding: 6px 8px; border-bottom: 1px solid #e0e0e0; }
+        .data-table tr:nth-child(even) { background-color: #f8f9fa; }
+        .text-right { text-align: right !important; }
+        .text-center { text-align: center !important; }
+        
+        .footer { clear: both; margin-top: 40px; padding-top: 15px; border-top: 2px solid #e0e0e0; text-align: center; }
+        .footer p { font-size: 9pt; color: #666; margin: 3px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>${companyName}</h1>
+            <p>${companyAddress}</p>
+        </div>
+
+        <div class="report-title">${reportType} Sales Report</div>
+        <div class="report-meta">Period: ${startDate} to ${endDate}</div>
+
+        <!-- Sales Data -->
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Invoice ID</th>
+                    <th>Date</th>
+                    <th>Customer</th>
+                    <th>Method</th>
+                    <th class="text-right">Subtotal</th>
+                    <th class="text-right">Discount</th>
+                    <th class="text-right">GST</th>
+                    <th class="text-right">Final Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                #set($totalSub = 0.0)
+                #set($totalDisc = 0.0)
+                #set($totalGst = 0.0)
+                #set($totalFinal = 0.0)
+                
+                #foreach($s in $sales)
+                <tr>
+                    <td>INV-${s.id}</td>
+                    <td>${s.saleDate.toLocalDate()}</td>
+                    <td>#if($s.customer)${s.customer.name}#else Walk-in#end</td>
+                    <td>${s.paymentMethod}</td>
+                    <td class="text-right">&#8377;${df.format($s.totalAmount)}</td>
+                    <td class="text-right">&#8377;#if($s.discountAmount)${df.format($s.discountAmount)}#else 0.00#end</td>
+                    <td class="text-right">&#8377;#if($s.gstAmount)${df.format($s.gstAmount)}#else 0.00#end</td>
+                    <td class="text-right">&#8377;#if($s.finalAmount)${df.format($s.finalAmount)}#else${df.format($s.totalAmount)}#end</td>
+                </tr>
+                
+                #set($totalSub = $totalSub + $s.totalAmount)
+                #if($s.discountAmount)#set($totalDisc = $totalDisc + $s.discountAmount)#end
+                #if($s.gstAmount)#set($totalGst = $totalGst + $s.gstAmount)#end
+                #if($s.finalAmount)#set($totalFinal = $totalFinal + $s.finalAmount)#else#set($totalFinal = $totalFinal + $s.totalAmount)#end
+                #end
+                
+                #if($sales.isEmpty())
+                <tr><td colspan="8" class="text-center">No sales data found for the selected period.</td></tr>
+                #end
+            </tbody>
+            #if(!$sales.isEmpty())
+            <tfoot>
+                <tr style="background-color: #f1f3f5; font-weight: bold;">
+                    <td colspan="4" class="text-right">TOTALS:</td>
+                    <td class="text-right">&#8377;${df.format($totalSub)}</td>
+                    <td class="text-right">&#8377;${df.format($totalDisc)}</td>
+                    <td class="text-right">&#8377;${df.format($totalGst)}</td>
+                    <td class="text-right">&#8377;${df.format($totalFinal)}</td>
+                </tr>
+            </tfoot>
+            #end
+        </table>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>Generated on ${generatedDate} by Medical Store Management System</p>
+        </div>
+    </div>
+</body>
+</html>

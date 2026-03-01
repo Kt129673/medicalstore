@@ -4,12 +4,55 @@
 
 <head>
     <style>
+        /* Top Notch Premium UI Adjustments */
+        .govt-header {
+            background: linear-gradient(135deg, #1e3a8a 0%, #312e81 100%);
+            color: white;
+            border-radius: 16px;
+            padding: 35px 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 25px -5px rgba(30, 58, 138, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .govt-header::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 60%);
+            transform: rotate(30deg);
+            pointer-events: none;
+        }
+
+        .govt-header h4 {
+            margin: 0;
+            font-weight: 700;
+        }
+
+        .govt-header p {
+            margin: 4px 0 0;
+            opacity: 0.8;
+            font-size: 14px;
+        }
+
         .gst-summary-card {
             border-radius: 16px;
             padding: 24px;
             color: white;
             position: relative;
             overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: none;
+        }
+
+        .gst-summary-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
         }
 
         .gst-summary-card::after {
@@ -84,23 +127,24 @@
             color: #6a1b9a;
         }
 
-        .govt-header {
-            background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
-            color: white;
-            border-radius: 16px;
-            padding: 24px;
-            margin-bottom: 24px;
+        .modern-card {
+            border: none;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
         }
 
-        .govt-header h4 {
-            margin: 0;
-            font-weight: 700;
+        .modern-card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
 
-        .govt-header p {
-            margin: 4px 0 0;
-            opacity: 0.8;
-            font-size: 14px;
+        .modern-card .card-header {
+            background-color: transparent;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            padding: 1.25rem 1.5rem;
+            font-weight: 600;
         }
     </style>
 </head>

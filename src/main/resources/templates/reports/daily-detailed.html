@@ -5,39 +5,78 @@
 <head>
     <style>
         @media print {
-            .no-print {
-                display: none !important;
-            }
-
-            .card {
-                border: 1px solid #dee2e6 !important;
-                box-shadow: none !important;
-            }
+            .no-print { display: none !important; }
+            .card { border: 1px solid #dee2e6 !important; box-shadow: none !important; }
         }
 
+        /* Top Notch Premium UI Adjustments */
         .report-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
             color: white;
-            padding: 30px;
-            border-radius: 15px;
+            padding: 35px 30px;
+            border-radius: 16px;
             margin-bottom: 30px;
+            box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .report-header::after {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 60%);
+            transform: rotate(30deg);
+            pointer-events: none;
         }
 
         .metric-card {
-            border-left: 4px solid;
-            transition: transform 0.2s;
+            border: none;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
         }
 
+        .metric-card::before {
+            content: '';
+            position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+        }
+        .metric-card.border-primary::before { background-color: #3b82f6; }
+        .metric-card.border-success::before { background-color: #10b981; }
+        .metric-card.border-warning::before { background-color: #f59e0b; }
+        .metric-card.border-info::before { background-color: #0ea5e9; }
+
         .metric-card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
         }
 
         .calculation-box {
-            background: #f8f9fa;
-            border-left: 4px solid #667eea;
-            padding: 15px;
-            margin: 10px 0;
+            background: #ffffff;
+            border-left: 4px solid #6366f1;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
         }
+        
+        .calculation-box:hover {
+            transform: translateX(5px);
+        }
+
+        .card {
+            border: none;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .card-header { border-bottom: none; font-weight: 600; padding: 1rem 1.25rem; }
     </style>
 </head>
 
@@ -365,10 +404,10 @@
                             <tr>
                                 <th>Invoice #</th>
                                 <th>Time</th>
-                                <th>Medicine</th>
+                                <th>Medicine(s)</th>
                                 <th>Customer</th>
-                                <th class="text-center">Qty</th>
-                                <th class="text-end">Unit Price</th>
+                                <th class="text-center">Total Qty</th>
+                                <th class="text-end">Base Amount</th>
                                 <th class="text-end">Discount</th>
                                 <th class="text-end">GST</th>
                                 <th class="text-end">Final Amount</th>
@@ -382,10 +421,13 @@
                                         th:text="'INV-' + ${#strings.padLeft(sale.id.toString(), 6, '0')}">INV-000001</span>
                                 </td>
                                 <td th:text="${#temporals.format(sale.saleDate, 'HH:mm:ss')}">10:30:45</td>
-                                <td th:text="${sale.medicine.name}">Medicine</td>
+                                <td>
+                                    <span th:if="${sale.items.size() == 1}" th:text="${sale.items[0].medicine.name}">Medicine</span>
+                                    <span th:if="${sale.items.size() > 1}" th:text="${sale.items.size()} + ' Items'" class="badge bg-info bg-opacity-25 text-info border border-info"></span>
+                                </td>
                                 <td th:text="${sale.customer != null ? sale.customer.name : 'Walk-in'}">Customer</td>
-                                <td class="text-center" th:text="${sale.quantity}">1</td>
-                                <td class="text-end" th:text="'₹' + ${#numbers.formatDecimal(sale.unitPrice, 0, 2)}">
+                                <td class="text-center" th:text="${#aggregates.sum(sale.items.![quantity])}">1</td>
+                                <td class="text-end" th:text="'₹' + ${#numbers.formatDecimal(sale.totalAmount, 0, 2)}">
                                     ₹0.00</td>
                                 <td class="text-end text-warning"
                                     th:text="'₹' + ${#numbers.formatDecimal(sale.discountAmount, 0, 2)}">₹0.00</td>

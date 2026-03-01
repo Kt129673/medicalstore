@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Monthly Report</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Helvetica', 'Arial', sans-serif; font-size: 11pt; line-height: 1.6; color: #333; }
+        .container { padding: 30px; }
+        .header { text-align: center; border-bottom: 3px solid #667eea; padding-bottom: 15px; margin-bottom: 25px; }
+        .header h1 { color: #667eea; font-size: 24pt; font-weight: bold; margin-bottom: 8px; }
+        .header p { font-size: 10pt; margin: 3px 0; color: #555; }
+        .report-title { text-align: center; font-size: 18pt; font-weight: bold; margin-bottom: 20px; color: #333; }
+        
+        .summary-boxes { width: 100%; margin-bottom: 20px; display: table; border-collapse: separate; border-spacing: 10px; }
+        .box { display: table-cell; background-color: #f8f9fa; border: 1px solid #e0e0e0; padding: 15px; text-align: center; border-radius: 8px; width: 25%; }
+        .box .label { font-size: 10pt; color: #666; font-weight: bold; text-transform: uppercase; margin-bottom: 5px; }
+        .box .val { font-size: 16pt; color: #667eea; font-weight: bold; }
+        
+        .section-title { font-size: 14pt; font-weight: bold; color: #667eea; margin-bottom: 15px; border-bottom: 2px solid #e0e0e0; padding-bottom: 5px; margin-top: 30px; }
+        
+        .data-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        .data-table th { background-color: #f1f3f5; color: #333; padding: 10px; text-align: left; font-size: 10pt; font-weight: bold; border-bottom: 2px solid #ddd; }
+        .data-table td { padding: 8px 10px; border-bottom: 1px solid #e0e0e0; font-size: 10pt; }
+        .data-table tr:nth-child(even) { background-color: #f8f9fa; }
+        .text-right { text-align: right !important; }
+        .text-center { text-align: center !important; }
+        
+        .footer { clear: both; margin-top: 40px; padding-top: 15px; border-top: 2px solid #e0e0e0; text-align: center; }
+        .footer p { font-size: 9pt; color: #666; margin: 3px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>${companyName}</h1>
+            <p>${companyAddress}</p>
+            <p>Phone: ${companyPhone} | Email: ${companyEmail}</p>
+            <p>GSTIN: ${companyGstin}</p>
+        </div>
+
+        <div class="report-title">Monthly Business Report: ${reportMonth}</div>
+
+        <!-- KPI Boxes -->
+        <div class="summary-boxes">
+            <div class="box">
+                <div class="label">Total Revenue</div>
+                <div class="val">&#8377;${df.format($r.totalRevenue)}</div>
+            </div>
+            <div class="box">
+                <div class="label">Gross Revenue</div>
+                <div class="val">&#8377;${df.format($r.grossRevenue)}</div>
+            </div>
+            <div class="box">
+                <div class="label">Transactions</div>
+                <div class="val">${r.totalTransactions}</div>
+            </div>
+            <div class="box">
+                <div class="label">Avg Daily Rev</div>
+                <div class="val">&#8377;${df.format($r.avgDailyRevenue)}</div>
+            </div>
+        </div>
+
+        <table class="data-table">
+            <tr>
+                <td><b>Total Discounts Provided:</b> &#8377;${df.format($r.totalDiscount)}</td>
+                <td><b>Total GST Collected:</b> &#8377;${df.format($r.totalGST)}</td>
+                <td><b>Items Sold:</b> ${r.totalItemsSold}</td>
+            </tr>
+            <tr>
+                <td><b>Peak Day:</b> ${r.peakDay} (&#8377;${df.format($r.peakDayRevenue)})</td>
+                <td><b>Total Customers:</b> ${r.totalCustomers}</td>
+                <td><b>Business Days:</b> ${r.businessDays}</td>
+            </tr>
+        </table>
+
+        <!-- Top Selling Medicines -->
+        <div class="section-title">Top Performing Medicines</div>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Medicine Name</th>
+                    <th>Category</th>
+                    <th class="text-right">Qty</th>
+                    <th class="text-right">Revenue</th>
+                </tr>
+            </thead>
+            <tbody>
+                #foreach($tm in $r.topMedicines)
+                <tr>
+                    <td>${tm.name}</td>
+                    <td>${tm.category}</td>
+                    <td class="text-right">${tm.quantitySold}</td>
+                    <td class="text-right">&#8377;${df.format($tm.revenue)}</td>
+                </tr>
+                #end
+                #if($r.topMedicines.isEmpty())
+                <tr><td colspan="4" class="text-center">No medicines sold.</td></tr>
+                #end
+            </tbody>
+        </table>
+
+        <!-- Top Customers -->
+        <div class="section-title">Top Spending Customers</div>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Customer Name</th>
+                    <th class="text-right">Visits</th>
+                    <th class="text-right">Total Spent</th>
+                </tr>
+            </thead>
+            <tbody>
+                #foreach($tc in $r.topCustomers)
+                <tr>
+                    <td>${tc.name}</td>
+                    <td class="text-right">${tc.purchaseCount}</td>
+                    <td class="text-right">&#8377;${df.format($tc.totalSpent)}</td>
+                </tr>
+                #end
+                #if($r.topCustomers.isEmpty())
+                <tr><td colspan="3" class="text-center">No customer data.</td></tr>
+                #end
+            </tbody>
+        </table>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>Generated on ${generatedDate} by Medical Store Management System</p>
+        </div>
+    </div>
+</body>
+</html>
