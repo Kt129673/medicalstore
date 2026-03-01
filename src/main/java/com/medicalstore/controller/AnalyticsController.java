@@ -16,7 +16,7 @@ import java.util.Map;
 
 @Controller
 @RequestMapping("/analytics")
-@PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'SHOPKEEPER')")
+@PreAuthorize("hasAnyRole('ADMIN', 'OWNER')")
 public class AnalyticsController {
 
     private final AnalyticsService analyticsService;

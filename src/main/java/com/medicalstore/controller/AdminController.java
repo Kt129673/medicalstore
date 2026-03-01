@@ -377,4 +377,49 @@ public class AdminController {
         }
         return RoutePaths.redirectTo(RoutePaths.ADMIN_SUBSCRIPTIONS);
     }
+
+    // ─── Admin → Owner Impersonation (Section 4.1) ─────────────────────────
+    /**
+     * Enter Owner View mode: admin sees the Owner Dashboard for a specific owner,
+     * with a prominent banner — "Viewing as Owner: [Name] (Admin Mode)".
+     *
+     * The owner's data is fetched directly; the admin's authentication is unchanged.
+     * This is a read-only view so the admin retains full admin rights.
+     *
+     * Flow:
+     *   1. Admin clicks "View as Owner" next to an owner's name.
+     *   2. System renders the Owner Dashboard for that owner.
+     *   3. A top banner identifies the impersonation context.
+     *   4. Admin can exit back to /admin.
+     */
+    @GetMapping("/view-as-owner/{ownerId}")
+    public String viewAsOwner(@PathVariable Long ownerId, Model model, RedirectAttributes ra) {
+        User owner = userRepository.findById(ownerId).orElse(null);
+        if (owner == null || !owner.getRoles().contains("OWNER")) {
+            ra.addFlashAttribute("error", "Owner not found.");
+            return RoutePaths.redirectTo(RoutePaths.ADMIN);
+        }
+
+        List<Branch> branches = branchService.getBranchesByOwner(ownerId);
+        Map<String, Object> kpis = dashboardService.buildOwnerDashboard(ownerId);
+
+        model.addAttribute("title", "Viewing as Owner: " + owner.getFullName());
+        model.addAttribute("page", "owner");
+        model.addAttribute("branches", branches);
+        model.addAttribute("branchCount", branches.size());
+        model.addAttribute("shopkeeperCount",
+                userRepository.findShopkeepersByOwnerId(ownerId).size());
+        model.addAttribute("lowStock", kpis.get("lowStockCount"));
+        kpis.forEach(model::addAttribute);
+
+        // Impersonation context — rendered as a banner in owner/dashboard.html
+        model.addAttribute("impersonationMode", true);
+        model.addAttribute("viewingOwnerName", owner.getFullName());
+        model.addAttribute("exitOwnerViewUrl", RoutePaths.ADMIN);
+
+        roleAuditService.logAction("ADMIN_VIEW_AS_OWNER",
+                "Admin viewing Owner dashboard for: " + owner.getUsername());
+
+        return "owner/dashboard";
+    }
 }

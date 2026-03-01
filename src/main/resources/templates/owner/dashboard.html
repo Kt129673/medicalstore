@@ -12,6 +12,18 @@
 </style>
 
 <div class="container-fluid py-4">
+    <!-- ── Admin Impersonation Banner (Section 4.1) ──────────────────────── -->
+    <div th:if="${impersonationMode}" class="alert alert-warning border-warning d-flex align-items-center justify-content-between mb-4 shadow-sm" role="alert">
+        <div>
+            <i class="bi bi-eye-fill me-2 text-warning"></i>
+            <strong>Viewing as Owner: <span th:text="${viewingOwnerName}">Owner Name</span></strong>
+            <span class="ms-2 badge bg-warning text-dark">Admin Mode</span>
+            <small class="ms-2 text-muted">You are viewing this Owner's dashboard. Your admin permissions remain unchanged.</small>
+        </div>
+        <a th:href="${exitOwnerViewUrl}" class="btn btn-sm btn-outline-warning ms-3 text-nowrap">
+            <i class="bi bi-x-circle me-1"></i>Exit Owner View
+        </a>
+    </div>
     <!-- Header -->
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
         <div>
