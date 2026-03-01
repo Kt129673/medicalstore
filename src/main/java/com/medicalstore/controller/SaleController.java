@@ -31,10 +31,36 @@ public class SaleController {
     @GetMapping
     public String listSales(@RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "15") int size,
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate,
+            @RequestParam(required = false) String paymentMethod,
             Model model) {
         org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, size);
-        org.springframework.data.domain.Page<Sale> salePage = saleService.getSalesPaginated(pageable);
+
+        boolean hasFilter = (search != null && !search.isBlank())
+                || (startDate != null && !startDate.isBlank())
+                || (endDate != null && !endDate.isBlank())
+                || (paymentMethod != null && !paymentMethod.isBlank());
+
+        org.springframework.data.domain.Page<Sale> salePage;
+        if (hasFilter) {
+            java.time.LocalDateTime start = (startDate != null && !startDate.isBlank())
+                    ? java.time.LocalDate.parse(startDate).atStartOfDay()
+                    : null;
+            java.time.LocalDateTime end = (endDate != null && !endDate.isBlank())
+                    ? java.time.LocalDate.parse(endDate).atTime(23, 59, 59)
+                    : null;
+            salePage = saleService.getFilteredSalesPaginated(search, start, end, paymentMethod, pageable);
+        } else {
+            salePage = saleService.getSalesPaginated(pageable);
+        }
+
         model.addAttribute("salePage", salePage);
+        model.addAttribute("currentSearch", search);
+        model.addAttribute("currentStartDate", startDate);
+        model.addAttribute("currentEndDate", endDate);
+        model.addAttribute("currentPaymentMethod", paymentMethod);
         return "sales/list";
     }
 

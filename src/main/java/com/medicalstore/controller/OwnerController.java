@@ -1,6 +1,7 @@
 package com.medicalstore.controller;
 
 import com.medicalstore.model.Branch;
+import com.medicalstore.model.SubscriptionPlan;
 import com.medicalstore.model.User;
 import com.medicalstore.repository.UserRepository;
 import com.medicalstore.service.BranchService;
@@ -8,6 +9,7 @@ import com.medicalstore.service.CustomerService;
 import com.medicalstore.service.DashboardService;
 import com.medicalstore.service.MedicineService;
 import com.medicalstore.service.SaleService;
+import com.medicalstore.service.SubscriptionService;
 import com.medicalstore.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -42,6 +44,7 @@ public class OwnerController {
         private final SecurityUtils securityUtils;
         private final PasswordEncoder passwordEncoder;
         private final DashboardService dashboardService;
+        private final SubscriptionService subscriptionService;
 
         // â”€â”€â”€ Owner Dashboard â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         @GetMapping({"", "/dashboard"})
@@ -217,5 +220,22 @@ public class OwnerController {
                         ra.addFlashAttribute("success", "Shopkeeper status updated.");
                 }, () -> ra.addFlashAttribute("error", "Shopkeeper not found."));
                 return "redirect:/owner/shopkeepers";
+        }
+
+        // ─── Subscription Status ───────────────────────────────────────────────
+        @GetMapping("/subscription")
+        public String subscriptionStatus(Model model) {
+                Long ownerId = securityUtils.getCurrentUserId();
+                SubscriptionPlan plan = subscriptionService.getPlanForOwner(ownerId).orElse(null);
+
+                model.addAttribute("title", "Subscription Status");
+                model.addAttribute("page", "owner");
+                model.addAttribute("plan", plan);
+
+                if (plan != null && !plan.isExpired()) {
+                        model.addAttribute("daysLeft", plan.getDaysUntilExpiry());
+                }
+
+                return "owner/subscription";
         }
 }
