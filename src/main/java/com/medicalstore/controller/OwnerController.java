@@ -123,6 +123,11 @@ public class OwnerController {
                         return "redirect:/owner/shopkeepers";
                 }
 
+                if (email != null && !email.isBlank() && userRepository.existsByEmail(email)) {
+                        ra.addFlashAttribute("error", "Email already registered: " + email);
+                        return "redirect:/owner/shopkeepers";
+                }
+
                 User shopkeeper = new User();
                 shopkeeper.setUsername(username);
                 shopkeeper.setPassword(passwordEncoder.encode(password));

@@ -142,6 +142,7 @@
                 </div>
 
                 <!-- ── Reports Group ── -->
+                <div sec:authorize="isAuthenticated()">
                 <details class="nav-group"
                     th:attr="open=${#lists.contains({'reports','analytics','gst'}, page)} ? 'open' : null">
                     <summary>Reports</summary>
@@ -160,6 +161,7 @@
                         <i class="bi bi-file-earmark-ruled nav-icon"></i><span>GST / Tax</span>
                     </a>
                 </details>
+                </div>
             </nav>
 
             <!-- User Profile -->
@@ -170,7 +172,9 @@
                     </div>
                     <div class="user-details">
                         <h6 sec:authentication="name">Username</h6>
-                        <small sec:authentication="principal.authorities">ROLE_USER</small>
+                        <small sec:authorize="hasRole('ADMIN')" class="text-warning fw-semibold">ADMIN</small>
+                        <small sec:authorize="hasRole('OWNER')" class="text-info fw-semibold">OWNER</small>
+                        <small sec:authorize="hasRole('SHOPKEEPER')" class="text-success fw-semibold">SHOPKEEPER</small>
                     </div>
                 </div>
                 <form th:action="@{/logout}" method="post">
@@ -191,9 +195,11 @@
             </div>
 
             <header class="main-header">
-                <!-- Left: Breadcrumb -->
+                <!-- Breadcrumb home: OWNER → /owner, others → / -->
                 <nav class="header-breadcrumb" aria-label="Breadcrumb">
-                    <a href="/"><i class="bi bi-house-door"></i></a>
+                    <a href="/owner" sec:authorize="hasRole('OWNER')"><i class="bi bi-house-door"></i></a>
+                    <a href="/admin" sec:authorize="hasRole('ADMIN')"><i class="bi bi-house-door"></i></a>
+                    <a href="/" sec:authorize="hasAnyRole('SHOPKEEPER')"><i class="bi bi-house-door"></i></a>
                     <i class="bi bi-chevron-right bc-sep"></i>
                     <span class="bc-current" th:text="${title}">Page</span>
                 </nav>
