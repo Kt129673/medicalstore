@@ -128,6 +128,8 @@ Database and admin user will be created automatically on first run!
 
 ## 📂 Application Structure
 
+For maintainable package/file organization and reuse guidelines, see `PROJECT_STRUCTURE_GUIDE.md`.
+
 ```
 Medical Store Application
 ├── Dashboard (/)

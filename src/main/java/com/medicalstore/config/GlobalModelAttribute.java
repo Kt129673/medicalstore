@@ -1,4 +1,4 @@
-package com.medicalstore.controller;
+package com.medicalstore.config;
 
 import com.medicalstore.model.SubscriptionPlan;
 import com.medicalstore.service.MedicineService;
@@ -36,17 +36,14 @@ public class GlobalModelAttribute {
 
     @ModelAttribute("subscriptionWarning")
     public String subscriptionWarning() {
-        if (!securityUtils.isOwner() && !securityUtils.isShopkeeper()) {
-            return null; // Admins don't get warnings
+        if (!securityUtils.isOwnerOrShopkeeper()) {
+            return null;
         }
 
-        Long userId = securityUtils.getCurrentUserId();
-        if (userId == null)
+        Long ownerId = securityUtils.getCurrentOwnerId();
+        if (ownerId == null) {
             return null;
-
-        Long ownerId = securityUtils.isOwner() ? userId : getOwnerIdForShopkeeper();
-        if (ownerId == null)
-            return null;
+        }
 
         SubscriptionPlan plan = subscriptionService.getPlanForOwner(ownerId).orElse(null);
 
@@ -65,14 +62,5 @@ public class GlobalModelAttribute {
         }
 
         return null;
-    }
-
-    private Long getOwnerIdForShopkeeper() {
-        return java.util.Optional.ofNullable(securityUtils.getCurrentUser()).map(u -> {
-            if (u.getBranch() != null && u.getBranch().getOwner() != null) {
-                return u.getBranch().getOwner().getId();
-            }
-            return null;
-        }).orElse(null);
     }
 }

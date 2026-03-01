@@ -1,0 +1,7 @@
+/* Layout CSS manifest: keep import order */
+@import url("layout/base.css");
+@import url("layout/sidebar.css");
+@import url("layout/header.css");
+@import url("layout/components.css");
+@import url("layout/responsive.css");
+

@@ -21,22 +21,20 @@ public class SubscriptionInterceptor implements HandlerInterceptor {
         String uri = request.getRequestURI();
 
         // Skip static resources and unprotected/billing routes
-        if (uri.startsWith("/css") || uri.startsWith("/js") || uri.startsWith("/images") ||
-                uri.equals("/login") || uri.startsWith("/subscription/billing") || uri.equals("/logout")
-                || uri.equals("/error")) {
+        if (RoutePaths.isPublicOrStatic(uri)) {
             return true;
         }
 
         // Only enforce for Owners and Shopkeepers
-        if (securityUtils.isOwner() || securityUtils.isShopkeeper()) {
+        if (securityUtils.isOwnerOrShopkeeper()) {
             Long userId = securityUtils.getCurrentUserId();
             if (userId != null) {
-                Long ownerId = getOwnerId();
+                Long ownerId = securityUtils.getCurrentOwnerId();
                 if (ownerId != null) {
                     var plan = subscriptionService.getPlanForOwner(ownerId);
                     if (plan.isPresent() && plan.get().isExpired()) {
                         // Redirect to billing wall
-                        response.sendRedirect("/subscription/billing");
+                        response.sendRedirect(RoutePaths.SUBSCRIPTION_BILLING);
                         return false;
                     }
                 }
@@ -44,17 +42,5 @@ public class SubscriptionInterceptor implements HandlerInterceptor {
         }
 
         return true;
-    }
-
-    private Long getOwnerId() {
-        if (securityUtils.isOwner()) {
-            return securityUtils.getCurrentUserId();
-        }
-        return java.util.Optional.ofNullable(securityUtils.getCurrentUser()).map(u -> {
-            if (u.getBranch() != null && u.getBranch().getOwner() != null) {
-                return u.getBranch().getOwner().getId();
-            }
-            return null;
-        }).orElse(null);
     }
 }

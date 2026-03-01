@@ -7,6 +7,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 /**
  * Central utility for resolving the current user's role and branch context
  * from Spring Security's SecurityContextHolder.
@@ -44,6 +46,10 @@ public class SecurityUtils {
         return hasRole("SHOPKEEPER");
     }
 
+    public boolean isOwnerOrShopkeeper() {
+        return isOwner() || isShopkeeper();
+    }
+
     /** Branch ID — only non-null for SHOPKEEPER */
     public Long getCurrentBranchId() {
         User user = getCurrentUser();
@@ -54,5 +60,25 @@ public class SecurityUtils {
     public Long getCurrentUserId() {
         User user = getCurrentUser();
         return user != null ? user.getId() : null;
+    }
+
+    /**
+     * Resolves owner id for current principal:
+     * - OWNER: own user id
+     * - SHOPKEEPER: branch owner id
+     */
+    public Long getCurrentOwnerId() {
+        if (isOwner()) {
+            return getCurrentUserId();
+        }
+
+        if (!isShopkeeper()) {
+            return null;
+        }
+
+        return Optional.ofNullable(getCurrentUser())
+                .map(User::getBranch)
+                .map(branch -> branch.getOwner() != null ? branch.getOwner().getId() : null)
+                .orElse(null);
     }
 }

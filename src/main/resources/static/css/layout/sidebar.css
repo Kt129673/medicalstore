@@ -1,0 +1,282 @@
+/* ═══════════════ SIDEBAR ═══════════════ */
+.sidebar {
+    width: var(--sidebar-width);
+    background: var(--bg-primary);
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+    flex-shrink: 0;
+    will-change: width;
+    transition: width 0.25s cubic-bezier(.4, 0, .2, 1);
+}
+
+.sidebar-brand {
+    height: var(--header-height);
+    padding: 0 20px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    gap: 12px;
+    overflow: hidden;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 1) 0%, rgba(249, 250, 251, 0.5) 100%);
+}
+
+.sidebar-brand h4 {
+    font-size: 19px;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--primary-color), #8b5cf6);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    white-space: nowrap;
+}
+
+.sidebar-brand h4 i {
+    font-size: 24px;
+    flex-shrink: 0;
+    background: linear-gradient(135deg, var(--primary-color), #8b5cf6);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.sidebar-nav {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 16px 12px;
+    overscroll-behavior: contain;
+}
+
+.sidebar-nav::-webkit-scrollbar {
+    width: 4px;
+}
+
+.sidebar-nav::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 4px;
+}
+
+/* ── Nav Links ── */
+.nav-link {
+    color: var(--text-secondary);
+    text-decoration: none;
+    padding: 10px 16px;
+    margin-bottom: 4px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    font-size: 13.5px;
+    font-weight: 600;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    white-space: nowrap;
+    overflow: hidden;
+    border: 1px solid transparent;
+}
+
+.nav-link i.nav-icon {
+    margin-right: 12px;
+    font-size: 18px;
+    width: 24px;
+    text-align: center;
+    flex-shrink: 0;
+    line-height: 1;
+    transition: transform 0.2s, color 0.2s;
+}
+
+.nav-link:hover {
+    background: var(--hover-bg);
+    color: var(--text-primary);
+    transform: translateX(4px);
+}
+
+.nav-link.active {
+    color: var(--primary-color);
+    background: linear-gradient(90deg, rgba(37, 99, 235, 0.08) 0%, rgba(37, 99, 235, 0.02) 100%);
+    border: 1px solid rgba(37, 99, 235, 0.1);
+    box-shadow: 0 2px 4px rgba(37, 99, 235, 0.05);
+}
+
+.nav-link.active i.nav-icon {
+    color: var(--primary-color);
+}
+
+/* ── Nav Badge ── */
+.nav-badge {
+    margin-left: auto;
+    background: var(--nav-badge-bg);
+    color: var(--nav-badge-text);
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 10px;
+    min-width: 18px;
+    text-align: center;
+    line-height: 1.4;
+    flex-shrink: 0;
+}
+
+.nav-badge.warning {
+    background: var(--warning-color);
+}
+
+.nav-badge.success {
+    background: var(--success-color);
+}
+
+/* ── Collapsible Groups (<details>) ── */
+.nav-group {
+    border-bottom: 1px dashed rgba(0, 0, 0, 0.06);
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+}
+
+.nav-group:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.nav-group summary {
+    display: flex;
+    align-items: center;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: #94a3b8;
+    padding: 12px 16px 8px;
+    cursor: pointer;
+    user-select: none;
+    list-style: none;
+    outline: none;
+    transition: color 0.2s;
+}
+
+.nav-group summary::-webkit-details-marker {
+    display: none;
+}
+
+.nav-group summary::before {
+    content: '\F285';
+    font-family: 'bootstrap-icons';
+    font-size: 10px;
+    margin-right: 6px;
+    transition: transform 0.2s;
+    display: inline-block;
+}
+
+.nav-group[open] summary::before {
+    transform: rotate(90deg);
+}
+
+.nav-group summary:hover {
+    color: var(--text-primary);
+}
+
+.nav-group summary:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: -2px;
+    border-radius: 4px;
+}
+
+.nav-group .nav-link {
+    padding-left: calc(16px + var(--sidebar-group-indent));
+}
+
+/* ── Top-level standalone link (Dashboard) ── */
+.nav-link.top-level {
+    padding: 10px 16px;
+    font-size: 14px;
+}
+
+/* ── User Profile Footer ── */
+.user-profile {
+    padding: 16px;
+    background: linear-gradient(180deg, rgba(249, 250, 251, 0.5) 0%, rgba(255, 255, 255, 1) 100%);
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    flex-shrink: 0;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+    overflow: hidden;
+    padding: 8px;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(0, 0, 0, 0.02);
+    transition: transform 0.2s;
+}
+
+.user-info:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--primary-color) 0%, #8b5cf6 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 18px;
+    flex-shrink: 0;
+    box-shadow: 0 4px 8px rgba(37, 99, 235, 0.2);
+}
+
+.user-details h6 {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 1px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.user-details small {
+    font-size: 11px;
+    color: var(--text-secondary);
+}
+
+.logout-btn {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    width: 100%;
+    padding: 7px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.logout-btn:hover {
+    background: #fee2e2;
+    border-color: #fecaca;
+    color: #dc2626;
+}
+

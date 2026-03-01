@@ -51,14 +51,8 @@ public class SubscriptionService {
 
     public SubscriptionPlan getEffectivePlan() {
         Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
-        if (ownerId == null) {
-            // For shopkeepers, we'd need to find their owner.
-            Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
-            if (tenantId != null) {
-                ownerId = java.util.Optional.ofNullable(securityUtils.getCurrentUser())
-                        .map(u -> u.getBranch() != null ? u.getBranch().getOwner().getId() : null)
-                        .orElse(null);
-            }
+        if (ownerId == null && com.medicalstore.config.TenantContext.getTenantId() != null) {
+            ownerId = securityUtils.getCurrentOwnerId();
         }
         if (ownerId != null) {
             return getPlanForOwner(ownerId).orElse(null);
