@@ -199,7 +199,7 @@
                 <nav class="header-breadcrumb" aria-label="Breadcrumb">
                     <a href="/owner" sec:authorize="hasRole('OWNER')"><i class="bi bi-house-door"></i></a>
                     <a href="/admin" sec:authorize="hasRole('ADMIN')"><i class="bi bi-house-door"></i></a>
-                    <a href="/" sec:authorize="hasAnyRole('SHOPKEEPER')"><i class="bi bi-house-door"></i></a>
+                    <a href="/" sec:authorize="hasRole('SHOPKEEPER')"><i class="bi bi-house-door"></i></a>
                     <i class="bi bi-chevron-right bc-sep"></i>
                     <span class="bc-current" th:text="${title}">Page</span>
                 </nav>
@@ -226,7 +226,7 @@
                     </span>
 
                     <!-- Notification Bell -->
-                    <div class="header-notif" id="notifContainer">
+                    <div class="header-notif" id="notifContainer" sec:authorize="hasAnyRole('ADMIN','SHOPKEEPER')">
                         <button class="header-notif-btn" id="notifBtn" title="Notifications" aria-label="Notifications"
                             aria-expanded="false">
                             <i class="bi bi-bell"></i>
