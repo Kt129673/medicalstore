@@ -67,8 +67,8 @@
     outline: none;
     width: 380px;
     background: #ffffff;
-    border-color: #93c5fd;
-    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1), 0 2px 8px rgba(37, 99, 235, 0.07);
+    border-color: var(--primary-light);
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12), 0 2px 8px rgba(37, 99, 235, 0.07);
 }
 
 /* Page-Specific Search Transition Classes */
@@ -317,7 +317,7 @@
 .header-right {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: var(--space-4);
     flex-shrink: 0;
 }
 

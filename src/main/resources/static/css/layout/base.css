@@ -2,39 +2,121 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
 
 :root {
+    /* ══════════════════ ENTERPRISE DESIGN SYSTEM ══════════════════ */
+
     /* ── Brand palette ── */
-    --primary-color: #2563eb;
-    --primary-dark: #1e40af;
-    --primary-light: #3b82f6;
-    --primary-glow: rgba(37, 99, 235, 0.18);
-    --primary-subtle: #eff6ff;
-    --focus-ring: 0 0 0 4px rgba(37, 99, 235, 0.18), 0 0 0 1px rgba(37, 99, 235, 0.4);
-    --sidebar-width: 248px;
-    --sidebar-collapsed-width: 68px;
-    --header-height: 56px;
-    --border-color: #e5e7eb;
-    --text-primary: #111827;
-    --text-secondary: #6b7280;
-    --bg-primary: #ffffff;
-    --bg-secondary: #f9fafb;
-    --bg-tertiary: #f1f5f9;
-    --hover-bg: #f3f4f6;
+    --primary-color:    #2563EB;
+    --primary-dark:     #1E3A8A;
+    --primary-light:    #3B82F6;
+    --primary-glow:     rgba(37, 99, 235, 0.18);
+    --primary-subtle:   #DBEAFE;
+    --primary-gradient: linear-gradient(135deg, #1E3A8A 0%, #2563EB 60%, #3B82F6 100%);
+    --focus-ring:       0 0 0 4px rgba(37, 99, 235, 0.18), 0 0 0 1px rgba(37, 99, 235, 0.4);
+
+    /* ── Layout dimensions ── */
+    --sidebar-width:            248px;
+    --sidebar-collapsed-width:   68px;
+    --header-height:             62px;
+
+    /* ── Neutral palette ── */
+    --border-color:   #E2E8F0;
+    --text-primary:   #111827;
+    --text-secondary: #64748B;
+    --bg-primary:     #ffffff;
+    --bg-secondary:   #F8FAFC;
+    --bg-tertiary:    #F1F5F9;
+    --hover-bg:       #F3F4F6;
+
+    /* ── Status / semantic colors ── */
+    --success-color:  #16A34A;
+    --warning-color:  #F59E0B;
+    --danger-color:   #DC2626;
+    --info-color:     #0891B2;
+
+    /* ── Sidebar nav ── */
     --sidebar-group-indent: 12px;
-    --nav-badge-bg: #ef4444;
+    --nav-badge-bg:   #DC2626;
     --nav-badge-text: #fff;
     --breadcrumb-sep: #9ca3af;
-    --success-color: #10b981;
-    --warning-color: #f59e0b;
-    --danger-color: #ef4444;
+
     /* ── Surface elevations ── */
     --surface-0: #ffffff;
-    --surface-1: #f9fafb;
-    --surface-2: #f3f4f6;
-    --surface-3: #e5e7eb;
+    --surface-1: #F8FAFC;
+    --surface-2: #F1F5F9;
+    --surface-3: #E2E8F0;
+
     /* ── Glass morphism ── */
-    --glass-bg: rgba(255,255,255,0.78);
+    --glass-bg:     rgba(255,255,255,0.78);
     --glass-border: rgba(255,255,255,0.6);
     --glass-shadow: 0 4px 24px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);
+
+    /* ── Shadow scale ── */
+    --shadow-xs: 0 1px 2px 0 rgba(0,0,0,.05);
+    --shadow-sm: 0 1px 3px 0 rgba(0,0,0,.07), 0 1px 2px -1px rgba(0,0,0,.07);
+    --shadow-md: 0 4px 6px -1px rgba(0,0,0,.07), 0 2px 4px -2px rgba(0,0,0,.07);
+    --shadow-lg: 0 10px 15px -3px rgba(0,0,0,.07), 0 4px 6px -4px rgba(0,0,0,.07);
+    --shadow-xl: 0 20px 25px -5px rgba(0,0,0,.08), 0 8px 10px -6px rgba(0,0,0,.08);
+
+    /* ── Semantic status colors ── */
+    --status-active-bg:     #dcfce7;
+    --status-active-text:   #15803d;
+    --status-inactive-bg:   #f3f4f6;
+    --status-inactive-text: #6b7280;
+    --status-pending-bg:    #fef3c7;
+    --status-pending-text:  #92400e;
+    --status-expired-bg:    #fee2e2;
+    --status-expired-text:  #DC2626;
+    --status-info-bg:       #DBEAFE;
+    --status-info-text:     #1d4ed8;
+    --status-critical-bg:   #fef2f2;
+    --status-critical-text: #DC2626;
+    --status-warning-bg:    #fffbeb;
+    --status-warning-text:  #d97706;
+
+    /* ── Border radius scale ── */
+    --radius-xs:   4px;
+    --radius-sm:   6px;
+    --radius-md:  10px;
+    --radius-lg:  14px;
+    --radius-xl:  18px;
+    --radius-full: 9999px;
+
+    /* ── Z-index scale ── */
+    --z-dropdown:  500;
+    --z-sticky:    600;
+    --z-overlay:   800;
+    --z-sidebar:  1000;
+    --z-modal:    1100;
+    --z-toast:    1300;
+
+    /* ── Transition presets ── */
+    --ease-std:    cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-in:     cubic-bezier(0.4, 0, 1, 1);
+    --ease-out:    cubic-bezier(0, 0, 0.2, 1);
+    --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+    --transition-fast:  0.15s var(--ease-std);
+    --transition-base:  0.2s  var(--ease-std);
+    --transition-slow:  0.35s var(--ease-std);
+
+    /* ── Spacing scale (8px base) ── */
+    --space-1:  4px;
+    --space-2:  8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 20px;
+    --space-6: 24px;
+    --space-8: 32px;
+    --space-10:40px;
+    --space-12:48px;
+
+    /* ── Typography scale ── */
+    --text-xs:   0.70rem;
+    --text-sm:   0.80rem;
+    --text-base: 0.875rem;
+    --text-md:   0.95rem;
+    --text-lg:   1.0625rem;
+    --text-xl:   1.25rem;
+    --text-2xl:  1.5rem;
 }
 
 /* Dark Mode Variables */
@@ -273,79 +355,7 @@ summary:focus-visible,
     color: var(--text-primary);
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   ENTERPRISE DESIGN TOKENS  (extend / override bootstrap freely)
-═══════════════════════════════════════════════════════════════ */
-
-:root {
-    /* ── Shadow scale ── */
-    --shadow-xs:  0 1px 2px 0 rgba(0,0,0,.05);
-    --shadow-sm:  0 1px 3px 0 rgba(0,0,0,.07), 0 1px 2px -1px rgba(0,0,0,.07);
-    --shadow-md:  0 4px 6px -1px rgba(0,0,0,.07), 0 2px 4px -2px rgba(0,0,0,.07);
-    --shadow-lg:  0 10px 15px -3px rgba(0,0,0,.07), 0 4px 6px -4px rgba(0,0,0,.07);
-    --shadow-xl:  0 20px 25px -5px rgba(0,0,0,.08), 0 8px 10px -6px rgba(0,0,0,.08);
-
-    /* ── Semantic status colors ── */
-    --status-active-bg:    #dcfce7;
-    --status-active-text:  #15803d;
-    --status-inactive-bg:  #f3f4f6;
-    --status-inactive-text:#6b7280;
-    --status-pending-bg:   #fef3c7;
-    --status-pending-text: #92400e;
-    --status-expired-bg:   #fee2e2;
-    --status-expired-text: #b91c1c;
-    --status-info-bg:      #dbeafe;
-    --status-info-text:    #1d4ed8;
-    --status-critical-bg:  #fef2f2;
-    --status-critical-text:#dc2626;
-    --status-warning-bg:   #fffbeb;
-    --status-warning-text: #d97706;
-
-    /* ── Border radius scale ── */
-    --radius-xs:  4px;
-    --radius-sm:  6px;
-    --radius-md:  10px;
-    --radius-lg:  14px;
-    --radius-xl:  18px;
-    --radius-full: 9999px;
-
-    /* ── Z-index scale ── */
-    --z-dropdown:  500;
-    --z-sticky:    600;
-    --z-overlay:   800;
-    --z-sidebar:  1000;
-    --z-modal:    1100;
-    --z-toast:    1300;
-
-    /* ── Transition presets ── */
-    --ease-std:   cubic-bezier(0.4, 0, 0.2, 1);
-    --ease-in:    cubic-bezier(0.4, 0, 1, 1);
-    --ease-out:   cubic-bezier(0, 0, 0.2, 1);
-    --ease-spring:cubic-bezier(0.16, 1, 0.3, 1);
-    --transition-fast:  0.15s var(--ease-std);
-    --transition-base:  0.2s  var(--ease-std);
-    --transition-slow:  0.35s var(--ease-std);
-
-    /* ── Spacing scale ── */
-    --space-1:  4px;
-    --space-2:  8px;
-    --space-3: 12px;
-    --space-4: 16px;
-    --space-5: 20px;
-    --space-6: 24px;
-    --space-8: 32px;
-    --space-10:40px;
-    --space-12:48px;
-
-    /* ── Typography scale ── */
-    --text-xs:   0.70rem;
-    --text-sm:   0.80rem;
-    --text-base: 0.875rem;
-    --text-md:   0.95rem;
-    --text-lg:   1.0625rem;
-    --text-xl:   1.25rem;
-    --text-2xl:  1.5rem;
-}
+/* ── All design tokens consolidated in the :root block above ── */
 
 [data-theme="dark"] {
     --status-active-bg:    rgba(21,128,61,.2);

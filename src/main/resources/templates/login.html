@@ -81,10 +81,10 @@
         .brand-logo-icon {
             width: 48px; height: 48px;
             border-radius: 14px;
-            background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%);
+            background: linear-gradient(135deg, #1E3A8A 0%, #2563EB 100%);
             display: flex; align-items: center; justify-content: center;
             font-size: 24px; color: #fff;
-            box-shadow: 0 0 0 6px rgba(37,99,235,0.15), 0 8px 24px rgba(37,99,235,0.35);
+            box-shadow: 0 0 0 6px rgba(37,99,235,0.15), 0 8px 24px rgba(30,58,138,0.4);
             flex-shrink: 0;
         }
 
@@ -230,10 +230,10 @@
         .login-card-icon {
             width: 56px; height: 56px;
             border-radius: 16px;
-            background: linear-gradient(135deg, #2563eb, #4f46e5);
+            background: linear-gradient(135deg, #1E3A8A, #2563EB);
             display: inline-flex; align-items: center; justify-content: center;
             font-size: 26px; color: #fff;
-            box-shadow: 0 8px 20px rgba(37,99,235,0.28);
+            box-shadow: 0 8px 20px rgba(30,58,138,0.32);
             margin-bottom: 16px;
         }
 
@@ -317,7 +317,7 @@
 
         /* Sign-in button */
         .btn-login {
-            background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 45%, #3b82f6 100%);
+            background: linear-gradient(135deg, #1E3A8A 0%, #2563EB 50%, #3B82F6 100%);
             border: none;
             border-radius: 11px;
             padding: 12px;
@@ -327,21 +327,21 @@
             width: 100%;
             position: relative;
             letter-spacing: 0.01em;
-            box-shadow: 0 4px 14px rgba(37,99,235,0.35), 0 1px 3px rgba(37,99,235,0.2);
+            box-shadow: 0 4px 14px rgba(30,58,138,0.38), 0 1px 3px rgba(37,99,235,0.2);
             transition: box-shadow 0.2s, transform 0.15s, background 0.2s;
             cursor: pointer;
         }
 
         .btn-login:hover:not(:disabled) {
-            background: linear-gradient(135deg, #1e40af 0%, #1d4ed8 45%, #2563eb 100%);
-            box-shadow: 0 6px 20px rgba(37,99,235,0.45), 0 2px 4px rgba(37,99,235,0.25);
+            background: linear-gradient(135deg, #1E3A8A 0%, #1d4ed8 50%, #2563EB 100%);
+            box-shadow: 0 6px 20px rgba(30,58,138,0.48), 0 2px 4px rgba(37,99,235,0.25);
             transform: translateY(-1px);
             color: #fff;
         }
 
         .btn-login:active:not(:disabled) {
-            transform: translateY(0);
-            box-shadow: 0 2px 8px rgba(37,99,235,0.3);
+            transform: translateY(0) scale(0.98);
+            box-shadow: 0 2px 8px rgba(30,58,138,0.35);
         }
 
         .btn-login.loading {
@@ -383,8 +383,8 @@
             margin-bottom: 0;
         }
 
-        .alert-danger  { background: #fef2f2; color: #991b1b; border-left: 4px solid #ef4444; }
-        .alert-success { background: #ecfdf5; color: #065f46; border-left: 4px solid #10b981; }
+        .alert-danger  { background: #fef2f2; color: #991b1b; border-left: 4px solid #DC2626; }
+        .alert-success { background: #f0fdf4; color: #166534; border-left: 4px solid #16A34A; }
 
         /* Caps lock hint */
         .caps-lock-hint {
@@ -474,9 +474,9 @@
             position: relative;
         }
 
-        .role-card.admin      .role-icon-wrap { background: #fef2f2; color: #dc2626; }
-        .role-card.owner      .role-icon-wrap { background: #eff6ff; color: #1d4ed8; }
-        .role-card.shopkeeper .role-icon-wrap { background: #f0fdf4; color: #15803d; }
+        .role-card.admin      .role-icon-wrap { background: #fef2f2; color: #DC2626; }
+        .role-card.owner      .role-icon-wrap { background: #EFF6FF; color: #1d4ed8; }
+        .role-card.shopkeeper .role-icon-wrap { background: #f0fdf4; color: #166534; }
 
         .role-card-name { font-size: 12.5px; font-weight: 700; color: #0f172a; }
         .role-card-user { font-size: 10.5px; color: #94a3b8; }
@@ -502,7 +502,7 @@
         .role-card.loading-role { pointer-events: none; opacity: 0.7; }
 
         /* Form check */
-        .form-check-input:checked { background-color: #2563eb; border-color: #2563eb; }
+        .form-check-input:checked { background-color: #2563EB; border-color: #2563EB; }
         .form-check-label { font-size: 13.5px; color: #64748b; }
 
         /* Shake animation */
