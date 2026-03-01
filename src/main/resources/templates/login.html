@@ -5,6 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Medical Store Management</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <style>
@@ -12,14 +15,24 @@
             --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             --primary-color: #667eea;
             --secondary-color: #764ba2;
+            --text-dark: #0f172a;
+            --text-muted: #64748b;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f8fafc;
-            overflow: hidden;
+            overflow: auto;
             height: 100vh;
             margin: 0;
+        }
+
+        a:focus-visible,
+        button:focus-visible,
+        input:focus-visible,
+        [tabindex]:focus-visible {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.25);
         }
 
         /* Left Panel - Branding */
@@ -204,6 +217,42 @@
             color: var(--primary-color);
         }
 
+        .password-toggle-btn {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: none;
+            background: transparent;
+            color: #64748b;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 11;
+            cursor: pointer;
+            transition: color 0.2s, background 0.2s;
+        }
+
+        .password-toggle-btn:hover {
+            color: #0f172a;
+            background: rgba(15, 23, 42, 0.06);
+        }
+
+        .caps-lock-hint {
+            display: none;
+            margin-top: 6px;
+            font-size: 12px;
+            color: #b45309;
+            font-weight: 600;
+        }
+
+        .caps-lock-hint.show {
+            display: block;
+        }
+
         .btn-login {
             background: var(--primary-gradient);
             border: none;
@@ -357,6 +406,20 @@
             .input-group-icon {
                 left: 15px;
             }
+
+            .password-toggle-btn {
+                right: 6px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
         }
     </style>
 </head>
@@ -440,6 +503,13 @@
                                 <i class="bi bi-lock-fill input-group-icon"></i>
                                 <input type="password" class="form-control" id="password" name="password"
                                     placeholder="Enter your password" required autocomplete="current-password">
+                                <button type="button" class="password-toggle-btn" id="passwordToggle"
+                                    aria-label="Show password" aria-pressed="false">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </div>
+                            <div class="caps-lock-hint" id="capsLockHint">
+                                <i class="bi bi-exclamation-triangle-fill me-1"></i>Caps Lock is on
                             </div>
                         </div>
 
@@ -464,11 +534,40 @@
     </div>
 
     <script>
-        // Add loading state to button on form submit
-        document.getElementById('loginForm').addEventListener('submit', function () {
-            const btn = document.getElementById('loginBtn');
-            btn.classList.add('loading');
-        });
+        const loginForm = document.getElementById('loginForm');
+        const loginBtn = document.getElementById('loginBtn');
+        const passwordInput = document.getElementById('password');
+        const passwordToggle = document.getElementById('passwordToggle');
+        const capsLockHint = document.getElementById('capsLockHint');
+
+        if (loginForm && loginBtn) {
+            loginForm.addEventListener('submit', function () {
+                loginBtn.classList.add('loading');
+                loginBtn.setAttribute('aria-busy', 'true');
+                loginBtn.disabled = true;
+            });
+        }
+
+        if (passwordInput && passwordToggle) {
+            passwordToggle.addEventListener('click', function () {
+                const isPassword = passwordInput.type === 'password';
+                passwordInput.type = isPassword ? 'text' : 'password';
+                passwordToggle.setAttribute('aria-label', isPassword ? 'Hide password' : 'Show password');
+                passwordToggle.setAttribute('aria-pressed', isPassword ? 'true' : 'false');
+                passwordToggle.innerHTML = isPassword ? '<i class="bi bi-eye-slash"></i>' : '<i class="bi bi-eye"></i>';
+                passwordInput.focus();
+            });
+
+            passwordInput.addEventListener('keydown', function (event) {
+                if (!capsLockHint) return;
+                capsLockHint.classList.toggle('show', event.getModifierState('CapsLock'));
+            });
+
+            passwordInput.addEventListener('blur', function () {
+                if (!capsLockHint) return;
+                capsLockHint.classList.remove('show');
+            });
+        }
 
         // Auto-remove alerts after 5 seconds
         setTimeout(function () {

@@ -17,33 +17,6 @@
 
 <!-- Reusable Empty State Fragment -->
 <div th:fragment="empty-state(iconClass, title, message, actionUrl, actionText)">
-    <style>
-        @keyframes floatUpDown {
-            0% {
-                transform: translateY(0);
-            }
-
-            50% {
-                transform: translateY(-10px);
-            }
-
-            100% {
-                transform: translateY(0);
-            }
-        }
-
-        .empty-state-icon {
-            display: inline-block;
-            font-size: 4rem;
-            animation: floatUpDown 3s ease-in-out infinite;
-            margin-bottom: 1.5rem;
-            background: linear-gradient(135deg, rgba(0, 0, 0, 0.05) 0%, rgba(0, 0, 0, 0) 100%);
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            line-height: 120px;
-        }
-    </style>
     <div class="text-center py-5">
         <div class="empty-state-icon">
             <i th:class="${iconClass}"></i>
@@ -59,7 +32,7 @@
 <!-- Reusable Search Bar Fragment -->
 <div th:fragment="search-bar(searchAction, searchPlaceholder)">
     <form th:action="${searchAction}" method="get" class="mb-4">
-        <div class="input-group search-group-transition" style="max-width: 500px;">
+        <div class="input-group search-group-transition search-inline-max">
             <span class="input-group-text bg-white border-end-0">
                 <i class="bi bi-search text-muted"></i>
             </span>
