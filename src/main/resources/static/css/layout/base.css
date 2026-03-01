@@ -175,6 +175,13 @@
     background: var(--hover-bg);
 }
 
+/* ── Bootstrap Modal z-index safety overrides ──
+   Ensures modals always stack above sidebar (1000), mobile-toggle (1100),
+   and any custom stacking contexts created by layout elements. */
+.modal-backdrop { z-index: 1040 !important; }
+.modal          { z-index: 1055 !important; }
+.modal-dialog   { z-index: 1056 !important; }
+
 /* Global Smooth Transitions */
 @keyframes fadeInUp {
     from {
@@ -193,10 +200,12 @@
     height: calc(100vh - var(--header-height));
     overflow-y: auto;
     position: relative;
-    /* Isolate layout recalculations to this subtree */
+    /* contain:layout is safe — does NOT create a stacking context by itself */
     contain: layout;
-    /* Hint to compositing engine (removed after animation via animation-fill-mode) */
-    will-change: transform, opacity;
+    /* NOTE: will-change:transform must NOT be set here permanently.
+       It creates a new stacking context which traps Bootstrap modal
+       z-indices inside this element, making the backdrop appear above
+       the modal dialog (faded/blocked). */
 }
 
 /* Premium styled scrollbar for main-body & sidebar */
