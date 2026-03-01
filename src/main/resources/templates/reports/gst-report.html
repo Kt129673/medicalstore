@@ -269,11 +269,11 @@
                     <h5 class="mb-0"><i class="bi bi-bar-chart-steps"></i> GST Slab-wise Breakdown</h5>
                 </div>
                 <div class="card-body">
-                    <div th:if="${reportData.slabBreakdown.isEmpty()}" class="text-center text-muted py-4">
+                    <div th:if="${#lists.isEmpty(reportData.slabBreakdown)}" class="text-center text-muted py-4">
                         <i class="bi bi-inbox" style="font-size: 3rem;"></i>
                         <p class="mt-2">No GST data available for this period</p>
                     </div>
-                    <div th:unless="${reportData.slabBreakdown.isEmpty()}" class="table-responsive">
+                    <div th:unless="${#lists.isEmpty(reportData.slabBreakdown)}" class="table-responsive">
                         <table class="table table-hover align-middle">
                             <thead class="table-light">
                                 <tr>
@@ -332,11 +332,11 @@
                     <h5 class="mb-0"><i class="bi bi-calendar3"></i> Daily GST Collection</h5>
                 </div>
                 <div class="card-body">
-                    <div th:if="${reportData.dailyBreakdown.isEmpty()}" class="text-center text-muted py-4">
+                    <div th:if="${#lists.isEmpty(reportData.dailyBreakdown)}" class="text-center text-muted py-4">
                         <i class="bi bi-calendar-x" style="font-size: 3rem;"></i>
                         <p class="mt-2">No transactions for this period</p>
                     </div>
-                    <div th:unless="${reportData.dailyBreakdown.isEmpty()}" class="table-responsive">
+                    <div th:unless="${#lists.isEmpty(reportData.dailyBreakdown)}" class="table-responsive">
                         <table class="table table-hover align-middle">
                             <thead class="table-light">
                                 <tr>
