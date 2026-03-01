@@ -23,6 +23,7 @@
             --primary-color: #2563eb;
             --primary-dark: #1e40af;
             --primary-light: #3b82f6;
+            --focus-ring: 0 0 0 3px rgba(37, 99, 235, 0.25);
             --sidebar-width: 248px;
             --sidebar-collapsed-width: 68px;
             --header-height: 56px;
@@ -46,6 +47,7 @@
             --primary-color: #3b82f6;
             --primary-dark: #60a5fa;
             --primary-light: #2563eb;
+            --focus-ring: 0 0 0 3px rgba(96, 165, 250, 0.3);
             --border-color: #334155;
             --text-primary: #f8fafc;
             --text-secondary: #94a3b8;
@@ -101,6 +103,46 @@
             font-size: 14px;
             line-height: 1.5;
             color: var(--text-primary);
+        }
+
+        a:focus-visible,
+        button:focus-visible,
+        input:focus-visible,
+        select:focus-visible,
+        textarea:focus-visible,
+        summary:focus-visible,
+        [tabindex]:focus-visible {
+            outline: none;
+            box-shadow: var(--focus-ring);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+        }
+
+        .skip-link {
+            position: fixed;
+            left: 12px;
+            top: -44px;
+            z-index: 1200;
+            background: var(--primary-color);
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: top 0.2s ease;
+        }
+
+        .skip-link:focus {
+            top: 12px;
         }
 
         /* Enterprise Layout Container */
@@ -715,6 +757,8 @@
             flex-shrink: 0;
             gap: 16px;
             z-index: 10;
+            position: sticky;
+            top: 0;
         }
 
         .subscription-banner {
@@ -1411,17 +1455,60 @@
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
         }
+
+        .table-responsive .table thead th {
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+
+        .table tbody tr:nth-child(even) {
+            background: rgba(148, 163, 184, 0.03);
+        }
+
+        .empty-state-icon {
+            display: inline-block;
+            font-size: 4rem;
+            animation: floatUpDown 3s ease-in-out infinite;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.05) 0%, rgba(0, 0, 0, 0) 100%);
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            line-height: 120px;
+        }
+
+        .search-inline-max {
+            max-width: 500px;
+        }
+
+        @keyframes floatUpDown {
+            0% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+
+            100% {
+                transform: translateY(0);
+            }
+        }
     </style>
 </head>
 
 <body>
+    <a href="#mainBody" class="skip-link">Skip to content</a>
+
     <!-- Mobile Toggle Button -->
-    <button class="mobile-toggle" id="mobileToggle" title="Toggle sidebar">
+    <button class="mobile-toggle" id="mobileToggle" title="Toggle sidebar" aria-label="Toggle navigation menu"
+        aria-expanded="false" aria-controls="sidebar">
         <i class="bi bi-list" id="toggleIcon"></i>
     </button>
 
     <!-- Sidebar Overlay -->
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <div class="sidebar-overlay" id="sidebarOverlay" aria-hidden="true"></div>
 
     <div class="app-container">
         <!-- Sidebar -->
@@ -1642,7 +1729,7 @@
             </header>
 
             <!-- Body -->
-            <div class="main-body">
+            <div class="main-body" id="mainBody" tabindex="-1">
                 <!-- Alert Messages -->
                 <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
                     <i class="bi bi-check-circle-fill me-2"></i><span th:text="${success}"></span>
@@ -1716,6 +1803,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             const successAlert = document.querySelector('.alert-success');
             const errorAlert = document.querySelector('.alert-danger');
+            const activeNavLink = document.querySelector('.sidebar .nav-link.active');
 
             if (successAlert) {
                 successAlert.style.display = 'none'; // hide native alert
@@ -1724,6 +1812,16 @@
             if (errorAlert) {
                 errorAlert.style.display = 'none';
                 showToast('error', errorAlert.textContent.trim());
+            }
+
+            if (activeNavLink) {
+                activeNavLink.scrollIntoView({ block: 'nearest' });
+            }
+
+            const savedQuery = localStorage.getItem('globalSearchQuery');
+            const globalSearchInput = document.getElementById('globalSearch');
+            if (globalSearchInput && savedQuery) {
+                globalSearchInput.value = savedQuery;
             }
         });
 
@@ -1849,13 +1947,31 @@
             });
             globalSearchInput.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter' && globalSearchInput.value.trim()) {
-                    window.location.href = '/medicines?search=' + encodeURIComponent(globalSearchInput.value.trim());
+                    const query = globalSearchInput.value.trim();
+                    localStorage.setItem('globalSearchQuery', query);
+                    window.location.href = '/medicines?search=' + encodeURIComponent(query);
                 }
                 if (e.key === 'Escape') {
                     globalSearchInput.blur();
                 }
             });
+
+            globalSearchInput.addEventListener('input', () => {
+                localStorage.setItem('globalSearchQuery', globalSearchInput.value);
+            });
         }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                if (isMobile() && sidebar.classList.contains('active')) {
+                    closeSidebarMobile();
+                }
+                if (notifDropdown && notifDropdown.classList.contains('open')) {
+                    notifDropdown.classList.remove('open');
+                    notifBtn?.setAttribute('aria-expanded', 'false');
+                }
+            }
+        });
     </script>
 </body>
 
