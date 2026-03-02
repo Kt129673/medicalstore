@@ -223,8 +223,8 @@
                 <!-- Breadcrumb home: OWNER → /owner, others → / -->
                 <nav class="header-breadcrumb" aria-label="Breadcrumb">
                     <a href="/owner" sec:authorize="hasRole('OWNER')"><i class="bi bi-house-door"></i></a>
-                    <a href="/admin" sec:authorize="hasRole('ADMIN')"><i class="bi bi-house-door"></i></a>
-                    <a href="/" sec:authorize="hasRole('SHOPKEEPER')"><i class="bi bi-house-door"></i></a>
+                    <a href="/admin" sec:authorize="!hasRole('OWNER') and hasRole('ADMIN')"><i class="bi bi-house-door"></i></a>
+                    <a href="/" sec:authorize="!hasRole('OWNER') and !hasRole('ADMIN') and hasRole('SHOPKEEPER')"><i class="bi bi-house-door"></i></a>
                     <i class="bi bi-chevron-right bc-sep"></i>
                     <span class="bc-current" th:text="${title}">Page</span>
                 </nav>
