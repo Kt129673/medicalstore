@@ -891,3 +891,34 @@ onDomReady(function () {
     });
 });
 
+/*
+ * Dark Mode Toggle
+ * ─────────────────
+ * Reads / writes data-theme="dark" on <html> and persists to localStorage.
+ * The anti-flash inline script in layout.html <head> applies the saved
+ * theme before first paint to prevent a visible flash.
+ */
+window.toggleDarkMode = function () {
+    var isDark = document.documentElement.dataset.theme === 'dark';
+    if (isDark) {
+        delete document.documentElement.dataset.theme;
+        localStorage.removeItem('theme');
+    } else {
+        document.documentElement.dataset.theme = 'dark';
+        localStorage.setItem('theme', 'dark');
+    }
+    syncThemeIcon();
+};
+
+function syncThemeIcon() {
+    var icon = document.getElementById('themeToggleIcon');
+    var btn  = document.getElementById('themeToggleBtn');
+    if (!icon) return;
+    var isDark = document.documentElement.dataset.theme === 'dark';
+    icon.className = isDark ? 'bi bi-sun-fill' : 'bi bi-moon-stars-fill';
+    if (btn) btn.title = isDark ? 'Switch to light mode' : 'Switch to dark mode';
+}
+
+onDomReady(syncThemeIcon);
+
+

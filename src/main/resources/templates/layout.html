@@ -30,7 +30,8 @@
     <!-- SweetAlert2 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.min.css" rel="stylesheet" media="print" onload="this.media='all'">
     <noscript><link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.min.css" rel="stylesheet"></noscript>
-
+    <!-- Dark-mode anti-flash: apply saved theme before first paint -->
+    <script>(function(){var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.dataset.theme='dark';})()</script>
 </head>
 
 <body>
@@ -101,6 +102,7 @@
 
                 <!-- ── Dashboard (standalone) ── -->
                 <div sec:authorize="hasAnyRole('ADMIN','SHOPKEEPER')">
+                    <div class="nav-section-label">Store Operations</div>
                     <a class="nav-link top-level" data-label="Dashboard"
                         th:classappend="${page == 'home'} ? 'active' : ''" href="/"
                         th:attr="aria-current=${page == 'home'} ? 'page' : null">
@@ -239,6 +241,12 @@
 
                 <!-- Right: controls -->
                 <div class="header-right">
+                    <!-- Dark Mode Toggle -->
+                    <button class="header-theme-toggle" id="themeToggleBtn" title="Toggle dark mode"
+                            aria-label="Toggle dark mode" onclick="toggleDarkMode()">
+                        <i class="bi bi-moon-stars-fill" id="themeToggleIcon"></i>
+                    </button>
+
                     <!-- Role badge -->
                     <span class="header-role-badge role-admin" sec:authorize="hasRole('ADMIN')">
                         <i class="bi bi-shield-fill"></i> Admin

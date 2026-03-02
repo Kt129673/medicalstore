@@ -2,59 +2,60 @@
 <html xmlns:th="http://www.thymeleaf.org"
     th:replace="~{layout :: layout(title='Customers', page='customers', content=~{::#content}, pageIcon='bi bi-people-fill')}">
 
-<head>
-    <style>
-        .customer-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 600;
-            font-size: 16px;
-            margin-right: 12px;
-        }
-
-        .customer-info {
-            display: flex;
-            align-items: center;
-        }
-
-        .customer-details {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .customer-name {
-            font-weight: 600;
-            color: #212529;
-        }
-
-        .customer-id {
-            font-size: 12px;
-            color: #6c757d;
-        }
-
-        .contact-icon {
-            color: #667eea;
-            margin-right: 4px;
-        }
-
-        .loyalty-badge {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            border: none;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-weight: 600;
-        }
-    </style>
-</head>
-
 <body>
     <div id="content">
+        <style>
+            .customer-avatar {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                font-weight: 600;
+                font-size: 16px;
+                margin-right: 12px;
+                flex-shrink: 0;
+            }
+
+            .customer-info {
+                display: flex;
+                align-items: center;
+            }
+
+            .customer-details {
+                display: flex;
+                flex-direction: column;
+            }
+
+            .customer-name {
+                font-weight: 600;
+                color: var(--text-primary, #212529);
+            }
+
+            .customer-id {
+                font-size: 12px;
+                color: var(--text-secondary, #6c757d);
+            }
+
+            .contact-icon {
+                color: #667eea;
+                margin-right: 4px;
+            }
+
+            .loyalty-badge {
+                background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+                border: none;
+                padding: 6px 12px;
+                border-radius: 20px;
+                font-weight: 600;
+                color: #fff;
+            }
+
+            [data-theme="dark"] .customer-name { color: var(--text-primary); }
+        </style>
         <!-- Page Header -->
         <div
             th:replace="~{fragments :: page-header('Customers', 'Manage customer information and loyalty programs', 'bi bi-people-fill text-primary', '/customers/new', 'Add New Customer', null)}">
@@ -93,45 +94,13 @@
                         </thead>
                         <!-- ░░ SKELETON ROWS ░░ -->
                         <tbody id="custSkeletonBody" aria-hidden="true">
-                            <tr class="ent-skeleton--row">
+                            <tr class="ent-skeleton--row" th:each="i : ${#numbers.sequence(1,5)}">
                                 <td><div class="d-flex align-items-center gap-2"><span class="ent-skeleton ent-skeleton--avatar"></span><div><span class="ent-skeleton ent-skeleton--text" style="width:110px;margin-bottom:6px;"></span><span class="ent-skeleton ent-skeleton--text" style="width:60px;height:10px;"></span></div></div></td>
                                 <td><span class="ent-skeleton ent-skeleton--text" style="width:100px;margin-bottom:6px;"></span><span class="ent-skeleton ent-skeleton--text" style="width:130px;"></span></td>
                                 <td><span class="ent-skeleton ent-skeleton--text" style="width:140px;"></span></td>
                                 <td><span class="ent-skeleton" style="width:72px;height:22px;border-radius:12px;display:inline-block;"></span></td>
                                 <td><span class="ent-skeleton ent-skeleton--text" style="width:90px;"></span></td>
-                                <td class="text-end"><div class="d-flex gap-1 justify-content-end"><span class="ent-skeleton" style="width:32px;height:32px;border-radius:6px;display:inline-block;"></span><span class="ent-skeleton" style="width:32px;height:32px;border-radius:6px;display:inline-block;"></span><span class="ent-skeleton" style="width:32px;height:32px;border-radius:6px;display:inline-block;"></span></div></td>
-                            </tr>
-                            <tr class="ent-skeleton--row">
-                                <td><div class="d-flex align-items-center gap-2"><span class="ent-skeleton ent-skeleton--avatar"></span><div><span class="ent-skeleton ent-skeleton--text" style="width:135px;margin-bottom:6px;"></span><span class="ent-skeleton ent-skeleton--text" style="width:45px;height:10px;"></span></div></div></td>
-                                <td><span class="ent-skeleton ent-skeleton--text" style="width:115px;margin-bottom:6px;"></span><span class="ent-skeleton ent-skeleton--text" style="width:145px;"></span></td>
-                                <td><span class="ent-skeleton ent-skeleton--text" style="width:120px;"></span></td>
-                                <td><span class="ent-skeleton" style="width:72px;height:22px;border-radius:12px;display:inline-block;"></span></td>
-                                <td><span class="ent-skeleton ent-skeleton--text" style="width:80px;"></span></td>
-                                <td class="text-end"><div class="d-flex gap-1 justify-content-end"><span class="ent-skeleton" style="width:32px;height:32px;border-radius:6px;display:inline-block;"></span><span class="ent-skeleton" style="width:32px;height:32px;border-radius:6px;display:inline-block;"></span><span class="ent-skeleton" style="width:32px;height:32px;border-radius:6px;display:inline-block;"></span></div></td>
-                            </tr>
-                            <tr class="ent-skeleton--row">
-                                <td><div class="d-flex align-items-center gap-2"><span class="ent-skeleton ent-skeleton--avatar"></span><div><span class="ent-skeleton ent-skeleton--text" style="width:95px;margin-bottom:6px;"></span><span class="ent-skeleton ent-skeleton--text" style="width:55px;height:10px;"></span></div></div></td>
-                                <td><span class="ent-skeleton ent-skeleton--text" style="width:105px;margin-bottom:6px;"></span><span class="ent-skeleton ent-skeleton--text" style="width:155px;"></span></td>
-                                <td><span class="ent-skeleton ent-skeleton--text" style="width:160px;"></span></td>
-                                <td><span class="ent-skeleton" style="width:72px;height:22px;border-radius:12px;display:inline-block;"></span></td>
-                                <td><span class="ent-skeleton ent-skeleton--text" style="width:95px;"></span></td>
-                                <td class="text-end"><div class="d-flex gap-1 justify-content-end"><span class="ent-skeleton" style="width:32px;height:32px;border-radius:6px;display:inline-block;"></span><span class="ent-skeleton" style="width:32px;height:32px;border-radius:6px;display:inline-block;"></span><span class="ent-skeleton" style="width:32px;height:32px;border-radius:6px;display:inline-block;"></span></div></td>
-                            </tr>
-                            <tr class="ent-skeleton--row">
-                                <td><div class="d-flex align-items-center gap-2"><span class="ent-skeleton ent-skeleton--avatar"></span><div><span class="ent-skeleton ent-skeleton--text" style="width:120px;margin-bottom:6px;"></span><span class="ent-skeleton ent-skeleton--text" style="width:50px;height:10px;"></span></div></div></td>
-                                <td><span class="ent-skeleton ent-skeleton--text" style="width:98px;margin-bottom:6px;"></span><span class="ent-skeleton ent-skeleton--text" style="width:128px;"></span></td>
-                                <td><span class="ent-skeleton ent-skeleton--text" style="width:105px;"></span></td>
-                                <td><span class="ent-skeleton" style="width:72px;height:22px;border-radius:12px;display:inline-block;"></span></td>
-                                <td><span class="ent-skeleton ent-skeleton--text" style="width:88px;"></span></td>
-                                <td class="text-end"><div class="d-flex gap-1 justify-content-end"><span class="ent-skeleton" style="width:32px;height:32px;border-radius:6px;display:inline-block;"></span><span class="ent-skeleton" style="width:32px;height:32px;border-radius:6px;display:inline-block;"></span><span class="ent-skeleton" style="width:32px;height:32px;border-radius:6px;display:inline-block;"></span></div></td>
-                            </tr>
-                            <tr class="ent-skeleton--row">
-                                <td><div class="d-flex align-items-center gap-2"><span class="ent-skeleton ent-skeleton--avatar"></span><div><span class="ent-skeleton ent-skeleton--text" style="width:108px;margin-bottom:6px;"></span><span class="ent-skeleton ent-skeleton--text" style="width:65px;height:10px;"></span></div></div></td>
-                                <td><span class="ent-skeleton ent-skeleton--text" style="width:122px;margin-bottom:6px;"></span><span class="ent-skeleton ent-skeleton--text" style="width:138px;"></span></td>
-                                <td><span class="ent-skeleton ent-skeleton--text" style="width:135px;"></span></td>
-                                <td><span class="ent-skeleton" style="width:72px;height:22px;border-radius:12px;display:inline-block;"></span></td>
-                                <td><span class="ent-skeleton ent-skeleton--text" style="width:82px;"></span></td>
-                                <td class="text-end"><div class="d-flex gap-1 justify-content-end"><span class="ent-skeleton" style="width:32px;height:32px;border-radius:6px;display:inline-block;"></span><span class="ent-skeleton" style="width:32px;height:32px;border-radius:6px;display:inline-block;"></span><span class="ent-skeleton" style="width:32px;height:32px;border-radius:6px;display:inline-block;"></span></div></td>
+                                <td class="text-end"><div class="d-flex gap-1 justify-content-end"><span class="ent-skeleton" style="width:32px;height:32px;border-radius:6px;display:inline-block;"></span><span class="ent-skeleton" style="width:32px;height:32px;border-radius:6px;display:inline-block;"></span></div></td>
                             </tr>
                         </tbody>
                         <!-- ░░ REAL ROWS ░░ -->

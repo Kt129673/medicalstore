@@ -37,18 +37,22 @@
 .card-top-green::before,
 .card-top-amber::before,
 .card-top-red::before,
-.card-top-slate::before {
+.card-top-slate::before,
+.card-top-teal::before,
+.card-top-purple::before {
     content: "";
     display: block;
     height: 4px;
     border-radius: 12px 12px 0 0;
     margin: -1px -1px 0 -1px;
 }
-.card-top-blue::before  { background: #2563EB; }
-.card-top-green::before { background: #16A34A; }
-.card-top-amber::before { background: #D97706; }
-.card-top-red::before   { background: #DC2626; }
-.card-top-slate::before { background: #64748B; }
+.card-top-blue::before   { background: #2563EB; }
+.card-top-green::before  { background: #16A34A; }
+.card-top-amber::before  { background: #D97706; }
+.card-top-red::before    { background: #DC2626; }
+.card-top-slate::before  { background: #64748B; }
+.card-top-teal::before   { background: #10B981; }
+.card-top-purple::before { background: #8B5CF6; }
 
 .card-header {
     background: var(--bg-secondary);
@@ -485,6 +489,67 @@ input[type="radio"] {
     background: var(--bg-primary);
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
     overflow: hidden;
+}
+
+/* ─────────────────────────────────────────────────
+   KPI CARDS  (gradient stat cards used in dashboard
+               and owner/dashboard)
+───────────────────────────────────────────────── */
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.kpi-card {
+    border-radius: 16px;
+    padding: 20px 24px;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+    transition: transform var(--transition-base, 0.2s ease), box-shadow var(--transition-base, 0.2s ease);
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+}
+
+.kpi-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 36px rgba(0,0,0,0.18);
+}
+
+.kpi-card .kpi-icon {
+    position: absolute;
+    top: 14px;
+    right: 18px;
+    font-size: 2rem;
+    opacity: 0.25;
+}
+
+.kpi-card .kpi-label {
+    font-size: 0.70rem;
+    font-weight: 700;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    opacity: 0.88;
+    margin-bottom: 6px;
+}
+
+.kpi-card .kpi-value {
+    font-size: 2rem;
+    font-weight: 900;
+    line-height: 1;
+    margin-bottom: 4px;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.5px;
+}
+
+.kpi-card .kpi-sub {
+    font-size: 0.72rem;
+    opacity: 0.95;
 }
 
 /* ─────────────────────────────────────────────────

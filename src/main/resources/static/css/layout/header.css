@@ -354,6 +354,38 @@
     border: 1.5px solid transparent;
 }
 
+/* Dark-mode toggle button in header */
+.header-theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    border: 1.5px solid var(--border-color);
+    background: var(--bg-primary);
+    color: var(--text-secondary);
+    font-size: 15px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+    flex-shrink: 0;
+}
+.header-theme-toggle:hover {
+    background: var(--primary-color);
+    color: #fff;
+    border-color: var(--primary-color);
+}
+[data-theme="dark"] .header-theme-toggle {
+    background: var(--bg-secondary);
+    color: #fbbf24;
+    border-color: var(--border-color);
+}
+[data-theme="dark"] .header-theme-toggle:hover {
+    background: #fbbf24;
+    color: #1e293b;
+    border-color: #fbbf24;
+}
+
 .role-admin {
     background: #fef2f2;
     color: #dc2626;

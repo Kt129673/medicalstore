@@ -62,17 +62,18 @@
                                 <td>
                                     <span class="badge bg-secondary" th:text="${returnItem.reason}">Expired</span>
                                 </td>
-                                <td class="text-end" sec:authorize="hasRole('ADMIN')">
-                                    <form th:action="@{/returns/delete/{id}(id=${returnItem.id})}" method="post"
-                                        style="display:inline"
-                                        data-confirm-delete="Cancel this return? The stock adjustment will be reversed.">
-                                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Cancel Return">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </form>
+                                <td class="text-end">
+                                    <div sec:authorize="hasRole('ADMIN')">
+                                        <form th:action="@{/returns/delete/{id}(id=${returnItem.id})}" method="post"
+                                            style="display:inline"
+                                            data-confirm-delete="Cancel this return? The stock adjustment will be reversed.">
+                                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Cancel Return">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
                                 </td>
-                                <td th:unless="${#authorization.expression('hasRole(''ADMIN'')')}"></td>
                             </tr>
                         </tbody>
                         <tfoot class="table-light fw-bold">

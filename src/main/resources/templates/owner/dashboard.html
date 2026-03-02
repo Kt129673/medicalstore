@@ -2,15 +2,6 @@
 <html xmlns:th="http://www.thymeleaf.org"
     th:replace="~{layout :: layout(title='Owner Dashboard', page='owner', content=~{::main}, pageIcon='bi bi-person-badge-fill')}">
 <main>
-<style>
-.kpi-card { border-radius:14px; padding:20px 22px; color:#fff; position:relative; overflow:hidden; transition:transform .2s,box-shadow .2s; min-height:110px; display:flex; flex-direction:column; justify-content:space-between; }
-.kpi-card:hover { transform:translateY(-3px); box-shadow:0 12px 30px rgba(0,0,0,.15); }
-.kpi-card .kpi-icon { position:absolute; top:12px; right:16px; font-size:1.9rem; opacity:.22; }
-.kpi-card .kpi-label { font-size:.7rem; font-weight:700; letter-spacing:.5px; text-transform:uppercase; opacity:.82; }
-.kpi-card .kpi-value { font-size:1.7rem; font-weight:800; line-height:1.1; }
-.kpi-card .kpi-sub { font-size:.7rem; opacity:.88; }
-</style>
-
 <div class="container-fluid py-4">
     <!-- ── Admin Impersonation Banner (Section 4.1) ──────────────────────── -->
     <div th:if="${impersonationMode}" class="alert alert-warning border-warning d-flex align-items-center justify-content-between mb-4 shadow-sm" role="alert">

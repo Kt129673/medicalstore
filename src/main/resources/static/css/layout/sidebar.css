@@ -290,6 +290,41 @@
     }
 }
 
+/* Section label divider (e.g. "Store Operations") */
+.nav-section-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--text-muted, #94a3b8);
+    padding: 14px 16px 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    user-select: none;
+    pointer-events: none;
+}
+
+.nav-section-label::before {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--border-color);
+    max-width: 18px;
+}
+
+.nav-section-label::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--border-color);
+}
+
+/* Hide section labels in mini-collapse mode (icon-only) */
+.sidebar-mini .nav-section-label {
+    display: none;
+}
+
 .nav-group summary {
     display: flex;
     align-items: center;
