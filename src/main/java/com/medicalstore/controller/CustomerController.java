@@ -59,13 +59,45 @@ public class CustomerController {
     
     @PostMapping("/save")
     public String saveCustomer(@ModelAttribute Customer customer, RedirectAttributes redirectAttributes) {
-        // Auto-assign branch for shopkeeper
-        if (customer.getId() == null && securityUtils.isShopkeeper()) {
-            Long branchId = securityUtils.getCurrentBranchId();
-            branchService.getBranchById(branchId).ifPresent(customer::setBranch);
+        try {
+            // Convert empty email to null to avoid UNIQUE constraint violation
+            if (customer.getEmail() != null && customer.getEmail().trim().isEmpty()) {
+                customer.setEmail(null);
+            }
+
+            if (customer.getId() != null) {
+                // Editing existing customer — preserve branch and registeredDate from DB
+                customerService.getCustomerById(customer.getId()).ifPresent(existing -> {
+                    customer.setBranch(existing.getBranch());
+                    if (customer.getRegisteredDate() == null) {
+                        customer.setRegisteredDate(existing.getRegisteredDate());
+                    }
+                });
+            } else {
+                // New customer — auto-assign branch for shopkeeper
+                if (securityUtils.isShopkeeper()) {
+                    Long branchId = securityUtils.getCurrentBranchId();
+                    if (branchId != null) {
+                        branchService.getBranchById(branchId).ifPresent(customer::setBranch);
+                    }
+                }
+            }
+
+            customerService.saveCustomer(customer);
+            redirectAttributes.addFlashAttribute("success", "Customer saved successfully!");
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+            redirectAttributes.addFlashAttribute("error", "A customer with this phone number or email already exists.");
+            String returnPath = customer.getId() != null
+                    ? RoutePaths.CUSTOMERS + "/edit/" + customer.getId()
+                    : RoutePaths.CUSTOMERS + "/new";
+            return "redirect:" + returnPath;
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Failed to save customer: " + e.getMessage());
+            String returnPath = customer.getId() != null
+                    ? RoutePaths.CUSTOMERS + "/edit/" + customer.getId()
+                    : RoutePaths.CUSTOMERS + "/new";
+            return "redirect:" + returnPath;
         }
-        customerService.saveCustomer(customer);
-        redirectAttributes.addFlashAttribute("success", "Customer saved successfully!");
         return RoutePaths.redirectTo(RoutePaths.CUSTOMERS);
     }
     

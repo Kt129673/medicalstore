@@ -32,7 +32,7 @@ public class ReturnController {
             saleService.getSaleById(saleId).ifPresent(returnItem::setSale);
         }
         model.addAttribute("returnItem", returnItem);
-        model.addAttribute("sales", saleService.getAllSales());
+        model.addAttribute("sales", saleService.getAllSalesWithItems());
         return "returns/form";
     }
     

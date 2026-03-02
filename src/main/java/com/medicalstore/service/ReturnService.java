@@ -2,9 +2,11 @@ package com.medicalstore.service;
 
 import com.medicalstore.model.Return;
 import com.medicalstore.model.Sale;
+import com.medicalstore.model.SaleItem;
 import com.medicalstore.model.Medicine;
 import com.medicalstore.repository.ReturnRepository;
 import com.medicalstore.repository.MedicineRepository;
+import com.medicalstore.repository.SaleItemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +20,7 @@ public class ReturnService {
 
     private final ReturnRepository returnRepository;
     private final MedicineRepository medicineRepository;
+    private final SaleItemRepository saleItemRepository;
 
     public List<Return> getAllReturns() {
         Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
@@ -51,11 +54,13 @@ public class ReturnService {
             throw new IllegalArgumentException("A specific Sale Item must be selected for return.");
         }
 
-        Sale sale = returnItem.getSale();
-        com.medicalstore.model.SaleItem item = sale.getItems().stream()
-                .filter(i -> i.getId().equals(returnItem.getSaleItem().getId()))
-                .findFirst()
+        // Reload SaleItem from DB (form binding only provides the ID, not a managed entity)
+        SaleItem item = saleItemRepository.findById(returnItem.getSaleItem().getId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid Sale Item selected."));
+
+        // Re-attach the fully loaded saleItem and its parent sale to the returnItem
+        returnItem.setSaleItem(item);
+        returnItem.setSale(item.getSale());
 
         if (returnItem.getReturnQuantity() > item.getQuantity()) {
             throw new IllegalArgumentException(

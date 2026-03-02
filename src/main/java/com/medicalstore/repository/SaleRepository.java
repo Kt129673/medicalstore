@@ -175,6 +175,22 @@ public interface SaleRepository extends JpaRepository<Sale, Long>, JpaSpecificat
         // ── Eager item loading (avoids N+1 in reports) ─────────────────────────
 
         /** Load sales with their items and medicines in a single JOIN FETCH — used by reports */
+        // --- all-sales with items loaded (for Return form dropdown) ---
+        @Query("SELECT DISTINCT s FROM Sale s " +
+                        "LEFT JOIN FETCH s.items i LEFT JOIN FETCH i.medicine " +
+                        "ORDER BY s.saleDate DESC")
+        List<Sale> findAllWithItems();
+
+        @Query("SELECT DISTINCT s FROM Sale s " +
+                        "LEFT JOIN FETCH s.items i LEFT JOIN FETCH i.medicine " +
+                        "WHERE s.branch.id = ?1 ORDER BY s.saleDate DESC")
+        List<Sale> findByBranchIdWithItems(Long branchId);
+
+        @Query("SELECT DISTINCT s FROM Sale s " +
+                        "LEFT JOIN FETCH s.items i LEFT JOIN FETCH i.medicine " +
+                        "WHERE s.branch.owner.id = ?1 ORDER BY s.saleDate DESC")
+        List<Sale> findByOwnerIdWithItems(Long ownerId);
+
         @Query("SELECT DISTINCT s FROM Sale s " +
                         "LEFT JOIN FETCH s.items i LEFT JOIN FETCH i.medicine " +
                         "WHERE s.saleDate BETWEEN ?1 AND ?2 ORDER BY s.saleDate DESC")

@@ -54,6 +54,22 @@ public class SaleService {
         return saleRepository.findAll();
     }
 
+    /**
+     * Returns sales with items and medicines eagerly loaded.
+     * Used by the Return form dropdown to avoid LazyInitializationException.
+     */
+    @Transactional(readOnly = true)
+    public List<Sale> getAllSalesWithItems() {
+        Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
+        Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
+
+        if (tenantId != null)
+            return saleRepository.findByBranchIdWithItems(tenantId);
+        if (ownerId != null)
+            return saleRepository.findByOwnerIdWithItems(ownerId);
+        return saleRepository.findAllWithItems();
+    }
+
     @Transactional(readOnly = true)
     public org.springframework.data.domain.Page<Sale> getSalesPaginated(
             org.springframework.data.domain.Pageable pageable) {

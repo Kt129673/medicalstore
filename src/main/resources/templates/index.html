@@ -512,12 +512,25 @@
                                 const d = new Date(sale.saleDate);
                                 const dateStr = d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }) + ', ' + d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
 
+                                // Build medicine names + total qty from items[]
+                                let medName = '—';
+                                let totalQty = '—';
+                                if (sale.items && sale.items.length > 0) {
+                                    if (sale.items.length === 1) {
+                                        medName  = sale.items[0].medicine ? sale.items[0].medicine.name : '—';
+                                        totalQty = sale.items[0].quantity;
+                                    } else {
+                                        medName  = sale.items.map(i => i.medicine ? i.medicine.name : '—').join(', ');
+                                        totalQty = sale.items.reduce((s, i) => s + (i.quantity || 0), 0);
+                                    }
+                                }
+
                                 txnBody.innerHTML += `
                                     <tr>
                                         <td><a href="/sales/invoice/${sale.id}" class="fw-semibold text-decoration-none"><code>#INV-${sale.id}</code></a></td>
-                                        <td>${sale.medicine ? sale.medicine.name : '—'}</td>
+                                        <td>${medName}</td>
                                         <td>${sale.customer ? sale.customer.name : 'Walk-in'}</td>
-                                        <td>${sale.quantity}</td>
+                                        <td>${totalQty}</td>
                                         <td class="fw-semibold" style="color:#059669;">₹${amt}</td>
                                         <td>${pmBadge}</td>
                                         <td class="text-muted">${dateStr}</td>
