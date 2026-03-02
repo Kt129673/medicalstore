@@ -231,7 +231,8 @@
 @media (max-width: 768px) {
     .page-header {
         flex-direction: column;
-        gap: 12px;
+        gap: var(--space-3);
+        padding: var(--space-5);
     }
 
     .page-header .btn {
@@ -247,40 +248,47 @@
     }
 
     .stat-card {
-        padding: 16px;
+        padding: var(--space-5);
     }
 
     .main-body {
-        padding: 16px;
+        padding: var(--space-4) var(--space-3);
     }
 
     .card-body {
-        padding: 12px;
+        padding: var(--space-4);
     }
 
     .card-header {
-        padding: 10px 12px;
+        padding: var(--space-3) var(--space-4);
         font-size: 13px;
+        min-height: 48px;
     }
 
     .btn {
         font-size: 13px;
-        padding: 6px 12px;
+        padding: 8px 16px;
+        min-height: 36px;
     }
 
     .btn-lg {
         font-size: 14px;
-        padding: 8px 16px;
+        padding: 10px 20px;
+        min-height: 42px;
     }
 
     .page-title {
         font-size: 16px;
     }
+
+    .kpi-card {
+        min-height: 120px;
+    }
 }
 
 @media (max-width: 576px) {
     .main-body {
-        padding: 12px;
+        padding: var(--space-3) var(--space-2);
     }
 
     .page-header h2 {
@@ -293,7 +301,7 @@
 
     .d-flex.gap-2.justify-content-between {
         flex-direction: column;
-        gap: 12px !important;
+        gap: var(--space-3) !important;
     }
 
     .d-flex.gap-2.justify-content-between .d-flex.gap-2 {
@@ -307,7 +315,7 @@
 
     .header-search {
         margin-left: auto;
-        margin-right: 12px;
+        margin-right: var(--space-3);
     }
 
     .header-search input {
@@ -323,6 +331,15 @@
 
     .header-search kbd {
         display: none;
+    }
+
+    .kpi-card {
+        min-height: 110px;
+        padding: var(--space-4);
+    }
+
+    .card-body {
+        padding: var(--space-3);
     }
 }
 
@@ -371,21 +388,23 @@
     .ent-action-row {
         flex-direction: column;
         align-items: stretch;
+        padding: var(--space-4);
     }
     .ent-action-row__left  { width: 100%; }
-    .ent-action-row__right { justify-content: flex-end; }
+    .ent-action-row__right { justify-content: flex-end; margin-top: var(--space-2); }
     .ent-search { max-width: 100%; }
 
     .ent-table-toolbar {
         flex-direction: column;
         align-items: flex-start;
+        padding: var(--space-3);
     }
-    .ent-table-toolbar__actions { width: 100%; justify-content: flex-start; }
+    .ent-table-toolbar__actions { width: 100%; justify-content: flex-start; margin-top: var(--space-2); }
 
     .ent-pagination {
         flex-direction: column;
         align-items: flex-start;
-        gap: 8px;
+        gap: var(--space-2);
     }
 
     /* KPI grid: 2 cols on tablet */

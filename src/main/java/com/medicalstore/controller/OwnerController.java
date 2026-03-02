@@ -21,7 +21,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.LinkedHashMap;
 
 /**
  * Owner panel â€” view all owned branches, combined stats,
@@ -102,28 +101,9 @@ public class OwnerController {
                         return "redirect:/login";
                 }
 
-                List<Branch> branches = branchService.getBranchesByOwner(ownerId);
-                if (branches == null) {
-                        branches = new ArrayList<>();
-                }
-
-                // Build per-branch KPI summary for comparison table
-                List<Map<String, Object>> branchStats = new ArrayList<>();
-                for (Branch b : branches) {
-                        Map<String, Object> stats = new LinkedHashMap<>();
-                        Map<String, Object> kpis = dashboardService.buildBranchDashboard(b.getId());
-                        if (kpis == null) {
-                                kpis = new LinkedHashMap<>();
-                        }
-                        stats.put("branch", b);
-                        stats.put("todaySales", kpis.getOrDefault("todaySales", 0.0));
-                        stats.put("monthlyRevenue", kpis.getOrDefault("monthlyRevenue", 0.0));
-                        stats.put("totalMedicines", kpis.getOrDefault("totalMedicines", 0L));
-                        stats.put("totalCustomers", kpis.getOrDefault("totalCustomers", 0L));
-                        stats.put("lowStockCount", kpis.getOrDefault("lowStockCount", 0L));
-                        stats.put("expiringIn30", kpis.getOrDefault("expiringIn30", 0L));
-                        branchStats.add(stats);
-                }
+                // Use optimized batch query method (avoids N+1)
+                List<com.medicalstore.dto.BranchComparisonDTO> branchStats = 
+                        branchService.getBranchComparisonData(ownerId);
 
                 // Build flat arrays for Chart.js
                 List<String> branchLabels    = new ArrayList<>();
@@ -131,34 +111,47 @@ public class OwnerController {
                 List<Double> monthlyData     = new ArrayList<>();
                 List<Long>   medicinesData   = new ArrayList<>();
                 List<Long>   lowStockData    = new ArrayList<>();
-                List<Long>   totalMedicinesData = new ArrayList<>();
-                for (Map<String, Object> s : branchStats) {
-                        Branch b = (Branch) s.get("branch");
-                        if (b != null) {
-                                branchLabels.add(b.getName());
-                                Object todaySalesObj = s.get("todaySales");
-                                Object monthlyObj = s.get("monthlyRevenue");
-                                Object medicinesObj = s.get("totalMedicines");
-                                Object lowStockObj = s.get("lowStockCount");
-                                
-                                todaySalesData.add(todaySalesObj != null ? ((Number) todaySalesObj).doubleValue() : 0.0);
-                                monthlyData.add(monthlyObj != null ? ((Number) monthlyObj).doubleValue() : 0.0);
-                                medicinesData.add(medicinesObj != null ? ((Number) medicinesObj).longValue() : 0L);
-                                lowStockData.add(lowStockObj != null ? ((Number) lowStockObj).longValue() : 0L);
-                                totalMedicinesData.add(medicinesObj != null ? ((Number) medicinesObj).longValue() : 0L);
+                List<Long>   shopkeeperData  = new ArrayList<>();
+
+                for (com.medicalstore.dto.BranchComparisonDTO dto : branchStats) {
+                        branchLabels.add(dto.getBranchName());
+                        todaySalesData.add(dto.getTodaySales() != null ? dto.getTodaySales() : 0.0);
+                        monthlyData.add(dto.getMonthlyRevenue() != null ? dto.getMonthlyRevenue() : 0.0);
+                        medicinesData.add(dto.getTotalMedicines() != null ? dto.getTotalMedicines() : 0L);
+                        lowStockData.add(dto.getLowStockCount() != null ? dto.getLowStockCount() : 0L);
+                        shopkeeperData.add(dto.getTotalShopkeepers() != null ? dto.getTotalShopkeepers() : 0L);
+                }
+
+                // Identify best and worst performing branches
+                String bestBranch = null;
+                String worstBranch = null;
+                Double maxRevenue = 0.0;
+                Double minRevenue = Double.MAX_VALUE;
+                
+                for (com.medicalstore.dto.BranchComparisonDTO dto : branchStats) {
+                        Double revenue = dto.getMonthlyRevenue() != null ? dto.getMonthlyRevenue() : 0.0;
+                        if (revenue > maxRevenue) {
+                                maxRevenue = revenue;
+                                bestBranch = dto.getBranchName();
+                        }
+                        if (revenue < minRevenue && revenue >= 0) {
+                                minRevenue = revenue;
+                                worstBranch = dto.getBranchName();
                         }
                 }
 
                 model.addAttribute("title", "Branch Comparison");
                 model.addAttribute("page", "owner");
-                model.addAttribute("branches", branches);
                 model.addAttribute("branchStats", branchStats);
                 model.addAttribute("branchLabels", branchLabels);
                 model.addAttribute("todaySalesData", todaySalesData);
                 model.addAttribute("monthlyData", monthlyData);
                 model.addAttribute("medicinesData", medicinesData);
                 model.addAttribute("lowStockData", lowStockData);
-                model.addAttribute("totalMedicinesData", totalMedicinesData);
+                model.addAttribute("shopkeeperData", shopkeeperData);
+                model.addAttribute("bestBranch", bestBranch);
+                model.addAttribute("worstBranch", worstBranch);
+                
                 return "owner/compare";
         }
 

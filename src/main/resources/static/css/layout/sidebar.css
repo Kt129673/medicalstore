@@ -9,7 +9,7 @@
     overflow: hidden;
     flex-shrink: 0;
     will-change: width;
-    transition: width var(--transition-slow) var(--ease-spring);
+    transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     box-shadow: 2px 0 12px rgba(0, 0, 0, 0.06), 1px 0 0 rgba(0,0,0,0.03);
     position: relative;
     z-index: var(--z-sidebar, 1000);
@@ -119,8 +119,8 @@
 .nav-link {
     color: #475569;
     text-decoration: none;
-    padding: 10px 14px;
-    margin-bottom: 3px;
+    padding: 11px 16px;
+    margin-bottom: 4px;
     border-radius: var(--radius-md);
     display: flex;
     align-items: center;
@@ -128,7 +128,7 @@
     font-weight: 500;
     line-height: 1.5;
     letter-spacing: 0.01em;
-    transition: all var(--transition-base);
+    transition: all 0.18s cubic-bezier(0.4,0,0.2,1);
     position: relative;
     white-space: nowrap;
     overflow: hidden;
@@ -151,13 +151,13 @@
 
 .nav-link i.nav-icon {
     margin-right: 14px;
-    font-size: 19px;
-    width: 24px;
+    font-size: 18px;
+    width: 22px;
     text-align: center;
     flex-shrink: 0;
     line-height: 1;
-    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.2s;
-    opacity: 0.8;
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.2s;
+    opacity: 0.85;
 }
 
 .nav-link .nav-icon--sale {
@@ -188,6 +188,7 @@
     background: #F1F5F9;
     color: #1E293B;
     border-color: transparent;
+    transform: translateX(2px);
 }
 
 .nav-link:hover::before {
@@ -203,12 +204,12 @@
 
 .nav-link.active {
     color: #1d4ed8;
-    background: #EFF6FF;
-    border: 1px solid rgba(37, 99, 235, 0.14);
+    background: linear-gradient(90deg, #EFF6FF 0%, #DBEAFE 100%);
+    border: 1px solid rgba(37, 99, 235, 0.18);
     border-left: 4px solid #2563EB;
-    border-radius: 0 8px 8px 0;
+    border-radius: 0 10px 10px 0;
     font-weight: 700;
-    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.10), inset 0 1px 0 rgba(255,255,255,0.8);
+    box-shadow: 0 2px 10px rgba(37, 99, 235, 0.12), inset 0 1px 0 rgba(255,255,255,0.9);
 }
 
 .nav-link.active::before {
@@ -257,11 +258,11 @@
 /* ── Collapsible Groups (<details>) ── */
 .nav-group {
     border-bottom: 1px solid #E8EDF3;
-    padding-bottom: 10px;
-    margin-bottom: 12px;
+    padding-bottom: var(--space-3);
+    margin-bottom: var(--space-4);
     background: transparent;
     border-radius: 8px;
-    padding: 4px;
+    padding: 6px;
     transition: background 0.2s;
 }
 
@@ -292,17 +293,18 @@
 
 /* Section label divider (e.g. "Store Operations") */
 .nav-section-label {
-    font-size: 10px;
+    font-size: 10.5px;
     font-weight: 700;
-    letter-spacing: 0.8px;
+    letter-spacing: 1px;
     text-transform: uppercase;
-    color: var(--text-muted, #94a3b8);
-    padding: 14px 16px 4px;
+    color: #94a3b8;
+    padding: var(--space-4) var(--space-4) var(--space-2);
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: var(--space-2);
     user-select: none;
     pointer-events: none;
+    margin-top: var(--space-2);
 }
 
 .nav-section-label::before {
@@ -333,18 +335,19 @@
     text-transform: uppercase;
     letter-spacing: 1.2px;
     color: #94A3B8;
-    padding: 12px 16px 8px;
+    padding: var(--space-3) var(--space-4) var(--space-2);
     cursor: pointer;
     user-select: none;
     list-style: none;
     outline: none;
-    transition: color 0.25s, background 0.2s;
+    transition: color 0.2s, background 0.18s;
     border-radius: 8px;
     position: relative;
 }
 
 .nav-group summary:hover {
-    background: rgba(37, 99, 235, 0.04);
+    background: rgba(37, 99, 235, 0.05);
+    color: #64748B;
 }
 
 .nav-group summary::-webkit-details-marker {
@@ -355,10 +358,10 @@
     content: '\F285';
     font-family: 'bootstrap-icons';
     font-size: 10px;
-    margin-right: 8px;
-    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    margin-right: var(--space-2);
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
     display: inline-block;
-    opacity: 0.5;
+    opacity: 0.6;
 }
 
 .nav-group[open] summary::before {
@@ -369,7 +372,7 @@
 
 .nav-group[open] summary {
     color: #64748B;
-    margin-bottom: 6px;
+    margin-bottom: var(--space-2);
 }
 
 .nav-group summary:hover {

@@ -205,10 +205,10 @@
                 font-weight: 800;
                 font-size: var(--text-lg);
                 color: var(--text-primary);
-                margin-bottom: 16px;
+                margin-bottom: var(--space-4);
                 display: flex;
                 align-items: center;
-                gap: 8px;
+                gap: var(--space-2);
             }
             .section-heading i { font-size: var(--text-lg); color: var(--primary-color); }
 
@@ -225,14 +225,14 @@
                 animation: skeleton-shimmer 1.4s linear infinite;
             }
             /* KPI value size override for dashboard */
-            .kpi-card .kpi-value { font-size: 1.6rem; }
+            .kpi-card .kpi-value { font-size: 1.75rem; letter-spacing: -0.8px; }
         </style>
 
         <!-- ═══════════ PAGE HEADER ═══════════ -->
         <div th:insert="~{fragments :: page-header('Dashboard', 'Store overview &amp; daily operations', 'bi bi-speedometer2', null, null, null)}"></div>
 
         <!-- ═══════════ QUICK ACTIONS (Admin + Shopkeeper only) ═══════════ -->
-        <div sec:authorize="hasAnyRole('ADMIN','SHOPKEEPER')" class="d-flex align-items-center justify-content-between mb-4 p-3 bg-white rounded-3 border" style="gap:12px;">
+        <div sec:authorize="hasAnyRole('ADMIN','SHOPKEEPER')" class="d-flex align-items-center justify-content-between mb-4 p-4 bg-white rounded-3 border shadow-sm">
             <div>
                 <h5 class="mb-0 fw-bold text-dark">
                     <i class="bi bi-speedometer2 me-2 text-primary"></i>Daily Operations
@@ -241,19 +241,19 @@
             </div>
             <div class="d-flex gap-2 flex-wrap">
                 <a href="/sales/new" class="btn btn-success btn-sm">
-                    <i class="bi bi-cart-plus me-1"></i>New Sale
+                    <i class="bi bi-cart-plus"></i>New Sale
                 </a>
                 <a href="/medicines" class="btn btn-info btn-sm text-white">
-                    <i class="bi bi-capsule-pill me-1"></i>Medicines
+                    <i class="bi bi-capsule-pill"></i>Medicines
                 </a>
                 <a href="/customers" class="btn btn-primary btn-sm">
-                    <i class="bi bi-person-plus me-1"></i>Customers
+                    <i class="bi bi-person-plus"></i>Customers
                 </a>
                 <a href="/purchases" class="btn btn-warning btn-sm text-dark">
-                    <i class="bi bi-bag-plus me-1"></i>Purchase
+                    <i class="bi bi-bag-plus"></i>Purchase
                 </a>
                 <a href="/reports" class="btn btn-outline-secondary btn-sm">
-                    <i class="bi bi-file-earmark-text me-1"></i>Reports
+                    <i class="bi bi-file-earmark-text"></i>Reports
                 </a>
             </div>
         </div>

@@ -83,7 +83,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, TenantFilter tenantFilter) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, TenantFilter tenantFilter, RateLimitFilter rateLimitFilter) throws Exception {
         http
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/login", "/css/**", "/js/**", "/images/**", "/error").permitAll()
@@ -141,6 +141,8 @@ public class SecurityConfig {
                 .authenticationProvider(authenticationProvider())
                 .addFilterAfter(tenantFilter,
                         org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class)
+                // Add rate limit filter after tenant filter
+                .addFilterAfter(rateLimitFilter, TenantFilter.class)
                 // Eagerly materialise the CSRF token before any template bytes are flushed
                 .addFilterAfter(new CsrfCookieFilter(),
                         org.springframework.security.web.csrf.CsrfFilter.class);

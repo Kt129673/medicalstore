@@ -258,36 +258,39 @@ summary:focus-visible,
 /* Premium Global UI Elements */
 .form-control,
 .form-select {
-    border-radius: 0.625rem;
+    border-radius: 10px;
     border: 1.5px solid var(--border-color);
-    padding: 0.575rem 0.9rem;
-    font-size: 0.875rem;
+    padding: 10px 14px;
+    font-size: 13.5px;
     color: var(--text-primary);
     background-color: var(--bg-primary);
-    transition: border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: border-color 0.18s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.18s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: var(--shadow-xs);
     font-family: inherit;
+    min-height: 42px;
+    line-height: 1.5;
 }
 
 .form-control:focus,
 .form-select:focus {
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12), var(--shadow-xs);
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.14), var(--shadow-xs);
     background-color: var(--bg-primary);
     color: var(--text-primary);
     outline: none;
 }
 
 .btn {
-    border-radius: 0.75rem;
+    border-radius: 10px;
     font-weight: 500;
-    padding: 0.5rem 1rem;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 10px 20px;
+    transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+    min-height: 38px;
 }
 
 .btn:hover:not(:disabled) {
     transform: translateY(-1px);
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    box-shadow: 0 4px 8px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
 }
 
 .btn:active:not(:disabled) {
@@ -295,11 +298,11 @@ summary:focus-visible,
 }
 
 .card {
-    border-radius: var(--radius-lg, 0.875rem);
+    border-radius: var(--radius-lg);
     border: 1px solid var(--border-color);
     box-shadow: var(--shadow-sm);
     background: var(--bg-primary);
-    margin-bottom: 1.5rem;
+    margin-bottom: var(--space-6);
     transition: transform 0.2s cubic-bezier(0.4,0,0.2,1), box-shadow 0.2s cubic-bezier(0.4,0,0.2,1);
 }
 
@@ -317,17 +320,18 @@ summary:focus-visible,
 }
 
 .table>thead>tr>th {
-    border-bottom-width: 1px;
-    font-weight: 600;
-    padding: 1rem;
+    border-bottom-width: 2px;
+    font-weight: 700;
+    padding: 14px 16px;
     background-color: var(--bg-secondary);
 }
 
 .table>tbody>tr>td {
-    padding: 1rem;
+    padding: 14px 16px;
     vertical-align: middle;
     border-bottom: 1px solid var(--border-color);
     color: var(--text-primary);
+    line-height: 1.5;
 }
 
 

@@ -39,6 +39,13 @@ public class SubscriptionPlan {
 
     @Column(nullable = false)
     private Integer maxBranches = 1;
+    
+    // Rate limiting (requests per hour)
+    @Column(name = "shopkeeper_rate_limit")
+    private Integer shopkeeperRateLimit = 500;
+    
+    @Column(name = "owner_rate_limit")
+    private Integer ownerRateLimit = 1000;
 
     private boolean active = true;
 
