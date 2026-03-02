@@ -6,7 +6,7 @@
     <div id="content">
         <div class="page-header mb-4">
             <div>
-                <h2><i class="bi bi-bank text-purple" style="color:#8b5cf6;"></i> GST Summary</h2>
+                <h2><i class="bi bi-bank text-primary"></i> GST Summary</h2>
                 <p class="text-muted mb-0">Monthly tax liability breakdown for filing</p>
             </div>
             <div class="d-flex gap-2">
@@ -30,7 +30,7 @@
                         </select>
                     </div>
                     <div class="col-md-4">
-                        <button type="submit" class="btn text-white w-100" style="background:#8b5cf6;"><i
+                        <button type="submit" class="btn btn-primary w-100"><i
                                 class="bi bi-calendar-date"></i> View Summary</button>
                     </div>
                 </form>
@@ -40,7 +40,7 @@
         <!-- Summary Widget -->
         <div class="row g-4 mb-4" th:if="${not #lists.isEmpty(data)}">
             <div class="col-md-6">
-                <div class="card stat-card h-100" style="background: linear-gradient(135deg, #8b5cf6, #a78bfa);">
+                <div class="card stat-card h-100" style="background: linear-gradient(135deg, #1e3a8a, #2563eb);">
                     <div class="stat-label">Total Taxable Value (<span th:text="${year}"></span>)</div>
                     <div class="stat-value"
                         th:text="'₹' + ${#numbers.formatDecimal(annualTaxable, 1, 'COMMA', 2, 'POINT')}"></div>
@@ -60,7 +60,7 @@
             <div class="col-12" th:if="${not #lists.isEmpty(data)}">
                 <div class="card modern-card">
                     <div class="card-header bg-white">
-                        <i class="bi bi-bar-chart-fill me-2" style="color:#8b5cf6;"></i> <strong>Monthly GST
+                        <i class="bi bi-bar-chart-fill me-2 text-primary"></i> <strong>Monthly GST
                             Trends</strong>
                     </div>
                     <div class="card-body">
@@ -81,7 +81,7 @@
                                     <th class="text-end">Taxable Amount</th>
                                     <th class="text-end">CGST</th>
                                     <th class="text-end">SGST</th>
-                                    <th class="text-end text-purple" style="color:#8b5cf6;">Total GST</th>
+                                    <th class="text-end text-primary">Total GST</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -99,7 +99,7 @@
                                     <td class="text-end"
                                         th:text="'₹' + ${#numbers.formatDecimal(item.sgst, 1, 'COMMA', 2, 'POINT')}">
                                     </td>
-                                    <td class="text-end fw-bold" style="color:#8b5cf6;"
+                                    <td class="text-end fw-bold text-primary"
                                         th:text="'₹' + ${#numbers.formatDecimal(item.totalGst, 1, 'COMMA', 2, 'POINT')}">
                                     </td>
                                 </tr>

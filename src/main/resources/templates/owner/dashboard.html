@@ -232,8 +232,8 @@
                     datasets: [{
                         label: 'Revenue (₹)',
                         data: trend.data,
-                        backgroundColor: 'rgba(102,126,234,0.7)',
-                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(37,99,235,0.7)',
+                        borderColor: '#2563eb',
                         borderWidth: 1.5,
                         borderRadius: 6
                     }]
@@ -289,10 +289,10 @@
                 </div>
             </div>
             <div class="col-6 col-md-3">
-                <div class="card border-0 shadow-sm h-100" style="border-left: 4px solid #8b5cf6 !important;">
+                <div class="card border-0 shadow-sm h-100" style="border-left: 4px solid var(--primary-color) !important;">
                     <div class="card-body">
                         <div class="small text-muted fw-semibold text-uppercase">Total Customers</div>
-                        <div class="fs-2 fw-bold" style="color:#8b5cf6" th:text="${totalCustomers}">0</div>
+                        <div class="fs-2 fw-bold text-primary" th:text="${totalCustomers}">0</div>
                         <div class="small text-muted">Registered customers</div>
                     </div>
                 </div>

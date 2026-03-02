@@ -891,6 +891,34 @@ onDomReady(function () {
     });
 });
 
+/* ═══════════════════════════════════════════════════════════════
+   BOOTSTRAP TOOLTIP AUTO-INIT
+   Automatically initialises Bootstrap tooltips on any element with
+   a [title] attribute inside .btn-group or on icon-only buttons.
+═══════════════════════════════════════════════════════════════ */
+onDomReady(function () {
+    if (typeof bootstrap === 'undefined' || !bootstrap.Tooltip) return;
+    document.querySelectorAll('[title]:is(.btn, [data-bs-toggle="tooltip"])').forEach(function (el) {
+        new bootstrap.Tooltip(el, { trigger: 'hover focus', delay: { show: 400, hide: 100 } });
+    });
+});
 
-
-
+/* ═══════════════════════════════════════════════════════════════
+   SCROLL-TO-TOP   Shows the #scrollToTop button after scrolling 400px, hides it
+   when back at top.  Clicking smoothly scrolls to the top.
+═══════════════════════════════════════════════════════════════ */
+(function () {
+    var btn = document.getElementById('scrollToTop');
+    if (!btn) return;
+    var THRESHOLD = 400;
+    window.addEventListener('scroll', function () {
+        if (window.scrollY > THRESHOLD) {
+            btn.classList.add('visible');
+        } else {
+            btn.classList.remove('visible');
+        }
+    }, { passive: true });
+    btn.addEventListener('click', function () {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+})();

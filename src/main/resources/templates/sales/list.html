@@ -4,57 +4,6 @@
 
 <body>
     <div id="content">
-
-        <style>
-            .sale-amount {
-                font-weight: 700;
-                color: #059669;
-                font-size: 16px;
-            }
-
-            .payment-badge {
-                font-weight: 600;
-                padding: 4px 12px;
-                border-radius: 20px;
-                font-size: 0.75rem;
-            }
-
-            .payment-cash {
-                background: #d1fae5;
-                color: #059669;
-            }
-
-            .payment-card {
-                background: #dbeafe;
-                color: #2563eb;
-            }
-
-            .payment-upi {
-                background: #e0e7ff;
-                color: #4f46e5;
-            }
-
-            .transaction-icon {
-                width: 36px;
-                height: 36px;
-                border-radius: 10px;
-                background: linear-gradient(135deg, #667eea, #764ba2);
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-                color: white;
-                font-size: 16px;
-                margin-right: 10px;
-            }
-
-            .customer-type {
-                font-size: 0.7rem;
-                padding: 2px 8px;
-                border-radius: 4px;
-                background: #f1f5f9;
-                color: #64748b;
-            }
-        </style>
         <!-- Page Header -->
         <div
             th:replace="~{fragments :: page-header('Sales History', 'View and manage all sales transactions', 'bi bi-receipt text-primary', '/sales/new', 'New Sale', null)}">

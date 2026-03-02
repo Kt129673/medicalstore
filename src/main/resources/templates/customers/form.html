@@ -27,13 +27,13 @@
                         </h5>
                     </div>
                     <div class="card-body">
-                        <form th:action="@{/customers/save}" th:object="${customer}" method="post">
+                        <form id="customerForm" th:action="@{/customers/save}" th:object="${customer}" method="post">
                             <input type="hidden" th:field="*{id}">
                             <input type="hidden" th:field="*{registeredDate}">
 
                             <!-- Personal Information -->
                             <div class="mb-4">
-                                <h6 class="text-muted text-uppercase mb-3" style="font-size: 13px; font-weight: 600;">
+                                <h6 class="form-section-title">
                                     <i class="bi bi-person"></i> Personal Details
                                 </h6>
                                 <div class="row">
@@ -61,7 +61,7 @@
 
                             <!-- Contact Information -->
                             <div class="mb-4">
-                                <h6 class="text-muted text-uppercase mb-3" style="font-size: 13px; font-weight: 600;">
+                                <h6 class="form-section-title">
                                     <i class="bi bi-telephone"></i> Contact Details
                                 </h6>
                                 <div class="row">
@@ -92,7 +92,7 @@
 
                             <!-- Address -->
                             <div class="mb-4">
-                                <h6 class="text-muted text-uppercase mb-3" style="font-size: 13px; font-weight: 600;">
+                                <h6 class="form-section-title">
                                     <i class="bi bi-geo-alt"></i> Address Information
                                 </h6>
                                 <div class="mb-3">
@@ -133,6 +133,7 @@
                         const btn = document.getElementById('saveCustomerBtn');
                         if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Saving...'; }
                     });
+                    if (typeof entInitFormDirty === 'function') entInitFormDirty('customerForm');
                 </script>
                 <div class="card modern-card mb-3">
                     <div class="card-header">
@@ -176,9 +177,8 @@
                     </div>
                     <div class="card-body">
                         <div class="text-center mb-3">
-                            <div
-                                style="width: 80px; height: 80px; margin: 0 auto; border-radius: 50%; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); display: flex; align-items: center; justify-content: center;">
-                                <i class="bi bi-gift-fill" style="font-size: 32px; color: white;"></i>
+                            <div class="customer-loyalty-icon">
+                                <i class="bi bi-gift-fill"></i>
                             </div>
                         </div>
                         <p class="text-muted small mb-0">

@@ -30,8 +30,8 @@
                 <div th:if="${not #lists.isEmpty(branchStats)}" class="row g-3 mb-4">
                     <div th:each="stat : ${branchStats}" class="col-md-6 col-xl-4">
                         <div class="card border-0 shadow-sm h-100">
-                            <div class="card-header bg-gradient text-white py-3"
-                                 style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                            <div class="card-header text-white py-3"
+                                 style="background: linear-gradient(135deg,var(--primary-dark,#1e3a8a),var(--primary-color,#2563eb));">
                                 <div class="d-flex align-items-center justify-content-between">
                                     <div>
                                         <h5 class="mb-0 fw-bold" th:text="${stat.branch.name}">Branch Name</h5>

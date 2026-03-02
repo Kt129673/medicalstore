@@ -4,56 +4,6 @@
 
 <body>
     <div id="content">
-        <style>
-            .customer-avatar {
-                width: 40px;
-                height: 40px;
-                border-radius: 50%;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-                color: white;
-                font-weight: 600;
-                font-size: 16px;
-                margin-right: 12px;
-                flex-shrink: 0;
-            }
-
-            .customer-info {
-                display: flex;
-                align-items: center;
-            }
-
-            .customer-details {
-                display: flex;
-                flex-direction: column;
-            }
-
-            .customer-name {
-                font-weight: 600;
-                color: var(--text-primary, #212529);
-            }
-
-            .customer-id {
-                font-size: 12px;
-                color: var(--text-secondary, #6c757d);
-            }
-
-            .contact-icon {
-                color: #667eea;
-                margin-right: 4px;
-            }
-
-            .loyalty-badge {
-                background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-                border: none;
-                padding: 6px 12px;
-                border-radius: 20px;
-                font-weight: 600;
-                color: #fff;
-            }
-        </style>
         <!-- Page Header -->
         <div
             th:replace="~{fragments :: page-header('Customers', 'Manage customer information and loyalty programs', 'bi bi-people-fill text-primary', '/customers/new', 'Add New Customer', null)}">
@@ -115,7 +65,7 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <div style="display: flex; flex-direction: column; gap: 4px;">
+                                    <div class="contact-info">
                                         <span>
                                             <i class="bi bi-telephone-fill contact-icon"></i>
                                             <span th:text="${customer.phone}"></span>

@@ -2080,3 +2080,30 @@ tbody tr.ent-row-removed {
         position: static;
     }
 }
+
+/* ─────────────────────────────────────────────────
+   SUPPLIERS
+───────────────────────────────────────────────── */
+.supplier-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-md, 10px);
+    background: linear-gradient(135deg, var(--success-color, #16a34a), #22c55e);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: 600;
+    font-size: 16px;
+    margin-right: 12px;
+    flex-shrink: 0;
+}
+.gst-badge {
+    font-family: ui-monospace, 'SFMono-Regular', Consolas, monospace;
+    background: var(--surface-alt, #f1f5f9);
+    color: var(--text-muted, #64748b);
+    padding: 3px 8px;
+    border-radius: var(--radius-sm, 6px);
+    font-size: 12px;
+    letter-spacing: .02em;
+}

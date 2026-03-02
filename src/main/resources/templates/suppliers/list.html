@@ -4,30 +4,6 @@
 
 <body>
     <div id="content">
-        <style>
-            .supplier-icon {
-                width: 40px;
-                height: 40px;
-                border-radius: 10px;
-                background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-                color: white;
-                font-weight: 600;
-                font-size: 16px;
-                margin-right: 12px;
-                flex-shrink: 0;
-            }
-
-            .gst-badge {
-                font-family: monospace;
-                background: #e9ecef;
-                padding: 4px 8px;
-                border-radius: 6px;
-                font-size: 12px;
-            }
-        </style>
         <!-- Page Header -->
         <div
             th:replace="~{fragments :: page-header('Suppliers', 'Manage your medicine suppliers and vendors', 'bi bi-building text-primary', '/suppliers/new', 'Add New Supplier', null)}">
@@ -64,20 +40,30 @@
                                 <th class="text-end"><i class="bi bi-tools"></i> Actions</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="suppSkeletonBody" aria-hidden="true">
+                            <tr class="ent-skeleton--row" th:each="i : ${#numbers.sequence(1,5)}">
+                                <td><span class="ent-skeleton ent-skeleton--text" style="width:140px;"></span></td>
+                                <td class="d-none d-md-table-cell"><span class="ent-skeleton ent-skeleton--text" style="width:110px;"></span></td>
+                                <td><span class="ent-skeleton ent-skeleton--text" style="width:100px;"></span></td>
+                                <td class="d-none d-lg-table-cell"><span class="ent-skeleton ent-skeleton--text" style="width:130px;"></span></td>
+                                <td class="d-none d-sm-table-cell"><span class="ent-skeleton ent-skeleton--text" style="width:110px;"></span></td>
+                                <td class="text-end"><div class="d-flex gap-1 justify-content-end"><span class="ent-skeleton" style="width:32px;height:32px;border-radius:6px;display:inline-block;"></span><span class="ent-skeleton" style="width:32px;height:32px;border-radius:6px;display:inline-block;"></span><span class="ent-skeleton" style="width:32px;height:32px;border-radius:6px;display:inline-block;"></span></div></td>
+                            </tr>
+                        </tbody>
+                        <tbody id="suppTableBody" style="display:none">
                             <tr th:each="supplier : ${suppliers}">
                                 <td>
-                                    <span style="font-weight: 600;" th:text="${supplier.name}">Company Name</span>
+                                    <span class="fw-semibold" th:text="${supplier.name}">Company Name</span>
                                 </td>
                                 <td class="d-none d-md-table-cell" th:text="${supplier.contactPerson}">Contact Person
                                 </td>
                                 <td>
-                                    <i class="bi bi-telephone-fill" style="color: #667eea; margin-right: 4px;"></i>
+                                    <i class="bi bi-telephone-fill text-primary me-1"></i>
                                     <span th:text="${supplier.phone}"></span>
                                 </td>
                                 <td class="d-none d-lg-table-cell">
                                     <span th:if="${supplier.email}">
-                                        <i class="bi bi-envelope-fill" style="color: #667eea; margin-right: 4px;"></i>
+                                        <i class="bi bi-envelope-fill text-primary me-1"></i>
                                         <span th:text="${supplier.email}"></span>
                                     </span>
                                     <span th:unless="${supplier.email}" class="text-muted small">No email</span>
@@ -111,6 +97,14 @@
                         </tbody>
                     </table>
                 </div>
+                <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    var sk = document.getElementById('suppSkeletonBody');
+                    var rb = document.getElementById('suppTableBody');
+                    if (!sk || !rb) return;
+                    setTimeout(function () { sk.style.display = 'none'; rb.style.display = ''; }, 230);
+                });
+                </script>
             </div>
         </div>
 
