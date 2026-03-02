@@ -394,3 +394,312 @@
 }
 
 
+/* ═════════════════ NAVBAR PROFILE DROPDOWN ═════════════════ */
+
+/* Wrapper */
+.nav-profile {
+    position: relative;
+    flex-shrink: 0;
+}
+
+/* Trigger button */
+.nav-profile-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #f8fafc;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 5px 10px 5px 5px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+    white-space: nowrap;
+    height: 38px;
+}
+
+.nav-profile-btn:hover,
+.nav-profile-btn.open {
+    background: #eff6ff;
+    border-color: #bfdbfe;
+    box-shadow: 0 3px 10px rgba(37, 99, 235, 0.12);
+}
+
+/* Avatar circle inside button */
+.nav-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2563eb 0%, #4f46e5 60%, #7c3aed 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 14px;
+    flex-shrink: 0;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.22);
+}
+
+/* Username text (hidden on mobile) */
+.nav-username {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-primary);
+    max-width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Inline role pill inside the button */
+.nav-profile-role {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    line-height: 1.4;
+    border: 1.5px solid transparent;
+    flex-shrink: 0;
+}
+
+.nav-profile-role.role-admin {
+    background: #fef2f2;
+    color: #dc2626;
+    border-color: #fecaca;
+}
+
+.nav-profile-role.role-owner {
+    background: #eff6ff;
+    color: #1d4ed8;
+    border-color: #bfdbfe;
+}
+
+.nav-profile-role.role-shopkeeper {
+    background: #f0fdf4;
+    color: #15803d;
+    border-color: #bbf7d0;
+}
+
+/* Dropdown chevron */
+.nav-caret {
+    font-size: 11px;
+    color: #94a3b8;
+    transition: transform 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+    flex-shrink: 0;
+}
+
+.nav-profile-btn.open .nav-caret {
+    transform: rotate(180deg);
+}
+
+/* ─ Dropdown panel ─ */
+.nav-profile-dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    min-width: 220px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06);
+    z-index: 300;
+    display: none;
+    overflow: hidden;
+    /* dropdown animation */
+    transform-origin: top right;
+    animation: npd-in 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes npd-in {
+    from { opacity: 0; transform: scale(0.96) translateY(-6px); }
+    to   { opacity: 1; transform: scale(1)   translateY(0);     }
+}
+
+.nav-profile-dropdown.open {
+    display: block;
+}
+
+/* Header block (avatar + identity) */
+.npd-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    background: #f8fafc;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.npd-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2563eb 0%, #4f46e5 60%, #7c3aed 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 20px;
+    flex-shrink: 0;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.22), 0 3px 10px rgba(37, 99, 235, 0.25);
+}
+
+.npd-identity {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    overflow: hidden;
+}
+
+.npd-name {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #111827;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Role badge inside dropdown header */
+.npd-role {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 9px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.6px;
+    line-height: 1.5;
+    border: 1.5px solid transparent;
+    width: fit-content;
+}
+
+.npd-role.role-admin {
+    background: #fef2f2;
+    color: #dc2626;
+    border-color: #fecaca;
+}
+
+.npd-role.role-owner {
+    background: #eff6ff;
+    color: #1d4ed8;
+    border-color: #bfdbfe;
+}
+
+.npd-role.role-shopkeeper {
+    background: #f0fdf4;
+    color: #15803d;
+    border-color: #bbf7d0;
+}
+
+/* Divider */
+.npd-divider {
+    height: 1px;
+    background: #e2e8f0;
+    margin: 4px 0;
+}
+
+/* Menu items */
+.npd-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #374151;
+    text-decoration: none;
+    background: transparent;
+    border: none;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.12s, color 0.12s;
+    border-radius: 0;
+}
+
+.npd-item i {
+    font-size: 16px;
+    width: 20px;
+    text-align: center;
+    color: #6b7280;
+    flex-shrink: 0;
+    transition: color 0.12s;
+}
+
+.npd-item:hover {
+    background: #f1f5f9;
+    color: #111827;
+}
+
+.npd-item:hover i {
+    color: #2563eb;
+}
+
+/* Logout item — red accent */
+.npd-item--logout {
+    color: #dc2626;
+}
+
+.npd-item--logout i {
+    color: #dc2626;
+}
+
+.npd-item--logout:hover {
+    background: #fef2f2;
+    color: #b91c1c;
+}
+
+.npd-item--logout:hover i {
+    color: #b91c1c;
+}
+
+/* Remove default form margins inside dropdown */
+.npd-logout-form {
+    margin: 0;
+    padding: 0;
+}
+
+/* ═════════════════ RESPONSIVE ═════════════════ */
+
+/* Mobile: hide username + role pill — show avatar only */
+@media (max-width: 576px) {
+    .nav-username,
+    .nav-profile-role {
+        display: none;
+    }
+
+    .nav-profile-btn {
+        padding: 5px;
+        gap: 0;
+    }
+
+    .nav-caret {
+        display: none;
+    }
+
+    /* Full-width dropdown on very small screens */
+    .nav-profile-dropdown {
+        position: fixed;
+        top: 74px;
+        left: 8px;
+        right: 8px;
+        min-width: unset;
+        border-radius: 12px;
+    }
+}
+
+/* Tablet: hide profile role pill only */
+@media (max-width: 768px) and (min-width: 577px) {
+    .nav-profile-role {
+        display: none;
+    }
+}
+

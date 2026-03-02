@@ -61,8 +61,6 @@
 
     .sidebar.mini .sidebar-brand h4 span,
     .sidebar.mini .sidebar-nav .nav-link span,
-    .sidebar.mini .user-details,
-    .sidebar.mini .logout-btn span,
     .sidebar.mini .nav-group summary,
     .sidebar.mini .nav-badge,
     .sidebar.mini .nav-link.top-level span {
@@ -125,19 +123,6 @@
 
     .sidebar.mini .nav-link:hover::after {
         opacity: 1;
-    }
-
-    .sidebar.mini .user-info {
-        justify-content: center;
-    }
-
-    .sidebar.mini .user-avatar {
-        margin-right: 0;
-    }
-
-    .sidebar.mini .logout-btn {
-        justify-content: center;
-        padding: 10px 0;
     }
 
     .app-container {
