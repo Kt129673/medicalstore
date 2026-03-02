@@ -65,4 +65,12 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Modifying
     @Query(value = "UPDATE users SET is_deleted = false, deleted_at = NULL WHERE id = :id", nativeQuery = true)
     void restoreUser(@Param("id") Long id);
+
+    /**
+     * Permanently hard-deletes users that were soft-deleted more than
+     * {@code retentionDays} days ago. Called by the scheduled cleanup job.
+     */
+    @Modifying
+    @Query(value = "DELETE FROM users WHERE is_deleted = true AND deleted_at < DATE_SUB(NOW(), INTERVAL :days DAY)", nativeQuery = true)
+    int purgeOldSoftDeleted(@Param("days") int days);
 }

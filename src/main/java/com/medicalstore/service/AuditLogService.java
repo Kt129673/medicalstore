@@ -4,10 +4,14 @@ import com.medicalstore.model.AuditLog;
 import com.medicalstore.repository.AuditLogRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 
 /**
  * Persists audit records to the {@code audit_logs} database table.
@@ -90,5 +94,26 @@ public class AuditLogService {
 
         persist(entityName, entityId, action, description, performedBy, performedByRole,
                 null, null, null);
+    }
+
+    // ── Read (synchronous, used by Admin audit-log page) ─────────────────────
+
+    /**
+     * Paginated search over audit logs with optional filters.
+     * Used by {@code AdminController.auditLogs()} — eliminates
+     * the direct {@code AuditLogRepository} injection in the controller.
+     */
+    @Transactional(readOnly = true)
+    public Page<AuditLog> search(String username, String action,
+            LocalDateTime from, LocalDateTime to, Pageable pageable) {
+        return auditLogRepository.search(username, action, from, to, pageable);
+    }
+
+    /**
+     * Returns the most recent 50 audit log entries for quick dashboard display.
+     */
+    @Transactional(readOnly = true)
+    public java.util.List<AuditLog> getRecentLogs() {
+        return auditLogRepository.findTop50ByOrderByTimestampDesc();
     }
 }

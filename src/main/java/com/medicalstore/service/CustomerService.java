@@ -18,8 +18,8 @@ public class CustomerService {
 
     // ── Context-Aware Lookups ───────────────────────────────────────────────
     public List<Customer> getAllCustomers() {
-        Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
-        Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
+        Long tenantId = com.medicalstore.common.TenantContext.getTenantId();
+        Long ownerId = com.medicalstore.common.TenantContext.getOwnerId();
         if (tenantId != null)
             return customerRepository.findByBranchId(tenantId);
         if (ownerId != null)
@@ -28,8 +28,8 @@ public class CustomerService {
     }
 
     public long countAllCustomers() {
-        Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
-        Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
+        Long tenantId = com.medicalstore.common.TenantContext.getTenantId();
+        Long ownerId = com.medicalstore.common.TenantContext.getOwnerId();
         if (tenantId != null)
             return customerRepository.countByBranchId(tenantId);
         if (ownerId != null)
@@ -40,16 +40,19 @@ public class CustomerService {
     public Optional<Customer> getCustomerById(Long id) {
         Optional<Customer> customer = customerRepository.findById(id);
         if (customer.isPresent()) {
-            Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
-            if (tenantId != null && customer.get().getBranch() != null 
+            Long tenantId = com.medicalstore.common.TenantContext.getTenantId();
+            if (tenantId != null && customer.get().getBranch() != null
                 && !tenantId.equals(customer.get().getBranch().getId())) {
-                return Optional.empty(); // Not authorized
+                // Throw rather than silently return empty — consistent with all other services
+                throw new org.springframework.security.access.AccessDeniedException(
+                        "Access denied: customer belongs to a different branch");
             }
-            Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
-            if (ownerId != null && customer.get().getBranch() != null 
+            Long ownerId = com.medicalstore.common.TenantContext.getOwnerId();
+            if (ownerId != null && customer.get().getBranch() != null
                 && customer.get().getBranch().getOwner() != null
                 && !ownerId.equals(customer.get().getBranch().getOwner().getId())) {
-                return Optional.empty(); // Not authorized
+                throw new org.springframework.security.access.AccessDeniedException(
+                        "Access denied: customer belongs to a different owner");
             }
         }
         return customer;
@@ -60,7 +63,7 @@ public class CustomerService {
         // or best-effort context filter.
         Optional<Customer> c = customerRepository.findByPhone(ph);
         if (c.isPresent()) {
-            Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
+            Long tenantId = com.medicalstore.common.TenantContext.getTenantId();
             if (tenantId != null && !tenantId.equals(c.get().getBranch().getId()))
                 return Optional.empty();
         }
@@ -68,8 +71,8 @@ public class CustomerService {
     }
 
     public List<Customer> searchCustomers(String name) {
-        Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
-        Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
+        Long tenantId = com.medicalstore.common.TenantContext.getTenantId();
+        Long ownerId = com.medicalstore.common.TenantContext.getOwnerId();
         if (tenantId != null)
             return customerRepository.findByBranchIdAndNameContainingIgnoreCase(tenantId, name);
         if (ownerId != null)

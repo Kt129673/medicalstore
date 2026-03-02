@@ -3,7 +3,7 @@ package com.medicalstore.controller.api;
 import com.medicalstore.dto.MedicineDTO;
 import com.medicalstore.repository.UserRepository;
 import com.medicalstore.service.*;
-import com.medicalstore.util.SecurityUtils;
+import com.medicalstore.common.SecurityUtils;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;

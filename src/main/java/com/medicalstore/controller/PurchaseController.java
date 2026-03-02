@@ -7,7 +7,7 @@ import com.medicalstore.service.BranchService;
 import com.medicalstore.service.MedicineService;
 import com.medicalstore.service.PurchaseService;
 import com.medicalstore.service.SupplierService;
-import com.medicalstore.util.SecurityUtils;
+import com.medicalstore.common.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;

@@ -2,7 +2,7 @@ package com.medicalstore.service;
 
 import com.medicalstore.model.User;
 import com.medicalstore.repository.UserRepository;
-import com.medicalstore.util.SecurityUtils;
+import com.medicalstore.common.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

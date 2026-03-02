@@ -3,17 +3,16 @@ package com.medicalstore.controller;
 import com.medicalstore.model.Branch;
 import com.medicalstore.model.SubscriptionPlan;
 import com.medicalstore.model.User;
-import com.medicalstore.repository.UserRepository;
 import com.medicalstore.service.BranchService;
 import com.medicalstore.service.CustomerService;
 import com.medicalstore.service.DashboardService;
 import com.medicalstore.service.MedicineService;
 import com.medicalstore.service.SaleService;
 import com.medicalstore.service.SubscriptionService;
-import com.medicalstore.util.SecurityUtils;
+import com.medicalstore.service.UserManagementService;
+import com.medicalstore.common.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +21,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.LinkedHashMap;
 
 /**
@@ -40,9 +38,8 @@ public class OwnerController {
         private final MedicineService medicineService;
         private final SaleService saleService;
         private final CustomerService customerService;
-        private final UserRepository userRepository;
+        private final UserManagementService userManagementService;
         private final SecurityUtils securityUtils;
-        private final PasswordEncoder passwordEncoder;
         private final DashboardService dashboardService;
         private final SubscriptionService subscriptionService;
 
@@ -66,7 +63,7 @@ public class OwnerController {
                 model.addAttribute("lowStock", kpis.get("lowStockCount"));
                 model.addAttribute("branchCount", branches.size());
                 model.addAttribute("shopkeeperCount",
-                        userRepository.countByRole("SHOPKEEPER"));
+                        userManagementService.countByRole("SHOPKEEPER"));
 
                 return "owner/dashboard";
         }
@@ -82,10 +79,10 @@ public class OwnerController {
                 // Build branch-scoped KPI data
                 Map<String, Object> kpis = dashboardService.buildBranchDashboard(id);
 
-                model.addAttribute("title", branch.getName() + " â€” Detail");
+                model.addAttribute("title", branch.getName() + " \u2013 Detail");
                 model.addAttribute("page", "owner");
                 model.addAttribute("branch", branch);
-                model.addAttribute("shopkeepers", userRepository.findShopkeepersByBranchId(id));
+                model.addAttribute("shopkeepers", userManagementService.findShopkeepersByBranchId(id));
 
                 // Medicines and recent sales from KPI data
                 model.addAttribute("medicines", medicineService.getMedicinesByBranch(id));
@@ -172,7 +169,7 @@ public class OwnerController {
 
                 model.addAttribute("title", "My Shopkeepers");
                 model.addAttribute("page", "owner");
-                model.addAttribute("shopkeepers", userRepository.findShopkeepersByOwnerId(ownerId));
+                model.addAttribute("shopkeepers", userManagementService.findShopkeepersByOwnerId(ownerId));
                 model.addAttribute("branches", branchService.getBranchesByOwner(ownerId));
                 return "owner/shopkeepers";
         }
@@ -188,31 +185,14 @@ public class OwnerController {
 
                 Long ownerId = securityUtils.getCurrentUserId();
 
-                // Verify branch belongs to this owner
+                // Verify branch belongs to this owner (tenant validation in controller is
+                // acceptable here since it's about ownership of the branch resource)
                 Branch branch = branchService.getBranchById(branchId)
                                 .filter(b -> b.getOwner().getId().equals(ownerId))
                                 .orElseThrow(() -> new RuntimeException("Branch not found or access denied"));
 
-                if (userRepository.existsByUsername(username)) {
-                        ra.addFlashAttribute("error", "Username already exists: " + username);
-                        return "redirect:/owner/shopkeepers";
-                }
-
-                if (email != null && !email.isBlank() && userRepository.existsByEmail(email)) {
-                        ra.addFlashAttribute("error", "Email already registered: " + email);
-                        return "redirect:/owner/shopkeepers";
-                }
-
-                User shopkeeper = new User();
-                shopkeeper.setUsername(username);
-                shopkeeper.setPassword(passwordEncoder.encode(password));
-                shopkeeper.setFullName(fullName);
-                shopkeeper.setEmail(email);
-                shopkeeper.setEnabled(true);
-                shopkeeper.setAccountNonLocked(true);
-                shopkeeper.setRoles(Set.of("SHOPKEEPER"));
-                shopkeeper.setBranch(branch);
-                userRepository.save(shopkeeper);
+                // All uniqueness checks + encoding + save handled by UserManagementService
+                userManagementService.createUser(username, password, fullName, email, "SHOPKEEPER", branch);
 
                 ra.addFlashAttribute("success",
                                 "Shopkeeper '" + username + "' created and assigned to " + branch.getName());
@@ -224,18 +204,8 @@ public class OwnerController {
                 Long ownerId = securityUtils.getCurrentUserId();
                 var myBranchIds = branchService.getBranchesByOwner(ownerId)
                                 .stream().map(Branch::getId).collect(java.util.stream.Collectors.toSet());
-
-                userRepository.findById(id).ifPresentOrElse(u -> {
-                        if (!u.getRoles().contains("SHOPKEEPER")
-                                        || u.getBranch() == null
-                                        || !myBranchIds.contains(u.getBranch().getId())) {
-                                ra.addFlashAttribute("error", "Access denied: shopkeeper not in your branches.");
-                                return;
-                        }
-                        u.setEnabled(!u.getEnabled());
-                        userRepository.save(u);
-                        ra.addFlashAttribute("success", "Shopkeeper status updated.");
-                }, () -> ra.addFlashAttribute("error", "Shopkeeper not found."));
+                userManagementService.toggleShopkeeper(id, myBranchIds);
+                ra.addFlashAttribute("success", "Shopkeeper status updated.");
                 return "redirect:/owner/shopkeepers";
         }
 
@@ -277,7 +247,7 @@ public class OwnerController {
                 var myBranchIds = branchService.getBranchesByOwner(ownerId)
                                 .stream().map(Branch::getId).collect(java.util.stream.Collectors.toSet());
 
-                User shopkeeper = userRepository.findById(shopkeeperId).orElse(null);
+                User shopkeeper = userManagementService.findById(shopkeeperId).orElse(null);
                 if (shopkeeper == null
                                 || !shopkeeper.getRoles().contains("SHOPKEEPER")
                                 || shopkeeper.getBranch() == null
@@ -293,7 +263,7 @@ public class OwnerController {
                 model.addAttribute("page", "owner");
                 model.addAttribute("branch", branch);
                 model.addAttribute("medicines", medicineService.getMedicinesByBranch(branch.getId()));
-                model.addAttribute("shopkeepers", userRepository.findShopkeepersByBranchId(branch.getId()));
+                model.addAttribute("shopkeepers", userManagementService.findShopkeepersByBranchId(branch.getId()));
                 kpis.forEach(model::addAttribute);
                 model.addAttribute("lowStock", kpis.get("lowStockCount"));
 

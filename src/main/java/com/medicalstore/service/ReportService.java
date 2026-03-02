@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.ByteArrayOutputStream;
 
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class ReportService {
 
         private final SaleRepository saleRepository;
@@ -35,8 +37,8 @@ public class ReportService {
          * - ADMIN: global
          */
         private List<Sale> fetchSalesWithItems(LocalDateTime start, LocalDateTime end) {
-                Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
-                Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
+                Long tenantId = com.medicalstore.common.TenantContext.getTenantId();
+                Long ownerId = com.medicalstore.common.TenantContext.getOwnerId();
                 if (tenantId != null)
                         return saleRepository.findWithItemsByBranchBetween(tenantId, start, end);
                 if (ownerId != null)

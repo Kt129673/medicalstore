@@ -3,7 +3,7 @@ package com.medicalstore.config;
 import com.medicalstore.model.SubscriptionPlan;
 import com.medicalstore.service.MedicineService;
 import com.medicalstore.service.SubscriptionService;
-import com.medicalstore.util.SecurityUtils;
+import com.medicalstore.common.SecurityUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.ControllerAdvice;

@@ -1,6 +1,6 @@
 package com.medicalstore.service;
 
-import com.medicalstore.config.TenantContext;
+import com.medicalstore.common.TenantContext;
 import com.medicalstore.model.Customer;
 import com.medicalstore.repository.CustomerRepository;
 import org.junit.jupiter.api.*;

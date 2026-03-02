@@ -1,7 +1,7 @@
 package com.medicalstore.controller.api;
 
 import com.medicalstore.service.DashboardService;
-import com.medicalstore.util.SecurityUtils;
+import com.medicalstore.common.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

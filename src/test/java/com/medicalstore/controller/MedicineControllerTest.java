@@ -3,7 +3,7 @@ package com.medicalstore.controller;
 import com.medicalstore.model.Medicine;
 import com.medicalstore.repository.UserRepository;
 import com.medicalstore.service.*;
-import com.medicalstore.util.SecurityUtils;
+import com.medicalstore.common.SecurityUtils;
 import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;

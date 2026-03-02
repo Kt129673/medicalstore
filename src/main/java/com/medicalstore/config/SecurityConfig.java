@@ -1,6 +1,6 @@
 package com.medicalstore.config;
 
-import com.medicalstore.config.RoutePaths;
+import com.medicalstore.common.RoutePaths;
 import com.medicalstore.security.MediStorePermissionEvaluator;
 import com.medicalstore.service.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;

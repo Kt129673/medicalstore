@@ -1,21 +1,20 @@
 package com.medicalstore.controller;
 
-import com.medicalstore.config.RoutePaths;
-import com.medicalstore.model.AuditLog;
+import com.medicalstore.common.RoutePaths;
 import com.medicalstore.model.Branch;
 import com.medicalstore.model.User;
-import com.medicalstore.repository.AuditLogRepository;
-import com.medicalstore.repository.UserRepository;
+import com.medicalstore.service.AuditLogService;
 import com.medicalstore.service.BranchService;
 import com.medicalstore.service.DashboardService;
+import com.medicalstore.service.RoleAuditService;
 import com.medicalstore.service.SubscriptionService;
-import com.medicalstore.util.SecurityUtils;
+import com.medicalstore.service.UserManagementService;
+import com.medicalstore.common.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -25,9 +24,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
-import com.medicalstore.service.RoleAuditService;
 
 /**
  * Platform Admin panel — manage owners, branches, shopkeepers.
@@ -39,17 +36,13 @@ import com.medicalstore.service.RoleAuditService;
 @PreAuthorize("hasRole('ADMIN')")
 public class AdminController {
 
-    /** Allowed role values an admin can assign to a new user. */
-    private static final Set<String> ALLOWED_ROLES = Set.of("ADMIN", "OWNER", "SHOPKEEPER");
-
-    private final UserRepository userRepository;
+    private final UserManagementService userManagementService;
     private final BranchService branchService;
     private final SecurityUtils securityUtils;
-    private final PasswordEncoder passwordEncoder;
     private final SubscriptionService subscriptionService;
     private final DashboardService dashboardService;
     private final RoleAuditService roleAuditService;
-    private final AuditLogRepository auditLogRepository;
+    private final AuditLogService auditLogService;
 
     // ─── Admin Dashboard ───────────────────────────────────────────────────
     /** Canonical dashboard URL — redirect legacy /admin to /admin/dashboard. */
@@ -60,7 +53,7 @@ public class AdminController {
 
     @GetMapping("/dashboard")
     public String dashboard(Model model) {
-        List<User> owners = userRepository.findByRole("OWNER");
+        List<User> owners = userManagementService.findByRole("OWNER");
         List<Branch> branches = branchService.getAllBranches();
 
         // Platform KPIs from DashboardService (global, unscoped)
@@ -90,10 +83,10 @@ public class AdminController {
         model.addAttribute("page", "admin");
 
         // User counts by role
-        model.addAttribute("totalUsers", userRepository.count());
+        model.addAttribute("totalUsers", userManagementService.count());
         model.addAttribute("totalOwners", owners.size());
-        model.addAttribute("totalShopkeepers", userRepository.countByRole("SHOPKEEPER"));
-        model.addAttribute("totalAdmins", userRepository.countByRole("ADMIN"));
+        model.addAttribute("totalShopkeepers", userManagementService.countByRole("SHOPKEEPER"));
+        model.addAttribute("totalAdmins", userManagementService.countByRole("ADMIN"));
 
         // Branch stats
         model.addAttribute("totalBranches", branches.size());
@@ -121,7 +114,7 @@ public class AdminController {
     public String listUsers(Model model) {
         model.addAttribute("title", "Manage Users");
         model.addAttribute("page", "admin");
-        model.addAttribute("users", userRepository.findAll());
+        model.addAttribute("users", userManagementService.findAll());
         model.addAttribute("branches", branchService.getAllBranches());
         return "admin/users";
     }
@@ -131,14 +124,14 @@ public class AdminController {
         model.addAttribute("title", "Create User");
         model.addAttribute("page", "admin");
         model.addAttribute("branches", branchService.getAllBranches());
-        model.addAttribute("owners", userRepository.findByRole("OWNER"));
+        model.addAttribute("owners", userManagementService.findByRole("OWNER"));
         model.addAttribute("newUser", new User());
         return "admin/create-user";
     }
 
     @GetMapping("/users/edit/{id}")
     public String showEditUserForm(@PathVariable Long id, Model model, RedirectAttributes ra) {
-        User user = userRepository.findById(id).orElse(null);
+        User user = userManagementService.findById(id).orElse(null);
         if (user == null) {
             ra.addFlashAttribute("error", "User not found.");
             return RoutePaths.redirectTo(RoutePaths.ADMIN_USERS);
@@ -159,16 +152,8 @@ public class AdminController {
             @RequestParam(defaultValue = "true") boolean enabled,
             @RequestParam(defaultValue = "true") boolean accountNonLocked,
             RedirectAttributes ra) {
-        userRepository.findById(id).ifPresent(user -> {
-            user.setFullName(fullName);
-            if (email != null && !email.isBlank()) user.setEmail(email);
-            user.setEnabled(enabled);
-            user.setAccountNonLocked(accountNonLocked);
-            if (branchId != null && user.getRoles().contains("SHOPKEEPER")) {
-                branchService.getBranchById(branchId).ifPresent(user::setBranch);
-            }
-            userRepository.save(user);
-        });
+        Branch branch = (branchId != null) ? branchService.getBranchById(branchId).orElse(null) : null;
+        userManagementService.updateUser(id, fullName, email, enabled, accountNonLocked, branch);
         ra.addFlashAttribute("success", "User updated successfully.");
         return RoutePaths.redirectTo(RoutePaths.ADMIN_USERS);
     }
@@ -178,16 +163,9 @@ public class AdminController {
             @PathVariable Long id,
             @RequestParam String newPassword,
             RedirectAttributes ra) {
-        if (newPassword == null || newPassword.length() < 6) {
-            ra.addFlashAttribute("error", "Password must be at least 6 characters.");
-            return RoutePaths.redirectTo(RoutePaths.ADMIN_USERS);
-        }
-        userRepository.findById(id).ifPresent(user -> {
-            user.setPassword(passwordEncoder.encode(newPassword));
-            userRepository.save(user);
-            // Log password reset for audit trail
-            roleAuditService.logPasswordReset(user.getUsername());
-        });
+        userManagementService.resetPassword(id, newPassword);
+        userManagementService.findById(id).ifPresent(u ->
+                roleAuditService.logPasswordReset(u.getUsername()));
         ra.addFlashAttribute("success", "Password reset successfully.");
         return RoutePaths.redirectTo(RoutePaths.ADMIN_USERS);
     }
@@ -201,58 +179,15 @@ public class AdminController {
             @RequestParam String role,
             @RequestParam(required = false) Long branchId,
             RedirectAttributes ra) {
-
-        if (userRepository.existsByUsername(username)) {
-            ra.addFlashAttribute("error", "Username already exists: " + username);
-            return RoutePaths.redirectTo(RoutePaths.ADMIN_USERS_CREATE);
-        }
-
-        if (!ALLOWED_ROLES.contains(role)) {
-            ra.addFlashAttribute("error", "Invalid role: " + role);
-            return RoutePaths.redirectTo(RoutePaths.ADMIN_USERS_CREATE);
-        }
-
-        if (email != null && !email.isBlank() && userRepository.existsByEmail(email)) {
-            ra.addFlashAttribute("error", "Email already registered: " + email);
-            return RoutePaths.redirectTo(RoutePaths.ADMIN_USERS_CREATE);
-        }
-
-        User user = new User();
-        user.setUsername(username);
-        user.setPassword(passwordEncoder.encode(password));
-        user.setFullName(fullName);
-        user.setEmail(email);
-        user.setEnabled(true);
-        user.setAccountNonLocked(true);
-        user.setRoles(Set.of(role));
-
-        if ("SHOPKEEPER".equals(role) && branchId != null) {
-            branchService.getBranchById(branchId).ifPresent(user::setBranch);
-        }
-
-        User saved = userRepository.save(user);
-
-        // Auto-provision FREE subscription plan for new OWNERs so they can log in
-        // without being immediately blocked by the SubscriptionInterceptor.
-        if ("OWNER".equals(role)) {
-            subscriptionService.createOrUpdatePlan(
-                    saved.getId(), "FREE",
-                    LocalDate.now().plusYears(1), // 1-year trial by default
-                    5,  // maxUsers
-                    3   // maxBranches
-            );
-        }
-
-        ra.addFlashAttribute("success", "User '" + username + "' created with role " + role);
+        Branch branch = (branchId != null) ? branchService.getBranchById(branchId).orElse(null) : null;
+        User saved = userManagementService.createUser(username, password, fullName, email, role, branch);
+        ra.addFlashAttribute("success", "User '" + saved.getUsername() + "' created with role " + role);
         return RoutePaths.redirectTo(RoutePaths.ADMIN_USERS);
     }
 
     @PostMapping("/users/toggle/{id}")
     public String toggleUser(@PathVariable Long id, RedirectAttributes ra) {
-        userRepository.findById(id).ifPresent(u -> {
-            u.setEnabled(!u.getEnabled());
-            userRepository.save(u);
-        });
+        userManagementService.toggleEnabled(id);
         ra.addFlashAttribute("success", "User status updated.");
         return RoutePaths.redirectTo(RoutePaths.ADMIN_USERS);
     }
@@ -261,15 +196,8 @@ public class AdminController {
     @org.springframework.security.access.prepost.PreAuthorize("hasPermission(null, 'USER_DELETE')")
     public String deleteUser(@PathVariable Long id, RedirectAttributes ra) {
         Long currentId = securityUtils.getCurrentUserId();
-        if (id.equals(currentId)) {
-            ra.addFlashAttribute("error", "You cannot delete your own account.");
-            return RoutePaths.redirectTo(RoutePaths.ADMIN_USERS);
-        }
-        userRepository.findById(id).ifPresent(u -> {
-            roleAuditService.logAction("USER_DELETED",
-                    "Soft-deleted user: " + u.getUsername());
-            userRepository.delete(u); // triggers @SQLDelete — no hard delete
-        });
+        userManagementService.deleteUser(id, currentId);
+        roleAuditService.logAction("USER_DELETED", "Soft-deleted user ID: " + id);
         ra.addFlashAttribute("success", "User deleted (soft delete — restorable).");
         return RoutePaths.redirectTo(RoutePaths.ADMIN_USERS);
     }
@@ -279,15 +207,14 @@ public class AdminController {
     public String deletedUsers(Model model) {
         model.addAttribute("title", "Deleted Users");
         model.addAttribute("page", "admin");
-        model.addAttribute("deletedUsers", userRepository.findDeletedUsers());
+        model.addAttribute("deletedUsers", userManagementService.findDeletedUsers());
         return "admin/deleted-users";
     }
 
     @PostMapping("/users/restore/{id}")
     @org.springframework.security.access.prepost.PreAuthorize("hasPermission(null, 'USER_RESTORE')")
-    @org.springframework.transaction.annotation.Transactional
     public String restoreUser(@PathVariable Long id, RedirectAttributes ra) {
-        userRepository.restoreUser(id);
+        userManagementService.restoreUser(id);
         roleAuditService.logAction("USER_RESTORED",
                 "Restored soft-deleted user ID: " + id);
         ra.addFlashAttribute("success", "User restored successfully.");
@@ -300,7 +227,7 @@ public class AdminController {
         model.addAttribute("title", "Manage Branches");
         model.addAttribute("page", "admin");
         model.addAttribute("branches", branchService.getAllBranches());
-        model.addAttribute("owners", userRepository.findByRole("OWNER"));
+        model.addAttribute("owners", userManagementService.findByRole("OWNER"));
         return "admin/branches";
     }
 
@@ -314,7 +241,7 @@ public class AdminController {
         model.addAttribute("title", "Edit Branch");
         model.addAttribute("page", "admin");
         model.addAttribute("editBranch", branch);
-        model.addAttribute("owners", userRepository.findByRole("OWNER"));
+        model.addAttribute("owners", userManagementService.findByRole("OWNER"));
         return "admin/edit-branch";
     }
 
@@ -334,7 +261,7 @@ public class AdminController {
             branch.setPhone(phone);
             branch.setGstNumber(gstNumber);
             branch.setLicenceNumber(licenceNumber);
-            userRepository.findById(ownerId).ifPresent(branch::setOwner);
+            userManagementService.findById(ownerId).ifPresent(branch::setOwner);
             branchService.saveBranch(branch);
         });
         ra.addFlashAttribute("success", "Branch updated successfully.");
@@ -351,7 +278,7 @@ public class AdminController {
             @RequestParam Long ownerId,
             RedirectAttributes ra) {
 
-        User owner = userRepository.findById(ownerId)
+        User owner = userManagementService.findById(ownerId)
                 .orElseThrow(() -> new RuntimeException("Owner not found"));
 
         Branch branch = new Branch();
@@ -378,7 +305,7 @@ public class AdminController {
     // ─── Subscription Management ───────────────────────────────────────────
     @GetMapping("/subscriptions")
     public String listSubscriptions(Model model) {
-        List<User> owners = userRepository.findAll().stream()
+        List<User> owners = userManagementService.findAll().stream()
                 .filter(u -> u.getRoles().contains("OWNER")).toList();
 
         Map<Long, com.medicalstore.model.SubscriptionPlan> plansByOwner = owners.stream()
@@ -408,7 +335,8 @@ public class AdminController {
             }
             LocalDate parsedDate = LocalDate.parse(expiryDate);
             subscriptionService.createOrUpdatePlan(ownerId, planType, parsedDate, maxUsers, maxBranches);
-            String ownerName = userRepository.findById(ownerId).map(User::getUsername).orElse("Unknown");
+            String ownerName = userManagementService.findById(ownerId)
+                    .map(User::getUsername).orElse("Unknown");
             ra.addFlashAttribute("success", "Subscription updated for owner: " + ownerName);
         } catch (Exception e) {
             ra.addFlashAttribute("error", "Failed to update subscription: " + e.getMessage());
@@ -432,7 +360,7 @@ public class AdminController {
      */
     @GetMapping("/view-as-owner/{ownerId}")
     public String viewAsOwner(@PathVariable Long ownerId, Model model, RedirectAttributes ra) {
-        User owner = userRepository.findById(ownerId).orElse(null);
+        User owner = userManagementService.findById(ownerId).orElse(null);
         if (owner == null || !owner.getRoles().contains("OWNER")) {
             ra.addFlashAttribute("error", "Owner not found.");
             return RoutePaths.redirectTo(RoutePaths.ADMIN);
@@ -446,7 +374,7 @@ public class AdminController {
         model.addAttribute("branches", branches);
         model.addAttribute("branchCount", branches.size());
         model.addAttribute("shopkeeperCount",
-                userRepository.findShopkeepersByOwnerId(ownerId).size());
+                userManagementService.findShopkeepersByOwnerId(ownerId).size());
         model.addAttribute("lowStock", kpis.get("lowStockCount"));
         kpis.forEach(model::addAttribute);
 
@@ -481,7 +409,7 @@ public class AdminController {
         String usernameFilter = (username != null && !username.isBlank()) ? username : null;
         String actionFilter   = (action   != null && !action.isBlank())   ? action   : null;
 
-        Page<AuditLog> logs = auditLogRepository.search(
+        Page<com.medicalstore.model.AuditLog> logs = auditLogService.search(
                 usernameFilter, actionFilter, fromDt, toDt, pageable);
 
         model.addAttribute("title", "Audit Logs");

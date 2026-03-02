@@ -4,7 +4,7 @@ import com.medicalstore.repository.UserRepository;
 import com.medicalstore.service.CustomUserDetailsService;
 import com.medicalstore.service.MedicineService;
 import com.medicalstore.service.SubscriptionService;
-import com.medicalstore.util.SecurityUtils;
+import com.medicalstore.common.SecurityUtils;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;

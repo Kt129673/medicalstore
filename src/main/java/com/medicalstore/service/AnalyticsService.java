@@ -32,9 +32,9 @@ public class AnalyticsService {
      * Called via SpEL in @Cacheable keys as: #root.target.tenantCachePrefix()
      */
     public String tenantCachePrefix() {
-        Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
+        Long tenantId = com.medicalstore.common.TenantContext.getTenantId();
         if (tenantId != null) return "b" + tenantId + "-";
-        Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
+        Long ownerId = com.medicalstore.common.TenantContext.getOwnerId();
         if (ownerId != null) return "o" + ownerId + "-";
         return "admin-";
     }
@@ -49,8 +49,8 @@ public class AnalyticsService {
      */
     @Cacheable(value = "analytics_profit", key = "#root.target.tenantCachePrefix() + #start.toLocalDate().toString() + '-' + #end.toLocalDate().toString()")
     public List<Map<String, Object>> getProfitPerMedicine(LocalDateTime start, LocalDateTime end) {
-        Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
-        Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
+        Long tenantId = com.medicalstore.common.TenantContext.getTenantId();
+        Long ownerId = com.medicalstore.common.TenantContext.getOwnerId();
 
         List<Object[]> rows;
         if (tenantId != null)
@@ -90,8 +90,8 @@ public class AnalyticsService {
     public List<Map<String, Object>> getDeadStock(int days) {
         LocalDateTime since = LocalDate.now().minusDays(days).atStartOfDay();
 
-        Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
-        Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
+        Long tenantId = com.medicalstore.common.TenantContext.getTenantId();
+        Long ownerId = com.medicalstore.common.TenantContext.getOwnerId();
 
         List<Long> activeIds;
         if (tenantId != null)
@@ -141,8 +141,8 @@ public class AnalyticsService {
 
     @Cacheable(value = "analytics_fastmoving", key = "#root.target.tenantCachePrefix() + #limit + '-' + #start.toLocalDate().toString() + '-' + #end.toLocalDate().toString()")
     public List<Map<String, Object>> getFastMovingItems(int limit, LocalDateTime start, LocalDateTime end) {
-        Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
-        Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
+        Long tenantId = com.medicalstore.common.TenantContext.getTenantId();
+        Long ownerId = com.medicalstore.common.TenantContext.getOwnerId();
 
         // LIMIT pushed to SQL via Pageable — avoids loading all rows and breaking in Java
         List<Object[]> rows;
@@ -174,8 +174,8 @@ public class AnalyticsService {
         LocalDateTime start = LocalDate.of(year, 1, 1).atStartOfDay();
         LocalDateTime end = LocalDate.of(year, 12, 31).atTime(23, 59, 59);
 
-        Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
-        Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
+        Long tenantId = com.medicalstore.common.TenantContext.getTenantId();
+        Long ownerId = com.medicalstore.common.TenantContext.getOwnerId();
 
         List<Object[]> rows;
         if (tenantId != null)

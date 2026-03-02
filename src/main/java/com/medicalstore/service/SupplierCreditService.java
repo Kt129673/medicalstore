@@ -21,8 +21,8 @@ public class SupplierCreditService {
     private final SupplierCreditRepository creditRepository;
 
     public List<SupplierCredit> getAllCredits() {
-        Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
-        Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
+        Long tenantId = com.medicalstore.common.TenantContext.getTenantId();
+        Long ownerId = com.medicalstore.common.TenantContext.getOwnerId();
 
         // Limit default view to recent credits (e.g., last 30 days) to prevent OOM
         // Here we just use a basic assumption that we want all, but realistically we
@@ -66,8 +66,8 @@ public class SupplierCreditService {
     }
 
     public List<SupplierCredit> getOverdueCredits() {
-        Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
-        Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
+        Long tenantId = com.medicalstore.common.TenantContext.getTenantId();
+        Long ownerId = com.medicalstore.common.TenantContext.getOwnerId();
         LocalDate today = LocalDate.now();
 
         if (tenantId != null)

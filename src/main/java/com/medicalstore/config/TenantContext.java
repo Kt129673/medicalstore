@@ -1,40 +1,21 @@
 package com.medicalstore.config;
 
 /**
- * ThreadLocal context to hold the current tenant (Branch ID) for the active
- * request.
+ * @deprecated Moved to {@link com.medicalstore.common.TenantContext}.
+ *             This stub exists only to ease migration; update usages to the new package.
+ * @see com.medicalstore.common.TenantContext
  */
-public class TenantContext {
+@Deprecated(since = "2.0", forRemoval = true)
+public final class TenantContext {
 
-    private static final ThreadLocal<Long> CURRENT_TENANT = new ThreadLocal<>();
-    private static final ThreadLocal<Long> CURRENT_OWNER = new ThreadLocal<>();
-
-    public static void setTenantId(Long tenantId) {
-        CURRENT_TENANT.set(tenantId);
+    private TenantContext() {
     }
 
-    public static Long getTenantId() {
-        return CURRENT_TENANT.get();
-    }
-
-    public static void clearTenant() {
-        CURRENT_TENANT.remove();
-    }
-
-    public static void setOwnerId(Long ownerId) {
-        CURRENT_OWNER.set(ownerId);
-    }
-
-    public static Long getOwnerId() {
-        return CURRENT_OWNER.get();
-    }
-
-    public static void clearOwner() {
-        CURRENT_OWNER.remove();
-    }
-
-    public static void clear() {
-        CURRENT_TENANT.remove();
-        CURRENT_OWNER.remove();
-    }
+    public static void setTenantId(Long tenantId) { com.medicalstore.common.TenantContext.setTenantId(tenantId); }
+    public static Long  getTenantId()              { return com.medicalstore.common.TenantContext.getTenantId(); }
+    public static void  clearTenant()              { com.medicalstore.common.TenantContext.clearTenant(); }
+    public static void  setOwnerId(Long ownerId)   { com.medicalstore.common.TenantContext.setOwnerId(ownerId); }
+    public static Long  getOwnerId()               { return com.medicalstore.common.TenantContext.getOwnerId(); }
+    public static void  clearOwner()               { com.medicalstore.common.TenantContext.clearOwner(); }
+    public static void  clear()                    { com.medicalstore.common.TenantContext.clear(); }
 }

@@ -2,7 +2,7 @@ package com.medicalstore.controller;
 
 import com.medicalstore.model.SubscriptionPlan;
 import com.medicalstore.service.SubscriptionService;
-import com.medicalstore.util.SecurityUtils;
+import com.medicalstore.common.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

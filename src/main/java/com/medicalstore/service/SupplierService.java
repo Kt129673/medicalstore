@@ -1,6 +1,6 @@
 package com.medicalstore.service;
 
-import com.medicalstore.config.TenantContext;
+import com.medicalstore.common.TenantContext;
 import com.medicalstore.model.Supplier;
 import com.medicalstore.repository.SupplierRepository;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +13,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class SupplierService {
     
     private final SupplierRepository supplierRepository;
@@ -61,8 +62,8 @@ public class SupplierService {
     }
     
     public List<Supplier> searchSuppliers(String name) {
-        Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
-        Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
+        Long tenantId = com.medicalstore.common.TenantContext.getTenantId();
+        Long ownerId = com.medicalstore.common.TenantContext.getOwnerId();
         if (tenantId != null)
             return supplierRepository.findByBranchIdAndNameContainingIgnoreCase(tenantId, name);
         if (ownerId != null)

@@ -33,6 +33,15 @@ public class Medicine {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    /**
+     * Optimistic locking version. JPA increments this on every UPDATE.
+     * A concurrent write to the same Medicine row will throw
+     * OptimisticLockException, preventing lost-update races on stock.
+     */
+    @Version
+    @Column(name = "version", nullable = false)
+    private Long version = 0L;
+
     @Column(nullable = false)
     private String name;
 

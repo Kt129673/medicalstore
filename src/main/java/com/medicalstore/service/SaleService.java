@@ -7,6 +7,8 @@ import com.medicalstore.repository.SaleRepository;
 import com.medicalstore.repository.MedicineRepository;
 import com.medicalstore.repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,11 +31,11 @@ public class SaleService {
         // Single JOIN FETCH query — avoids N+1 on invoice/detail view
         Optional<Sale> sale = saleRepository.findByIdWithDetails(id);
         if (sale.isPresent() && sale.get().getBranch() != null) {
-            Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
+            Long tenantId = com.medicalstore.common.TenantContext.getTenantId();
             if (tenantId != null && !tenantId.equals(sale.get().getBranch().getId())) {
                 return Optional.empty();
             }
-            Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
+            Long ownerId = com.medicalstore.common.TenantContext.getOwnerId();
             if (ownerId != null && sale.get().getBranch().getOwner() != null
                     && !ownerId.equals(sale.get().getBranch().getOwner().getId())) {
                 return Optional.empty();
@@ -44,8 +46,8 @@ public class SaleService {
 
     @Transactional(readOnly = true)
     public List<Sale> getAllSales() {
-        Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
-        Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
+        Long tenantId = com.medicalstore.common.TenantContext.getTenantId();
+        Long ownerId = com.medicalstore.common.TenantContext.getOwnerId();
 
         if (tenantId != null)
             return saleRepository.findByBranchId(tenantId);
@@ -60,8 +62,8 @@ public class SaleService {
      */
     @Transactional(readOnly = true)
     public List<Sale> getAllSalesWithItems() {
-        Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
-        Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
+        Long tenantId = com.medicalstore.common.TenantContext.getTenantId();
+        Long ownerId = com.medicalstore.common.TenantContext.getOwnerId();
 
         if (tenantId != null)
             return saleRepository.findByBranchIdWithItems(tenantId);
@@ -73,8 +75,8 @@ public class SaleService {
     @Transactional(readOnly = true)
     public org.springframework.data.domain.Page<Sale> getSalesPaginated(
             org.springframework.data.domain.Pageable pageable) {
-        Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
-        Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
+        Long tenantId = com.medicalstore.common.TenantContext.getTenantId();
+        Long ownerId = com.medicalstore.common.TenantContext.getOwnerId();
 
         if (tenantId != null)
             return saleRepository.findByBranchIdOrderBySaleDateDesc(tenantId, pageable);
@@ -88,8 +90,8 @@ public class SaleService {
             String search, LocalDateTime startDate, LocalDateTime endDate,
             String paymentMethod, org.springframework.data.domain.Pageable pageable) {
 
-        Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
-        Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
+        Long tenantId = com.medicalstore.common.TenantContext.getTenantId();
+        Long ownerId = com.medicalstore.common.TenantContext.getOwnerId();
 
         org.springframework.data.jpa.domain.Specification<Sale> spec = (root, query, cb) -> {
             java.util.List<jakarta.persistence.criteria.Predicate> predicates = new java.util.ArrayList<>();
@@ -135,6 +137,13 @@ public class SaleService {
     }
 
     @Transactional
+    @Caching(evict = {
+        @CacheEvict(value = "medicines_search",    allEntries = true),
+        @CacheEvict(value = "dashboard_kpis",      allEntries = true),
+        @CacheEvict(value = "analytics_profit",    allEntries = true),
+        @CacheEvict(value = "analytics_fastmoving",allEntries = true),
+        @CacheEvict(value = "analytics_deadstock", allEntries = true)
+    })
     public Sale createSale(Sale sale) {
         if (sale.getItems() == null || sale.getItems().isEmpty()) {
             throw new RuntimeException("Sale must have at least one item.");
@@ -177,7 +186,7 @@ public class SaleService {
         sale.setTotalAmount(calculatedTotalAmt);
 
         // Auto-assign branch if tenant is set (Shopkeeper)
-        Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
+        Long tenantId = com.medicalstore.common.TenantContext.getTenantId();
         if (tenantId != null && sale.getBranch() == null) {
             com.medicalstore.model.Branch b = new com.medicalstore.model.Branch();
             b.setId(tenantId);
@@ -214,6 +223,10 @@ public class SaleService {
     }
 
     @Transactional
+    @Caching(evict = {
+        @CacheEvict(value = "medicines_search", allEntries = true),
+        @CacheEvict(value = "dashboard_kpis",   allEntries = true)
+    })
     public void deleteSale(Long id) {
         Sale sale = saleRepository.findByIdWithDetails(id)
                 .orElseThrow(() -> new RuntimeException("Sale not found: " + id));
@@ -236,8 +249,8 @@ public class SaleService {
     }
 
     public List<Sale> getSalesByDateRange(LocalDateTime start, LocalDateTime end) {
-        Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
-        Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
+        Long tenantId = com.medicalstore.common.TenantContext.getTenantId();
+        Long ownerId = com.medicalstore.common.TenantContext.getOwnerId();
 
         if (tenantId != null)
             return saleRepository.findByBranchIdAndSaleDateBetween(tenantId, start, end);
@@ -249,8 +262,8 @@ public class SaleService {
     public Double getTodaySales() {
         LocalDateTime startOfDay = LocalDate.now().atStartOfDay();
         LocalDateTime endOfDay = LocalDate.now().atTime(23, 59, 59);
-        Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
-        Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
+        Long tenantId = com.medicalstore.common.TenantContext.getTenantId();
+        Long ownerId = com.medicalstore.common.TenantContext.getOwnerId();
 
         Double total;
         if (tenantId != null)
@@ -264,8 +277,8 @@ public class SaleService {
     }
 
     public Double getTotalSalesBetween(LocalDateTime start, LocalDateTime end) {
-        Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
-        Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
+        Long tenantId = com.medicalstore.common.TenantContext.getTenantId();
+        Long ownerId = com.medicalstore.common.TenantContext.getOwnerId();
 
         Double total;
         if (tenantId != null)
@@ -279,8 +292,8 @@ public class SaleService {
     }
 
     public List<Sale> getRecentSales() {
-        Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
-        Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
+        Long tenantId = com.medicalstore.common.TenantContext.getTenantId();
+        Long ownerId = com.medicalstore.common.TenantContext.getOwnerId();
 
         if (tenantId != null)
             return saleRepository.findTop5ByBranchIdOrderBySaleDateDesc(tenantId);

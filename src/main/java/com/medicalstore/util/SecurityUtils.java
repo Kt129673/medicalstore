@@ -1,84 +1,22 @@
 package com.medicalstore.util;
 
-import com.medicalstore.model.User;
-import com.medicalstore.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
-
-import java.util.Optional;
-
 /**
- * Central utility for resolving the current user's role and branch context
- * from Spring Security's SecurityContextHolder.
+ * @deprecated Moved to {@link com.medicalstore.common.SecurityUtils}.
+ *             This file is intentionally left as a non-functional stub so that
+ *             any missed import still produces a clear compile error pointing at
+ *             the right class rather than a silent NoSuchBeanDefinitionException.
+ *
+ * <p><b>Do NOT annotate this class with {@code @Component}</b> — doing so would
+ * register a second bean, breaking dependency injection for
+ * {@link com.medicalstore.common.SecurityUtils}.
+ *
+ * @see com.medicalstore.common.SecurityUtils
  */
-@Component
-@RequiredArgsConstructor
-public class SecurityUtils {
+@Deprecated(since = "2.0", forRemoval = true)
+public final class SecurityUtils {
 
-    private final @org.springframework.context.annotation.Lazy UserRepository userRepository;
-
-    public User getCurrentUser() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null || !auth.isAuthenticated()
-                || "anonymousUser".equals(auth.getPrincipal())) {
-            return null;
-        }
-        return userRepository.findByUsername(auth.getName()).orElse(null);
-    }
-
-    private boolean hasRole(String role) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        return auth != null && auth.getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().equals("ROLE_" + role));
-    }
-
-    public boolean isAdmin() {
-        return hasRole("ADMIN");
-    }
-
-    public boolean isOwner() {
-        return hasRole("OWNER");
-    }
-
-    public boolean isShopkeeper() {
-        return hasRole("SHOPKEEPER");
-    }
-
-    public boolean isOwnerOrShopkeeper() {
-        return isOwner() || isShopkeeper();
-    }
-
-    /** Branch ID — only non-null for SHOPKEEPER */
-    public Long getCurrentBranchId() {
-        User user = getCurrentUser();
-        return (user != null && user.getBranch() != null) ? user.getBranch().getId() : null;
-    }
-
-    /** Current user's DB id */
-    public Long getCurrentUserId() {
-        User user = getCurrentUser();
-        return user != null ? user.getId() : null;
-    }
-
-    /**
-     * Resolves owner id for current principal:
-     * - OWNER: own user id
-     * - SHOPKEEPER: branch owner id
-     */
-    public Long getCurrentOwnerId() {
-        if (isOwner()) {
-            return getCurrentUserId();
-        }
-
-        if (!isShopkeeper()) {
-            return null;
-        }
-
-        return Optional.ofNullable(getCurrentUser())
-                .map(User::getBranch)
-                .map(branch -> branch.getOwner() != null ? branch.getOwner().getId() : null)
-                .orElse(null);
+    private SecurityUtils() {
+        throw new UnsupportedOperationException(
+                "Use com.medicalstore.common.SecurityUtils (Spring bean)");
     }
 }

@@ -1,11 +1,13 @@
 package com.medicalstore.service;
 
-import com.medicalstore.config.TenantContext;
+import com.medicalstore.common.TenantContext;
 import com.medicalstore.model.PurchaseOrder;
 import com.medicalstore.model.PurchaseOrderItem;
 import com.medicalstore.repository.MedicineRepository;
 import com.medicalstore.repository.PurchaseOrderRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
@@ -98,16 +100,20 @@ public class PurchaseService {
     }
 
     @Transactional
+    @Caching(evict = {
+        @CacheEvict(value = "medicines_search", allEntries = true),
+        @CacheEvict(value = "dashboard_kpis",   allEntries = true)
+    })
     public PurchaseOrder receiveOrder(Long orderId, List<Integer> receivedQuantities) {
         PurchaseOrder order = purchaseOrderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Purchase order not found"));
 
         // Tenant check — only the owning branch or admin can receive
-        Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
+        Long tenantId = com.medicalstore.common.TenantContext.getTenantId();
         if (tenantId != null && (order.getBranch() == null || !tenantId.equals(order.getBranch().getId()))) {
             throw new RuntimeException("Access denied: order does not belong to your branch.");
         }
-        Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
+        Long ownerId = com.medicalstore.common.TenantContext.getOwnerId();
         if (ownerId != null && order.getBranch() != null && order.getBranch().getOwner() != null
                 && !ownerId.equals(order.getBranch().getOwner().getId())) {
             throw new RuntimeException("Access denied: order does not belong to your organisation.");
@@ -136,11 +142,11 @@ public class PurchaseService {
                 .orElseThrow(() -> new RuntimeException("Purchase order not found"));
 
         // Tenant check
-        Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
+        Long tenantId = com.medicalstore.common.TenantContext.getTenantId();
         if (tenantId != null && (order.getBranch() == null || !tenantId.equals(order.getBranch().getId()))) {
             throw new RuntimeException("Access denied: order does not belong to your branch.");
         }
-        Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
+        Long ownerId = com.medicalstore.common.TenantContext.getOwnerId();
         if (ownerId != null && order.getBranch() != null && order.getBranch().getOwner() != null
                 && !ownerId.equals(order.getBranch().getOwner().getId())) {
             throw new RuntimeException("Access denied: order does not belong to your organisation.");

@@ -5,6 +5,8 @@ import com.medicalstore.repository.MedicineRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -19,8 +21,8 @@ public class MedicineService {
 
     // ── Context-Aware Lookups ───────────────────────────────────────────────
     public java.util.List<String> getAllCategories() {
-        Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
-        Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
+        Long tenantId = com.medicalstore.common.TenantContext.getTenantId();
+        Long ownerId = com.medicalstore.common.TenantContext.getOwnerId();
         if (tenantId != null)
             return medicineRepository.findDistinctCategoriesByBranch(tenantId);
         if (ownerId != null)
@@ -32,8 +34,8 @@ public class MedicineService {
             String search, String category, String stockLevel, String expiryRange,
             org.springframework.data.domain.Pageable pageable) {
 
-        Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
-        Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
+        Long tenantId = com.medicalstore.common.TenantContext.getTenantId();
+        Long ownerId = com.medicalstore.common.TenantContext.getOwnerId();
 
         org.springframework.data.jpa.domain.Specification<Medicine> spec = (root, query, cb) -> {
             java.util.List<jakarta.persistence.criteria.Predicate> predicates = new java.util.ArrayList<>();
@@ -84,8 +86,8 @@ public class MedicineService {
     }
 
     public List<Medicine> getAllMedicines() {
-        Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
-        Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
+        Long tenantId = com.medicalstore.common.TenantContext.getTenantId();
+        Long ownerId = com.medicalstore.common.TenantContext.getOwnerId();
 
         if (tenantId != null)
             return medicineRepository.findByBranchId(tenantId);
@@ -95,8 +97,8 @@ public class MedicineService {
     }
 
     public long countAllMedicines() {
-        Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
-        Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
+        Long tenantId = com.medicalstore.common.TenantContext.getTenantId();
+        Long ownerId = com.medicalstore.common.TenantContext.getOwnerId();
 
         if (tenantId != null)
             return medicineRepository.countByBranchId(tenantId);
@@ -106,8 +108,8 @@ public class MedicineService {
     }
 
     public long countLowStockMedicines(Integer threshold) {
-        Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
-        Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
+        Long tenantId = com.medicalstore.common.TenantContext.getTenantId();
+        Long ownerId = com.medicalstore.common.TenantContext.getOwnerId();
 
         if (tenantId != null)
             return medicineRepository.countByBranchIdAndQuantityLessThan(tenantId, threshold);
@@ -120,23 +122,26 @@ public class MedicineService {
         // Find by ID, but verify it belongs to the tenant or owner if context is set
         Optional<Medicine> medicine = medicineRepository.findById(id);
         if (medicine.isPresent()) {
-            Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
-            if (tenantId != null && medicine.get().getBranch() != null 
+            Long tenantId = com.medicalstore.common.TenantContext.getTenantId();
+            if (tenantId != null && medicine.get().getBranch() != null
                 && !tenantId.equals(medicine.get().getBranch().getId())) {
-                return Optional.empty(); // Not authorized - Wrong Branch
+                // Throw rather than silently return empty — consistent with all other services
+                throw new org.springframework.security.access.AccessDeniedException(
+                        "Access denied: medicine belongs to a different branch");
             }
-            Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
-            if (ownerId != null && medicine.get().getBranch() != null 
+            Long ownerId = com.medicalstore.common.TenantContext.getOwnerId();
+            if (ownerId != null && medicine.get().getBranch() != null
                 && medicine.get().getBranch().getOwner() != null
                 && !ownerId.equals(medicine.get().getBranch().getOwner().getId())) {
-                return Optional.empty(); // Not authorized - Wrong Owner
+                throw new org.springframework.security.access.AccessDeniedException(
+                        "Access denied: medicine belongs to a different owner");
             }
         }
         return medicine;
     }
 
     public List<Medicine> searchMedicines(String name) {
-        Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
+        Long tenantId = com.medicalstore.common.TenantContext.getTenantId();
         if (tenantId != null)
             return medicineRepository.findByBranchIdAndNameContainingIgnoreCase(tenantId, name);
         // Owner global search not explicitly defined in repo, fallback to global for
@@ -148,7 +153,7 @@ public class MedicineService {
     @org.springframework.cache.annotation.Cacheable(value = "medicines_search", key = "#query + '-' + T(com.medicalstore.config.TenantContext).getTenantId()")
     public List<com.medicalstore.dto.MedicineDTO> searchMedicinesForPos(String query) {
         org.springframework.data.domain.Pageable top20 = org.springframework.data.domain.PageRequest.of(0, 20);
-        Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
+        Long tenantId = com.medicalstore.common.TenantContext.getTenantId();
         if (tenantId != null) {
             return medicineRepository.searchMedicinesDtoByBranch(tenantId, query, top20);
         }
@@ -156,8 +161,8 @@ public class MedicineService {
     }
 
     public List<Medicine> getLowStockMedicines(Integer threshold) {
-        Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
-        Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
+        Long tenantId = com.medicalstore.common.TenantContext.getTenantId();
+        Long ownerId = com.medicalstore.common.TenantContext.getOwnerId();
 
         if (tenantId != null)
             return medicineRepository.findByBranchIdAndQuantityLessThan(tenantId, threshold);
@@ -167,14 +172,14 @@ public class MedicineService {
     }
 
     public List<Medicine> getExpiredMedicines() {
-        Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
+        Long tenantId = com.medicalstore.common.TenantContext.getTenantId();
         if (tenantId != null)
             return medicineRepository.findByBranchIdAndExpiryDateBefore(tenantId, LocalDate.now());
         return medicineRepository.findByExpiryDateBefore(LocalDate.now());
     }
 
     public List<Medicine> getExpiringSoonMedicines(int days) {
-        Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
+        Long tenantId = com.medicalstore.common.TenantContext.getTenantId();
         if (tenantId != null)
             return medicineRepository.findByBranchIdAndExpiryDateBetween(tenantId, LocalDate.now(),
                     LocalDate.now().plusDays(days));
@@ -183,8 +188,8 @@ public class MedicineService {
 
     /** COUNT-only query — avoids loading full Medicine entities just to call .size() */
     public long countExpiringSoonMedicines(int days) {
-        Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
-        Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
+        Long tenantId = com.medicalstore.common.TenantContext.getTenantId();
+        Long ownerId = com.medicalstore.common.TenantContext.getOwnerId();
         LocalDate now = LocalDate.now();
         LocalDate limit = now.plusDays(days);
         if (tenantId != null)
@@ -206,8 +211,9 @@ public class MedicineService {
 
     // ── Branch-scoped (Legacy - kept for explicit calls if needed) ─────────
 
-    // ── Writes (all roles, branch set by controller) ─────────────────────────
+    // ── Writes (all roles, branch set by controller) ——————————————————————————
     @Transactional
+    @CacheEvict(value = "medicines_search", allEntries = true)
     public Medicine saveMedicine(Medicine medicine) {
         if (medicine.getName() == null || medicine.getName().trim().isEmpty())
             throw new IllegalArgumentException("Medicine name is required");
@@ -226,6 +232,7 @@ public class MedicineService {
     }
 
     @Transactional
+    @CacheEvict(value = "medicines_search", allEntries = true)
     public void deleteMedicine(Long id) {
         medicineRepository.deleteById(id);
     }

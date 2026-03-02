@@ -1,7 +1,8 @@
 package com.medicalstore.config;
 
+import com.medicalstore.common.RoutePaths;
+import com.medicalstore.common.SecurityUtils;
 import com.medicalstore.service.SubscriptionService;
-import com.medicalstore.util.SecurityUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;

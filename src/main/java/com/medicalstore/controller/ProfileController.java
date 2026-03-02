@@ -2,7 +2,7 @@ package com.medicalstore.controller;
 
 import com.medicalstore.model.User;
 import com.medicalstore.repository.UserRepository;
-import com.medicalstore.util.SecurityUtils;
+import com.medicalstore.common.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;

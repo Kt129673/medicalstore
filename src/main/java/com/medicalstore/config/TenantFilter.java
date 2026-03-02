@@ -2,7 +2,7 @@ package com.medicalstore.config;
 
 import com.medicalstore.model.Branch;
 import com.medicalstore.repository.UserRepository;
-import com.medicalstore.util.SecurityUtils;
+import com.medicalstore.common.SecurityUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

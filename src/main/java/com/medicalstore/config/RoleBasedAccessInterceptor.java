@@ -1,7 +1,7 @@
 package com.medicalstore.config;
 
 import com.medicalstore.service.RoleAuditService;
-import com.medicalstore.util.SecurityUtils;
+import com.medicalstore.common.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

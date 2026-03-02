@@ -26,6 +26,14 @@ public class PurchaseOrder {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    /**
+     * Optimistic locking version. Protects DRAFT → ORDERED → RECEIVED/CANCELLED
+     * status transitions from concurrent modifications.
+     */
+    @Version
+    @Column(name = "version", nullable = false)
+    private Long version = 0L;
+
     @Column(name = "order_number", unique = true, nullable = false)
     private String orderNumber;
 

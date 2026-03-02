@@ -24,7 +24,7 @@ public class SubscriptionService {
     private final SubscriptionPlanRepository planRepository;
     private final UserRepository userRepository;
     private final SubscriptionFeatureRepository featureRepository;
-    private final com.medicalstore.util.SecurityUtils securityUtils;
+    private final com.medicalstore.common.SecurityUtils securityUtils;
 
     @Cacheable(value = "subscription_plan", key = "#ownerId")
     public Optional<SubscriptionPlan> getPlanForOwner(Long ownerId) {
@@ -58,8 +58,8 @@ public class SubscriptionService {
     }
 
     public SubscriptionPlan getEffectivePlan() {
-        Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
-        if (ownerId == null && com.medicalstore.config.TenantContext.getTenantId() != null) {
+        Long ownerId = com.medicalstore.common.TenantContext.getOwnerId();
+        if (ownerId == null && com.medicalstore.common.TenantContext.getTenantId() != null) {
             ownerId = securityUtils.getCurrentOwnerId();
         }
         if (ownerId != null) {

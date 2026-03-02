@@ -1,11 +1,11 @@
 package com.medicalstore.controller;
 
-import com.medicalstore.config.RoutePaths;
+import com.medicalstore.common.RoutePaths;
 import com.medicalstore.model.Medicine;
 import com.medicalstore.service.BranchService;
 import com.medicalstore.service.MedicineService;
 import com.medicalstore.service.SupplierService;
-import com.medicalstore.util.SecurityUtils;
+import com.medicalstore.common.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;

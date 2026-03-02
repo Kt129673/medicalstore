@@ -1,6 +1,6 @@
 package com.medicalstore.service;
 
-import com.medicalstore.config.TenantContext;
+import com.medicalstore.common.TenantContext;
 import com.medicalstore.model.Return;
 import com.medicalstore.model.Sale;
 import com.medicalstore.model.SaleItem;
@@ -9,6 +9,8 @@ import com.medicalstore.repository.ReturnRepository;
 import com.medicalstore.repository.MedicineRepository;
 import com.medicalstore.repository.SaleItemRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +20,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class ReturnService {
 
     private final ReturnRepository returnRepository;
@@ -56,6 +59,10 @@ public class ReturnService {
     }
 
     @Transactional
+    @Caching(evict = {
+        @CacheEvict(value = "medicines_search", allEntries = true),
+        @CacheEvict(value = "dashboard_kpis",   allEntries = true)
+    })
     public Return createReturn(Return returnItem) {
         if (returnItem.getSaleItem() == null || returnItem.getSaleItem().getId() == null) {
             throw new IllegalArgumentException("A specific Sale Item must be selected for return.");
@@ -87,6 +94,10 @@ public class ReturnService {
     }
 
     @Transactional
+    @Caching(evict = {
+        @CacheEvict(value = "medicines_search", allEntries = true),
+        @CacheEvict(value = "dashboard_kpis",   allEntries = true)
+    })
     public void deleteReturn(Long id) {
         Return returnItem = returnRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Return record not found: " + id));
