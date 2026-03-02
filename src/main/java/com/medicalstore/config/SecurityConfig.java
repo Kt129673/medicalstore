@@ -33,7 +33,7 @@ public class SecurityConfig {
 
     private final CustomUserDetailsService userDetailsService;
 
-    @Value("${remember.me.key}")
+    @Value("${remember.me.key:medicalStoreRememberMeKey2024}")
     private String rememberMeKey;
 
     @Bean
