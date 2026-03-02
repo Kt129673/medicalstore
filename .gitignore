@@ -68,3 +68,11 @@ application-local.yml
 application-secret.properties
 application-secret.yml
 nul
+
+# ===========================
+# Private keys / certificates
+# ===========================
+*.pem
+*.key
+*.p12
+*.jks

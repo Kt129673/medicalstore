@@ -17,10 +17,13 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Controller
 @RequestMapping("/sales")
 @RequiredArgsConstructor
 @PreAuthorize("hasAnyRole('ADMIN', 'SHOPKEEPER')")
+@Slf4j
 public class SaleController {
 
     private final SaleService saleService;
@@ -131,11 +134,12 @@ public class SaleController {
                     .contentType(MediaType.TEXT_HTML)
                     .body(html);
         } catch (Exception e) {
+            log.error("Failed to generate invoice for sale id={}", id, e);
             String errorHtml = "<!DOCTYPE html><html><head><title>Error</title>"
                     + "<link href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css' rel='stylesheet'>"
                     + "</head><body class='d-flex justify-content-center align-items-center' style='height:100vh'>"
                     + "<div class='text-center'><h1 class='text-danger'>Invoice Error</h1>"
-                    + "<p>" + e.getMessage() + "</p>"
+                    + "<p>An error occurred while generating the invoice. Please try again or contact support.</p>"
                     + "<a href='/sales' class='btn btn-primary mt-3'>Back to Sales</a></div></body></html>";
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .contentType(MediaType.TEXT_HTML)
