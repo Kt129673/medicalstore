@@ -166,7 +166,7 @@
                 </div>
 
                 <!-- ── Reports Group ── -->
-                <div sec:authorize="isAuthenticated()">
+                <div sec:authorize="hasAnyRole('ADMIN', 'OWNER', 'SHOPKEEPER')">
                 <details class="nav-group"
                     th:attr="open=${#lists.contains({'reports','analytics','gst'}, page)} ? 'open' : null">
                     <summary>Reports</summary>
@@ -176,13 +176,11 @@
                         <i class="bi bi-graph-up-arrow nav-icon"></i><span>Standard Reports</span>
                     </a>
                     <!-- Advanced Analytics — all roles can view analytics (export restricted by permission) -->
-                    <div sec:authorize="isAuthenticated()">
-                        <a class="nav-link" data-label="Advanced Analytics"
-                            th:classappend="${page == 'analytics'} ? 'active' : ''" href="/analytics"
-                            th:attr="aria-current=${page == 'analytics'} ? 'page' : null">
-                            <i class="bi bi-bar-chart-fill nav-icon"></i><span>Advanced Analytics</span>
-                        </a>
-                    </div>
+                    <a class="nav-link" data-label="Advanced Analytics"
+                        th:classappend="${page == 'analytics'} ? 'active' : ''" href="/analytics"
+                        th:attr="aria-current=${page == 'analytics'} ? 'page' : null">
+                        <i class="bi bi-bar-chart-fill nav-icon"></i><span>Advanced Analytics</span>
+                    </a>
                     <a class="nav-link" data-label="GST / Tax" th:classappend="${page == 'gst'} ? 'active' : ''"
                         href="/reports/gst" th:attr="aria-current=${page == 'gst'} ? 'page' : null">
                         <i class="bi bi-file-earmark-ruled nav-icon"></i><span>GST / Tax</span>
@@ -236,7 +234,7 @@
                 <!-- Right: controls -->
                 <div class="header-right">
                     <!-- Notification Bell -->
-                    <div class="header-notif" id="notifContainer" sec:authorize="hasAnyRole('ADMIN','SHOPKEEPER')">
+                    <div class="header-notif" id="notifContainer" sec:authorize="hasRole('SHOPKEEPER')">
                         <button class="header-notif-btn" id="notifBtn" title="Notifications" aria-label="Notifications"
                             aria-expanded="false">
                             <i class="bi bi-bell"></i>
@@ -354,6 +352,9 @@
 
     <!-- Bootstrap JS API -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Chart.js — deferred so it doesn't block render; pages that need it inline-script after DOMContentLoaded -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js" defer></script>
 
     <!-- SweetAlert2 API -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.all.min.js"></script>

@@ -75,6 +75,7 @@ public class SaleController {
     }
 
     @PostMapping("/save")
+    @PreAuthorize("hasRole('SHOPKEEPER')")
     @ResponseBody
     public ResponseEntity<?> saveSale(@RequestBody com.medicalstore.dto.SaleRequestDTO saleDto) {
         try {
@@ -148,6 +149,7 @@ public class SaleController {
     }
 
     @PostMapping("/send-whatsapp/{id}")
+    @PreAuthorize("hasRole('SHOPKEEPER')")
     @ResponseBody
     public String sendWhatsApp(@PathVariable Long id) {
         try {

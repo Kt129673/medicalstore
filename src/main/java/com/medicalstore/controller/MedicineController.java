@@ -78,6 +78,7 @@ public class MedicineController {
     }
 
     @PostMapping("/save")
+    @PreAuthorize("hasRole('SHOPKEEPER')")
     public String saveMedicine(@ModelAttribute Medicine medicine,
             @RequestParam(required = false) Long branchId,
             RedirectAttributes ra, Model model) {

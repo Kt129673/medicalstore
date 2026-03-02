@@ -3,38 +3,42 @@
     th:replace="~{layout :: layout(title='Owner Dashboard', page='owner', content=~{::main}, pageIcon='bi bi-person-badge-fill')}">
 <main>
 <div class="container-fluid py-4">
-    <!-- ── Admin Impersonation Banner (Section 4.1) ──────────────────────── -->
-    <div th:if="${impersonationMode}" class="alert alert-warning border-warning d-flex align-items-center justify-content-between mb-4 shadow-sm" role="alert">
+
+    <!-- ── Admin Impersonation Banner ──────────────────────────────────── -->
+    <div th:if="${impersonationMode}"
+         class="ent-alert ent-alert--warning mb-4"
+         role="alert">
+        <i class="bi bi-eye-fill"></i>
         <div>
-            <i class="bi bi-eye-fill me-2 text-warning"></i>
             <strong>Viewing as Owner: <span th:text="${viewingOwnerName}">Owner Name</span></strong>
-            <span class="ms-2 badge bg-warning text-dark">Admin Mode</span>
-            <small class="ms-2 text-muted">You are viewing this Owner's dashboard. Your admin permissions remain unchanged.</small>
+            <span class="ms-2 ent-badge ent-badge--warning">Admin Mode</span>
+            <span class="ms-2" style="font-size:12px;color:var(--text-secondary)">You are viewing this Owner's dashboard. Your admin permissions remain unchanged.</span>
         </div>
-        <a th:href="${exitOwnerViewUrl}" class="btn btn-sm btn-outline-warning ms-3 text-nowrap">
-            <i class="bi bi-x-circle me-1"></i>Exit Owner View
+        <a th:href="${exitOwnerViewUrl}" class="btn btn-sm btn-outline-warning ms-auto text-nowrap flex-shrink-0">
+            <i class="bi bi-x-circle"></i>Exit Owner View
         </a>
     </div>
-    <!-- Header -->
-    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+
+    <!-- ── Page Header ─────────────────────────────────────────────────── -->
+    <div class="page-header mb-4">
         <div>
-            <h2 class="fw-bold mb-0"><i class="bi bi-person-badge-fill text-primary me-2"></i>Owner Dashboard</h2>
-            <p class="text-muted mb-0">Aggregated view across all your branches</p>
+            <h2><i class="bi bi-person-badge-fill text-primary me-2"></i>Owner Dashboard</h2>
+            <p>Aggregated view across all your branches</p>
         </div>
-        <div class="d-flex gap-2">
+        <div class="d-flex gap-2 flex-wrap">
             <a href="/owner/compare" class="btn btn-outline-info btn-sm">
-                <i class="bi bi-bar-chart-line me-1"></i>Compare Branches
+                <i class="bi bi-bar-chart-line"></i>Compare Branches
             </a>
             <a href="/owner/shopkeepers" class="btn btn-outline-primary btn-sm">
-                <i class="bi bi-people me-1"></i>Manage Shopkeepers
+                <i class="bi bi-people"></i>Manage Shopkeepers
             </a>
             <a href="/owner/subscription" class="btn btn-outline-secondary btn-sm">
-                <i class="bi bi-credit-card me-1"></i>Subscription
+                <i class="bi bi-credit-card"></i>Subscription
             </a>
         </div>
     </div>
 
-    <!-- ── KPI Cards ─────────────────────────────────────────────────────── -->
+    <!-- ── KPI Cards ────────────────────────────────────────────────────── -->
     <div class="row g-3 mb-4">
         <div class="col-6 col-md-4 col-xl-2">
             <div class="kpi-card ent-kpi--blue">
@@ -61,7 +65,7 @@
             </div>
         </div>
         <div class="col-6 col-md-4 col-xl-2">
-            <div class="kpi-card ent-kpi--amber">
+            <div class="kpi-card ent-kpi--purple">
                 <i class="bi bi-capsule-pill kpi-icon"></i>
                 <div class="kpi-label">Total Medicines</div>
                 <div class="kpi-value" th:text="${totalMedicines}">0</div>
@@ -69,119 +73,147 @@
             </div>
         </div>
         <div class="col-6 col-md-4 col-xl-2">
-            <div class="kpi-card ent-kpi--red">
-                <i class="bi bi-exclamation-triangle kpi-icon"></i>
-                <div class="kpi-label">Low Stock</div>
-                <div class="kpi-value" th:text="${lowStockCount ?: lowStock}">0</div>
-                <div class="kpi-sub">Below 10 units</div>
+            <div class="kpi-card ent-kpi--amber">
+                <i class="bi bi-person-gear kpi-icon"></i>
+                <div class="kpi-label">Shopkeepers</div>
+                <div class="kpi-value" th:text="${shopkeeperCount}">0</div>
+                <div class="kpi-sub">Active staff</div>
             </div>
         </div>
         <div class="col-6 col-md-4 col-xl-2">
             <div class="kpi-card ent-kpi--teal">
-                <i class="bi bi-calendar-x kpi-icon"></i>
-                <div class="kpi-label">Expiring Soon</div>
-                <div class="kpi-value" th:text="${expiringIn30}">0</div>
-                <div class="kpi-sub">Within 30 days</div>
+                <i class="bi bi-building kpi-icon"></i>
+                <div class="kpi-label">Active Branches</div>
+                <div class="kpi-value" th:text="${branchCount}">0</div>
+                <div class="kpi-sub">In your portfolio</div>
             </div>
         </div>
     </div>
 
+    <!-- ── Chart + Portfolio ────────────────────────────────────────────── -->
     <div class="row g-4 mb-4">
-        <!-- Sales Trend Chart -->
         <div class="col-lg-7">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-header bg-white border-0 py-3">
-                    <h6 class="fw-bold mb-0"><i class="bi bi-bar-chart-line me-2 text-primary"></i>7-Day Sales Trend — All Branches</h6>
+            <div class="card h-100">
+                <div class="card-header">
+                    <span class="d-flex align-items-center gap-2">
+                        <i class="bi bi-bar-chart-line text-primary"></i>
+                        <span>7-Day Sales Trend — All Branches</span>
+                    </span>
                 </div>
                 <div class="card-body">
                     <canvas id="salesTrendChart" height="120"></canvas>
                 </div>
             </div>
         </div>
-        <!-- Portfolio Summary -->
         <div class="col-lg-5">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-header bg-white border-0 py-3">
-                    <h6 class="fw-bold mb-0"><i class="bi bi-info-circle me-2 text-info"></i>Portfolio Overview</h6>
+            <div class="card h-100">
+                <div class="card-header">
+                    <span class="d-flex align-items-center gap-2">
+                        <i class="bi bi-info-circle text-info"></i>
+                        <span>Portfolio Overview</span>
+                    </span>
                 </div>
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                <div class="card-body p-0">
+                    <div class="portfolio-row d-flex justify-content-between align-items-center px-4 py-3 border-bottom">
                         <span class="text-muted small">Total Branches</span>
                         <span class="fw-bold fs-5 text-primary" th:text="${branchCount}">0</span>
                     </div>
-                    <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                    <div class="portfolio-row d-flex justify-content-between align-items-center px-4 py-3 border-bottom">
                         <span class="text-muted small">Total Shopkeepers</span>
                         <span class="fw-bold fs-5" th:text="${shopkeeperCount}">0</span>
                     </div>
-                    <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
-                        <span class="text-muted small">Expiring in 30 days</span>
-                        <span class="fw-bold fs-5 text-warning" th:text="${expiringIn30}">0</span>
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
-                        <span class="text-muted small">Expiring in 60 days</span>
-                        <span class="fw-bold fs-5" th:text="${expiringIn60}">0</span>
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center py-2">
-                        <span class="text-muted small">Expiring in 90 days</span>
-                        <span class="fw-bold fs-5" th:text="${expiringIn90}">0</span>
+                    <div class="portfolio-row d-flex justify-content-between align-items-center px-4 py-3">
+                        <span class="text-muted small">Subscription Status</span>
+                        <span class="ent-badge ent-badge--active"><i class="bi bi-circle-fill"></i>Active</span>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Branch Cards -->
+    <!-- ── Branch Cards ─────────────────────────────────────────────────── -->
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h5 class="fw-bold mb-0"><i class="bi bi-building me-2"></i>My Branches</h5>
+        <h5 class="fw-bold mb-0 d-flex align-items-center gap-2">
+            <i class="bi bi-building text-primary"></i>My Branches
+        </h5>
         <a href="/owner/compare" class="btn btn-sm btn-outline-info">
-            <i class="bi bi-columns-gap me-1"></i>Compare All Branches
+            <i class="bi bi-columns-gap"></i>Compare All Branches
         </a>
     </div>
     <div class="row g-3 mb-4">
         <div class="col-sm-6 col-lg-4 col-xl-3" th:each="branch : ${branches}">
-            <div class="card border-0 shadow-sm h-100">
+            <div class="card branch-card h-100">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start mb-2">
                         <h6 class="fw-bold mb-0" th:text="${branch.name}"></h6>
-                        <span th:if="${branch.isActive}" class="badge bg-success">Active</span>
-                        <span th:unless="${branch.isActive}" class="badge bg-secondary">Inactive</span>
+                        <span th:if="${branch.isActive}" class="ent-badge ent-badge--active">
+                            <i class="bi bi-circle-fill"></i>Active
+                        </span>
+                        <span th:unless="${branch.isActive}" class="ent-badge ent-badge--inactive">
+                            <i class="bi bi-circle-fill"></i>Inactive
+                        </span>
                     </div>
-                    <div class="small text-muted mb-1"><i class="bi bi-geo-alt me-1"></i><span th:text="${branch.address}"></span></div>
+                    <div class="small text-muted mb-1">
+                        <i class="bi bi-geo-alt text-primary me-1"></i>
+                        <span th:text="${branch.address}"></span>
+                    </div>
                     <div class="small text-muted mb-1" th:if="${branch.phone}">
-                        <i class="bi bi-telephone me-1"></i><span th:text="${branch.phone}"></span>
+                        <i class="bi bi-telephone text-primary me-1"></i>
+                        <span th:text="${branch.phone}"></span>
                     </div>
                     <div class="small text-muted mb-3" th:if="${branch.gstNumber}">
-                        <i class="bi bi-file-text me-1"></i>GST: <span th:text="${branch.gstNumber}"></span>
+                        <i class="bi bi-file-text text-primary me-1"></i>GST: <span th:text="${branch.gstNumber}"></span>
                     </div>
                     <a th:href="@{/owner/branches/{id}(id=${branch.id})}" class="btn btn-sm btn-outline-primary w-100">
-                        <i class="bi bi-arrow-right-circle me-1"></i>View Details &amp; KPIs
+                        <i class="bi bi-arrow-right-circle"></i>View Details &amp; KPIs
                     </a>
                 </div>
             </div>
         </div>
         <div class="col-12" th:if="${#lists.isEmpty(branches)}">
-            <div class="alert alert-info">No branches assigned yet. Contact your platform admin.</div>
+            <div class="ent-alert ent-alert--info">
+                <i class="bi bi-info-circle"></i>
+                <div>No branches assigned yet. Contact your platform admin.</div>
+            </div>
         </div>
     </div>
 
-    <!-- Critical Stock Alert -->
-    <div class="card border-0 shadow-sm mb-4 border-start border-4 border-danger"
+    <!-- ── Critical Stock Alert ─────────────────────────────────────────── -->
+    <div class="card mb-4 card-accent-danger"
          th:if="${criticalStockItems != null and !#lists.isEmpty(criticalStockItems)}">
-        <div class="card-header bg-white border-0 py-3">
-            <h6 class="fw-bold mb-0 text-danger"><i class="bi bi-exclamation-circle me-2"></i>Critical Stock Alert</h6>
+        <div class="card-header">
+            <span class="d-flex align-items-center gap-2 text-danger">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                <span>Critical Stock Alert</span>
+            </span>
+            <span class="ent-badge ent-badge--critical"
+                  th:text="${#lists.size(criticalStockItems)} + ' items'">0 items</span>
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-sm table-hover align-middle mb-0">
-                    <thead class="table-light">
-                        <tr><th>Medicine</th><th>Category</th><th>Branch</th><th>Stock</th><th>Expiry</th></tr>
+                <table class="modern-table table table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Medicine</th>
+                            <th>Category</th>
+                            <th>Branch</th>
+                            <th class="col-num">Stock</th>
+                            <th>Expiry</th>
+                        </tr>
                     </thead>
                     <tbody>
                         <tr th:each="m : ${criticalStockItems}">
                             <td class="fw-semibold" th:text="${m.name}"></td>
-                            <td><span class="badge bg-light text-dark" th:text="${m.category}"></span></td>
+                            <td>
+                                <span class="cat-tag" th:text="${m.category}"></span>
+                            </td>
                             <td class="small text-muted" th:text="${m.branch?.name}">—</td>
-                            <td><span class="badge bg-danger" th:text="${m.quantity} + ' units'"></span></td>
+                            <td class="col-num">
+                                <span class="stock-pill critical">
+                                    <span class="dot"></span>
+                                    <span th:text="${m.quantity} + ' units'"></span>
+                                </span>
+                            </td>
                             <td class="small" th:text="${m.expiryDate}"></td>
                         </tr>
                     </tbody>
@@ -190,194 +222,79 @@
         </div>
     </div>
 
-    <!-- Recent Sales -->
-    <div class="card border-0 shadow-sm">
-        <div class="card-header bg-white border-0 py-3">
-            <h6 class="fw-bold mb-0"><i class="bi bi-receipt me-2"></i>Recent Sales — All Branches</h6>
+    <!-- ── Recent Sales ─────────────────────────────────────────────────── -->
+    <div class="card">
+        <div class="card-header">
+            <span class="d-flex align-items-center gap-2">
+                <i class="bi bi-receipt text-primary"></i>
+                <span>Recent Sales — All Branches</span>
+            </span>
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light">
-                        <tr><th>Invoice</th><th>Customer</th><th>Branch</th><th>Amount</th><th>Date</th></tr>
+                <table class="modern-table table table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Invoice</th>
+                            <th>Customer</th>
+                            <th>Branch</th>
+                            <th class="col-num">Amount</th>
+                            <th>Date</th>
+                        </tr>
                     </thead>
                     <tbody>
                         <tr th:each="sale : ${recentSales}">
                             <td><code th:text="'#INV-' + ${sale.id}"></code></td>
                             <td th:text="${sale.customer?.name ?: 'Walk-in'}">—</td>
                             <td class="small text-muted" th:text="${sale.branch?.name}">—</td>
-                            <td class="fw-semibold text-success">₹<span th:text="${#numbers.formatDecimal(sale.finalAmount ?: sale.totalAmount, 0, 'COMMA', 2, 'POINT')}"></span></td>
-                            <td class="small" th:text="${#temporals.format(sale.saleDate, 'dd MMM HH:mm')}"></td>
+                            <td class="col-num sale-amount">₹<span th:text="${#numbers.formatDecimal(sale.finalAmount ?: sale.totalAmount, 0, 'COMMA', 2, 'POINT')}"></span></td>
+                            <td class="small text-muted" th:text="${#temporals.format(sale.saleDate, 'dd MMM HH:mm')}"></td>
                         </tr>
-                        <tr th:if="${recentSales == null or #lists.isEmpty(recentSales)}">
-                            <td colspan="5" class="text-center text-muted py-3">No sales recorded yet.</td>
+                        <tr th:if="${recentSales == null or #lists.isEmpty(recentSales)}" class="tr-empty">
+                            <td colspan="5">
+                                <i class="bi bi-receipt"></i>
+                                No sales recorded yet.
+                            </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
+
 </div>
 
 <script th:inline="javascript">
     const trendRaw = /*[[${salesTrendJson}]]*/ '{"labels":[],"data":[]}';
-    try {
-        const trend = JSON.parse(trendRaw);
-        const ctx = document.getElementById('salesTrendChart');
-        if (ctx && typeof Chart !== 'undefined') {
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: trend.labels,
-                    datasets: [{
-                        label: 'Revenue (₹)',
-                        data: trend.data,
-                        backgroundColor: 'rgba(37,99,235,0.7)',
-                        borderColor: '#2563eb',
-                        borderWidth: 1.5,
-                        borderRadius: 6
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: { legend: { display: false } },
-                    scales: { y: { beginAtZero: true,
-                        ticks: { callback: v => '₹' + v.toLocaleString() }
-                    }}
-                }
-            });
-        }
-    } catch(e) {}
+    window.addEventListener('load', function () {
+        try {
+            const trend = JSON.parse(trendRaw);
+            const ctx = document.getElementById('salesTrendChart');
+            if (ctx && typeof Chart !== 'undefined') {
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: trend.labels,
+                        datasets: [{
+                            label: 'Revenue (₹)',
+                            data: trend.data,
+                            backgroundColor: 'rgba(37,99,235,0.7)',
+                            borderColor: '#2563eb',
+                            borderWidth: 1.5,
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: { legend: { display: false } },
+                        scales: { y: { beginAtZero: true,
+                            ticks: { callback: v => '₹' + v.toLocaleString() }
+                        }}
+                    }
+                });
+            }
+        } catch(e) {}
+    });
 </script>
 </main>
-</html>
-    <div class="container-fluid py-4">
-
-        <!-- Header -->
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <div>
-                <h2 class="fw-bold mb-0">
-                    <i class="bi bi-person-badge-fill text-primary me-2"></i>Owner Dashboard
-                </h2>
-                <p class="text-muted mb-0">Aggregated view across all your branches</p>
-            </div>
-            <a href="/owner/shopkeepers" class="btn btn-outline-primary">
-                <i class="bi bi-people me-1"></i>Manage Shopkeepers
-            </a>
-        </div>
-
-        <!-- Aggregated Stats -->
-        <div class="row g-3 mb-4">
-            <div class="col-6 col-md-3">
-                <div class="card border-0 shadow-sm h-100" style="border-left: 4px solid #2563eb !important;">
-                    <div class="card-body">
-                        <div class="small text-muted fw-semibold text-uppercase">Total Medicines</div>
-                        <div class="fs-2 fw-bold text-primary" th:text="${totalMedicines}">0</div>
-                        <div class="small text-muted">Across all branches</div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-6 col-md-3">
-                <div class="card border-0 shadow-sm h-100" style="border-left: 4px solid #10b981 !important;">
-                    <div class="card-body">
-                        <div class="small text-muted fw-semibold text-uppercase">Today's Revenue</div>
-                        <div class="fs-2 fw-bold text-success">
-                            ₹<span th:text="${#numbers.formatDecimal(todaySales, 0, 'COMMA', 2, 'POINT')}">0.00</span>
-                        </div>
-                        <div class="small text-muted">All branches combined</div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-6 col-md-3">
-                <div class="card border-0 shadow-sm h-100" style="border-left: 4px solid var(--primary-color) !important;">
-                    <div class="card-body">
-                        <div class="small text-muted fw-semibold text-uppercase">Total Customers</div>
-                        <div class="fs-2 fw-bold text-primary" th:text="${totalCustomers}">0</div>
-                        <div class="small text-muted">Registered customers</div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-6 col-md-3">
-                <div class="card border-0 shadow-sm h-100" style="border-left: 4px solid #f59e0b !important;">
-                    <div class="card-body">
-                        <div class="small text-muted fw-semibold text-uppercase">Low Stock Items</div>
-                        <div class="fs-2 fw-bold text-warning" th:text="${lowStock}">0</div>
-                        <div class="small text-muted">Below 10 units</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Branches Grid -->
-        <h5 class="fw-bold mb-3"><i class="bi bi-building me-2"></i>My Branches</h5>
-        <div class="row g-3 mb-4">
-            <div class="col-md-4" th:each="branch : ${branches}">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <h6 class="fw-bold mb-0" th:text="${branch.name}"></h6>
-                            <span th:if="${branch.isActive}" class="badge bg-success">Active</span>
-                            <span th:unless="${branch.isActive}" class="badge bg-secondary">Inactive</span>
-                        </div>
-                        <div class="small text-muted mb-1"><i class="bi bi-geo-alt me-1"></i><span
-                                th:text="${branch.address}"></span></div>
-                        <div class="small text-muted mb-1" th:if="${branch.phone}">
-                            <i class="bi bi-telephone me-1"></i><span th:text="${branch.phone}"></span>
-                        </div>
-                        <div class="small text-muted mb-3" th:if="${branch.gstNumber}">
-                            <i class="bi bi-file-text me-1"></i>GST: <span th:text="${branch.gstNumber}"></span>
-                        </div>
-                        <a th:href="@{/owner/branches/{id}(id=${branch.id})}"
-                            class="btn btn-sm btn-outline-primary w-100">
-                            <i class="bi bi-arrow-right me-1"></i>View Details
-                        </a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-12" th:if="${#lists.isEmpty(branches)}">
-                <div class="alert alert-info">No branches assigned yet. Contact your platform admin.</div>
-            </div>
-        </div>
-
-        <!-- Recent Sales -->
-        <div class="card border-0 shadow-sm">
-            <div class="card-header bg-white border-0 py-3">
-                <h5 class="fw-bold mb-0"><i class="bi bi-receipt me-2"></i>Recent Sales</h5>
-            </div>
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead class="table-light">
-                            <tr>
-                                <th>ID</th>
-                                <th>Medicine</th>
-                                <th>Customer</th>
-                                <th>Branch</th>
-                                <th>Amount</th>
-                                <th>Date</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr th:each="sale : ${recentSales}">
-                                <td><code th:text="'#INV-' + ${sale.id}"></code></td>
-                                <td th:text="${sale.medicine?.name}">—</td>
-                                <td th:text="${sale.customer?.name ?: 'Walk-in'}">—</td>
-                                <td th:text="${sale.branch?.name}">—</td>
-                                <td class="fw-semibold text-success">₹<span
-                                        th:text="${#numbers.formatDecimal(sale.finalAmount ?: sale.totalAmount, 0, 'COMMA', 2, 'POINT')}"></span>
-                                </td>
-                                <td th:text="${#temporals.format(sale.saleDate, 'dd MMM HH:mm')}"></td>
-                            </tr>
-                            <tr th:if="${#lists.isEmpty(recentSales)}">
-                                <td colspan="6" class="text-center text-muted py-3">No recent sales.</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-    </div>
-</main>
-
 </html>

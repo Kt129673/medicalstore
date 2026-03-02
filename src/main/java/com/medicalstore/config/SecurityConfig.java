@@ -42,15 +42,18 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    // ─── Role Hierarchy: ADMIN > OWNER > SHOPKEEPER ────────────────────────
-    // Satisfies Section 5.1 of the RBAC specification.
-    // ADMIN inherits all permissions of OWNER and SHOPKEEPER.
-    // OWNER inherits all permissions of SHOPKEEPER.
+    // ─── Role Hierarchy: ADMIN > OWNER (OWNER does NOT inherit SHOPKEEPER) ────
+    // ADMIN inherits OWNER permissions only — enabling admin impersonation of
+    // /owner/** routes (view-as-owner drill-down). OWNER does NOT inherit
+    // SHOPKEEPER so that OWNER users cannot access or modify operational
+    // endpoints. This enforces the 3-layer SaaS separation:
+    //   ADMIN   → Platform governance (/admin/**)
+    //   OWNER   → Portfolio management (/owner/**)
+    //   SHOPKEEPER → Store operations (/medicines/**, /sales/**, etc.)
     @Bean
     public RoleHierarchy roleHierarchy() {
         return RoleHierarchyImpl.withDefaultRolePrefix()
                 .role("ADMIN").implies("OWNER")
-                .role("OWNER").implies("SHOPKEEPER")
                 .build();
     }
 
@@ -85,17 +88,19 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/login", "/css/**", "/js/**", "/images/**", "/error").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/owner/**").hasRole("OWNER")
-                        // Analytics — all roles can view; export endpoints restricted to ADMIN/OWNER via @PreAuthorize
+                        // ADMIN explicitly granted for impersonation (view-as-owner drill-down)
+                        .requestMatchers("/owner/**").hasAnyRole("OWNER", "ADMIN")
+                        // Analytics — all roles can view; export endpoints restricted via @PreAuthorize
                         .requestMatchers("/analytics/**").hasAnyRole("ADMIN", "OWNER", "SHOPKEEPER")
                         // Reports — all authenticated roles can view
-                        .requestMatchers("/reports/**")
-                        .hasAnyRole("ADMIN", "OWNER", "SHOPKEEPER")
-                        // Operational endpoints — ADMIN and SHOPKEEPER only (OWNER uses /owner portal)
+                        .requestMatchers("/reports/**").hasAnyRole("ADMIN", "OWNER", "SHOPKEEPER")
+                        // Operational endpoints — ADMIN (read-only monitoring) and SHOPKEEPER (full operations)
+                        // Write operations are further blocked at method level via @PreAuthorize("hasRole('SHOPKEEPER')")
                         .requestMatchers("/medicines/**", "/sales/**", "/customers/**", "/returns/**",
                                 "/suppliers/**", "/purchases/**")
                         .hasAnyRole("ADMIN", "SHOPKEEPER")
-                        .requestMatchers("/dashboard").hasAnyRole("ADMIN", "SHOPKEEPER")
+                        // OWNER included for view-as-shopkeeper impersonation flow
+                        .requestMatchers("/dashboard").hasAnyRole("ADMIN", "OWNER", "SHOPKEEPER")
                         .anyRequest().authenticated())
                 .csrf(csrf -> {
                     // Use non-deferred handler so the CSRF token is eagerly loaded.

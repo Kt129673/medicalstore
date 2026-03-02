@@ -47,6 +47,7 @@ public class SupplierController {
     }
     
     @PostMapping("/save")
+    @PreAuthorize("hasRole('SHOPKEEPER')")
     public String saveSupplier(@ModelAttribute Supplier supplier, RedirectAttributes redirectAttributes) {
         // Auto-assign branch for shopkeeper
         if (supplier.getId() == null && securityUtils.isShopkeeper()) {

@@ -73,6 +73,7 @@ public class PurchaseController {
     }
 
     @PostMapping("/save")
+    @PreAuthorize("hasRole('SHOPKEEPER')")
     public String saveOrder(@RequestParam Long supplierId,
             @RequestParam String orderDate,
             @RequestParam(required = false) String notes,
@@ -127,6 +128,7 @@ public class PurchaseController {
     }
 
     @PostMapping("/{id}/receive")
+    @PreAuthorize("hasRole('SHOPKEEPER')")
     public String receiveOrder(@PathVariable Long id,
             @RequestParam(name = "receivedQty") List<Integer> receivedQuantities,
             RedirectAttributes ra) {
@@ -153,6 +155,7 @@ public class PurchaseController {
     }
 
     @PostMapping("/{id}/cancel")
+    @PreAuthorize("hasRole('SHOPKEEPER')")
     public String cancelOrder(@PathVariable Long id, RedirectAttributes ra) {
         purchaseService.cancelOrder(id);
         ra.addFlashAttribute("success", "Purchase order cancelled.");

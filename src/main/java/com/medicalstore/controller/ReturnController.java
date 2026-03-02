@@ -37,6 +37,7 @@ public class ReturnController {
     }
     
     @PostMapping("/save")
+    @PreAuthorize("hasRole('SHOPKEEPER')")
     public String saveReturn(@ModelAttribute Return returnItem, RedirectAttributes redirectAttributes) {
         try {
             returnService.createReturn(returnItem);

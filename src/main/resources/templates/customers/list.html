@@ -4,6 +4,17 @@
 
 <body>
     <div id="content">
+
+        <!-- Read-Only Monitoring Mode: shown to ADMIN drilling down into operations -->
+        <div sec:authorize="hasRole('ADMIN')"
+             class="alert alert-info d-flex align-items-center gap-2 mb-3" role="alert">
+            <i class="bi bi-eye-fill fs-5 flex-shrink-0"></i>
+            <div>
+                <strong>Read-Only Monitoring Mode.</strong>
+                You are viewing operational data as Platform Admin. Write operations are restricted to Shopkeeper.
+            </div>
+        </div>
+
         <!-- Page Header -->
         <div
             th:replace="~{fragments :: page-header('Customers', 'Manage customer information and loyalty programs', 'bi bi-people-fill text-primary', '/customers/new', 'Add New Customer', null)}">
@@ -98,7 +109,7 @@
                                             <i class="bi bi-eye"></i>
                                         </a>
                                         <a th:href="@{/customers/edit/{id}(id=${customer.id})}"
-                                            class="btn btn-outline-primary" title="Edit">
+                                            class="btn btn-outline-primary" title="Edit" sec:authorize="hasRole('SHOPKEEPER')">
                                             <i class="bi bi-pencil"></i>
                                         </a>
                                         <form method="post" th:action="@{/customers/delete/{id}(id=${customer.id})}" style="display:inline"

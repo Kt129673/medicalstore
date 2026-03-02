@@ -39,7 +39,9 @@
         </h2>
         <p class="text-muted mb-0" th:text="${headerDescription}">Description</p>
     </div>
-    <a th:if="${actionUrl}" th:href="${actionUrl}" th:class="${actionClass ?: 'btn btn-primary'}">
+    <!-- Action button: only rendered for SHOPKEEPER (operational write). ADMIN/OWNER see read-only view. -->
+    <a th:if="${actionUrl}" th:href="${actionUrl}" th:class="${actionClass ?: 'btn btn-primary'}"
+       sec:authorize="hasRole('SHOPKEEPER')">
         <i class="bi bi-plus-circle"></i>
         <span th:text="${actionText}">Action</span>
     </a>

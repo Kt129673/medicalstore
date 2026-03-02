@@ -5,13 +5,23 @@
 <body>
     <div id="content">
 
+        <!-- Read-Only Monitoring Mode: shown to ADMIN drilling down into operations -->
+        <div sec:authorize="hasRole('ADMIN')"
+             class="alert alert-info d-flex align-items-center gap-2 mb-3" role="alert">
+            <i class="bi bi-eye-fill fs-5 flex-shrink-0"></i>
+            <div>
+                <strong>Read-Only Monitoring Mode.</strong>
+                You are viewing operational data as Platform Admin. Write operations are restricted to Shopkeeper.
+            </div>
+        </div>
+
         <!-- Page Header -->
         <div class="page-header mb-4">
             <div>
                 <h2 class="mb-1"><i class="bi bi-capsule-pill"></i> Medicines Inventory</h2>
                 <p class="text-muted mb-0">Manage your medical inventory and stock levels</p>
             </div>
-            <div class="d-flex gap-2 flex-wrap">
+            <div sec:authorize="hasRole('SHOPKEEPER')" class="d-flex gap-2 flex-wrap">
                 <a href="/medicines/expiry-alerts" class="btn btn-outline-danger">
                     <i class="bi bi-calendar-x"></i> Expiry Alerts
                 </a>
@@ -264,7 +274,7 @@
                                         <i class="bi bi-eye"></i>
                                     </button>
                                     <a th:href="@{/medicines/edit/{id}(id=${medicine.id})}" class="action-btn"
-                                        title="Edit">
+                                        title="Edit" sec:authorize="hasRole('SHOPKEEPER')">
                                         <i class="bi bi-pencil"></i>
                                     </a>
                                     <form method="post" th:action="@{/medicines/delete/{id}(id=${medicine.id})}" style="display:inline"

@@ -39,6 +39,7 @@ public class SupplierCreditController {
     }
 
     @PostMapping("/save")
+    @PreAuthorize("hasRole('SHOPKEEPER')")
     public String saveCredit(@ModelAttribute SupplierCredit credit, RedirectAttributes ra) {
         try {
             // Auto-assign branch for shopkeepers
@@ -54,6 +55,7 @@ public class SupplierCreditController {
     }
 
     @PostMapping("/{id}/pay")
+    @PreAuthorize("hasRole('SHOPKEEPER')")
     public String recordPayment(@PathVariable Long id, @RequestParam Double amount, RedirectAttributes ra) {
         try {
             creditService.recordPayment(id, amount);

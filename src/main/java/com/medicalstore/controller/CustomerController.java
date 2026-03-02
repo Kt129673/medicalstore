@@ -58,6 +58,7 @@ public class CustomerController {
     }
     
     @PostMapping("/save")
+    @PreAuthorize("hasRole('SHOPKEEPER')")
     public String saveCustomer(@ModelAttribute Customer customer, RedirectAttributes redirectAttributes) {
         try {
             // Convert empty email to null to avoid UNIQUE constraint violation

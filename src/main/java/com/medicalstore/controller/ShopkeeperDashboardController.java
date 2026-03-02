@@ -28,7 +28,9 @@ import org.springframework.web.bind.annotation.GetMapping;
  */
 @Controller
 @RequiredArgsConstructor
-@PreAuthorize("hasAnyRole('ADMIN', 'SHOPKEEPER')")
+// OWNER included to support view-as-shopkeeper impersonation drill-down from OwnerController.
+// ADMIN included for read-only operational monitoring (writes are blocked at method level on SaleController etc.)
+@PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'SHOPKEEPER')")
 public class ShopkeeperDashboardController {
 
     /**

@@ -4,6 +4,17 @@
 
 <body>
     <div id="content">
+
+        <!-- Read-Only Monitoring Mode: shown to ADMIN drilling down into operations -->
+        <div sec:authorize="hasRole('ADMIN')"
+             class="alert alert-info d-flex align-items-center gap-2 mb-3" role="alert">
+            <i class="bi bi-eye-fill fs-5 flex-shrink-0"></i>
+            <div>
+                <strong>Read-Only Monitoring Mode.</strong>
+                You are viewing operational data as Platform Admin. Write operations are restricted to Shopkeeper.
+            </div>
+        </div>
+
         <!-- Page Header -->
         <div
             th:replace="~{fragments :: page-header('Sales History', 'View and manage all sales transactions', 'bi bi-receipt text-primary', '/sales/new', 'New Sale', null)}">
