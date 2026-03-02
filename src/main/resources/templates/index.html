@@ -370,51 +370,45 @@
 
             /* Skeletons for async loading */
             .skeleton {
-                background: linear-gradient(90deg, rgba(255, 255, 255, 0.1) 25%, rgba(255, 255, 255, 0.3) 50%, rgba(255, 255, 255, 0.1) 75%);
-                background-size: 200% 100%;
+                background: linear-gradient(90deg, #e2e8f0 0%, #f0f4f8 40%, #e2e8f0 80%);
+                background-size: 600px 100%;
                 border-radius: 4px;
                 display: inline-block;
                 min-width: 60px;
-                min-height: 24px;
-                opacity: 0;
-                animation: skeleton-fade-in 0.3s 0.15s ease-in forwards, skeleton-loading 1.5s infinite;
+                min-height: 22px;
+                color: transparent !important;
+                vertical-align: middle;
+                animation: skeleton-shimmer 1.4s linear infinite;
             }
 
-            @keyframes skeleton-fade-in {
-                from {
-                    opacity: 0;
-                }
-
-                to {
-                    opacity: 1;
-                }
+            /* On colored KPI card backgrounds use a semi-transparent white shimmer */
+            .kpi-card .skeleton {
+                background: linear-gradient(90deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.38) 40%, rgba(255,255,255,0.18) 80%);
+                background-size: 400px 100%;
+                animation: skeleton-shimmer 1.4s linear infinite;
             }
 
-            @keyframes skeleton-loading {
-                0% {
-                    background-position: 200% 0;
-                }
-
-                100% {
-                    background-position: -200% 0;
-                }
+            @keyframes skeleton-shimmer {
+                0%   { background-position: -400px 0; }
+                100% { background-position: 400px 0; }
             }
 
-            /* Responsive */
-            @media (max-width: 768px) {
-                .kpi-grid {
-                    grid-template-columns: repeat(2, 1fr);
-                }
+            /* KPI Responsive grid – max 4 per row */
+            @media (min-width: 1200px) {
+                .kpi-grid { grid-template-columns: repeat(4, 1fr); }
             }
-
-            @media (max-width: 576px) {
-                .kpi-grid {
-                    grid-template-columns: 1fr;
-                }
+            @media (min-width: 768px) and (max-width: 1199px) {
+                .kpi-grid { grid-template-columns: repeat(3, 1fr); }
+            }
+            @media (max-width: 767px) {
+                .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+            }
+            @media (max-width: 480px) {
+                .kpi-grid { grid-template-columns: 1fr; }
             }
 
             .kpi-card .kpi-value {
-                font-size: 1.4rem;
+                font-size: 1.6rem;
             }
 
             .expiry-grid {
@@ -422,8 +416,11 @@
             }
         </style>
 
-        <!-- ═══════════ QUICK ACTIONS (Shopkeeper) ═══════════ -->
-        <div class="d-flex align-items-center justify-content-between mb-3">
+        <!-- ═══════════ PAGE HEADER ═══════════ -->
+        <div th:insert="~{fragments :: page-header('Dashboard', 'Store overview &amp; daily operations', 'bi bi-speedometer2', null, null, null)}"></div>
+
+        <!-- ═══════════ QUICK ACTIONS (Admin + Shopkeeper only) ═══════════ -->
+        <div sec:authorize="hasAnyRole('ADMIN','SHOPKEEPER')" class="d-flex align-items-center justify-content-between mb-4 p-3 bg-white rounded-3 border" style="gap:12px;">
             <div>
                 <h5 class="mb-0 fw-bold text-dark">
                     <i class="bi bi-speedometer2 me-2 text-primary"></i>Daily Operations

@@ -28,7 +28,7 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-4 mb-3">
-                            <label class="form-label">Supplier *</label>
+                            <label class="form-label ent-required">Supplier</label>
                             <select class="form-control" name="supplierId" required id="supplierSelect">
                                 <option value="">Select Supplier</option>
                                 <option th:each="s : ${suppliers}" th:value="${s.id}" th:text="${s.name}"
@@ -37,7 +37,7 @@
                             </select>
                         </div>
                         <div class="col-md-3 mb-3">
-                            <label class="form-label">Order Date *</label>
+                            <label class="form-label ent-required">Order Date</label>
                             <input type="date" class="form-control" name="orderDate" required
                                 th:value="${order.orderDate != null ? order.orderDate : #temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}">
                         </div>

@@ -24,33 +24,33 @@
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label class="form-label text-muted small fw-bold">Company Name *</label>
+                            <label class="form-label ent-required">Company Name</label>
                             <input type="text" class="form-control" th:field="*{name}" required>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label class="form-label text-muted small fw-bold">Contact Person *</label>
+                            <label class="form-label ent-required">Contact Person</label>
                             <input type="text" class="form-control" th:field="*{contactPerson}" required>
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label class="form-label text-muted small fw-bold">Phone Number *</label>
+                            <label class="form-label ent-required">Phone Number</label>
                             <input type="tel" class="form-control" th:field="*{phone}" required>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label class="form-label text-muted small fw-bold">Email</label>
+                            <label class="form-label">Email</label>
                             <input type="email" class="form-control" th:field="*{email}">
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label class="form-label text-muted small fw-bold">Address *</label>
+                            <label class="form-label ent-required">Address</label>
                             <textarea class="form-control" rows="2" th:field="*{address}" required></textarea>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label class="form-label text-muted small fw-bold">GST Number</label>
+                            <label class="form-label">GST Number</label>
                             <input type="text" class="form-control" th:field="*{gstNumber}"
                                 placeholder="22AAAAA0000A1Z5">
                         </div>

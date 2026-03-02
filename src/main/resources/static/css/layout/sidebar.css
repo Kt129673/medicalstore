@@ -12,7 +12,7 @@
     transition: width var(--transition-slow) var(--ease-spring);
     box-shadow: 2px 0 12px rgba(0, 0, 0, 0.06), 1px 0 0 rgba(0,0,0,0.03);
     position: relative;
-    z-index: 15;
+    z-index: var(--z-sidebar, 1000);
 }
 
 .sidebar-brand {

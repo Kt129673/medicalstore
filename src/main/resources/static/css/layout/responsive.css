@@ -27,12 +27,12 @@
     .mobile-toggle {
         display: block;
         position: fixed;
-        top: 12px;
+        top: 17px;
         left: 14px;
         z-index: 1100;
-        background: rgba(255, 255, 255, 0.08);
+        background: transparent;
         color: #94a3b8;
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        border: 1px solid #E2E8F0;
         border-radius: 8px;
         width: 36px;
         height: 36px;
@@ -45,9 +45,9 @@
     }
 
     .mobile-toggle:hover {
-        background: rgba(255, 255, 255, 0.14);
-        color: #e2e8f0;
-        border-color: rgba(255, 255, 255, 0.2);
+        background: #EFF6FF;
+        color: #2563EB;
+        border-color: #BFDBFE;
     }
 
     .sidebar-overlay {
@@ -150,7 +150,7 @@
     }
 
     .main-header {
-        padding-left: 60px;
+        padding-left: 64px;
     }
 }
 

@@ -35,12 +35,12 @@
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label class="form-label text-muted small fw-bold">Medicine Name *</label>
+                                    <label class="form-label ent-required">Medicine Name</label>
                                     <input type="text" class="form-control" th:field="*{name}" required
                                         placeholder="e.g. Paracetamol 500mg">
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <label class="form-label text-muted small fw-bold">Category *</label>
+                                    <label class="form-label ent-required">Category</label>
                                     <input type="text" list="categoryOptions" class="form-control"
                                         th:field="*{category}" required placeholder="Select or type category">
                                     <datalist id="categoryOptions">
@@ -50,12 +50,12 @@
                             </div>
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label class="form-label text-muted small fw-bold">Manufacturer</label>
+                                    <label class="form-label">Manufacturer</label>
                                     <input type="text" class="form-control" th:field="*{manufacturer}"
                                         placeholder="e.g. Cipla Ltd.">
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <label class="form-label text-muted small fw-bold">Supplier</label>
+                                    <label class="form-label">Supplier</label>
                                     <select class="form-control" th:field="*{supplier}">
                                         <option value="">Select Supplier</option>
                                         <option th:each="sup : ${suppliers}" th:value="${sup.id}" th:text="${sup.name}">
@@ -65,12 +65,12 @@
                             </div>
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label class="form-label text-muted small fw-bold">Salt Composition</label>
+                                    <label class="form-label">Salt Composition</label>
                                     <input type="text" class="form-control" th:field="*{saltComposition}"
                                         placeholder="e.g. Paracetamol IP 500mg">
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <label class="form-label text-muted small fw-bold">Barcode</label>
+                                    <label class="form-label">Barcode</label>
                                     <input type="text" class="form-control" th:field="*{barcode}"
                                         placeholder="Scan or enter barcode">
                                     <small class="text-muted" style="font-size: 0.75rem;">Leave blank to
@@ -79,7 +79,7 @@
                             </div>
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label class="form-label text-muted small fw-bold">Schedule Type</label>
+                                    <label class="form-label">Schedule Type</label>
                                     <select class="form-control" th:field="*{scheduleType}">
                                         <option value="">Select Schedule</option>
                                         <option value="OTC">OTC (Over The Counter)</option>
@@ -101,7 +101,7 @@
                         </div>
                         <div class="card-body">
                             <div class="mb-0">
-                                <label class="form-label text-muted small fw-bold">Description</label>
+                                <label class="form-label">Description</label>
                                 <textarea class="form-control" rows="3" th:field="*{description}"
                                     placeholder="Usage instructions, storage conditions, etc."></textarea>
                             </div>
@@ -118,17 +118,17 @@
                         </div>
                         <div class="card-body">
                             <div class="mb-3">
-                                <label class="form-label text-muted small fw-bold">Quantity *</label>
+                                <label class="form-label ent-required">Quantity</label>
                                 <input type="number" min="0" class="form-control form-control-lg" th:field="*{quantity}"
                                     required>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label text-muted small fw-bold">Batch Number</label>
+                                <label class="form-label">Batch Number</label>
                                 <input type="text" class="form-control" th:field="*{batchNumber}"
                                     placeholder="e.g. B2024-001">
                             </div>
                             <div class="mb-0">
-                                <label class="form-label text-muted small fw-bold">Expiry Date</label>
+                                <label class="form-label">Expiry Date</label>
                                 <input type="date" class="form-control" th:field="*{expiryDate}">
                             </div>
                         </div>
@@ -142,25 +142,25 @@
                         </div>
                         <div class="card-body">
                             <div class="mb-3">
-                                <label class="form-label text-muted small fw-bold">Purchase Price (₹)</label>
+                                <label class="form-label">Purchase Price (₹)</label>
                                 <input type="number" step="0.01" min="0"
                                     class="form-control form-control-lg text-success fw-bold"
                                     th:field="*{purchasePrice}" placeholder="Cost price">
                             </div>
                             <div class="mb-3">
-                                <label class="form-label text-muted small fw-bold">Selling Price (₹) *</label>
+                                <label class="form-label ent-required">Selling Price (₹)</label>
                                 <input type="number" step="0.01" min="0.01"
                                     class="form-control form-control-lg text-primary fw-bold" th:field="*{price}"
                                     required placeholder="Selling price">
                             </div>
                             <div class="row">
                                 <div class="col-6 mb-3">
-                                    <label class="form-label text-muted small fw-bold">MRP (₹)</label>
+                                    <label class="form-label">MRP (₹)</label>
                                     <input type="number" step="0.01" min="0" class="form-control" th:field="*{mrp}"
                                         placeholder="Max Retail">
                                 </div>
                                 <div class="col-6 mb-3">
-                                    <label class="form-label text-muted small fw-bold">GST %</label>
+                                    <label class="form-label">GST %</label>
                                     <select class="form-control" th:field="*{gstPercentage}">
                                         <option value="">Slab</option>
                                         <option value="0">0%</option>
@@ -172,7 +172,7 @@
                                 </div>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label text-muted small fw-bold">HSN Code</label>
+                                <label class="form-label">HSN Code</label>
                                 <input type="text" class="form-control" th:field="*{hsnCode}"
                                     placeholder="e.g. 30049099">
                             </div>

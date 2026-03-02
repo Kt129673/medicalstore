@@ -5,10 +5,10 @@
     background: var(--bg-primary);
     box-shadow: var(--shadow-xs);
     transition: box-shadow 0.25s cubic-bezier(0.4,0,0.2,1), transform 0.25s cubic-bezier(0.4,0,0.2,1);
-    will-change: transform;
 }
 
 .card:hover {
+    will-change: transform;
     transform: translateY(-3px);
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05), 0 4px 8px rgba(0, 0, 0, 0.04);
 }
@@ -20,10 +20,6 @@
     -webkit-backdrop-filter: blur(18px) saturate(140%);
     border: 1px solid rgba(255,255,255,0.55);
     box-shadow: 0 2px 8px rgba(0,0,0,0.05), 0 8px 24px rgba(0,0,0,0.06);
-}
-[data-theme="dark"] .card-glass {
-    background: rgba(15,23,42,0.65);
-    border-color: rgba(255,255,255,0.07);
 }
 
 /* Accent card variant — left colored border */
@@ -203,7 +199,6 @@
     color: white;
     box-shadow: 0 4px 18px rgba(37, 99, 235, 0.28), 0 1px 3px rgba(37,99,235,0.15);
     transition: transform 0.22s cubic-bezier(0.4,0,0.2,1), box-shadow 0.22s cubic-bezier(0.4,0,0.2,1);
-    will-change: transform;
     position: relative;
     overflow: hidden;
 }
@@ -312,16 +307,10 @@
 .table tbody tr[aria-selected="true"] > td:first-child {
     box-shadow: inset 3px 0 0 var(--primary-color);
 }
-[data-theme="dark"] .table tbody tr.table-active > td {
-    background: rgba(59,130,246,0.12);
-}
 
 /* Subtle zebra stripe */
 .table-striped > tbody > tr:nth-of-type(odd) > td {
     background: rgba(148,163,184,0.04);
-}
-[data-theme="dark"] .table-striped > tbody > tr:nth-of-type(odd) > td {
-    background: rgba(255,255,255,0.025);
 }
 
 /* Column helpers */
@@ -501,6 +490,10 @@ input[type="radio"] {
     gap: 16px;
     margin-bottom: 24px;
 }
+@media (min-width: 1200px) { .kpi-grid { grid-template-columns: repeat(4, 1fr); } }
+@media (min-width: 900px) and (max-width: 1199px) { .kpi-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 899px) { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 480px) { .kpi-grid { grid-template-columns: 1fr; } }
 
 .kpi-card {
     border-radius: 16px;
@@ -656,12 +649,6 @@ input[type="radio"] {
 }
 .table-responsive::-webkit-scrollbar-thumb:hover {
     background: #94a3b8;
-}
-[data-theme="dark"] .table-responsive {
-    scrollbar-color: #334155 transparent;
-}
-[data-theme="dark"] .table-responsive::-webkit-scrollbar-thumb {
-    background: #334155;
 }
 
 /* Sticky header inside scrollable containers */
@@ -962,10 +949,6 @@ th.ent-sortable:hover { background: var(--hover-bg); }
     background-size: 600px 100%;
     animation: skeleton-shimmer 1.5s infinite linear;
     border-radius: var(--radius-sm);
-}
-[data-theme="dark"] .ent-skeleton {
-    background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%);
-    background-size: 600px 100%;
 }
 .ent-skeleton--text    { height: 14px; width: 80%; border-radius: 3px; display: block; }
 .ent-skeleton--title   { height: 20px; width: 50%; border-radius: 5px; display: block; margin-bottom:8px; }
@@ -1348,108 +1331,6 @@ tr:focus-within .ent-row-actions { opacity: 1; }
 .ent-dirty-indicator.visible { display: inline-flex; }
 
 /* ═══════════════════════════════════════════════════════════════
-   DARK MODE COMPONENT OVERRIDES
-═══════════════════════════════════════════════════════════════ */
-[data-theme="dark"] .card {
-    border-color: rgba(255, 255, 255, 0.06);
-    box-shadow: 0 1px 4px rgba(0,0,0,0.25), 0 4px 12px rgba(0,0,0,0.2);
-}
-
-[data-theme="dark"] .card-header {
-    border-bottom-color: rgba(255, 255, 255, 0.06);
-}
-
-[data-theme="dark"] .modern-card {
-    border-color: rgba(255, 255, 255, 0.06);
-    box-shadow: 0 1px 4px rgba(0,0,0,0.3);
-}
-
-[data-theme="dark"] .table thead th {
-    background: #0f172a;
-    border-bottom-color: rgba(255, 255, 255, 0.08);
-}
-
-[data-theme="dark"] .table tbody td {
-    border-bottom-color: rgba(255, 255, 255, 0.04);
-}
-
-[data-theme="dark"] .table tbody tr:last-child td {
-    border-bottom: none;
-}
-
-[data-theme="dark"] .table-hover tbody tr:hover {
-    background: rgba(255, 255, 255, 0.03);
-}
-
-[data-theme="dark"] .table tbody tr:nth-child(even) {
-    background: rgba(255, 255, 255, 0.02);
-}
-
-[data-theme="dark"] .btn-primary {
-    background: linear-gradient(135deg, #1d4ed8, #3b82f6);
-    border-color: #1d4ed8;
-    box-shadow: 0 2px 6px rgba(37,99,235,0.4);
-}
-
-[data-theme="dark"] .btn-primary:hover:not(:disabled) {
-    background: linear-gradient(135deg, #1e40af, #2563eb);
-    border-color: #1e40af;
-    box-shadow: 0 4px 12px rgba(37,99,235,0.5);
-}
-
-[data-theme="dark"] .btn-success {
-    background: linear-gradient(135deg, #14532d, #16A34A);
-    border-color: #14532d;
-    box-shadow: 0 2px 6px rgba(22,163,74,0.4);
-}
-
-[data-theme="dark"] .btn-success:hover:not(:disabled) {
-    background: linear-gradient(135deg, #166534, #22C55E);
-    border-color: #166534;
-    box-shadow: 0 4px 12px rgba(22,163,74,0.5);
-}
-
-[data-theme="dark"] .ent-action-row {
-    background: #0f172a;
-    border-bottom-color: rgba(255,255,255,0.06);
-}
-
-[data-theme="dark"] .ent-search input {
-    background: #1e293b;
-    border-color: rgba(255,255,255,0.1);
-    color: #e2e8f0;
-}
-
-[data-theme="dark"] .ent-search input:focus {
-    background: #1e293b;
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
-}
-
-[data-theme="dark"] .page-header h2,
-[data-theme="dark"] .page-header p {
-    color: var(--text-primary);
-}
-
-[data-theme="dark"] .alert-success {
-    background: rgba(22,163,74,.12);
-    border-color: rgba(22,163,74,.25);
-    color: #86efac;
-}
-
-[data-theme="dark"] .alert-danger {
-    background: rgba(220,38,38,.12);
-    border-color: rgba(220,38,38,.25);
-    color: #fca5a5;
-}
-
-[data-theme="dark"] .alert-warning {
-    background: rgba(245,158,11,.12);
-    border-color: rgba(245,158,11,.25);
-    color: #fde68a;
-}
-
-/* ═══════════════════════════════════════════════════════════════
    N-PROGRESS  –  thin top-of-page navigation progress bar
    Markup injected by layout.js:  <div id="nprogress"><div class="bar"></div></div>
 ═══════════════════════════════════════════════════════════════ */
@@ -1485,14 +1366,6 @@ tr:focus-within .ent-row-actions { opacity: 1; }
 #nprogress.nprogress-done .bar {
     opacity: 0;
     transition: width 0.05s ease, opacity 0.5s ease 0.1s;
-}
-[data-theme="dark"] #nprogress .bar {
-    background: linear-gradient(90deg, #3b82f6, #93c5fd);
-    box-shadow: 0 0 8px rgba(59,130,246,0.8), 0 0 20px rgba(147,197,253,0.4);
-}
-[data-theme="dark"] #nprogress .bar::after {
-    background: #93c5fd;
-    box-shadow: 0 0 8px 3px rgba(147,197,253,0.8);
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -1599,9 +1472,5 @@ tbody tr.ent-row-removed {
     vertical-align: middle;
     margin-right: 4px;
     flex-shrink: 0;
-}
-
-[data-theme="dark"] .ent-page-loader {
-    background: rgba(2, 6, 23, 0.82);
 }
 
