@@ -23,6 +23,8 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 
+import org.springframework.beans.factory.annotation.Value;
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -30,6 +32,9 @@ import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 public class SecurityConfig {
 
     private final CustomUserDetailsService userDetailsService;
+
+    @Value("${remember.me.key}")
+    private String rememberMeKey;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -115,7 +120,7 @@ public class SecurityConfig {
                         .permitAll())
                 .requestCache(cache -> cache.requestCache(new org.springframework.security.web.savedrequest.NullRequestCache()))
                 .rememberMe(rm -> rm
-                        .key("medicalStoreRememberMeKey2024")
+                        .key(rememberMeKey)
                         .tokenValiditySeconds(60 * 60 * 24 * 7)  // 7 days
                         .userDetailsService(userDetailsService)
                         .rememberMeParameter("remember-me"))
