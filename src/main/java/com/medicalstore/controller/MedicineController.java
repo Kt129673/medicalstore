@@ -116,7 +116,7 @@ public class MedicineController {
     }
 
     @PostMapping("/delete/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasPermission(null, 'MEDICINE_DELETE')")
     public String deleteMedicine(@PathVariable Long id, RedirectAttributes ra) {
         try {
             medicineService.deleteMedicine(id);
@@ -128,7 +128,7 @@ public class MedicineController {
     }
 
     @PostMapping("/bulk-delete")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasPermission(null, 'MEDICINE_BULK_IMPORT')")
     public String bulkDeleteMedicines(@RequestParam("ids") java.util.List<Long> ids, RedirectAttributes ra) {
         int count = 0;
         if (ids != null && !ids.isEmpty()) {

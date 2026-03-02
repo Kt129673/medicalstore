@@ -1,14 +1,19 @@
 package com.medicalstore.controller;
 
 import com.medicalstore.config.RoutePaths;
+import com.medicalstore.model.AuditLog;
 import com.medicalstore.model.Branch;
 import com.medicalstore.model.User;
+import com.medicalstore.repository.AuditLogRepository;
 import com.medicalstore.repository.UserRepository;
 import com.medicalstore.service.BranchService;
 import com.medicalstore.service.DashboardService;
 import com.medicalstore.service.SubscriptionService;
 import com.medicalstore.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -17,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -43,9 +49,16 @@ public class AdminController {
     private final SubscriptionService subscriptionService;
     private final DashboardService dashboardService;
     private final RoleAuditService roleAuditService;
+    private final AuditLogRepository auditLogRepository;
 
     // ─── Admin Dashboard ───────────────────────────────────────────────────
+    /** Canonical dashboard URL — redirect legacy /admin to /admin/dashboard. */
     @GetMapping
+    public String dashboardRedirect() {
+        return "redirect:/admin/dashboard";
+    }
+
+    @GetMapping("/dashboard")
     public String dashboard(Model model) {
         List<User> owners = userRepository.findByRole("OWNER");
         List<Branch> branches = branchService.getAllBranches();
@@ -245,14 +258,39 @@ public class AdminController {
     }
 
     @PostMapping("/users/delete/{id}")
+    @org.springframework.security.access.prepost.PreAuthorize("hasPermission(null, 'USER_DELETE')")
     public String deleteUser(@PathVariable Long id, RedirectAttributes ra) {
         Long currentId = securityUtils.getCurrentUserId();
         if (id.equals(currentId)) {
             ra.addFlashAttribute("error", "You cannot delete your own account.");
             return RoutePaths.redirectTo(RoutePaths.ADMIN_USERS);
         }
-        userRepository.deleteById(id);
-        ra.addFlashAttribute("success", "User deleted.");
+        userRepository.findById(id).ifPresent(u -> {
+            roleAuditService.logAction("USER_DELETED",
+                    "Soft-deleted user: " + u.getUsername());
+            userRepository.delete(u); // triggers @SQLDelete — no hard delete
+        });
+        ra.addFlashAttribute("success", "User deleted (soft delete — restorable).");
+        return RoutePaths.redirectTo(RoutePaths.ADMIN_USERS);
+    }
+
+    // ─── Deleted Users (soft-delete recycle-bin view) ──────────────────────
+    @GetMapping("/users/deleted")
+    public String deletedUsers(Model model) {
+        model.addAttribute("title", "Deleted Users");
+        model.addAttribute("page", "admin");
+        model.addAttribute("deletedUsers", userRepository.findDeletedUsers());
+        return "admin/deleted-users";
+    }
+
+    @PostMapping("/users/restore/{id}")
+    @org.springframework.security.access.prepost.PreAuthorize("hasPermission(null, 'USER_RESTORE')")
+    @org.springframework.transaction.annotation.Transactional
+    public String restoreUser(@PathVariable Long id, RedirectAttributes ra) {
+        userRepository.restoreUser(id);
+        roleAuditService.logAction("USER_RESTORED",
+                "Restored soft-deleted user ID: " + id);
+        ra.addFlashAttribute("success", "User restored successfully.");
         return RoutePaths.redirectTo(RoutePaths.ADMIN_USERS);
     }
 
@@ -421,5 +459,42 @@ public class AdminController {
                 "Admin viewing Owner dashboard for: " + owner.getUsername());
 
         return "owner/dashboard";
+    }
+
+    // ─── Audit Logs ────────────────────────────────────────────────────────
+    @GetMapping("/audit-logs")
+    public String auditLogs(
+            @RequestParam(required = false) String username,
+            @RequestParam(required = false) String action,
+            @RequestParam(required = false) String from,
+            @RequestParam(required = false) String to,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "50") int size,
+            Model model) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        LocalDateTime fromDt = from != null && !from.isBlank()
+                ? LocalDate.parse(from).atStartOfDay() : null;
+        LocalDateTime toDt = to != null && !to.isBlank()
+                ? LocalDate.parse(to).atTime(23, 59, 59) : null;
+
+        String usernameFilter = (username != null && !username.isBlank()) ? username : null;
+        String actionFilter   = (action   != null && !action.isBlank())   ? action   : null;
+
+        Page<AuditLog> logs = auditLogRepository.search(
+                usernameFilter, actionFilter, fromDt, toDt, pageable);
+
+        model.addAttribute("title", "Audit Logs");
+        model.addAttribute("page", "admin");
+        model.addAttribute("logs", logs);
+        model.addAttribute("filterUsername", username);
+        model.addAttribute("filterAction", action);
+        model.addAttribute("filterFrom", from);
+        model.addAttribute("filterTo", to);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", logs.getTotalPages());
+        model.addAttribute("totalElements", logs.getTotalElements());
+
+        return "admin/audit-logs";
     }
 }

@@ -1,6 +1,7 @@
 package com.medicalstore.config;
 
 import com.medicalstore.config.RoutePaths;
+import com.medicalstore.security.MediStorePermissionEvaluator;
 import com.medicalstore.service.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -53,11 +54,14 @@ public class SecurityConfig {
                 .build();
     }
 
-    // Apply role hierarchy to method-level security (@PreAuthorize annotations)
+    // Apply role hierarchy and custom permission evaluator to method-level security (@PreAuthorize annotations)
     @Bean
-    static MethodSecurityExpressionHandler methodSecurityExpressionHandler(RoleHierarchy roleHierarchy) {
+    static MethodSecurityExpressionHandler methodSecurityExpressionHandler(
+            RoleHierarchy roleHierarchy,
+            MediStorePermissionEvaluator permissionEvaluator) {
         DefaultMethodSecurityExpressionHandler handler = new DefaultMethodSecurityExpressionHandler();
         handler.setRoleHierarchy(roleHierarchy);
+        handler.setPermissionEvaluator(permissionEvaluator);
         return handler;
     }
 
@@ -82,9 +86,8 @@ public class SecurityConfig {
                         .requestMatchers("/login", "/css/**", "/js/**", "/images/**", "/error").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/owner/**").hasRole("OWNER")
-                        // Analytics — financial insights restricted to ADMIN and OWNER only.
-                        // SHOPKEEPER cannot view financial analytics (Section 2.3).
-                        .requestMatchers("/analytics/**").hasAnyRole("ADMIN", "OWNER")
+                        // Analytics — all roles can view; export endpoints restricted to ADMIN/OWNER via @PreAuthorize
+                        .requestMatchers("/analytics/**").hasAnyRole("ADMIN", "OWNER", "SHOPKEEPER")
                         // Reports — all authenticated roles can view
                         .requestMatchers("/reports/**")
                         .hasAnyRole("ADMIN", "OWNER", "SHOPKEEPER")
@@ -92,6 +95,7 @@ public class SecurityConfig {
                         .requestMatchers("/medicines/**", "/sales/**", "/customers/**", "/returns/**",
                                 "/suppliers/**", "/purchases/**")
                         .hasAnyRole("ADMIN", "SHOPKEEPER")
+                        .requestMatchers("/dashboard").hasAnyRole("ADMIN", "SHOPKEEPER")
                         .anyRequest().authenticated())
                 .csrf(csrf -> {
                     // Use non-deferred handler so the CSRF token is eagerly loaded.
@@ -150,14 +154,14 @@ public class SecurityConfig {
                 boolean isAdmin = auth.getAuthorities().stream()
                         .map(GrantedAuthority::getAuthority).anyMatch("ROLE_ADMIN"::equals);
                 if (isAdmin) {
-                    response.sendRedirect(request.getContextPath() + RoutePaths.ADMIN + "?denied=true");
+                    response.sendRedirect(request.getContextPath() + RoutePaths.ADMIN_DASHBOARD + "?denied=true");
                     return;
                 } else if (isOwner) {
-                    response.sendRedirect(request.getContextPath() + "/owner?denied=true");
+                    response.sendRedirect(request.getContextPath() + RoutePaths.OWNER_DASHBOARD + "?denied=true");
                     return;
                 }
             }
-            response.sendRedirect(request.getContextPath() + "/?denied=true");
+            response.sendRedirect(request.getContextPath() + RoutePaths.SHOPKEEPER_DASHBOARD + "?denied=true");
         };
     }
 
@@ -172,11 +176,11 @@ public class SecurityConfig {
                     .map(GrantedAuthority::getAuthority).anyMatch("ROLE_ADMIN"::equals);
 
             if (isAdmin) {
-                response.sendRedirect(RoutePaths.ADMIN);
+                response.sendRedirect(RoutePaths.ADMIN_DASHBOARD);
             } else if (isOwner) {
-                response.sendRedirect("/owner");
+                response.sendRedirect(RoutePaths.OWNER_DASHBOARD);
             } else {
-                response.sendRedirect("/");
+                response.sendRedirect(RoutePaths.SHOPKEEPER_DASHBOARD);
             }
         };
     }

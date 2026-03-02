@@ -9,6 +9,8 @@ import com.medicalstore.service.PurchaseService;
 import com.medicalstore.service.SupplierService;
 import com.medicalstore.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -30,8 +32,16 @@ public class PurchaseController {
     private final SecurityUtils securityUtils;
 
     @GetMapping
-    public String listOrders(Model model) {
-        model.addAttribute("orders", purchaseService.getAllOrders());
+    public String listOrders(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            Model model) {
+        var ordersPage = purchaseService.getAllOrdersPaged(
+                PageRequest.of(page, size, Sort.by("orderDate").descending()));
+        model.addAttribute("ordersPage", ordersPage);
+        model.addAttribute("orders", ordersPage.getContent()); // backward compat for existing template
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", ordersPage.getTotalPages());
         return "purchase/list";
     }
 

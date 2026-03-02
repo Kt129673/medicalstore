@@ -23,7 +23,9 @@ public class CacheConfig {
                 "analytics_profit",
                 "analytics_deadstock",
                 "analytics_fastmoving",
-                "analytics_gst");
+                "analytics_gst",
+                "role_permissions",
+                "plan_features");
 
         cacheManager.setCaffeine(Caffeine.newBuilder()
                 .initialCapacity(100)

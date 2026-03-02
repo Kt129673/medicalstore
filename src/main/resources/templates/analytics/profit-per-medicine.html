@@ -10,10 +10,14 @@
                 <p class="text-muted mb-0">Detailed margin analysis for each product</p>
             </div>
             <div class="d-flex gap-2">
-                <a th:href="@{/analytics/export/excel(report='profit',startDate=${startDate},endDate=${endDate})}"
+                <a th:if="${availableFeatures.contains('EXCEL_EXPORT')}"
+                   th:href="@{/analytics/export/excel(report='profit',startDate=${startDate},endDate=${endDate})}"
                     class="btn btn-outline-success">
                     <i class="bi bi-file-earmark-excel"></i> Export Excel
                 </a>
+                <span th:unless="${availableFeatures.contains('EXCEL_EXPORT')}" class="btn btn-outline-secondary disabled" title="Upgrade to PRO to export">
+                    <i class="bi bi-lock"></i> Export Excel
+                </span>
                 <a href="/analytics" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Back</a>
             </div>
         </div>

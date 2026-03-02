@@ -12,6 +12,12 @@ import org.springframework.web.servlet.HandlerInterceptor;
 @RequiredArgsConstructor
 public class SubscriptionInterceptor implements HandlerInterceptor {
 
+    /** Request attribute name to signal templates that the subscription is expired. */
+    public static final String ATTR_SUBSCRIPTION_EXPIRED = "subscriptionExpired";
+
+    private static final java.util.Set<String> WRITE_METHODS =
+            java.util.Set.of("POST", "PUT", "DELETE", "PATCH");
+
     private final SubscriptionService subscriptionService;
     private final SecurityUtils securityUtils;
 
@@ -37,14 +43,18 @@ public class SubscriptionInterceptor implements HandlerInterceptor {
                 Long ownerId = securityUtils.getCurrentOwnerId();
                 if (ownerId == null) {
                     // Orphan shopkeeper with no owning branch — treat as expired
-                    response.sendRedirect(RoutePaths.SUBSCRIPTION_BILLING);
+                    response.sendRedirect(RoutePaths.SUBSCRIPTION_BILLING + "?expired=true");
                     return false;
                 }
                 var plan = subscriptionService.getPlanForOwner(ownerId);
                 if (plan.isEmpty() || plan.get().isExpired()) {
-                    // No plan or expired plan
-                    response.sendRedirect(RoutePaths.SUBSCRIPTION_BILLING);
-                    return false;
+                    if (WRITE_METHODS.contains(request.getMethod().toUpperCase())) {
+                        // Block all mutation requests when subscription is expired
+                        response.sendRedirect(RoutePaths.SUBSCRIPTION_BILLING + "?expired=true");
+                        return false;
+                    }
+                    // For read-only (GET/HEAD) requests, allow through but flag the template
+                    request.setAttribute(ATTR_SUBSCRIPTION_EXPIRED, Boolean.TRUE);
                 }
             }
         }

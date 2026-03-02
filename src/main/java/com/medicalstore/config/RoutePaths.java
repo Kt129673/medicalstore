@@ -13,10 +13,14 @@ public final class RoutePaths {
     public static final String CUSTOMERS = "/customers";
     public static final String SUPPLIERS = "/suppliers";
     public static final String ADMIN = "/admin";
+    public static final String ADMIN_DASHBOARD = "/admin/dashboard";
     public static final String ADMIN_USERS = "/admin/users";
     public static final String ADMIN_USERS_CREATE = "/admin/users/create";
     public static final String ADMIN_BRANCHES = "/admin/branches";
     public static final String ADMIN_SUBSCRIPTIONS = "/admin/subscriptions";
+
+    public static final String OWNER_DASHBOARD = "/owner/dashboard";
+    public static final String SHOPKEEPER_DASHBOARD = "/dashboard";
 
     public static final String REDIRECT_PREFIX = "redirect:";
 

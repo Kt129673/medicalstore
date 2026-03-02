@@ -4,16 +4,21 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "sales", indexes = {
-        @Index(name = "idx_sale_date", columnList = "sale_date"),
-        @Index(name = "idx_sale_customer", columnList = "customer_id"),
-        @Index(name = "idx_sale_branch", columnList = "branch_id"),
-        @Index(name = "idx_sale_payment", columnList = "paymentMethod")
+        @Index(name = "idx_sale_date",    columnList = "sale_date"),
+        @Index(name = "idx_sale_customer",columnList = "customer_id"),
+        @Index(name = "idx_sale_branch",  columnList = "branch_id"),
+        @Index(name = "idx_sale_payment", columnList = "paymentMethod"),
+        @Index(name = "idx_sale_deleted", columnList = "is_deleted")
 })
+@SQLDelete(sql = "UPDATE sales SET is_deleted = true, deleted_at = NOW() WHERE id = ?")
+@SQLRestriction("is_deleted = false")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -61,6 +66,14 @@ public class Sale {
     @JoinColumn(name = "branch_id")
     @com.fasterxml.jackson.annotation.JsonIgnore
     private Branch branch;
+
+    /** Soft-delete flag — set by Hibernate @SQLDelete. Sales are never hard-deleted. */
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted = false;
+
+    /** Timestamp of soft deletion (null while active). */
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
 
     public void addItem(SaleItem item) {
         items.add(item);

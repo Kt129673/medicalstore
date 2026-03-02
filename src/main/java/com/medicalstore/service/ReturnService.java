@@ -1,5 +1,6 @@
 package com.medicalstore.service;
 
+import com.medicalstore.config.TenantContext;
 import com.medicalstore.model.Return;
 import com.medicalstore.model.Sale;
 import com.medicalstore.model.SaleItem;
@@ -8,6 +9,7 @@ import com.medicalstore.repository.ReturnRepository;
 import com.medicalstore.repository.MedicineRepository;
 import com.medicalstore.repository.SaleItemRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,10 +23,11 @@ public class ReturnService {
     private final ReturnRepository returnRepository;
     private final MedicineRepository medicineRepository;
     private final SaleItemRepository saleItemRepository;
+    private final RoleAuditService roleAuditService;
 
     public List<Return> getAllReturns() {
-        Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
-        Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
+        Long tenantId = TenantContext.getTenantId();
+        Long ownerId = TenantContext.getOwnerId();
         if (tenantId != null)
             return returnRepository.findByBranchId(tenantId);
         if (ownerId != null)
@@ -35,14 +38,18 @@ public class ReturnService {
     public Optional<Return> getReturnById(Long id) {
         Optional<Return> ret = returnRepository.findById(id);
         if (ret.isPresent() && ret.get().getSale() != null && ret.get().getSale().getBranch() != null) {
-            Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
+            Long tenantId = TenantContext.getTenantId();
             if (tenantId != null && !tenantId.equals(ret.get().getSale().getBranch().getId())) {
-                return Optional.empty();
+                roleAuditService.logEscalationAttempt("/returns/" + id, "SHOPKEEPER",
+                        "Attempted to access return from different branch (branchId=" + ret.get().getSale().getBranch().getId() + ")");
+                throw new AccessDeniedException("Access denied: return belongs to a different branch");
             }
-            Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
+            Long ownerId = TenantContext.getOwnerId();
             if (ownerId != null && ret.get().getSale().getBranch().getOwner() != null
                     && !ownerId.equals(ret.get().getSale().getBranch().getOwner().getId())) {
-                return Optional.empty();
+                roleAuditService.logEscalationAttempt("/returns/" + id, "OWNER",
+                        "Attempted to access return belonging to different owner");
+                throw new AccessDeniedException("Access denied: return belongs to a different owner");
             }
         }
         return ret;

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+    th:replace="~{layout :: layout(title='Audit Logs', page='admin', content=~{::main}, pageIcon='bi bi-journal-text')}">
+<main>
+    <div class="container-fluid py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="fw-bold mb-0"><i class="bi bi-journal-text me-2"></i>Audit Logs</h2>
+                <p class="text-muted mb-0">Database-persisted record of all sensitive platform actions</p>
+            </div>
+            <span class="badge bg-secondary fs-6" th:text="${totalElements} + ' total records'">0 total records</span>
+        </div>
+
+        <!-- Filter Form -->
+        <div class="card modern-card border-0 mb-4">
+            <div class="card-header bg-white border-bottom py-3">
+                <form method="get" action="/admin/audit-logs" class="row g-3 align-items-end">
+                    <div class="col-md-3">
+                        <label class="form-label fw-semibold">Username</label>
+                        <input type="text" name="username" class="form-control"
+                               placeholder="Filter by username"
+                               th:value="${filterUsername}" autocomplete="off"/>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label fw-semibold">Action</label>
+                        <select name="action" class="form-select">
+                            <option value="">All Actions</option>
+                            <option value="USER_CREATED"          th:selected="${filterAction == 'USER_CREATED'}">USER_CREATED</option>
+                            <option value="USER_DISABLED"         th:selected="${filterAction == 'USER_DISABLED'}">USER_DISABLED</option>
+                            <option value="USER_DELETED"          th:selected="${filterAction == 'USER_DELETED'}">USER_DELETED</option>
+                            <option value="PASSWORD_RESET_BY_ADMIN" th:selected="${filterAction == 'PASSWORD_RESET_BY_ADMIN'}">PASSWORD_RESET_BY_ADMIN</option>
+                            <option value="BRANCH_CREATED"        th:selected="${filterAction == 'BRANCH_CREATED'}">BRANCH_CREATED</option>
+                            <option value="SUBSCRIPTION_CHANGED"  th:selected="${filterAction == 'SUBSCRIPTION_CHANGED'}">SUBSCRIPTION_CHANGED</option>
+                            <option value="SHOPKEEPER_CREATED"    th:selected="${filterAction == 'SHOPKEEPER_CREATED'}">SHOPKEEPER_CREATED</option>
+                            <option value="SALE_COMPLETED"        th:selected="${filterAction == 'SALE_COMPLETED'}">SALE_COMPLETED</option>
+                            <option value="AUDIT_DENIED"          th:selected="${filterAction == 'AUDIT_DENIED'}">AUDIT_DENIED</option>
+                            <option value="ESCALATION_ATTEMPT"    th:selected="${filterAction == 'ESCALATION_ATTEMPT'}">ESCALATION_ATTEMPT</option>
+                            <option value="DATA_EXPORT"           th:selected="${filterAction == 'DATA_EXPORT'}">DATA_EXPORT</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label fw-semibold">From Date</label>
+                        <input type="date" name="from" class="form-control" th:value="${filterFrom}"/>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label fw-semibold">To Date</label>
+                        <input type="date" name="to" class="form-control" th:value="${filterTo}"/>
+                    </div>
+                    <div class="col-md-3 d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-search me-1"></i>Search
+                        </button>
+                        <a href="/admin/audit-logs" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-circle me-1"></i>Clear
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Audit Log Table -->
+        <div class="card modern-card border-0">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0" aria-label="Audit log records">
+                        <thead class="table-light">
+                            <tr>
+                                <th scope="col">Timestamp</th>
+                                <th scope="col">Action</th>
+                                <th scope="col">Performed By</th>
+                                <th scope="col">Role</th>
+                                <th scope="col">Entity</th>
+                                <th scope="col">Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${logs.isEmpty()}">
+                                <td colspan="6" class="text-center text-muted py-4">
+                                    <i class="bi bi-inbox fs-3 d-block mb-2"></i>
+                                    No audit records found for the selected filters.
+                                </td>
+                            </tr>
+                            <tr th:each="log : ${logs}">
+                                <td class="text-nowrap">
+                                    <small th:text="${#temporals.format(log.timestamp, 'dd MMM yyyy HH:mm:ss')}"></small>
+                                </td>
+                                <td>
+                                    <span class="badge"
+                                          th:classappend="${log.action == 'ESCALATION_ATTEMPT' or log.action == 'AUDIT_DENIED'} ? 'bg-danger' : (${log.action.contains('DELETE') or log.action.contains('DISABLED')} ? 'bg-warning text-dark' : 'bg-primary')"
+                                          th:text="${log.action}">ACTION</span>
+                                </td>
+                                <td th:text="${log.performedBy}"></td>
+                                <td>
+                                    <span class="badge"
+                                          th:classappend="${log.performedByRole != null and log.performedByRole.contains('ADMIN')} ? 'bg-warning text-dark' : (${log.performedByRole != null and log.performedByRole.contains('OWNER')} ? 'bg-info text-dark' : 'bg-success')"
+                                          th:text="${log.performedByRole}"></span>
+                                </td>
+                                <td>
+                                    <small class="text-muted">
+                                        <span th:if="${log.entityName != null}" th:text="${log.entityName}"></span>
+                                        <span th:if="${log.entityId != null}" th:text="' #' + ${log.entityId}"></span>
+                                    </small>
+                                </td>
+                                <td>
+                                    <small th:text="${log.description}"></small>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="d-flex justify-content-between align-items-center p-3 border-top"
+                     th:if="${totalPages > 1}">
+                    <span class="text-muted small">
+                        Page <span th:text="${currentPage + 1}"></span> of <span th:text="${totalPages}"></span>
+                    </span>
+                    <nav aria-label="Audit log pagination">
+                        <ul class="pagination pagination-sm mb-0">
+                            <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                                <a class="page-link"
+                                   th:href="@{/admin/audit-logs(page=${currentPage - 1}, username=${filterUsername}, action=${filterAction}, from=${filterFrom}, to=${filterTo})}">
+                                    &laquo;
+                                </a>
+                            </li>
+                            <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                                th:classappend="${i == currentPage} ? 'active'">
+                                <a class="page-link"
+                                   th:href="@{/admin/audit-logs(page=${i}, username=${filterUsername}, action=${filterAction}, from=${filterFrom}, to=${filterTo})}"
+                                   th:text="${i + 1}"></a>
+                            </li>
+                            <li class="page-item" th:classappend="${currentPage + 1 >= totalPages} ? 'disabled'">
+                                <a class="page-link"
+                                   th:href="@{/admin/audit-logs(page=${currentPage + 1}, username=${filterUsername}, action=${filterAction}, from=${filterFrom}, to=${filterTo})}">
+                                    &raquo;
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+</html>

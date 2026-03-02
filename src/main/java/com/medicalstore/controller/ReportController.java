@@ -158,6 +158,7 @@ public class ReportController {
     }
 
     @GetMapping("/export/excel")
+    @PreAuthorize("hasPermission(null, 'REPORT_EXPORT_EXCEL')")
     public void exportSalesExcel(@RequestParam(required = false) String startDate,
             @RequestParam(required = false) String endDate,
             jakarta.servlet.http.HttpServletResponse response) throws Exception {

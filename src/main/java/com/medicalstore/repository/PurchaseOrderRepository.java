@@ -1,6 +1,8 @@
 package com.medicalstore.repository;
 
 import com.medicalstore.model.PurchaseOrder;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -13,16 +15,23 @@ public interface PurchaseOrderRepository extends JpaRepository<PurchaseOrder, Lo
 
     List<PurchaseOrder> findAllByOrderByOrderDateDesc();
 
+    /** Pageable version for the purchases list endpoint. */
+    Page<PurchaseOrder> findAllByOrderByOrderDateDesc(Pageable pageable);
+
     Optional<PurchaseOrder> findByOrderNumber(String orderNumber);
 
     List<PurchaseOrder> findByStatus(String status);
 
     // --- branch-scoped (SHOPKEEPER) ---
     List<PurchaseOrder> findByBranchIdOrderByOrderDateDesc(Long branchId);
+    Page<PurchaseOrder> findByBranchIdOrderByOrderDateDesc(Long branchId, Pageable pageable);
 
     // --- owner-scoped (OWNER) ---
     @Query("SELECT po FROM PurchaseOrder po WHERE po.branch.owner.id = :ownerId ORDER BY po.orderDate DESC")
     List<PurchaseOrder> findByOwnerId(Long ownerId);
+
+    @Query("SELECT po FROM PurchaseOrder po WHERE po.branch.owner.id = :ownerId ORDER BY po.orderDate DESC")
+    Page<PurchaseOrder> findByOwnerIdPageable(Long ownerId, Pageable pageable);
 
     // --- count queries ---
     long countByStatus(String status);

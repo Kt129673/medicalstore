@@ -3,7 +3,9 @@ package com.medicalstore.config;
 import com.medicalstore.model.Branch;
 import com.medicalstore.model.Customer;
 import com.medicalstore.model.Medicine;
+import com.medicalstore.model.Permission;
 import com.medicalstore.model.Sale;
+import com.medicalstore.model.SubscriptionFeature;
 import com.medicalstore.model.Supplier;
 import com.medicalstore.model.SubscriptionPlan;
 import com.medicalstore.model.User;
@@ -18,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -43,6 +46,8 @@ public class DataInitializer implements CommandLineRunner {
     private final CustomerRepository customerRepository;
     private final SupplierRepository supplierRepository;
     private final SubscriptionPlanRepository subscriptionPlanRepository;
+    private final PermissionRepository permissionRepository;
+    private final SubscriptionFeatureRepository subscriptionFeatureRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Override
@@ -218,6 +223,88 @@ public class DataInitializer implements CommandLineRunner {
 
         if (migrated > 0) {
             log.info("Migrated {} existing records to Default Branch", migrated);
+        }
+
+        // 5. Seed fine-grained permission codes (idempotent)
+        seedPermissions();
+
+        // 6. Seed subscription feature flags per plan tier (idempotent)
+        seedSubscriptionFeatures();
+    }
+
+    /**
+     * Idempotent seed of the fine-grained permission matrix.
+     * Each entry is only inserted when the code does not yet exist.
+     * Hierarchy: ADMIN inherits OWNER which inherits SHOPKEEPER,
+     * so permissions granted to OWNER are also implicitly available to ADMIN
+     * at the service/controller level — but we store them explicitly here
+     * for correctness and clarity.
+     */
+    private void seedPermissions() {
+        // permission code → roles that are directly granted it
+        Map<String, Set<String>> matrix = Map.ofEntries(
+            Map.entry("MEDICINE_DELETE",       Set.of("ADMIN", "OWNER")),
+            Map.entry("MEDICINE_BULK_IMPORT",  Set.of("ADMIN", "OWNER")),
+            Map.entry("USER_DELETE",           Set.of("ADMIN")),
+            Map.entry("USER_RESTORE",          Set.of("ADMIN")),
+            Map.entry("CUSTOMER_DELETE",       Set.of("ADMIN", "OWNER")),
+            Map.entry("REPORT_EXPORT_EXCEL",   Set.of("ADMIN", "OWNER")),
+            Map.entry("REPORT_VIEW_ANALYTICS", Set.of("ADMIN", "OWNER", "SHOPKEEPER")),
+            Map.entry("SALE_DELETE",           Set.of("ADMIN")),
+            Map.entry("INVOICE_PRINT",         Set.of("ADMIN", "OWNER", "SHOPKEEPER")),
+            Map.entry("SUPPLIER_MANAGE",       Set.of("ADMIN", "OWNER")),
+            Map.entry("BULK_EXPORT",           Set.of("ADMIN", "OWNER"))
+        );
+
+        int seeded = 0;
+        for (var entry : matrix.entrySet()) {
+            if (!permissionRepository.existsByCode(entry.getKey())) {
+                Permission p = Permission.builder()
+                        .code(entry.getKey())
+                        .description(entry.getKey().replace('_', ' ').toLowerCase())
+                        .roles(new java.util.HashSet<>(entry.getValue()))
+                        .build();
+                permissionRepository.save(p);
+                seeded++;
+            }
+        }
+        if (seeded > 0) {
+            log.info("Seeded {} permission(s) into the permission matrix", seeded);
+        }
+    }
+
+    /**
+     * Idempotent seed of the subscription feature matrix.
+     * Plan tiers: FREE, PRO, ENTERPRISE
+     */
+    private void seedSubscriptionFeatures() {
+        // feature code → plan tiers that include it
+        Map<String, Set<String>> featureMatrix = Map.ofEntries(
+            Map.entry("INVOICE_PRINT",       Set.of("FREE", "PRO", "ENTERPRISE")),
+            Map.entry("BASIC_REPORTS",        Set.of("FREE", "PRO", "ENTERPRISE")),
+            Map.entry("ADVANCED_ANALYTICS",   Set.of("PRO",  "ENTERPRISE")),
+            Map.entry("EXCEL_EXPORT",         Set.of("PRO",  "ENTERPRISE")),
+            Map.entry("BULK_EXPORT",          Set.of("ENTERPRISE")),
+            Map.entry("API_ACCESS",           Set.of("ENTERPRISE"))
+        );
+
+        int seeded = 0;
+        for (var entry : featureMatrix.entrySet()) {
+            String featureCode = entry.getKey();
+            for (String planType : entry.getValue()) {
+                if (!subscriptionFeatureRepository.existsByPlanTypeAndFeatureCode(planType, featureCode)) {
+                    subscriptionFeatureRepository.save(
+                        SubscriptionFeature.builder()
+                                .planType(planType)
+                                .featureCode(featureCode)
+                                .build()
+                    );
+                    seeded++;
+                }
+            }
+        }
+        if (seeded > 0) {
+            log.info("Seeded {} subscription feature flag(s)", seeded);
         }
     }
 }

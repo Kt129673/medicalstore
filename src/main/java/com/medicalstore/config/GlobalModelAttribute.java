@@ -4,6 +4,7 @@ import com.medicalstore.model.SubscriptionPlan;
 import com.medicalstore.service.MedicineService;
 import com.medicalstore.service.SubscriptionService;
 import com.medicalstore.util.SecurityUtils;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -63,5 +64,39 @@ public class GlobalModelAttribute {
         }
 
         return null;
+    }
+
+    /**
+     * Exposes the subscription-expired flag set by {@link SubscriptionInterceptor}
+     * so that Thymeleaf templates can show an inline "read-only mode" banner.
+     */
+    @ModelAttribute("subscriptionExpired")
+    public boolean subscriptionExpired(HttpServletRequest request) {
+        Object flag = request.getAttribute(SubscriptionInterceptor.ATTR_SUBSCRIPTION_EXPIRED);
+        return Boolean.TRUE.equals(flag);
+    }
+
+    /**
+     * Exposes the set of feature codes available for the current owner's subscription tier.
+     * Templates can gate UI elements with: {@code th:if="${availableFeatures.contains('EXCEL_EXPORT')}"}.
+     * Returns an empty set for ADMIN users (they bypass subscription checks) and
+     * unauthenticated requests.
+     */
+    @ModelAttribute("availableFeatures")
+    public java.util.Set<String> availableFeatures() {
+        try {
+            Long ownerId = securityUtils.getCurrentOwnerId();
+            if (ownerId == null) {
+                // ADMINs are not bound by subscriptions — grant everything
+                if (securityUtils.isAdmin()) {
+                    return java.util.Set.of("INVOICE_PRINT", "BASIC_REPORTS",
+                            "ADVANCED_ANALYTICS", "EXCEL_EXPORT", "BULK_EXPORT", "API_ACCESS");
+                }
+                return java.util.Collections.emptySet();
+            }
+            return subscriptionService.getAvailableFeatures(ownerId);
+        } catch (Exception e) {
+            return java.util.Collections.emptySet();
+        }
     }
 }

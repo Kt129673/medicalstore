@@ -10,7 +10,11 @@ import java.time.LocalDate;
 @Data
 @NoArgsConstructor
 @Entity
-@Table(name = "subscription_plans")
+@Table(name = "subscription_plans", indexes = {
+        @Index(name = "idx_sub_expiry", columnList = "expiry_date"),
+        @Index(name = "idx_sub_plan",   columnList = "plan_type"),
+        @Index(name = "idx_sub_active", columnList = "active")
+})
 public class SubscriptionPlan {
 
     @Id

@@ -16,7 +16,7 @@ import java.util.Map;
 
 @Controller
 @RequestMapping("/analytics")
-@PreAuthorize("hasAnyRole('ADMIN', 'OWNER')")
+@PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'SHOPKEEPER')")
 public class AnalyticsController {
 
     private final AnalyticsService analyticsService;
@@ -115,6 +115,7 @@ public class AnalyticsController {
     // ═══════════════════════════════════════════════════════════════════
 
     @GetMapping("/export/excel")
+    @PreAuthorize("hasPermission(null, 'REPORT_EXPORT_EXCEL')")
     public void exportExcel(
             @RequestParam String report,
             @RequestParam(required = false) String startDate,

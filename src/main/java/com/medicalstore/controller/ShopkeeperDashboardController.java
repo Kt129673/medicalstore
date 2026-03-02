@@ -35,7 +35,13 @@ public class ShopkeeperDashboardController {
      * Renders the shopkeeper's operational dashboard.
      * Dashboard data is loaded asynchronously via {@link com.medicalstore.controller.api.DashboardApiController}.
      */
+    /** Redirect legacy root URL to canonical /dashboard. */
     @GetMapping("/")
+    public String rootRedirect() {
+        return "redirect:/dashboard";
+    }
+
+    @GetMapping("/dashboard")
     public String dashboard(Model model) {
         model.addAttribute("page", "home");
         return "index";

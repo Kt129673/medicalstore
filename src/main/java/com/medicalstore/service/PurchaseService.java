@@ -1,10 +1,14 @@
 package com.medicalstore.service;
 
+import com.medicalstore.config.TenantContext;
 import com.medicalstore.model.PurchaseOrder;
 import com.medicalstore.model.PurchaseOrderItem;
 import com.medicalstore.repository.MedicineRepository;
 import com.medicalstore.repository.PurchaseOrderRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,15 +25,30 @@ public class PurchaseService {
 
     private final PurchaseOrderRepository purchaseOrderRepository;
     private final MedicineRepository medicineRepository;
+    private final RoleAuditService roleAuditService;
 
     public List<PurchaseOrder> getAllOrders() {
-        Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
-        Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
+        Long tenantId = TenantContext.getTenantId();
+        Long ownerId = TenantContext.getOwnerId();
         if (tenantId != null)
             return purchaseOrderRepository.findByBranchIdOrderByOrderDateDesc(tenantId);
         if (ownerId != null)
             return purchaseOrderRepository.findByOwnerId(ownerId);
         return purchaseOrderRepository.findAllByOrderByOrderDateDesc();
+    }
+
+    /**
+     * Paginated version of {@link #getAllOrders()}.
+     * Returns a {@link Page} of orders scoped to the current tenant/owner.
+     */
+    public Page<PurchaseOrder> getAllOrdersPaged(Pageable pageable) {
+        Long tenantId = TenantContext.getTenantId();
+        Long ownerId = TenantContext.getOwnerId();
+        if (tenantId != null)
+            return purchaseOrderRepository.findByBranchIdOrderByOrderDateDesc(tenantId, pageable);
+        if (ownerId != null)
+            return purchaseOrderRepository.findByOwnerIdPageable(ownerId, pageable);
+        return purchaseOrderRepository.findAllByOrderByOrderDateDesc(pageable);
     }
 
     public List<PurchaseOrder> getOrdersByBranch(Long branchId) {
@@ -43,16 +62,20 @@ public class PurchaseService {
     public Optional<PurchaseOrder> getOrderById(Long id) {
         Optional<PurchaseOrder> order = purchaseOrderRepository.findById(id);
         if (order.isPresent()) {
-            Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
+            Long tenantId = TenantContext.getTenantId();
             if (tenantId != null && order.get().getBranch() != null 
                 && !tenantId.equals(order.get().getBranch().getId())) {
-                return Optional.empty(); // Not authorized
+                roleAuditService.logEscalationAttempt("/purchases/" + id, "SHOPKEEPER",
+                        "Attempted to access purchase order from different branch (branchId=" + order.get().getBranch().getId() + ")");
+                throw new AccessDeniedException("Access denied: purchase order belongs to a different branch");
             }
-            Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
+            Long ownerId = TenantContext.getOwnerId();
             if (ownerId != null && order.get().getBranch() != null 
                 && order.get().getBranch().getOwner() != null
                 && !ownerId.equals(order.get().getBranch().getOwner().getId())) {
-                return Optional.empty(); // Not authorized
+                roleAuditService.logEscalationAttempt("/purchases/" + id, "OWNER",
+                        "Attempted to access purchase order belonging to different owner");
+                throw new AccessDeniedException("Access denied: purchase order belongs to a different owner");
             }
         }
         return order;

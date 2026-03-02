@@ -11,14 +11,9 @@ import java.time.LocalDateTime;
 
 /**
  * RoleAuditService — tracks role-based actions for audit trail.
- * 
- * Useful for:
- * - Compliance auditing
- * - Security monitoring
- * - Debugging access issues
- * - Tracking admin actions
- * 
- * Future: Can be extended to persist audit logs to database.
+ *
+ * Writes to both SLF4J (immediate, synchronous) and the
+ * {@code audit_logs} database table (async via {@link AuditLogService}).
  */
 @Slf4j
 @Service
@@ -27,63 +22,56 @@ public class RoleAuditService {
 
     private final SecurityUtils securityUtils;
     private final UserRepository userRepository;
+    private final AuditLogService auditLogService;
 
     /**
      * Log a sensitive action performed by a role.
-     * 
-     * Examples:
-     * - logAction("DELETE_USER", "Deleted user: john_doe")
-     * - logAction("EDIT_SUBSCRIPTION", "Changed plan from FREE to PRO for owner_1")
-     * - logAction("RESET_PASSWORD", "Reset password for user: shopkeeper_5")
      */
     public void logAction(String actionType, String description) {
         User currentUser = securityUtils.getCurrentUser();
         String username = currentUser != null ? currentUser.getUsername() : "ANONYMOUS";
         String roles = currentUser != null ? String.join(",", currentUser.getRoles()) : "UNKNOWN";
-        
+
         log.info(
             "AUDIT_LOG | User: {} | Roles: {} | Action: {} | Description: {} | Timestamp: {}",
-            username,
-            roles,
-            actionType,
-            description,
-            LocalDateTime.now()
+            username, roles, actionType, description, LocalDateTime.now()
         );
+
+        auditLogService.persist(null, null, actionType, description, username, roles);
     }
 
     /**
-     * Log when access is denied (403/403).
+     * Log when access is denied (403).
      */
     public void logAccessDenied(String attemptedPath, String reason) {
         User currentUser = securityUtils.getCurrentUser();
         String username = currentUser != null ? currentUser.getUsername() : "ANONYMOUS";
         String roles = currentUser != null ? String.join(",", currentUser.getRoles()) : "NONE";
-        
+
         log.warn(
             "AUDIT_DENIED | User: {} | Roles: {} | Attempted: {} | Reason: {} | Timestamp: {}",
-            username,
-            roles,
-            attemptedPath,
-            reason,
-            LocalDateTime.now()
+            username, roles, attemptedPath, reason, LocalDateTime.now()
         );
+
+        auditLogService.persist(null, null, "AUDIT_DENIED",
+                "Attempted: " + attemptedPath + " | Reason: " + reason, username, roles);
     }
 
     /**
-     * Log role escalation attempts (trying to access higher-privilege endpoints).
+     * Log role escalation attempts (trying to access another entity's data).
      */
-    public void logEscalationAttempt(String endpoint, String userRole, String requiredRole) {
+    public void logEscalationAttempt(String endpoint, String userRole, String detail) {
         User currentUser = securityUtils.getCurrentUser();
         String username = currentUser != null ? currentUser.getUsername() : "ANONYMOUS";
-        
+        String roles = currentUser != null ? String.join(",", currentUser.getRoles()) : userRole;
+
         log.error(
-            "PRIVILEGE_ESCALATION_ATTEMPT | User: {} | Current Role: {} | Tried to access: {} | Required: {} | Timestamp: {}",
-            username,
-            userRole,
-            endpoint,
-            requiredRole,
-            LocalDateTime.now()
+            "PRIVILEGE_ESCALATION_ATTEMPT | User: {} | Role: {} | Endpoint: {} | Detail: {} | Timestamp: {}",
+            username, userRole, endpoint, detail, LocalDateTime.now()
         );
+
+        auditLogService.persist(null, null, "ESCALATION_ATTEMPT",
+                "Endpoint: " + endpoint + " | Detail: " + detail, username, roles);
     }
 
     /**

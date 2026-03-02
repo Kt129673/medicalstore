@@ -1,8 +1,10 @@
 package com.medicalstore.service;
 
+import com.medicalstore.config.TenantContext;
 import com.medicalstore.model.Supplier;
 import com.medicalstore.repository.SupplierRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,10 +16,11 @@ import java.util.Optional;
 public class SupplierService {
     
     private final SupplierRepository supplierRepository;
+    private final RoleAuditService roleAuditService;
     
     public List<Supplier> getAllSuppliers() {
-        Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
-        Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
+        Long tenantId = TenantContext.getTenantId();
+        Long ownerId = TenantContext.getOwnerId();
         if (tenantId != null)
             return supplierRepository.findByBranchId(tenantId);
         if (ownerId != null)
@@ -28,16 +31,20 @@ public class SupplierService {
     public Optional<Supplier> getSupplierById(Long id) {
         Optional<Supplier> supplier = supplierRepository.findById(id);
         if (supplier.isPresent()) {
-            Long tenantId = com.medicalstore.config.TenantContext.getTenantId();
+            Long tenantId = TenantContext.getTenantId();
             if (tenantId != null && supplier.get().getBranch() != null
                     && !tenantId.equals(supplier.get().getBranch().getId())) {
-                return Optional.empty();
+                roleAuditService.logEscalationAttempt("/suppliers/" + id, "SHOPKEEPER",
+                        "Attempted to access supplier from different branch (branchId=" + supplier.get().getBranch().getId() + ")");
+                throw new AccessDeniedException("Access denied: supplier belongs to a different branch");
             }
-            Long ownerId = com.medicalstore.config.TenantContext.getOwnerId();
+            Long ownerId = TenantContext.getOwnerId();
             if (ownerId != null && supplier.get().getBranch() != null
                     && supplier.get().getBranch().getOwner() != null
                     && !ownerId.equals(supplier.get().getBranch().getOwner().getId())) {
-                return Optional.empty();
+                roleAuditService.logEscalationAttempt("/suppliers/" + id, "OWNER",
+                        "Attempted to access supplier belonging to different owner");
+                throw new AccessDeniedException("Access denied: supplier belongs to a different owner");
             }
         }
         return supplier;
