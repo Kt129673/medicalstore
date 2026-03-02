@@ -37,7 +37,7 @@
     <!-- ── KPI Cards ─────────────────────────────────────────────────────── -->
     <div class="row g-3 mb-4">
         <div class="col-6 col-md-4 col-xl-2">
-            <div class="kpi-card" style="background:linear-gradient(135deg,#667eea,#764ba2)">
+            <div class="kpi-card ent-kpi--blue">
                 <i class="bi bi-cash-stack kpi-icon"></i>
                 <div class="kpi-label">Today's Sales</div>
                 <div class="kpi-value">₹<span th:text="${#numbers.formatDecimal(todaySales, 0, 'COMMA', 0, 'POINT')}">0</span></div>
@@ -45,7 +45,7 @@
             </div>
         </div>
         <div class="col-6 col-md-4 col-xl-2">
-            <div class="kpi-card" style="background:linear-gradient(135deg,#11998e,#38ef7d)">
+            <div class="kpi-card ent-kpi--green">
                 <i class="bi bi-graph-up kpi-icon"></i>
                 <div class="kpi-label">Monthly Revenue</div>
                 <div class="kpi-value">₹<span th:text="${#numbers.formatDecimal(monthlyRevenue, 0, 'COMMA', 0, 'POINT')}">0</span></div>
@@ -53,7 +53,7 @@
             </div>
         </div>
         <div class="col-6 col-md-4 col-xl-2">
-            <div class="kpi-card" style="background:linear-gradient(135deg,#4facfe,#00f2fe)">
+            <div class="kpi-card ent-kpi--cyan">
                 <i class="bi bi-people kpi-icon"></i>
                 <div class="kpi-label">Total Customers</div>
                 <div class="kpi-value" th:text="${totalCustomers}">0</div>
@@ -61,7 +61,7 @@
             </div>
         </div>
         <div class="col-6 col-md-4 col-xl-2">
-            <div class="kpi-card" style="background:linear-gradient(135deg,#fa709a,#fee140)">
+            <div class="kpi-card ent-kpi--amber">
                 <i class="bi bi-capsule-pill kpi-icon"></i>
                 <div class="kpi-label">Total Medicines</div>
                 <div class="kpi-value" th:text="${totalMedicines}">0</div>
@@ -69,7 +69,7 @@
             </div>
         </div>
         <div class="col-6 col-md-4 col-xl-2">
-            <div class="kpi-card" style="background:linear-gradient(135deg,#f5576c,#f093fb)">
+            <div class="kpi-card ent-kpi--red">
                 <i class="bi bi-exclamation-triangle kpi-icon"></i>
                 <div class="kpi-label">Low Stock</div>
                 <div class="kpi-value" th:text="${lowStockCount ?: lowStock}">0</div>
@@ -77,11 +77,11 @@
             </div>
         </div>
         <div class="col-6 col-md-4 col-xl-2">
-            <div class="kpi-card" style="background:linear-gradient(135deg,#ff9a9e,#fad0c4)">
+            <div class="kpi-card ent-kpi--teal">
                 <i class="bi bi-calendar-x kpi-icon"></i>
                 <div class="kpi-label">Expiring Soon</div>
-                <div class="kpi-value" style="color:#333" th:text="${expiringIn30}">0</div>
-                <div class="kpi-sub" style="color:#555">Within 30 days</div>
+                <div class="kpi-value" th:text="${expiringIn30}">0</div>
+                <div class="kpi-sub">Within 30 days</div>
             </div>
         </div>
     </div>
