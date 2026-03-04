@@ -797,6 +797,16 @@
         display: none;
     }
 
+    /* Hide clock on small screens to prevent logout button overflow */
+    .header-clock {
+        display: none;
+    }
+
+    /* Tighten spacing so all header-right items fit within the viewport */
+    .header-right {
+        gap: var(--space-2);
+    }
+
     .mobile-logout-form {
         display: block;
     }
