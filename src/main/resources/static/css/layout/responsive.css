@@ -634,7 +634,7 @@
 @media (max-width: 576px) {
     .notif-dropdown {
         position: fixed;
-        top: 74px;
+        top: 74px; /* matches --header-height (70px) + 4px gap */
         left: 8px;
         right: 8px;
         width: auto;
@@ -687,7 +687,7 @@
 
     .bc-current {
         font-size: 13px;
-        max-width: 100px;
+        max-width: 120px; /* limit but keep readable on narrow headers */
     }
 }
 
@@ -782,12 +782,12 @@
 
 /* ── Subscription expired alert: prevent icon+text from squishing ─ */
 @media (max-width: 576px) {
-    .main-content > .alert.alert-danger.d-flex {
+    .subscription-expired-banner {
         flex-wrap: wrap;
         font-size: 0.8rem;
     }
 
-    .main-content > .alert.alert-danger.d-flex .btn-close {
+    .subscription-expired-banner .btn-close {
         margin-top: 4px;
     }
 }
