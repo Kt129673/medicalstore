@@ -45,9 +45,9 @@
                             <tr>
                                 <th><i class="bi bi-person"></i> Customer</th>
                                 <th><i class="bi bi-telephone"></i> Contact</th>
-                                <th><i class="bi bi-geo-alt"></i> Address</th>
-                                <th><i class="bi bi-star"></i> Loyalty Points</th>
-                                <th><i class="bi bi-calendar"></i> Member Since</th>
+                                <th class="d-none d-md-table-cell"><i class="bi bi-geo-alt"></i> Address</th>
+                                <th class="d-none d-sm-table-cell"><i class="bi bi-star"></i> Loyalty Points</th>
+                                <th class="d-none d-lg-table-cell"><i class="bi bi-calendar"></i> Member Since</th>
                                 <th class="text-end"><i class="bi bi-tools"></i> Actions</th>
                             </tr>
                         </thead>
@@ -56,9 +56,9 @@
                             <tr class="ent-skeleton--row" th:each="i : ${#numbers.sequence(1,5)}">
                                 <td><div class="d-flex align-items-center gap-2"><span class="ent-skeleton ent-skeleton--avatar"></span><div><span class="ent-skeleton ent-skeleton--text" style="width:110px;margin-bottom:6px;"></span><span class="ent-skeleton ent-skeleton--text" style="width:60px;height:10px;"></span></div></div></td>
                                 <td><span class="ent-skeleton ent-skeleton--text" style="width:100px;margin-bottom:6px;"></span><span class="ent-skeleton ent-skeleton--text" style="width:130px;"></span></td>
-                                <td><span class="ent-skeleton ent-skeleton--text" style="width:140px;"></span></td>
-                                <td><span class="ent-skeleton" style="width:72px;height:22px;border-radius:12px;display:inline-block;"></span></td>
-                                <td><span class="ent-skeleton ent-skeleton--text" style="width:90px;"></span></td>
+                                <td class="d-none d-md-table-cell"><span class="ent-skeleton ent-skeleton--text" style="width:140px;"></span></td>
+                                <td class="d-none d-sm-table-cell"><span class="ent-skeleton" style="width:72px;height:22px;border-radius:12px;display:inline-block;"></span></td>
+                                <td class="d-none d-lg-table-cell"><span class="ent-skeleton ent-skeleton--text" style="width:90px;"></span></td>
                                 <td class="text-end"><div class="d-flex gap-1 justify-content-end"><span class="ent-skeleton" style="width:32px;height:32px;border-radius:6px;display:inline-block;"></span><span class="ent-skeleton" style="width:32px;height:32px;border-radius:6px;display:inline-block;"></span></div></td>
                             </tr>
                         </tbody>
@@ -90,16 +90,16 @@
                                         </span>
                                     </div>
                                 </td>
-                                <td>
+                                <td class="d-none d-md-table-cell">
                                     <span th:if="${customer.address}"
                                         th:text="${#strings.abbreviate(customer.address, 40)}"></span>
                                     <span th:unless="${customer.address}" class="text-muted small">No address</span>
                                 </td>
-                                <td>
+                                <td class="d-none d-sm-table-cell">
                                     <span class="badge loyalty-badge" th:text="${customer.loyaltyPoints} + ' Points'">0
                                         Points</span>
                                 </td>
-                                <td
+                                <td class="d-none d-lg-table-cell"
                                     th:text="${customer.registeredDate != null ? #temporals.format(customer.registeredDate, 'MMM dd, yyyy') : 'N/A'}">
                                     Jan 01, 2024</td>
                                 <td class="text-end">

@@ -72,9 +72,9 @@
                         <thead class="table-light">
                             <tr>
                                 <th class="ps-3">Shopkeeper</th>
-                                <th>Assigned Branch</th>
-                                <th>Last Login</th>
-                                <th>Activity</th>
+                                <th class="d-none d-sm-table-cell">Assigned Branch</th>
+                                <th class="d-none d-md-table-cell">Last Login</th>
+                                <th class="d-none d-lg-table-cell">Activity</th>
                                 <th>Status</th>
                                 <th>Action</th>
                             </tr>
@@ -86,19 +86,19 @@
                                     <small class="text-muted"><code th:text="${sk.username}">user</code></small>
                                     <div th:if="${sk.email}" class="text-muted" style="font-size:0.78rem;" th:text="${sk.email}"></div>
                                 </td>
-                                <td>
+                                <td class="d-none d-sm-table-cell">
                                     <span th:if="${sk.branch != null}" class="badge bg-primary"
                                           th:text="${sk.branch.name}">Branch</span>
                                     <span th:unless="${sk.branch != null}" class="badge bg-secondary">Unassigned</span>
                                 </td>
-                                <td>
+                                <td class="d-none d-md-table-cell">
                                     <span th:if="${sk.lastLogin != null}">
                                         <div th:text="${#temporals.format(sk.lastLogin, 'dd MMM yyyy')}">date</div>
                                         <small class="text-muted" th:text="${#temporals.format(sk.lastLogin, 'hh:mm a')}">time</small>
                                     </span>
                                     <span th:unless="${sk.lastLogin != null}" class="text-muted small">Never</span>
                                 </td>
-                                <td>
+                                <td class="d-none d-lg-table-cell">
                                     <!-- Active Today (lastLogin is today) -->
                                     <span th:if="${sk.lastLogin != null and #temporals.format(sk.lastLogin, 'yyyy-MM-dd') == #temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}"
                                           class="badge bg-success">

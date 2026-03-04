@@ -37,24 +37,24 @@
                         <thead>
                             <tr>
                                 <th>Return ID</th>
-                                <th>Date</th>
-                                <th>Invoice #</th>
+                                <th class="d-none d-sm-table-cell">Date</th>
+                                <th class="d-none d-md-table-cell">Invoice #</th>
                                 <th>Medicine</th>
-                                <th>Quantity</th>
+                                <th class="d-none d-sm-table-cell">Quantity</th>
                                 <th>Refund Amount</th>
-                                <th>Reason</th>
+                                <th class="d-none d-lg-table-cell">Reason</th>
                                 <th class="text-end">Actions</th>
                             </tr>
                         </thead>
                         <tbody id="retSkeletonBody" aria-hidden="true">
                             <tr class="ent-skeleton--row" th:each="i : ${#numbers.sequence(1,5)}">
                                 <td><span class="ent-skeleton ent-skeleton--text" style="width:80px;"></span></td>
-                                <td><span class="ent-skeleton ent-skeleton--text" style="width:110px;"></span></td>
-                                <td><span class="ent-skeleton ent-skeleton--text" style="width:90px;"></span></td>
+                                <td class="d-none d-sm-table-cell"><span class="ent-skeleton ent-skeleton--text" style="width:110px;"></span></td>
+                                <td class="d-none d-md-table-cell"><span class="ent-skeleton ent-skeleton--text" style="width:90px;"></span></td>
                                 <td><span class="ent-skeleton ent-skeleton--text" style="width:120px;"></span></td>
-                                <td><span class="ent-skeleton ent-skeleton--text" style="width:40px;"></span></td>
+                                <td class="d-none d-sm-table-cell"><span class="ent-skeleton ent-skeleton--text" style="width:40px;"></span></td>
                                 <td><span class="ent-skeleton ent-skeleton--text" style="width:70px;"></span></td>
-                                <td><span class="ent-skeleton ent-skeleton--text" style="width:80px;"></span></td>
+                                <td class="d-none d-lg-table-cell"><span class="ent-skeleton ent-skeleton--text" style="width:80px;"></span></td>
                                 <td class="text-end"><span class="ent-skeleton" style="width:32px;height:32px;border-radius:6px;display:inline-block;"></span></td>
                             </tr>
                         </tbody>
@@ -62,9 +62,9 @@
                             <tr th:each="returnItem : ${returns}">
                                 <td th:text="'RET-' + ${#strings.padLeft(returnItem.id.toString(), 5, '0')}">RET-00001
                                 </td>
-                                <td th:text="${#temporals.format(returnItem.returnDate, 'dd-MM-yyyy HH:mm')}">17-11-2025
+                                <td class="d-none d-sm-table-cell" th:text="${#temporals.format(returnItem.returnDate, 'dd-MM-yyyy HH:mm')}">17-11-2025
                                 </td>
-                                <td>
+                                <td class="d-none d-md-table-cell">
                                     <a th:href="@{/sales/invoice/{id}(id=${returnItem.sale.id})}"
                                         class="text-decoration-none text-primary fw-semibold" target="_blank"
                                         th:text="'INV-' + ${#strings.padLeft(returnItem.sale.id.toString(), 6, '0')}">
@@ -72,11 +72,11 @@
                                     </a>
                                 </td>
                                 <td th:text="${returnItem.saleItem != null and returnItem.saleItem.medicine != null ? returnItem.saleItem.medicine.name : 'Deleted Item'}">Medicine</td>
-                                <td><span class="badge bg-warning text-dark" th:text="${returnItem.returnQuantity}">1</span></td>
+                                <td class="d-none d-sm-table-cell"><span class="badge bg-warning text-dark" th:text="${returnItem.returnQuantity}">1</span></td>
                                 <td class="fw-bold text-danger"
                                     th:text="'₹' + ${#numbers.formatDecimal(returnItem.refundAmount, 0, 2)}">₹100.00
                                 </td>
-                                <td>
+                                <td class="d-none d-lg-table-cell">
                                     <span class="badge bg-secondary" th:text="${returnItem.reason}">Expired</span>
                                 </td>
                                 <td class="text-end">

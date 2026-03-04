@@ -90,11 +90,11 @@
                     <thead>
                         <tr>
                             <th>Supplier</th>
-                            <th>Due Date</th>
+                            <th class="d-none d-sm-table-cell">Due Date</th>
                             <th>Status</th>
                             <th class="text-end">Total Due</th>
-                            <th class="text-end">Paid Amount</th>
-                            <th class="text-end">Remaining</th>
+                            <th class="text-end d-none d-md-table-cell">Paid Amount</th>
+                            <th class="text-end d-none d-sm-table-cell">Remaining</th>
                             <th class="text-center">Action</th>
                         </tr>
                     </thead>
@@ -104,7 +104,7 @@
                                 <i class="bi bi-truck text-muted me-2"></i>
                                 <span th:text="${credit.supplier.name}"></span>
                             </td>
-                            <td>
+                            <td class="d-none d-sm-table-cell">
                                 <i class="bi bi-calendar me-1 text-muted"></i>
                                 <span th:text="${#temporals.format(credit.dueDate, 'dd MMM yyyy')}"></span>
                             </td>
@@ -116,10 +116,10 @@
                             </td>
                             <td class="text-end"
                                 th:text="'₹' + ${#numbers.formatDecimal(credit.totalDue, 1, 'COMMA', 2, 'POINT')}"></td>
-                            <td class="text-end text-success"
+                            <td class="text-end text-success d-none d-md-table-cell"
                                 th:text="'₹' + ${#numbers.formatDecimal(credit.paidAmount, 1, 'COMMA', 2, 'POINT')}">
                             </td>
-                            <td class="text-end fw-bold"
+                            <td class="text-end fw-bold d-none d-sm-table-cell"
                                 th:classappend="${credit.remainingAmount > 0} ? 'text-danger' : 'text-muted'"
                                 th:text="'₹' + ${#numbers.formatDecimal(credit.remainingAmount, 1, 'COMMA', 2, 'POINT')}">
                             </td>
