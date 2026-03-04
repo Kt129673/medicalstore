@@ -1056,6 +1056,49 @@
 
             .panel-right {
                 padding: 16px 12px;
+                align-items: flex-start;
+                padding-top: 24px;
+            }
+
+            /* Quick login role-grid: reduce padding on tiny screens */
+            .role-btn {
+                padding: 12px 6px 10px;
+            }
+
+            .role-icon {
+                width: 36px;
+                height: 36px;
+                font-size: 16px;
+            }
+
+            /* Card title smaller on phones */
+            .card-title {
+                font-size: 19px;
+            }
+
+            /* Shrink logo ring slightly */
+            .logo-ring {
+                width: 54px;
+                height: 54px;
+                font-size: 25px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .login-card {
+                padding: 1.6rem 1rem 1.4rem;
+            }
+
+            .role-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .role-btn span {
+                font-size: 10px;
+            }
+
+            .panel-right {
+                padding: 12px 8px;
             }
         }
     </style>
