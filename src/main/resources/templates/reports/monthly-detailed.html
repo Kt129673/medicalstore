@@ -106,6 +106,34 @@
                 font-weight: 600;
                 padding: 1rem 1.25rem;
             }
+
+            @media (max-width: 768px) {
+                .report-header {
+                    padding: 20px 16px;
+                }
+                .report-header h1 {
+                    font-size: 1.4rem;
+                }
+                .report-header h4 {
+                    font-size: 1rem;
+                }
+                .report-header .col-md-4 {
+                    text-align: left !important;
+                    margin-top: 16px;
+                }
+                .report-header .btn-group {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 6px;
+                }
+                .report-header .btn-group .btn {
+                    flex: 1 1 calc(50% - 3px);
+                    min-width: 0;
+                }
+                .metric-card:hover {
+                    transform: none;
+                }
+            }
         </style>
         <!-- Report Header -->
         <div class="report-header">
@@ -183,8 +211,8 @@
                             <h5 class="mb-0"><i class="bi bi-briefcase"></i> Executive Summary</h5>
                         </div>
                         <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-3 mb-3">
+                            <div class="row g-3">
+                                <div class="col-6 col-md-3">
                                     <div class="card metric-card border-primary h-100">
                                         <div class="card-body text-center">
                                             <i class="bi bi-receipt-cutoff text-primary" style="font-size: 2rem;"></i>
@@ -193,7 +221,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-3 mb-3">
+                                <div class="col-6 col-md-3">
                                     <div class="card metric-card border-success h-100">
                                         <div class="card-body text-center">
                                             <i class="bi bi-currency-rupee text-success" style="font-size: 2rem;"></i>
@@ -205,7 +233,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-3 mb-3">
+                                <div class="col-6 col-md-3">
                                     <div class="card metric-card border-info h-100">
                                         <div class="card-body text-center">
                                             <i class="bi bi-graph-up text-info" style="font-size: 2rem;"></i>
@@ -216,7 +244,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-3 mb-3">
+                                <div class="col-6 col-md-3">
                                     <div class="card metric-card border-warning h-100">
                                         <div class="card-body text-center">
                                             <i class="bi bi-people text-warning" style="font-size: 2rem;"></i>

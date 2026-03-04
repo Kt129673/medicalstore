@@ -2803,6 +2803,7 @@ tbody tr.ent-row-removed {
 
 .payment-options {
     display: flex;
+    flex-wrap: wrap;
     gap: 8px;
 }
 
