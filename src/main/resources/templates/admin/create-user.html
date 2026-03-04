@@ -44,8 +44,16 @@
                                     placeholder="e.g. ramesh@store.com">
                             </div>
                             <div class="mb-3">
-                                <label class="form-label fw-semibold">Password</label>
-                                <input type="password" name="password" class="form-control" required minlength="6">
+                                <label class="form-label fw-semibold">Password <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <input type="password" id="createUserPassword" name="password"
+                                        class="form-control" required minlength="6"
+                                        placeholder="At least 6 characters" autocomplete="new-password">
+                                    <button type="button" class="btn btn-outline-secondary toggle-pw"
+                                        data-target="createUserPassword" aria-label="Show password">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                </div>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label fw-semibold">Role</label>
@@ -90,6 +98,21 @@
                 branchInput.required = false;
             }
         }
+        document.querySelectorAll('.toggle-pw').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                const inp = document.getElementById(this.dataset.target);
+                const icon = this.querySelector('i');
+                if (inp.type === 'password') {
+                    inp.type = 'text';
+                    icon.className = 'bi bi-eye-slash';
+                    this.setAttribute('aria-label', 'Hide password');
+                } else {
+                    inp.type = 'password';
+                    icon.className = 'bi bi-eye';
+                    this.setAttribute('aria-label', 'Show password');
+                }
+            });
+        });
     </script>
 </main>
 

@@ -7,8 +7,9 @@
         <!-- Page Header -->
         <div class="page-header mb-4">
             <div>
-                <h2 th:text="${supplier.id != null ? 'Edit Supplier' : 'Add New Supplier'}">
-                    <i class="bi bi-truck text-primary"></i> Add Supplier
+                <h2>
+                    <i class="bi bi-truck text-primary"></i>
+                    <span th:text="${supplier.id != null ? 'Edit Supplier' : 'Add New Supplier'}">Add Supplier</span>
                 </h2>
                 <p class="text-muted mb-0">Enter supplier company details and contact information</p>
             </div>
@@ -19,35 +20,40 @@
 
         <div class="card">
             <div class="card-body">
-                <form th:action="@{/suppliers/save}" th:object="${supplier}" method="post">
+                <form id="supplierForm" th:action="@{/suppliers/save}" th:object="${supplier}" method="post">
                     <input type="hidden" th:field="*{id}">
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label ent-required">Company Name</label>
-                            <input type="text" class="form-control" th:field="*{name}" required>
+                            <input type="text" class="form-control" th:field="*{name}" required
+                                placeholder="e.g. Cipla Pharmaceuticals">
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label ent-required">Contact Person</label>
-                            <input type="text" class="form-control" th:field="*{contactPerson}" required>
+                            <input type="text" class="form-control" th:field="*{contactPerson}" required
+                                placeholder="e.g. Ramesh Kumar">
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label ent-required">Phone Number</label>
-                            <input type="tel" class="form-control" th:field="*{phone}" required>
+                            <input type="tel" class="form-control" th:field="*{phone}" required
+                                placeholder="10-digit number">
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Email</label>
-                            <input type="email" class="form-control" th:field="*{email}">
+                            <input type="email" class="form-control" th:field="*{email}"
+                                placeholder="supplier@example.com">
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label ent-required">Address</label>
-                            <textarea class="form-control" rows="2" th:field="*{address}" required></textarea>
+                            <textarea class="form-control" rows="2" th:field="*{address}" required
+                                placeholder="Street address, city, state, PIN code"></textarea>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label">GST Number</label>
@@ -56,15 +62,27 @@
                         </div>
                     </div>
 
-                    <div class="d-flex gap-2 mt-2">
-                        <button type="submit" class="btn btn-primary px-4 fw-bold shadow-sm">
-                            <i class="bi bi-save"></i> Save
-                        </button>
-                        <a href="/suppliers" class="btn btn-secondary">
-                            <i class="bi bi-x-circle"></i> Cancel
-                        </a>
+                    <div class="d-flex gap-2 justify-content-between align-items-center pt-3 border-top mt-2">
+                        <small class="text-muted">
+                            <i class="bi bi-info-circle"></i> Fields marked with * are required
+                        </small>
+                        <div class="d-flex gap-2">
+                            <a href="/suppliers" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-circle"></i> Cancel
+                            </a>
+                            <button type="submit" id="saveSupplierBtn" class="btn btn-primary px-4 fw-bold shadow-sm">
+                                <i class="bi bi-save"></i> Save Supplier
+                            </button>
+                        </div>
                     </div>
                 </form>
+                <script>
+                    document.getElementById('supplierForm').addEventListener('submit', function () {
+                        const btn = document.getElementById('saveSupplierBtn');
+                        if (btn) { btn.disabled = true; btn.setAttribute('aria-busy', 'true'); btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span><span>Saving...</span>'; }
+                    });
+                    if (typeof entInitFormDirty === 'function') entInitFormDirty('supplierForm');
+                </script>
             </div>
         </div>
     </div>
