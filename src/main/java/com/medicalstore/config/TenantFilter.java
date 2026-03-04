@@ -1,5 +1,6 @@
 package com.medicalstore.config;
 
+import com.medicalstore.common.TenantContext;
 import com.medicalstore.model.Branch;
 import com.medicalstore.repository.UserRepository;
 import com.medicalstore.common.SecurityUtils;
