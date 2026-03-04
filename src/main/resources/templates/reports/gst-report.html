@@ -195,8 +195,8 @@
 
         <div th:unless="${reportData.totalTransactions == 0}">
             <!-- Summary Cards -->
-            <div class="row mb-4">
-                <div class="col-lg-3 col-md-6 mb-3">
+            <div class="row g-3 mb-4">
+                <div class="col-6 col-md-6 col-lg-3">
                     <div class="gst-summary-card gst-card-1">
                         <div class="gst-label">Total Sales</div>
                         <div class="gst-value" th:text="${reportData.totalTransactions}">0</div>
@@ -204,7 +204,7 @@
                                 th:text="${#numbers.formatDecimal(reportData.grossRevenue, 1, 2)}">0.00</span></small>
                     </div>
                 </div>
-                <div class="col-lg-3 col-md-6 mb-3">
+                <div class="col-6 col-md-6 col-lg-3">
                     <div class="gst-summary-card gst-card-2">
                         <div class="gst-label">Taxable Amount</div>
                         <div class="gst-value">₹<span
@@ -215,7 +215,7 @@
                             discounts</small>
                     </div>
                 </div>
-                <div class="col-lg-3 col-md-6 mb-3">
+                <div class="col-6 col-md-6 col-lg-3">
                     <div class="gst-summary-card gst-card-3">
                         <div class="gst-label">Total GST Collected</div>
                         <div class="gst-value">₹<span
@@ -223,7 +223,7 @@
                         <small>CGST + SGST</small>
                     </div>
                 </div>
-                <div class="col-lg-3 col-md-6 mb-3">
+                <div class="col-6 col-md-6 col-lg-3">
                     <div class="gst-summary-card gst-card-4">
                         <div class="gst-label">Net Revenue</div>
                         <div class="gst-value">₹<span

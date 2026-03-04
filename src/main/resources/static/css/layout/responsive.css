@@ -551,3 +551,77 @@
         min-width: unset;
     }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   CHART RESPONSIVE IMPROVEMENTS
+═══════════════════════════════════════════════════════════════ */
+
+/* Ensure Chart.js canvas containers are position:relative for responsive resize.
+   Targets both .chart-body (dashboard) and any .card-body containing a canvas. */
+.chart-body,
+.card-body:has(canvas) {
+    position: relative;
+}
+
+@media (max-width: 576px) {
+    /* Reduce chart height on very small screens to save vertical space */
+    .chart-body canvas {
+        max-height: 220px;
+    }
+
+    /* Payment buttons: 2 per row on very small screens */
+    .payment-btn {
+        min-width: calc(50% - 4px);
+    }
+
+    /* Shortcuts bar: wrap keyboard shortcuts on mobile */
+    .shortcuts-bar {
+        font-size: 12px;
+        padding: 8px 12px;
+    }
+
+    /* Bill card adjustments */
+    .bill-total {
+        font-size: 1.5rem !important;
+    }
+
+    /* Analytics/report page header action buttons: full-width stacking */
+    .page-header .d-flex.gap-2 {
+        flex-wrap: wrap;
+    }
+
+    /* Quick actions: stack title and buttons cleanly */
+    .dashboard-quick-actions .d-flex.gap-2.flex-wrap .btn {
+        flex: 1 1 calc(50% - 4px);
+        text-align: center;
+    }
+}
+
+@media (max-width: 768px) {
+    /* Report header buttons: left-align on mobile */
+    .report-header .col-md-4.text-end {
+        text-align: left !important;
+        margin-top: 12px;
+    }
+
+    /* Report header btn-group: wrap buttons */
+    .report-header .btn-group {
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .report-header .btn-group .btn {
+        flex: 1 1 auto;
+    }
+
+    /* Subscription banner: smaller text on mobile */
+    .subscription-banner {
+        font-size: 12px;
+        padding: 6px 12px;
+    }
+
+    /* inv-table-card header: wrap on tablet */
+    .inv-table-header {
+        gap: var(--space-2);
+    }
+}
