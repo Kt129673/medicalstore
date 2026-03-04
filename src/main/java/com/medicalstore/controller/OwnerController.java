@@ -62,7 +62,7 @@ public class OwnerController {
                 model.addAttribute("lowStock", kpis.get("lowStockCount"));
                 model.addAttribute("branchCount", branches.size());
                 model.addAttribute("shopkeeperCount",
-                        userManagementService.countByRole("SHOPKEEPER"));
+                        userManagementService.findShopkeepersByOwnerId(ownerId).size());
 
                 return "owner/dashboard";
         }

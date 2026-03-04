@@ -89,7 +89,7 @@ Role.SHOPKEEPER ("ROLE_SHOPKEEPER")
 | Manage Users | ✅ | ❌ | ❌ |
 | Manage Branches | ✅ | ❌ | ❌ |
 | Manage Subscriptions | ✅ | ✅ | ❌ |
-| Manage Shopkeepers | ❌ | ✅ | ❌ |
+| Manage Shopkeepers | ✅ | ✅ | ❌ |
 | **Operations** | | | |
 | View Dashboard | ✅ | N/A | ✅ |
 | Medicines | ✅ | ❌ | ✅ |

@@ -114,7 +114,7 @@ MediStore uses a **3-tier Role-Based Access Control (RBAC)** system built on **S
 | Create User | `POST /admin/users/create` | Create OWNER or SHOPKEEPER accounts |
 | Edit User | `POST /admin/users/edit/{id}` | Update name, email, enabled status |
 | Toggle User | `POST /admin/users/toggle/{id}` | Enable or disable any user account |
-| Delete User | `POST /admin/users/delete/{id}` | Permanently remove a user (cannot delete own account) |
+| Delete User | `POST /admin/users/delete/{id}` | Soft-delete a user (recoverable from `/admin/users/deleted`; cannot delete own account or the last administrator) |
 | Reset Password | `POST /admin/users/reset-password/{id}` | Force-reset any user's password |
 | List All Branches | `GET /admin/branches` | All branches across all owners |
 | Create Branch | `POST /admin/branches/create` | Create a new branch and assign it to an owner |

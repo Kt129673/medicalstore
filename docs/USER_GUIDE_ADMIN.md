@@ -16,9 +16,10 @@
 6. [Inventory Management](#6-inventory-management)
 7. [Sales & Billing](#7-sales--billing)
 8. [Reports & Analytics](#8-reports--analytics)
-9. [Notifications](#9-notifications)
-10. [Profile & Password](#10-profile--password)
-11. [Troubleshooting](#11-troubleshooting)
+9. [Audit Logs](#9-audit-logs)
+10. [Notifications](#10-notifications)
+11. [Profile & Password](#11-profile--password)
+12. [Troubleshooting](#12-troubleshooting)
 
 ---
 
@@ -110,9 +111,18 @@ Navigate to **Admin Panel → Manage Users**. A table lists every registered use
 
 1. Click **Delete** next to the user you want to remove.
 2. Confirm the deletion in the dialog box.
-3. The action is permanent and cannot be undone.
+3. The user account is **soft-deleted** — it is hidden from normal views but not permanently removed from the database.
 
-> **Warning:** You cannot delete your own account.
+> **Warning:** You cannot delete your own account. You also cannot delete the last remaining Administrator account — create another admin first if you need to remove the current one.
+
+### 3.5 Restoring a Deleted User
+
+Soft-deleted users can be recovered at any time:
+
+1. Navigate to **Admin Panel → Manage Users → Deleted Users** (or visit `/admin/users/deleted`).
+2. Find the user you want to restore.
+3. Click **Restore** next to the user.
+4. The account is immediately re-activated and the user can log in again.
 
 ---
 
@@ -311,7 +321,55 @@ As Admin you can view all sales from every branch, create new sales on behalf of
 
 ---
 
-## 9. Notifications
+## 9. Audit Logs
+
+**URL:** `/admin/audit-logs`
+
+The Audit Logs page records every significant action performed by any user in the system — giving administrators a full tamper-evident trail of who did what and when.
+
+### 9.1 Viewing Audit Logs
+
+Navigate to **Admin Panel → Audit Logs**. The log table shows:
+
+| Column | Description |
+|---|---|
+| Timestamp | Date and time the action occurred |
+| User | Username of the person who performed the action |
+| Action | Action code (e.g., `USER_CREATED`, `SALE_COMPLETED`, `PASSWORD_RESET`) |
+| Description | Human-readable description of what happened |
+
+Logs are displayed in reverse-chronological order (newest first), 50 per page.
+
+### 9.2 Filtering Audit Logs
+
+Use the filter bar at the top to narrow the results:
+
+| Filter | Description |
+|---|---|
+| Username | Filter by the user who performed the action |
+| Action | Filter by action code keyword |
+| From Date | Start of date range (YYYY-MM-DD) |
+| To Date | End of date range (YYYY-MM-DD) |
+
+Click **Apply Filters** to refresh the results.
+
+### 9.3 What Gets Logged
+
+| Action Code | When it is recorded |
+|---|---|
+| `USER_CREATED` | A new user is created |
+| `USER_DELETED` | A user account is soft-deleted |
+| `USER_RESTORED` | A soft-deleted user is restored |
+| `PASSWORD_RESET` | An admin resets a user's password |
+| `ADMIN_VIEW_AS_OWNER` | An admin uses the "View as Owner" feature |
+| `SALE_COMPLETED` | A sale transaction is completed |
+| `ESCALATION_ATTEMPT` | A user tries to access a resource beyond their role |
+
+> **Tip:** Use audit logs to investigate suspicious activity or to verify that an operation was performed correctly. All actions are immutable — they cannot be edited or deleted through the UI.
+
+---
+
+## 10. Notifications
 
 The **bell icon** in the top navigation bar shows real-time alert counts:
 
@@ -324,7 +382,7 @@ Click the bell icon to see a dropdown list of the alerts with quick links to the
 
 ---
 
-## 10. Profile & Password
+## 11. Profile & Password
 
 **URL:** `/profile`
 
@@ -340,13 +398,14 @@ Click the bell icon to see a dropdown list of the alerts with quick links to the
 
 ---
 
-## 11. Troubleshooting
+## 12. Troubleshooting
 
 | Problem | Solution |
 |---|---|
 | Cannot log in | Verify username and password. Ask another admin to reset your password if needed. |
 | Page shows 403 Forbidden | You may have navigated to a URL you don't have access to. Return to `/admin`. |
-| User account not appearing | Refresh the page. The account may have been deleted. |
+| User account not appearing | Refresh the page. The user may have been soft-deleted — check `/admin/users/deleted`. |
+| Cannot delete a user | You cannot delete your own account or the last Administrator account. |
 | Subscription changes not applying | Verify the expiry date is in the future. Check the owner's username. |
 | Excel export is empty | Make sure there is data in the selected date range before exporting. |
 | Low-stock alerts missing | Verify the medicine's **Low Stock Threshold** is set correctly. |
