@@ -221,32 +221,35 @@
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js" defer></script>
 <script th:inline="javascript">
     const trendRaw = /*[[${salesTrendJson}]]*/ '{"labels":[],"data":[]}';
     const catRaw   = /*[[${categoryJson}]]*/ '{"labels":[],"data":[]}';
-    try {
-        if (typeof Chart !== 'undefined') {
-            const trend = JSON.parse(trendRaw);
-            new Chart(document.getElementById('branchTrendChart'), {
-                type: 'line',
-                data: { labels: trend.labels, datasets: [{ label:'Revenue (₹)', data: trend.data,
-                    borderColor:'#2563eb', backgroundColor:'rgba(37,99,235,0.12)',
-                    tension:0.4, fill:true, pointRadius:4 }]},
-                options: { responsive:true, plugins:{ legend:{display:false}},
-                    scales:{ y:{ beginAtZero:true, ticks:{callback:v=>'₹'+v.toLocaleString()}}}}
-            });
-
-            const cat = JSON.parse(catRaw);
-            if (cat.labels.length > 0) {
-                new Chart(document.getElementById('branchCategoryChart'), {
-                    type: 'doughnut',
-                    data: { labels: cat.labels, datasets:[{ data: cat.data,
-                        backgroundColor:['#2563eb','#11998e','#fa709a','#38bdf8','#f5576c','#a78bfa','#fbc2eb','#fddb92']}]},
-                    options:{ responsive:true, plugins:{ legend:{ position:'bottom', labels:{boxWidth:12}}}}
+    window.addEventListener('load', function () {
+        try {
+            if (typeof Chart !== 'undefined') {
+                const trend = JSON.parse(trendRaw);
+                new Chart(document.getElementById('branchTrendChart'), {
+                    type: 'line',
+                    data: { labels: trend.labels, datasets: [{ label:'Revenue (₹)', data: trend.data,
+                        borderColor:'#2563eb', backgroundColor:'rgba(37,99,235,0.12)',
+                        tension:0.4, fill:true, pointRadius:4 }]},
+                    options: { responsive:true, plugins:{ legend:{display:false}},
+                        scales:{ y:{ beginAtZero:true, ticks:{callback:v=>'₹'+v.toLocaleString()}}}}
                 });
+
+                const cat = JSON.parse(catRaw);
+                if (cat.labels.length > 0) {
+                    new Chart(document.getElementById('branchCategoryChart'), {
+                        type: 'doughnut',
+                        data: { labels: cat.labels, datasets:[{ data: cat.data,
+                            backgroundColor:['#2563eb','#11998e','#fa709a','#38bdf8','#f5576c','#a78bfa','#fbc2eb','#fddb92']}]},
+                        options:{ responsive:true, plugins:{ legend:{ position:'bottom', labels:{boxWidth:12}}}}
+                    });
+                }
             }
-        }
-    } catch(e) {}
+        } catch(e) {}
+    });
 </script>
 </main>
 </html>
