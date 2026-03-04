@@ -37,6 +37,7 @@ public class CacheConfig {
                 // ── 30-second dashboard caches (refresh fast KPIs)
                 build("dashboard_kpis",       30),
                 build("dashboard_charts",     30),
+                build("branch_comparison",    30),
 
                 // ── 60-second caches
                 build("medicines_search",     60),
