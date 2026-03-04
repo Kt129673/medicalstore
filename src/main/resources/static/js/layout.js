@@ -126,6 +126,22 @@ onDomReady(() => {
     if (globalSearchInput && savedQuery) {
         globalSearchInput.value = savedQuery;
     }
+
+    /* ---- Back button: navigate within app or fall back to home ---- */
+    const headerBackBtn = document.getElementById('headerBackBtn');
+    if (headerBackBtn) {
+        headerBackBtn.addEventListener('click', () => {
+            const referrer = document.referrer;
+            const sameOrigin = referrer && referrer.startsWith(location.origin);
+            if (history.length > 1 && sameOrigin) {
+                history.back();
+            } else {
+                /* No in-app history — navigate to role-appropriate home */
+                const homeLink = document.querySelector('.header-breadcrumb a');
+                window.location.href = homeLink ? homeLink.getAttribute('href') : '/';
+            }
+        });
+    }
 });
 
 /* ---- Mobile Sidebar Logic ---- */
@@ -211,6 +227,31 @@ window.addEventListener('resize', () => {
         if (!isMobile()) closeSidebarMobile();
     }, 150);
 });
+
+/* ---- Swipe-to-close sidebar on mobile ---- */
+(function () {
+    let touchStartX = 0;
+    let touchStartY = 0;
+    const SWIPE_THRESHOLD = 60;
+    const AXIS_LOCK = 30;
+
+    document.addEventListener('touchstart', (e) => {
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+    }, { passive: true });
+
+    document.addEventListener('touchend', (e) => {
+        if (!isMobile() || !sidebar) return;
+        const dx = e.changedTouches[0].clientX - touchStartX;
+        const dy = Math.abs(e.changedTouches[0].clientY - touchStartY);
+        if (dy >= AXIS_LOCK) return; // vertical scroll — ignore
+        if (sidebar.classList.contains('active') && dx < -SWIPE_THRESHOLD) {
+            closeSidebarMobile();
+        } else if (!sidebar.classList.contains('active') && touchStartX <= 20 && dx > SWIPE_THRESHOLD) {
+            openSidebarMobile();
+        }
+    }, { passive: true });
+})();
 
 /* ---- Live clock (DOM elements cached once to avoid repeated getElementById) ---- */
 const _clockTimeEl = document.getElementById('liveClock');

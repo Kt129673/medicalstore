@@ -1,5 +1,31 @@
 /* ═══════════════ NAVBAR ADDITIONS ═══════════════ */
 
+/* Back button in header */
+.header-back-btn {
+    background: #f8fafc;
+    border: 1.5px solid #e2e8f0;
+    color: #64748b;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 17px;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    flex-shrink: 0;
+    padding: 0;
+}
+
+.header-back-btn:hover {
+    color: var(--primary-color);
+    background: #eff6ff;
+    border-color: #bfdbfe;
+    box-shadow: 0 3px 10px rgba(59, 130, 246, 0.14);
+    transform: translateY(-1px);
+}
+
 /* Breadcrumbs */
 .header-breadcrumb {
     display: flex;
