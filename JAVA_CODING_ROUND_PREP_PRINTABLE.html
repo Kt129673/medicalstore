@@ -1,0 +1,3849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Java Coding Round — 50 Questions Prep Guide</title>
+
+<!-- Syntax Highlighting: GitHub theme -->
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+
+<style>
+  /* ─── Variables ─────────────────────────────────────────────── */
+  :root {
+    --primary:   #1a73e8;
+    --secondary: #0d47a1;
+    --easy:      #2e7d32;
+    --medium:    #e65100;
+    --hard:      #c62828;
+    --bg:        #fafafa;
+    --card:      #ffffff;
+    --border:    #e0e0e0;
+    --code-bg:   #f6f8fa;
+    --text:      #212121;
+    --muted:     #555;
+    --font:      'Segoe UI', system-ui, -apple-system, sans-serif;
+    --mono:      'Cascadia Code', 'Fira Code', Consolas, 'Courier New', monospace;
+    --radius:    10px;
+    --shadow:    0 2px 12px rgba(0,0,0,0.08);
+  }
+
+  /* ─── Reset & Base ───────────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font);
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text);
+    background: var(--bg);
+    padding: 0;
+  }
+
+  /* ─── Cover Page ─────────────────────────────────────────────── */
+  .cover {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #1a237e 0%, #283593 40%, #1565c0 100%);
+    color: white;
+    text-align: center;
+    padding: 40px;
+    page-break-after: always;
+  }
+  .cover .badge {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 30px;
+    padding: 6px 20px;
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 30px;
+  }
+  .cover h1 {
+    font-size: 42px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    line-height: 1.2;
+    margin-bottom: 16px;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+  }
+  .cover h1 span { color: #ffd54f; }
+  .cover .subtitle {
+    font-size: 18px;
+    opacity: 0.85;
+    margin-bottom: 50px;
+    max-width: 540px;
+  }
+  .cover .stats {
+    display: flex;
+    gap: 30px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 50px;
+  }
+  .cover .stat {
+    background: rgba(255,255,255,0.1);
+    border-radius: var(--radius);
+    padding: 18px 28px;
+    text-align: center;
+  }
+  .cover .stat-num  { font-size: 32px; font-weight: 800; color: #ffd54f; }
+  .cover .stat-lbl  { font-size: 11px; opacity: 0.75; text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; }
+  .cover .pills {
+    display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;
+  }
+  .cover .pill {
+    background: rgba(255,255,255,0.12);
+    border-radius: 20px;
+    padding: 6px 16px;
+    font-size: 12px;
+  }
+  .cover .footer {
+    position: absolute;
+    bottom: 30px;
+    font-size: 11px;
+    opacity: 0.5;
+    letter-spacing: 1px;
+  }
+
+  /* ─── TOC Page ───────────────────────────────────────────────── */
+  .toc-page {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 50px 40px;
+    page-break-after: always;
+  }
+  .toc-page h2 {
+    font-size: 26px;
+    color: var(--secondary);
+    border-bottom: 3px solid var(--primary);
+    padding-bottom: 10px;
+    margin-bottom: 30px;
+  }
+  .toc-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  .toc-section h3 {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--primary);
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+  .toc-section ul { list-style: none; }
+  .toc-section li {
+    padding: 4px 0;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .toc-section li .num {
+    background: var(--primary);
+    color: white;
+    border-radius: 50%;
+    width: 20px; height: 20px;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 700; flex-shrink: 0;
+  }
+  .toc-section.easy   .num { background: var(--easy); }
+  .toc-section.medium .num { background: var(--medium); }
+  .toc-section.hard   .num { background: var(--hard); }
+  .freq { font-size: 10px; margin-left: auto; color: var(--muted); }
+
+  /* ─── Main content wrapper ───────────────────────────────────── */
+  .content {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 40px 40px 60px;
+  }
+
+  /* ─── Headings ───────────────────────────────────────────────── */
+  h1 {
+    font-size: 32px;
+    color: var(--secondary);
+    margin: 48px 0 20px;
+    border-left: 5px solid var(--primary);
+    padding-left: 16px;
+  }
+  h2 {
+    font-size: 22px;
+    color: var(--secondary);
+    margin: 36px 0 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--border);
+  }
+  h3 {
+    font-size: 17px;
+    color: #1a237e;
+    margin: 40px 0 12px;
+    background: linear-gradient(90deg, #e8eaf6, transparent);
+    padding: 10px 16px;
+    border-radius: 6px;
+    border-left: 4px solid var(--primary);
+    page-break-after: avoid;
+  }
+
+  /* ─── Tier headers ───────────────────────────────────────────── */
+  h1:has(+ hr + h3:contains('Easy')),
+  .tier-easy  { border-color: var(--easy); }
+  .tier-medium{ border-color: var(--medium); }
+  .tier-hard  { border-color: var(--hard); }
+
+  /* ─── Paragraphs & text ──────────────────────────────────────── */
+  p  { margin: 10px 0; color: var(--text); }
+  hr { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+  blockquote {
+    border-left: 4px solid var(--primary);
+    background: #e3f2fd;
+    padding: 12px 18px;
+    margin: 16px 0;
+    border-radius: 0 var(--radius) var(--radius) 0;
+    font-style: italic;
+    color: var(--secondary);
+  }
+  strong { color: var(--secondary); }
+  em     { color: var(--muted); }
+
+  /* ─── Lists ──────────────────────────────────────────────────── */
+  ul, ol {
+    margin: 10px 0 10px 24px;
+  }
+  li { margin: 4px 0; }
+
+  /* ─── Inline code ────────────────────────────────────────────── */
+  code:not(pre code) {
+    background: var(--code-bg);
+    color: #c7254e;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-family: var(--mono);
+    font-size: 12px;
+  }
+
+  /* ─── Code blocks ────────────────────────────────────────────── */
+  pre {
+    background: var(--code-bg) !important;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px;
+    overflow-x: auto;
+    margin: 14px 0;
+    position: relative;
+    page-break-inside: avoid;
+  }
+  pre::before {
+    content: 'Java';
+    position: absolute;
+    top: 8px; right: 12px;
+    font-size: 10px;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-family: var(--font);
+  }
+  pre code {
+    font-family: var(--mono) !important;
+    font-size: 12.5px !important;
+    line-height: 1.6 !important;
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    color: #2d2d2d;
+  }
+  .hljs { background: transparent !important; }
+
+  /* ─── Tables ─────────────────────────────────────────────────── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 18px 0;
+    font-size: 13px;
+    box-shadow: var(--shadow);
+    border-radius: var(--radius);
+    overflow: hidden;
+    page-break-inside: auto;
+  }
+  thead tr { background: var(--secondary); color: white; }
+  th { padding: 12px 14px; text-align: left; font-weight: 600; }
+  td { padding: 10px 14px; border-bottom: 1px solid var(--border); }
+  tr:nth-child(even) { background: #f8f9ff; }
+  tr:hover { background: #e8eaf6; }
+  table code { font-size: 11px; }
+
+  /* ─── Difficulty badges inside h3 ────────────────────────────── */
+  h3 .badge-easy   { color: var(--easy);   font-weight: 600; }
+  h3 .badge-medium { color: var(--medium); font-weight: 600; }
+  h3 .badge-hard   { color: var(--hard);   font-weight: 600; }
+
+  /* ─── Key Interview Points callout ──────────────────────────── */
+  h4 + ul, h4 + p {
+    background: #fffde7;
+    border-left: 4px solid #f9a825;
+    border-radius: 0 var(--radius) var(--radius) 0;
+    padding: 12px 18px;
+    margin-left: 0;
+  }
+
+  /* ─── ⭐ stars color ─────────────────────────────────────────── */
+  td:contains('⭐') { color: #f57f17; font-size: 13px; }
+
+  /* ─── Tier separator banners ─────────────────────────────────── */
+  h1 {
+    background: linear-gradient(90deg, #e8eaf6 0%, transparent 100%);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin-top: 56px;
+  }
+
+  /* ─── Print Styles ───────────────────────────────────────────── */
+  @media print {
+    @page {
+      size: A4;
+      margin: 15mm 18mm 15mm 18mm;
+    }
+    body { background: white; font-size: 11px; }
+    .cover { min-height: auto; padding: 60mm 30mm; }
+    .cover h1 { font-size: 30px; }
+    .cover .stats { gap: 16px; }
+    .toc-page { padding: 20mm 0; }
+    .content { padding: 0; max-width: 100%; }
+    pre { font-size: 9.5px; page-break-inside: avoid; }
+    h1 { page-break-before: always; margin-top: 0; }
+    h3 { page-break-after: avoid; }
+    table { page-break-inside: auto; font-size: 10px; }
+    tr    { page-break-inside: avoid; }
+    a { color: inherit; text-decoration: none; }
+    .cover, .toc-page { page-break-after: always; }
+    pre::before { display: none; }
+    blockquote { border-color: #1a73e8; background: #f0f4ff; }
+    thead tr { background: #1a237e !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    tr:nth-child(even) { background: #f0f0ff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    h3 { background: #e8eaf6 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════ COVER PAGE ═══════════════════════════ -->
+<div class="cover">
+  <div class="badge">Interview Preparation · 2026 Edition</div>
+  <h1>Java Coding Round<br><span>50 FAQ Guide</span></h1>
+  <p class="subtitle">
+    Stream-first approach · Easy → Hard sequence ·
+    Java 8 · With frequency ratings &amp; interview tips
+  </p>
+  <div class="stats">
+    <div class="stat"><div class="stat-num">50</div><div class="stat-lbl">Questions</div></div>
+    <div class="stat"><div class="stat-num">5</div><div class="stat-lbl">Categories</div></div>
+    <div class="stat"><div class="stat-num">3</div><div class="stat-lbl">Difficulty Tiers</div></div>
+    <div class="stat"><div class="stat-num">Java 8</div><div class="stat-lbl">Compatible</div></div>
+  </div>
+  <div class="pills">
+    <span class="pill">String Manipulation</span>
+    <span class="pill">Arrays &amp; Matrices</span>
+    <span class="pill">Stream API</span>
+    <span class="pill">Concurrency</span>
+    <span class="pill">Design Patterns</span>
+    <span class="pill">Math &amp; DP</span>
+  </div>
+  <div class="footer">JAVA CODING ROUND PREP · STREAM-FIRST · 2026</div>
+</div>
+
+<!-- ═══════════════════════════ TABLE OF CONTENTS ════════════════════ -->
+<div class="toc-page">
+<h2>📋 Table of Contents</h2>
+<div class="toc-grid">
+  <div class="toc-section easy">
+    <h3>🟢 Easy Tier (Q1–Q33)</h3>
+    <ul>
+      <li><span class="num">1</span>Swap Two Numbers<span class="freq">⭐⭐⭐</span></li>
+      <li><span class="num">2</span>Reverse a String<span class="freq">⭐⭐⭐⭐⭐</span></li>
+      <li><span class="num">3</span>Palindrome Check<span class="freq">⭐⭐⭐⭐⭐</span></li>
+      <li><span class="num">4</span>Vowel &amp; Consonant Count<span class="freq">⭐⭐⭐⭐</span></li>
+      <li><span class="num">5</span>Factorial<span class="freq">⭐⭐⭐⭐</span></li>
+      <li><span class="num">6</span>Prime Number Check<span class="freq">⭐⭐⭐⭐</span></li>
+      <li><span class="num">7</span>Custom Exception<span class="freq">⭐⭐⭐</span></li>
+      <li><span class="num">8</span>Find Max / Min<span class="freq">⭐⭐⭐</span></li>
+      <li><span class="num">27</span>Sum of Digits<span class="freq">⭐⭐⭐⭐</span></li>
+      <li><span class="num">28</span>Even / Odd Partition<span class="freq">⭐⭐⭐⭐⭐</span></li>
+      <li><span class="num">29</span>Reverse Words<span class="freq">⭐⭐⭐⭐</span></li>
+      <li><span class="num">30</span>List to Uppercase<span class="freq">⭐⭐⭐</span></li>
+      <li><span class="num">31</span>Count Words<span class="freq">⭐⭐⭐</span></li>
+      <li><span class="num">32</span>Armstrong Number<span class="freq">⭐⭐⭐</span></li>
+      <li><span class="num">33</span>Collectors.joining<span class="freq">⭐⭐⭐⭐</span></li>
+    </ul>
+  </div>
+  <div class="toc-section medium">
+    <h3>🟡 Medium Tier (Q9–Q43)</h3>
+    <ul>
+      <li><span class="num">9</span>Fibonacci Series<span class="freq">⭐⭐⭐⭐⭐</span></li>
+      <li><span class="num">10</span>Anagram Check<span class="freq">⭐⭐⭐⭐</span></li>
+      <li><span class="num">11</span>Missing Number<span class="freq">⭐⭐⭐⭐⭐</span></li>
+      <li><span class="num">12</span>First Non-Repeated Char<span class="freq">⭐⭐⭐⭐⭐</span></li>
+      <li><span class="num">13</span>Find Second Largest<span class="freq">⭐⭐⭐⭐</span></li>
+      <li><span class="num">14</span>Remove Duplicates<span class="freq">⭐⭐⭐⭐</span></li>
+      <li><span class="num">15</span>Filter Starts With '1'<span class="freq">⭐⭐⭐⭐⭐</span></li>
+      <li><span class="num">16</span>Find Duplicates (Stream)<span class="freq">⭐⭐⭐⭐⭐</span></li>
+      <li><span class="num">17</span>Grouping &amp; Counting<span class="freq">⭐⭐⭐⭐</span></li>
+      <li><span class="num">18</span>Sort Employee Objects<span class="freq">⭐⭐⭐⭐</span></li>
+      <li><span class="num">19</span>Binary Search<span class="freq">⭐⭐⭐⭐</span></li>
+      <li><span class="num">20</span>Singleton Pattern<span class="freq">⭐⭐⭐⭐</span></li>
+      <li><span class="num">34</span>FlatMap — Flatten Lists<span class="freq">⭐⭐⭐⭐⭐</span></li>
+      <li><span class="num">35</span>partitioningBy (Adv)<span class="freq">⭐⭐⭐⭐</span></li>
+      <li><span class="num">36</span>Collectors.toMap<span class="freq">⭐⭐⭐⭐</span></li>
+      <li><span class="num">37</span>Optional — Null Safety<span class="freq">⭐⭐⭐⭐⭐</span></li>
+      <li><span class="num">38</span>String Compression<span class="freq">⭐⭐⭐⭐</span></li>
+      <li><span class="num">39</span>Two Sum Problem<span class="freq">⭐⭐⭐⭐⭐</span></li>
+      <li><span class="num">40</span>Comparable vs Comparator<span class="freq">⭐⭐⭐⭐</span></li>
+      <li><span class="num">41</span>Salary Aggregation<span class="freq">⭐⭐⭐⭐</span></li>
+      <li><span class="num">42</span>Count by Condition<span class="freq">⭐⭐⭐</span></li>
+      <li><span class="num">43</span>Merge Sorted Arrays<span class="freq">⭐⭐⭐⭐</span></li>
+    </ul>
+  </div>
+  <div class="toc-section hard">
+    <h3>🔴 Hard Tier (Q21–Q50)</h3>
+    <ul>
+      <li><span class="num">21</span>Rotate an Array<span class="freq">⭐⭐⭐</span></li>
+      <li><span class="num">22</span>Kadane's Algorithm<span class="freq">⭐⭐⭐⭐</span></li>
+      <li><span class="num">23</span>Longest Substring<span class="freq">⭐⭐⭐⭐⭐</span></li>
+      <li><span class="num">24</span>Matrix Rotation 90°<span class="freq">⭐⭐⭐</span></li>
+      <li><span class="num">25</span>LRU Cache<span class="freq">⭐⭐⭐⭐</span></li>
+      <li><span class="num">26</span>Create a Deadlock<span class="freq">⭐⭐⭐</span></li>
+      <li><span class="num">44</span>CompletableFuture<span class="freq">⭐⭐⭐⭐</span></li>
+      <li><span class="num">45</span>ExecutorService<span class="freq">⭐⭐⭐⭐</span></li>
+      <li><span class="num">46</span>Producer-Consumer<span class="freq">⭐⭐⭐⭐</span></li>
+      <li><span class="num">47</span>Top-N Frequent Words<span class="freq">⭐⭐⭐⭐</span></li>
+      <li><span class="num">48</span>Valid Parentheses<span class="freq">⭐⭐⭐⭐⭐</span></li>
+      <li><span class="num">49</span>Immutable Class<span class="freq">⭐⭐⭐⭐</span></li>
+      <li><span class="num">50</span>Stream reduce()<span class="freq">⭐⭐⭐⭐</span></li>
+    </ul>
+  </div>
+  <div class="toc-section">
+    <h3>⭐ Must-Know (Appear in Every Interview)</h3>
+    <ul>
+      <li><span class="num" style="background:#7b1fa2">★</span>Q2 — Reverse String</li>
+      <li><span class="num" style="background:#7b1fa2">★</span>Q3 — Palindrome</li>
+      <li><span class="num" style="background:#7b1fa2">★</span>Q9 — Fibonacci</li>
+      <li><span class="num" style="background:#7b1fa2">★</span>Q11 — Missing Number</li>
+      <li><span class="num" style="background:#7b1fa2">★</span>Q12 — First Non-Repeated</li>
+      <li><span class="num" style="background:#7b1fa2">★</span>Q15 — Filter Starts With '1'</li>
+      <li><span class="num" style="background:#7b1fa2">★</span>Q16 — Find Duplicates</li>
+      <li><span class="num" style="background:#7b1fa2">★</span>Q28 — Even/Odd Partition</li>
+      <li><span class="num" style="background:#7b1fa2">★</span>Q34 — FlatMap</li>
+      <li><span class="num" style="background:#7b1fa2">★</span>Q37 — Optional</li>
+      <li><span class="num" style="background:#7b1fa2">★</span>Q39 — Two Sum</li>
+      <li><span class="num" style="background:#7b1fa2">★</span>Q23 — Longest Substring</li>
+      <li><span class="num" style="background:#7b1fa2">★</span>Q48 — Valid Parentheses</li>
+    </ul>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════════════════ MAIN CONTENT ═════════════════════════ -->
+<div class="content">
+<h1>Java Coding Round Preparation Guide</h1>
+<blockquote>
+<p>Java 8 · Stream-first approach · Easy → Hard sequence</p>
+</blockquote>
+<hr>
+<h2>Frequency Legend</h2>
+<table>
+<thead>
+<tr>
+<th>Rating</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>⭐⭐⭐⭐⭐</td>
+<td>Asked in almost every interview</td>
+</tr>
+<tr>
+<td>⭐⭐⭐⭐</td>
+<td>Very commonly asked</td>
+</tr>
+<tr>
+<td>⭐⭐⭐</td>
+<td>Moderately asked (senior / product roles)</td>
+</tr>
+<tr>
+<td>⭐⭐</td>
+<td>Niche / role-specific</td>
+</tr>
+</tbody></table>
+<hr>
+<h2>Quick Reference Table</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Question</th>
+<th>Category</th>
+<th>Difficulty</th>
+<th>Frequency</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>Swap Two Numbers</td>
+<td>Math</td>
+<td>Easy</td>
+<td>⭐⭐⭐</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Reverse a String</td>
+<td>String</td>
+<td>Easy</td>
+<td>⭐⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Palindrome Check</td>
+<td>String</td>
+<td>Easy</td>
+<td>⭐⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Vowel &amp; Consonant Count</td>
+<td>String</td>
+<td>Easy</td>
+<td>⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Factorial</td>
+<td>Math</td>
+<td>Easy</td>
+<td>⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Prime Number Check</td>
+<td>Math</td>
+<td>Easy</td>
+<td>⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Custom Exception</td>
+<td>Java Core</td>
+<td>Easy</td>
+<td>⭐⭐⭐</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Find Max / Min in List</td>
+<td>Stream</td>
+<td>Easy</td>
+<td>⭐⭐⭐</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Fibonacci Series</td>
+<td>Math</td>
+<td>Medium</td>
+<td>⭐⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Anagram Check</td>
+<td>String</td>
+<td>Medium</td>
+<td>⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>11</td>
+<td>Missing Number</td>
+<td>Array</td>
+<td>Medium</td>
+<td>⭐⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>12</td>
+<td>First Non-Repeated Character</td>
+<td>String</td>
+<td>Medium</td>
+<td>⭐⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>13</td>
+<td>Find Second Largest</td>
+<td>Array</td>
+<td>Medium</td>
+<td>⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>14</td>
+<td>Remove Duplicates</td>
+<td>Array</td>
+<td>Medium</td>
+<td>⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>15</td>
+<td>Filter Numbers Starting With &#39;1&#39;</td>
+<td>Stream</td>
+<td>Medium</td>
+<td>⭐⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>16</td>
+<td>Find Duplicates in a List</td>
+<td>Stream</td>
+<td>Medium</td>
+<td>⭐⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>17</td>
+<td>Grouping &amp; Counting</td>
+<td>Stream</td>
+<td>Medium</td>
+<td>⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>18</td>
+<td>Sort Custom Employee Objects</td>
+<td>Stream</td>
+<td>Medium</td>
+<td>⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>19</td>
+<td>Binary Search</td>
+<td>Algorithm</td>
+<td>Medium</td>
+<td>⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>20</td>
+<td>Singleton Pattern</td>
+<td>Design Pattern</td>
+<td>Medium</td>
+<td>⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>21</td>
+<td>Rotate an Array</td>
+<td>Array</td>
+<td>Hard</td>
+<td>⭐⭐⭐</td>
+</tr>
+<tr>
+<td>22</td>
+<td>Kadane&#39;s Algorithm</td>
+<td>Array</td>
+<td>Hard</td>
+<td>⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>23</td>
+<td>Longest Substring Without Repeating Chars</td>
+<td>String</td>
+<td>Hard</td>
+<td>⭐⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>24</td>
+<td>Matrix Rotation 90°</td>
+<td>Matrix</td>
+<td>Hard</td>
+<td>⭐⭐⭐</td>
+</tr>
+<tr>
+<td>25</td>
+<td>LRU Cache (Thread-Safe)</td>
+<td>Concurrent</td>
+<td>Hard</td>
+<td>⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>26</td>
+<td>Create a Deadlock</td>
+<td>Concurrent</td>
+<td>Hard</td>
+<td>⭐⭐⭐</td>
+</tr>
+<tr>
+<td>27</td>
+<td>Sum of Digits</td>
+<td>Math</td>
+<td>Easy</td>
+<td>⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>28</td>
+<td>Even / Odd Partition</td>
+<td>Stream</td>
+<td>Easy</td>
+<td>⭐⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>29</td>
+<td>Reverse Words in a Sentence</td>
+<td>String</td>
+<td>Easy</td>
+<td>⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>30</td>
+<td>Convert List to Uppercase</td>
+<td>Stream</td>
+<td>Easy</td>
+<td>⭐⭐⭐</td>
+</tr>
+<tr>
+<td>31</td>
+<td>Count Words in a String</td>
+<td>String</td>
+<td>Easy</td>
+<td>⭐⭐⭐</td>
+</tr>
+<tr>
+<td>32</td>
+<td>Armstrong Number Check</td>
+<td>Math</td>
+<td>Easy</td>
+<td>⭐⭐⭐</td>
+</tr>
+<tr>
+<td>33</td>
+<td>Collectors.joining — Build Sentences</td>
+<td>Stream</td>
+<td>Easy</td>
+<td>⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>34</td>
+<td>FlatMap — Flatten List of Lists</td>
+<td>Stream</td>
+<td>Medium</td>
+<td>⭐⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>35</td>
+<td>Collectors.partitioningBy</td>
+<td>Stream</td>
+<td>Medium</td>
+<td>⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>36</td>
+<td>Collectors.toMap</td>
+<td>Stream</td>
+<td>Medium</td>
+<td>⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>37</td>
+<td>Optional — Null Safety</td>
+<td>Java Core</td>
+<td>Medium</td>
+<td>⭐⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>38</td>
+<td>String Compression</td>
+<td>String</td>
+<td>Medium</td>
+<td>⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>39</td>
+<td>Two Sum Problem</td>
+<td>Array</td>
+<td>Medium</td>
+<td>⭐⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>40</td>
+<td>Comparable vs Comparator</td>
+<td>Java Core</td>
+<td>Medium</td>
+<td>⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>41</td>
+<td>Sum &amp; Average (Employee Salaries)</td>
+<td>Stream</td>
+<td>Medium</td>
+<td>⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>42</td>
+<td>Count Elements by Condition</td>
+<td>Stream</td>
+<td>Medium</td>
+<td>⭐⭐⭐</td>
+</tr>
+<tr>
+<td>43</td>
+<td>Merge Two Sorted Arrays</td>
+<td>Array</td>
+<td>Medium</td>
+<td>⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>44</td>
+<td>CompletableFuture — Async Tasks</td>
+<td>Concurrent</td>
+<td>Hard</td>
+<td>⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>45</td>
+<td>ExecutorService / Thread Pool</td>
+<td>Concurrent</td>
+<td>Hard</td>
+<td>⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>46</td>
+<td>Producer-Consumer (BlockingQueue)</td>
+<td>Concurrent</td>
+<td>Hard</td>
+<td>⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>47</td>
+<td>Top-N Frequent Words</td>
+<td>Stream</td>
+<td>Hard</td>
+<td>⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>48</td>
+<td>Valid Parentheses</td>
+<td>Stack</td>
+<td>Hard</td>
+<td>⭐⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>49</td>
+<td>Immutable Class Design</td>
+<td>Java Core</td>
+<td>Hard</td>
+<td>⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>50</td>
+<td>Stream reduce() — Custom Aggregation</td>
+<td>Stream</td>
+<td>Hard</td>
+<td>⭐⭐⭐⭐</td>
+</tr>
+</tbody></table>
+<hr>
+<h1>EASY TIER</h1>
+<hr>
+<h3>Q1. Swap Two Numbers</h3>
+<p><strong>Difficulty:</strong> Easy | <strong>Frequency:</strong> ⭐⭐⭐<br><strong>Category:</strong> Math</p>
+<p><strong>Concept:</strong><br>Swap two integer variables without using a third temporary variable. Two classic tricks exist: arithmetic (addition/subtraction) and bitwise XOR. This tests whether you know language-level tricks beyond the naive <code>temp</code> approach.</p>
+<p><strong>Approach:</strong></p>
+<ul>
+<li>Arithmetic: <code>a = a + b</code>, then <code>b = a - b</code>, then <code>a = a - b</code></li>
+<li>XOR: <code>a = a ^ b</code>, then <code>b = a ^ b</code>, then <code>a = a ^ b</code></li>
+<li>Note: Streams are not applicable here — this is a single mutation, not a collection operation.</li>
+</ul>
+<p><strong>Solution (Java 8):</strong></p>
+<pre><code class="language-java">public class SwapNumbers {
+    public static void main(String[] args) {
+
+        // ── Approach 1: Arithmetic ──────────────────────────────
+        int a = 10, b = 20;
+        System.out.println(&quot;Before: a=&quot; + a + &quot;, b=&quot; + b);
+
+        a = a + b;   // a = 30
+        b = a - b;   // b = 30 - 20 = 10
+        a = a - b;   // a = 30 - 10 = 20
+
+        System.out.println(&quot;After (Arithmetic): a=&quot; + a + &quot;, b=&quot; + b);
+        // Output: a=20, b=10
+
+        // ── Approach 2: XOR (no risk of integer overflow) ───────
+        int x = 5, y = 7;
+        x = x ^ y;   // x = 0101 ^ 0111 = 0010
+        y = x ^ y;   // y = 0010 ^ 0111 = 0101 (original x)
+        x = x ^ y;   // x = 0010 ^ 0101 = 0111 (original y)
+
+        System.out.println(&quot;After (XOR): x=&quot; + x + &quot;, y=&quot; + y);
+        // Output: x=7, y=5
+    }
+}
+</code></pre>
+<p><strong>Key Interview Points:</strong></p>
+<ul>
+<li>Arithmetic swap can overflow for very large integers — XOR is safer.</li>
+<li>In real code, use a temp variable for clarity; these tricks are interview-specific.</li>
+</ul>
+<hr>
+<h3>Q2. Reverse a String</h3>
+<p><strong>Difficulty:</strong> Easy | <strong>Frequency:</strong> ⭐⭐⭐⭐⭐<br><strong>Category:</strong> String Manipulation</p>
+<p><strong>Concept:</strong><br>Reverse a string without using <code>StringBuilder.reverse()</code>. This checks your understanding of character streams and the <code>chars()</code> method introduced in Java 8. Every Java developer should know this cold.</p>
+<p><strong>Approach:</strong></p>
+<ul>
+<li>Get the <code>IntStream</code> of characters via <code>str.chars()</code></li>
+<li>Convert each <code>int</code> back to a <code>char</code> using <code>mapToObj(c -&gt; String.valueOf((char) c))</code></li>
+<li>Collect into a single string and reverse order by sorting in reverse index — OR collect and manually reverse</li>
+</ul>
+<p><strong>Stream Solution (Java 8):</strong></p>
+<pre><code class="language-java">import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+public class ReverseString {
+    public static String reverseStream(String str) {
+        return IntStream
+            .rangeClosed(1, str.length())                     // indices 1..length
+            .mapToObj(i -&gt; String.valueOf(str.charAt(str.length() - i))) // pick from end
+            .collect(Collectors.joining());                   // join all chars
+    }
+
+    // ── Alternative using StringBuilder (still no reverse()) ──
+    public static String reverseTraditional(String str) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = str.length() - 1; i &gt;= 0; i--) {
+            sb.append(str.charAt(i));
+        }
+        return sb.toString();
+    }
+
+    public static void main(String[] args) {
+        System.out.println(reverseStream(&quot;Hello&quot;));       // olleH
+        System.out.println(reverseTraditional(&quot;World&quot;));  // dlroW
+    }
+}
+</code></pre>
+<p><strong>Key Interview Points:</strong></p>
+<ul>
+<li><code>String.chars()</code> returns <code>IntStream</code>, not <code>Stream&lt;Character&gt;</code> — interviewers often ask why.</li>
+<li>Always mention time complexity: O(n).</li>
+</ul>
+<hr>
+<h3>Q3. Palindrome Check</h3>
+<p><strong>Difficulty:</strong> Easy | <strong>Frequency:</strong> ⭐⭐⭐⭐⭐<br><strong>Category:</strong> String Manipulation</p>
+<p><strong>Concept:</strong><br>A palindrome reads the same forwards and backwards (e.g., &quot;madam&quot;, &quot;racecar&quot;). The stream approach compares characters at mirrored indices using <code>IntStream.range</code>. Common in screening rounds.</p>
+<p><strong>Approach:</strong></p>
+<ul>
+<li>Use <code>IntStream.range(0, length/2)</code> to iterate over only the first half</li>
+<li>At each index <code>i</code>, compare <code>str.charAt(i)</code> with <code>str.charAt(length - 1 - i)</code></li>
+<li>If all pairs match, it is a palindrome — use <code>allMatch</code></li>
+</ul>
+<p><strong>Stream Solution (Java 8):</strong></p>
+<pre><code class="language-java">import java.util.stream.IntStream;
+
+public class PalindromeCheck {
+    public static boolean isPalindrome(String str) {
+        String s = str.toLowerCase().replaceAll(&quot;[^a-z0-9]&quot;, &quot;&quot;); // normalize
+        int len = s.length();
+        return IntStream
+            .range(0, len / 2)                         // only half needed
+            .allMatch(i -&gt; s.charAt(i) == s.charAt(len - 1 - i)); // mirror compare
+    }
+
+    public static void main(String[] args) {
+        System.out.println(isPalindrome(&quot;racecar&quot;));   // true
+        System.out.println(isPalindrome(&quot;A man a plan a canal Panama&quot;)); // true
+        System.out.println(isPalindrome(&quot;hello&quot;));     // false
+    }
+}
+</code></pre>
+<p><strong>Key Interview Points:</strong></p>
+<ul>
+<li>Always normalize (lowercase, strip spaces/punctuation) before checking — interviewers test edge cases.</li>
+<li><code>allMatch</code> short-circuits on the first mismatch: efficient, O(n/2).</li>
+</ul>
+<hr>
+<h3>Q4. Vowel &amp; Consonant Count</h3>
+<p><strong>Difficulty:</strong> Easy | <strong>Frequency:</strong> ⭐⭐⭐⭐<br><strong>Category:</strong> String Manipulation</p>
+<p><strong>Concept:</strong><br>Count vowels and consonants in a string. Stream&#39;s <code>filter</code> makes this clean — one stream for vowels, one for consonants (letters that aren&#39;t vowels). Tests basic <code>chars()</code> usage.</p>
+<p><strong>Approach:</strong></p>
+<ul>
+<li>Convert string to lowercase</li>
+<li>Stream all chars and filter only alphabetic characters</li>
+<li><code>filter</code> for vowels using <code>&quot;aeiou&quot;.indexOf(c) &gt;= 0</code></li>
+<li>Consonants = total letters minus vowels</li>
+</ul>
+<p><strong>Stream Solution (Java 8):</strong></p>
+<pre><code class="language-java">import java.util.stream.IntStream;
+
+public class VowelConsonantCount {
+    public static void main(String[] args) {
+        String str = &quot;Hello World&quot;;
+        String lower = str.toLowerCase();
+
+        // Count vowels: filter chars that are in &quot;aeiou&quot;
+        long vowels = lower.chars()
+            .filter(c -&gt; &quot;aeiou&quot;.indexOf(c) &gt;= 0)       // is it a vowel?
+            .count();
+
+        // Count consonants: filter letters that are NOT vowels
+        long consonants = lower.chars()
+            .filter(c -&gt; c &gt;= &#39;a&#39; &amp;&amp; c &lt;= &#39;z&#39;)           // is it a letter?
+            .filter(c -&gt; &quot;aeiou&quot;.indexOf(c) &lt; 0)         // and NOT a vowel?
+            .count();
+
+        System.out.println(&quot;Vowels: &quot; + vowels);         // 3
+        System.out.println(&quot;Consonants: &quot; + consonants); // 7
+    }
+}
+</code></pre>
+<p><strong>Key Interview Points:</strong></p>
+<ul>
+<li>Two separate stream pipelines is fine — don&#39;t force both into one for readability.</li>
+<li>Ask the interviewer: &quot;Should spaces and numbers be counted?&quot; — shows awareness of edge cases.</li>
+</ul>
+<hr>
+<h3>Q5. Factorial</h3>
+<p><strong>Difficulty:</strong> Easy | <strong>Frequency:</strong> ⭐⭐⭐⭐<br><strong>Category:</strong> Mathematical Logic</p>
+<p><strong>Concept:</strong><br>Factorial of n (n!) is the product of all integers from 1 to n. Java 8&#39;s <code>LongStream</code> with <code>reduce</code> gives an elegant single-line solution. Recursive approach is also expected.</p>
+<p><strong>Approach:</strong></p>
+<ul>
+<li>Stream: <code>LongStream.rangeClosed(1, n)</code> generates all values 1..n</li>
+<li><code>reduce(1L, Math::multiplyExact)</code> multiplies them all together</li>
+<li>Recursive: <code>n * factorial(n-1)</code>, base case <code>n == 0 → 1</code></li>
+</ul>
+<p><strong>Stream Solution (Java 8):</strong></p>
+<pre><code class="language-java">import java.util.stream.LongStream;
+
+public class Factorial {
+    // ── Stream approach ─────────────────────────────────────────
+    public static long factorialStream(int n) {
+        if (n &lt; 0) throw new IllegalArgumentException(&quot;Negative input&quot;);
+        if (n == 0) return 1L;
+        return LongStream
+            .rangeClosed(1, n)                  // 1, 2, 3, ..., n
+            .reduce(1L, Math::multiplyExact);   // multiply all together
+    }
+
+    // ── Recursive approach ───────────────────────────────────────
+    public static long factorialRecursive(int n) {
+        return (n &lt;= 1) ? 1 : n * factorialRecursive(n - 1);
+    }
+
+    public static void main(String[] args) {
+        System.out.println(factorialStream(5));       // 120
+        System.out.println(factorialRecursive(10));   // 3628800
+    }
+}
+</code></pre>
+<p><strong>Key Interview Points:</strong></p>
+<ul>
+<li><code>Math::multiplyExact</code> throws <code>ArithmeticException</code> on overflow — safer than <code>*</code>.</li>
+<li>For large n, suggest <code>BigInteger</code> — shows awareness of practical limits.</li>
+</ul>
+<hr>
+<h3>Q6. Prime Number Check</h3>
+<p><strong>Difficulty:</strong> Easy | <strong>Frequency:</strong> ⭐⭐⭐⭐<br><strong>Category:</strong> Mathematical Logic</p>
+<p><strong>Concept:</strong><br>A prime number is divisible only by 1 and itself. The key optimization is to check divisors only up to √n. Java 8&#39;s <code>IntStream.rangeClosed</code> with <code>noneMatch</code> makes this a clean one-liner.</p>
+<p><strong>Approach:</strong></p>
+<ul>
+<li>Numbers ≤ 1 are not prime — handle as edge case</li>
+<li>Check if any number in range <code>[2, √n]</code> divides <code>n</code> evenly</li>
+<li><code>noneMatch(i -&gt; n % i == 0)</code> — if none divide it, it is prime</li>
+</ul>
+<p><strong>Stream Solution (Java 8):</strong></p>
+<pre><code class="language-java">import java.util.stream.IntStream;
+
+public class PrimeCheck {
+    public static boolean isPrime(int n) {
+        if (n &lt;= 1) return false;                    // 0, 1 are not prime
+        if (n &lt;= 3) return true;                     // 2, 3 are prime
+        if (n % 2 == 0) return false;                // quick even check
+
+        return IntStream
+            .rangeClosed(2, (int) Math.sqrt(n))      // check 2 to √n
+            .noneMatch(i -&gt; n % i == 0);             // none should divide n
+    }
+
+    public static void main(String[] args) {
+        System.out.println(isPrime(7));    // true
+        System.out.println(isPrime(15));   // false (3×5)
+        System.out.println(isPrime(97));   // true
+    }
+}
+</code></pre>
+<p><strong>Key Interview Points:</strong></p>
+<ul>
+<li>Checking up to √n reduces complexity from O(n) to O(√n) — always mention this.</li>
+<li><code>noneMatch</code> short-circuits on the first divisor found — efficient.</li>
+</ul>
+<hr>
+<h3>Q7. Custom Exception</h3>
+<p><strong>Difficulty:</strong> Easy | <strong>Frequency:</strong> ⭐⭐⭐<br><strong>Category:</strong> Java Core</p>
+<p><strong>Concept:</strong><br>Custom exceptions let you represent domain-specific error conditions (e.g., <code>InsufficientStockException</code>). They extend <code>RuntimeException</code> (unchecked) or <code>Exception</code> (checked). Streams are not applicable here — this is class hierarchy design.</p>
+<p><strong>Approach:</strong></p>
+<ul>
+<li>Extend <code>RuntimeException</code> for unchecked, <code>Exception</code> for checked</li>
+<li>Add a constructor that passes a message to <code>super(message)</code></li>
+<li>Throw it with <code>throw new YourException(&quot;message&quot;)</code></li>
+<li>Catch it like any standard exception</li>
+</ul>
+<p><strong>Solution (Java 8):</strong></p>
+<pre><code class="language-java">// ── Step 1: Define the custom exception ──────────────────────────
+class InsufficientStockException extends RuntimeException {
+    private final String medicineName;
+
+    public InsufficientStockException(String medicineName, int requested) {
+        super(&quot;Insufficient stock for &#39;&quot; + medicineName
+              + &quot;&#39;. Requested: &quot; + requested);
+        this.medicineName = medicineName;
+    }
+
+    public String getMedicineName() {
+        return medicineName;
+    }
+}
+
+// ── Step 2: Use it ────────────────────────────────────────────────
+public class CustomExceptionDemo {
+    static void dispense(String medicine, int stock, int requested) {
+        if (requested &gt; stock) {
+            throw new InsufficientStockException(medicine, requested);
+        }
+        System.out.println(&quot;Dispensed &quot; + requested + &quot; units of &quot; + medicine);
+    }
+
+    public static void main(String[] args) {
+        try {
+            dispense(&quot;Paracetamol&quot;, 50, 100);  // will throw
+        } catch (InsufficientStockException e) {
+            System.out.println(&quot;Error: &quot; + e.getMessage());
+            System.out.println(&quot;Medicine: &quot; + e.getMedicineName());
+        }
+    }
+}
+// Output:
+// Error: Insufficient stock for &#39;Paracetamol&#39;. Requested: 100
+// Medicine: Paracetamol
+</code></pre>
+<p><strong>Key Interview Points:</strong></p>
+<ul>
+<li>Prefer <code>RuntimeException</code> (unchecked) for programming errors; <code>Exception</code> (checked) for recoverable business conditions.</li>
+<li>Always add contextual fields to custom exceptions — not just a message string.</li>
+</ul>
+<hr>
+<h3>Q8. Find Max / Min in a List</h3>
+<p><strong>Difficulty:</strong> Easy | <strong>Frequency:</strong> ⭐⭐⭐<br><strong>Category:</strong> Stream API</p>
+<p><strong>Concept:</strong><br>Finding the max or min value in a collection is a perfect fit for Streams. Java 8 provides both <code>stream().max()</code> and <code>mapToInt().max()</code> variants. A good warm-up question before moving to complex stream problems.</p>
+<p><strong>Approach:</strong></p>
+<ul>
+<li>Use <code>stream().max(Comparator.naturalOrder())</code> — returns <code>Optional&lt;T&gt;</code></li>
+<li>Or use <code>mapToInt(Integer::intValue).max()</code> — returns <code>OptionalInt</code></li>
+<li>Always handle the <code>Optional</code> with <code>.orElseThrow()</code> or <code>.orElse()</code></li>
+</ul>
+<p><strong>Stream Solution (Java 8):</strong></p>
+<pre><code class="language-java">import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+import java.util.OptionalInt;
+
+public class MaxMinStream {
+    public static void main(String[] args) {
+        List&lt;Integer&gt; numbers = Arrays.asList(3, 1, 7, 2, 9, 5, 4);
+
+        // ── Max using Comparator ──────────────────────────────────
+        Optional&lt;Integer&gt; max = numbers.stream()
+            .max(Comparator.naturalOrder());            // finds maximum
+        System.out.println(&quot;Max: &quot; + max.orElseThrow()); // 9
+
+        // ── Min using Comparator ──────────────────────────────────
+        Optional&lt;Integer&gt; min = numbers.stream()
+            .min(Comparator.naturalOrder());            // finds minimum
+        System.out.println(&quot;Min: &quot; + min.orElseThrow()); // 1
+
+        // ── Primitive stream variant (slightly faster) ────────────
+        OptionalInt maxPrimitive = numbers.stream()
+            .mapToInt(Integer::intValue)
+            .max();
+        System.out.println(&quot;Max (primitive): &quot; + maxPrimitive.getAsInt()); // 9
+    }
+}
+</code></pre>
+<p><strong>Key Interview Points:</strong></p>
+<ul>
+<li><code>max()</code>/<code>min()</code> return <code>Optional</code> — explain why (empty list has no max).</li>
+<li><code>mapToInt()</code> avoids boxing/unboxing — mention this for performance-aware answers.</li>
+</ul>
+<hr>
+<h1>MEDIUM TIER</h1>
+<hr>
+<h3>Q9. Fibonacci Series</h3>
+<p><strong>Difficulty:</strong> Medium | <strong>Frequency:</strong> ⭐⭐⭐⭐⭐<br><strong>Category:</strong> Mathematical Logic</p>
+<p><strong>Concept:</strong><br>The Fibonacci series is 0, 1, 1, 2, 3, 5, 8, 13... where each number is the sum of the previous two. Java 8&#39;s <code>Stream.iterate</code> can generate this lazily. Almost certain to appear in any Java round.</p>
+<p><strong>Approach:</strong></p>
+<ul>
+<li>Stream: <code>Stream.iterate</code> with a seed pair <code>{0, 1}</code> and a lambda that shifts the pair</li>
+<li>Map out the first element of each pair — that is the Fibonacci number</li>
+<li><code>limit(n)</code> controls how many terms to generate</li>
+<li>Recursive: <code>fib(n) = fib(n-1) + fib(n-2)</code>, base cases <code>n==0→0</code>, <code>n==1→1</code></li>
+</ul>
+<p><strong>Stream Solution (Java 8):</strong></p>
+<pre><code class="language-java">import java.util.Arrays;
+import java.util.stream.Stream;
+
+public class Fibonacci {
+    // ── Stream approach ──────────────────────────────────────────
+    public static void fibonacciStream(int n) {
+        Stream.iterate(new long[]{0, 1},
+                       f -&gt; new long[]{f[1], f[0] + f[1]}) // shift: [b, a+b]
+              .limit(n)                                      // first n terms
+              .map(f -&gt; f[0])                                // first element = current fib
+              .forEach(System.out::println);
+    }
+
+    // ── Iterative approach ───────────────────────────────────────
+    public static void fibonacciIterative(int n) {
+        long a = 0, b = 1;
+        for (int i = 0; i &lt; n; i++) {
+            System.out.print(a + &quot; &quot;);
+            long temp = a + b;
+            a = b;
+            b = temp;
+        }
+    }
+
+    // ── Recursive approach (not efficient for large n) ───────────
+    public static long fibRecursive(int n) {
+        if (n &lt;= 1) return n;
+        return fibRecursive(n - 1) + fibRecursive(n - 2);
+    }
+
+    public static void main(String[] args) {
+        System.out.println(&quot;Stream (first 8 terms):&quot;);
+        fibonacciStream(8);           // 0 1 1 2 3 5 8 13
+
+        System.out.println(&quot;\nIterative:&quot;);
+        fibonacciIterative(8);        // 0 1 1 2 3 5 8 13
+
+        System.out.println(&quot;\nRecursive fib(7): &quot; + fibRecursive(7)); // 13
+    }
+}
+</code></pre>
+<p><strong>Key Interview Points:</strong></p>
+<ul>
+<li>Recursive is elegant but O(2^n) time — always mention memoization or dynamic programming.</li>
+<li><code>Stream.iterate</code> is lazy: it generates values only when consumed — memory efficient.</li>
+</ul>
+<hr>
+<h3>Q10. Anagram Check</h3>
+<p><strong>Difficulty:</strong> Medium | <strong>Frequency:</strong> ⭐⭐⭐⭐<br><strong>Category:</strong> String Manipulation</p>
+<p><strong>Concept:</strong><br>Two strings are anagrams if they contain exactly the same characters in the same frequencies (e.g., &quot;silent&quot; and &quot;listen&quot;). Stream&#39;s <code>chars().sorted()</code> approach is clean and interview-ready.</p>
+<p><strong>Approach:</strong></p>
+<ul>
+<li>Normalize both strings: lowercase, remove spaces</li>
+<li>Sort the characters of both strings</li>
+<li>If the sorted arrays are equal, they are anagrams</li>
+<li>Stream variant: collect sorted chars into a string and use <code>.equals()</code></li>
+</ul>
+<p><strong>Stream Solution (Java 8):</strong></p>
+<pre><code class="language-java">import java.util.Arrays;
+
+public class AnagramCheck {
+    // ── Stream approach ──────────────────────────────────────────
+    public static boolean isAnagramStream(String s1, String s2) {
+        String normalize = s1.toLowerCase().replaceAll(&quot;\\s&quot;, &quot;&quot;);
+        String normalize2 = s2.toLowerCase().replaceAll(&quot;\\s&quot;, &quot;&quot;);
+
+        if (normalize.length() != normalize2.length()) return false;
+
+        // Sort chars of both strings and compare
+        char[] arr1 = normalize.chars()
+            .sorted()                            // sort int values of chars
+            .collect(StringBuilder::new,
+                     (sb, c) -&gt; sb.append((char) c),
+                     StringBuilder::append)
+            .toString()
+            .toCharArray();
+
+        char[] arr2 = normalize2.chars()
+            .sorted()
+            .collect(StringBuilder::new,
+                     (sb, c) -&gt; sb.append((char) c),
+                     StringBuilder::append)
+            .toString()
+            .toCharArray();
+
+        return Arrays.equals(arr1, arr2);
+    }
+
+    // ── Cleaner stream variant ────────────────────────────────────
+    public static boolean isAnagram(String s1, String s2) {
+        String a = sorted(s1);
+        String b = sorted(s2);
+        return a.equals(b);
+    }
+
+    private static String sorted(String s) {
+        return s.toLowerCase()
+                .replaceAll(&quot;\\s&quot;, &quot;&quot;)
+                .chars()
+                .sorted()
+                .collect(StringBuilder::new,
+                         (sb, c) -&gt; sb.append((char) c),
+                         StringBuilder::append)
+                .toString();
+    }
+
+    public static void main(String[] args) {
+        System.out.println(isAnagram(&quot;silent&quot;, &quot;listen&quot;));  // true
+        System.out.println(isAnagram(&quot;hello&quot;, &quot;bello&quot;));    // false
+        System.out.println(isAnagram(&quot;Astronomer&quot;, &quot;Moon starer&quot;)); // true
+    }
+}
+</code></pre>
+<p><strong>Key Interview Points:</strong></p>
+<ul>
+<li>Sorting approach is O(n log n); a <code>HashMap</code> frequency counter is O(n) — mention both.</li>
+<li>Always ask &quot;are spaces counted?&quot; and &quot;is it case-sensitive?&quot; before coding.</li>
+</ul>
+<hr>
+<h3>Q11. Missing Number</h3>
+<p><strong>Difficulty:</strong> Medium | <strong>Frequency:</strong> ⭐⭐⭐⭐⭐<br><strong>Category:</strong> Arrays</p>
+<p><strong>Concept:</strong><br>Given an array containing n-1 distinct numbers from 1 to n, find the missing one. The classic trick is: sum of 1..n is <code>n*(n+1)/2</code>; subtract the array&#39;s actual sum to get the missing value. Streams make this a two-liner.</p>
+<p><strong>Approach:</strong></p>
+<ul>
+<li>Find <code>n</code> = array length + 1</li>
+<li>Expected sum = <code>n*(n+1)/2</code> — or use <code>IntStream.rangeClosed(1,n).sum()</code></li>
+<li>Actual sum = <code>Arrays.stream(arr).sum()</code></li>
+<li>Missing = expected − actual</li>
+</ul>
+<p><strong>Stream Solution (Java 8):</strong></p>
+<pre><code class="language-java">import java.util.Arrays;
+import java.util.stream.IntStream;
+
+public class MissingNumber {
+    public static int findMissing(int[] arr) {
+        int n = arr.length + 1;                        // array has n-1 elements
+
+        int expectedSum = IntStream
+            .rangeClosed(1, n)                         // 1 to n
+            .sum();                                    // n*(n+1)/2
+
+        int actualSum = Arrays.stream(arr).sum();      // sum of given array
+
+        return expectedSum - actualSum;                // difference = missing
+    }
+
+    public static void main(String[] args) {
+        int[] arr = {1, 2, 4, 5, 6};                  // 3 is missing
+        System.out.println(&quot;Missing: &quot; + findMissing(arr)); // 3
+
+        int[] arr2 = {2, 3, 4, 5};                    // 1 is missing
+        System.out.println(&quot;Missing: &quot; + findMissing(arr2)); // 1
+    }
+}
+</code></pre>
+<p><strong>Key Interview Points:</strong></p>
+<ul>
+<li>XOR approach also works: XOR all indices 1..n with all array elements — missing number remains.</li>
+<li>Always clarify: is the array sorted? Does it start from 1? Are there negatives?</li>
+</ul>
+<hr>
+<h3>Q12. First Non-Repeated Character</h3>
+<p><strong>Difficulty:</strong> Medium | <strong>Frequency:</strong> ⭐⭐⭐⭐⭐<br><strong>Category:</strong> String Manipulation</p>
+<p><strong>Concept:</strong><br>Find the first character in a string that appears only once (e.g., in &quot;aabbcd&quot;, the answer is &#39;c&#39;). The stream approach uses <code>Collectors.groupingBy</code> to count frequencies, then <code>filter</code> to find the first with count == 1.</p>
+<p><strong>Approach:</strong></p>
+<ul>
+<li>Use a <code>LinkedHashMap</code> to preserve insertion order (critical for &quot;first&quot;)</li>
+<li><code>Collectors.groupingBy(identity(), LinkedHashMap::new, counting())</code> gives ordered frequency map</li>
+<li>Stream <code>.entrySet()</code>, filter <code>value == 1</code>, <code>.findFirst()</code> gives the answer</li>
+</ul>
+<p><strong>Stream Solution (Java 8):</strong></p>
+<pre><code class="language-java">import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+public class FirstNonRepeated {
+    public static Character firstNonRepeated(String str) {
+        return str.chars()
+            .mapToObj(c -&gt; (char) c)                        // IntStream → Stream&lt;Character&gt;
+            .collect(Collectors.groupingBy(
+                Function.identity(),                         // group by the char itself
+                LinkedHashMap::new,                          // preserve insertion order!
+                Collectors.counting()))                      // count occurrences
+            .entrySet().stream()
+            .filter(e -&gt; e.getValue() == 1)                 // keep count==1 entries
+            .map(Map.Entry::getKey)
+            .findFirst()                                     // first such character
+            .orElse(null);                                   // null if all repeat
+    }
+
+    public static void main(String[] args) {
+        System.out.println(firstNonRepeated(&quot;aabbcd&quot;));     // c
+        System.out.println(firstNonRepeated(&quot;swiss&quot;));      // w
+        System.out.println(firstNonRepeated(&quot;aabb&quot;));       // null
+    }
+}
+</code></pre>
+<p><strong>Key Interview Points:</strong></p>
+<ul>
+<li><code>LinkedHashMap::new</code> is the critical detail — without it, order is not guaranteed.</li>
+<li>Many candidates miss this and use <code>HashMap</code> — knowing this difference stands out.</li>
+</ul>
+<hr>
+<h3>Q13. Find Second Largest</h3>
+<p><strong>Difficulty:</strong> Medium | <strong>Frequency:</strong> ⭐⭐⭐⭐<br><strong>Category:</strong> Arrays</p>
+<p><strong>Concept:</strong><br>Find the second largest distinct element in an integer array. Streams make this elegant with <code>distinct().sorted()</code> in reverse order, then <code>skip(1).findFirst()</code>.</p>
+<p><strong>Approach:</strong></p>
+<ul>
+<li>Remove duplicates with <code>distinct()</code></li>
+<li>Sort in reverse order (largest first) with <code>sorted(Comparator.reverseOrder())</code></li>
+<li>Skip the first (largest) element with <code>skip(1)</code></li>
+<li>Take the next one with <code>findFirst()</code></li>
+</ul>
+<p><strong>Stream Solution (Java 8):</strong></p>
+<pre><code class="language-java">import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+
+public class SecondLargest {
+    public static Optional&lt;Integer&gt; secondLargest(List&lt;Integer&gt; list) {
+        return list.stream()
+            .distinct()                                  // remove duplicates
+            .sorted(Comparator.reverseOrder())           // 9, 7, 5, 3, 1
+            .skip(1)                                     // skip largest (9)
+            .findFirst();                                // return next = 7
+    }
+
+    public static void main(String[] args) {
+        List&lt;Integer&gt; numbers = Arrays.asList(5, 3, 9, 7, 9, 1, 3);
+        System.out.println(&quot;Second Largest: &quot;
+            + secondLargest(numbers).orElse(-1));           // 7
+
+        List&lt;Integer&gt; allSame = Arrays.asList(5, 5, 5);
+        System.out.println(&quot;Second Largest: &quot;
+            + secondLargest(allSame).orElse(-1));           // -1 (no second largest)
+    }
+}
+</code></pre>
+<p><strong>Key Interview Points:</strong></p>
+<ul>
+<li><code>distinct()</code> is important — <code>{5, 5, 3}</code> without it would return <code>5</code> as second largest.</li>
+<li><code>sorted()</code> on the full stream is O(n log n) — mention that a two-pass O(n) approach exists for performance-critical code.</li>
+</ul>
+<hr>
+<h3>Q14. Remove Duplicates</h3>
+<p><strong>Difficulty:</strong> Medium | <strong>Frequency:</strong> ⭐⭐⭐⭐<br><strong>Category:</strong> Arrays</p>
+<p><strong>Concept:</strong><br>Remove duplicate elements from a list. Streams make this trivially easy with <code>distinct()</code>. For sorted arrays, interviewers may ask for an in-place approach — both covered here.</p>
+<p><strong>Approach:</strong></p>
+<ul>
+<li>Stream: <code>stream().distinct().collect(Collectors.toList())</code></li>
+<li>For a sorted int array without extra memory: two-pointer approach</li>
+<li>Both approaches should be known</li>
+</ul>
+<p><strong>Stream Solution (Java 8):</strong></p>
+<pre><code class="language-java">import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class RemoveDuplicates {
+    // ── Stream approach (for List) ────────────────────────────────
+    public static List&lt;Integer&gt; removeDuplicatesStream(List&lt;Integer&gt; list) {
+        return list.stream()
+            .distinct()                                  // removes duplicates
+            .collect(Collectors.toList());
+    }
+
+    // ── Two-pointer for sorted int array (no extra memory) ───────
+    public static int removeDuplicatesInPlace(int[] arr) {
+        if (arr.length == 0) return 0;
+        int uniqueIndex = 0;
+        for (int i = 1; i &lt; arr.length; i++) {
+            if (arr[i] != arr[uniqueIndex]) {           // found a new unique element
+                uniqueIndex++;
+                arr[uniqueIndex] = arr[i];              // place it next
+            }
+        }
+        return uniqueIndex + 1;                         // count of unique elements
+    }
+
+    public static void main(String[] args) {
+        List&lt;Integer&gt; list = Arrays.asList(1, 2, 2, 3, 4, 4, 5);
+        System.out.println(removeDuplicatesStream(list));   // [1, 2, 3, 4, 5]
+
+        int[] arr = {1, 1, 2, 3, 3, 4, 5};
+        int count = removeDuplicatesInPlace(arr);
+        System.out.print(&quot;Unique elements: &quot;);
+        for (int i = 0; i &lt; count; i++) System.out.print(arr[i] + &quot; &quot;);
+        // 1 2 3 4 5
+    }
+}
+</code></pre>
+<p><strong>Key Interview Points:</strong></p>
+<ul>
+<li><code>distinct()</code> uses <code>equals()</code> and <code>hashCode()</code> — for custom objects, these must be overridden.</li>
+<li>For sorted arrays, O(1) space two-pointer is the optimal expected answer.</li>
+</ul>
+<hr>
+<h3>Q15. Filter Numbers Starting With &#39;1&#39;</h3>
+<p><strong>Difficulty:</strong> Medium | <strong>Frequency:</strong> ⭐⭐⭐⭐⭐<br><strong>Category:</strong> Stream API</p>
+<p><strong>Concept:</strong><br>Given a list of integers, return only those that start with the digit &#39;1&#39; (e.g., 1, 10, 11, 100). This is a classic Java 8 Stream warm-up combining <code>filter</code> and <code>String.valueOf()</code>. Almost certainly asked in Java 8 screening rounds.</p>
+<p><strong>Approach:</strong></p>
+<ul>
+<li>Convert each number to a String with <code>String.valueOf(n)</code></li>
+<li><code>filter</code> to check if it <code>startsWith(&quot;1&quot;)</code></li>
+<li>Collect back to a list</li>
+</ul>
+<p><strong>Stream Solution (Java 8):</strong></p>
+<pre><code class="language-java">import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class FilterStartsWithOne {
+    public static List&lt;Integer&gt; filterStartingWithOne(List&lt;Integer&gt; numbers) {
+        return numbers.stream()
+            .filter(n -&gt; String.valueOf(n).startsWith(&quot;1&quot;)) // convert to String, check prefix
+            .collect(Collectors.toList());
+    }
+
+    public static void main(String[] args) {
+        List&lt;Integer&gt; numbers = Arrays.asList(10, 25, 1, 100, 37, 15, 200, 11);
+        System.out.println(filterStartingWithOne(numbers));
+        // [10, 1, 100, 15, 11]
+
+        // ── Bonus: also print their squares ──────────────────────
+        numbers.stream()
+            .filter(n -&gt; String.valueOf(n).startsWith(&quot;1&quot;))
+            .map(n -&gt; n * n)                             // square each
+            .forEach(System.out::println);               // 100, 1, 10000, 225, 121
+    }
+}
+</code></pre>
+<p><strong>Key Interview Points:</strong></p>
+<ul>
+<li>This is usually a gateway question — if you answer it quickly with Streams, the interviewer moves to harder stream questions.</li>
+<li>Extend the answer: &quot;I can also chain <code>.map()</code>, <code>.sorted()</code> etc. if needed.&quot;</li>
+</ul>
+<hr>
+<h3>Q16. Find Duplicates in a List</h3>
+<p><strong>Difficulty:</strong> Medium | <strong>Frequency:</strong> ⭐⭐⭐⭐⭐<br><strong>Category:</strong> Stream API</p>
+<p><strong>Concept:</strong><br>Find elements that appear more than once in a list. Use <code>Collectors.groupingBy</code> to count occurrences, then filter. One of the most commonly asked Java 8 Stream questions.</p>
+<p><strong>Approach:</strong></p>
+<ul>
+<li>Use <code>Collectors.groupingBy(identity(), counting())</code> to get a frequency map</li>
+<li>Stream the map&#39;s entries and filter where <code>value &gt; 1</code></li>
+<li>Collect the keys (duplicate elements)</li>
+</ul>
+<p><strong>Stream Solution (Java 8):</strong></p>
+<pre><code class="language-java">import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+public class FindDuplicates {
+    public static Set&lt;Integer&gt; findDuplicates(List&lt;Integer&gt; list) {
+        return list.stream()
+            .collect(Collectors.groupingBy(
+                Function.identity(),             // group each element by itself
+                Collectors.counting()))          // count occurrences
+            .entrySet().stream()
+            .filter(e -&gt; e.getValue() &gt; 1)      // keep only those appearing &gt; 1 time
+            .map(Map.Entry::getKey)
+            .collect(Collectors.toSet());
+    }
+
+    // ── Alternative: using a HashSet to track seen elements ──────
+    public static List&lt;Integer&gt; findDuplicatesAlt(List&lt;Integer&gt; list) {
+        Set&lt;Integer&gt; seen = new java.util.HashSet&lt;&gt;();
+        return list.stream()
+            .filter(n -&gt; !seen.add(n))           // add() returns false if already present
+            .distinct()
+            .collect(Collectors.toList());
+    }
+
+    public static void main(String[] args) {
+        List&lt;Integer&gt; numbers = Arrays.asList(1, 2, 3, 2, 4, 3, 5);
+        System.out.println(&quot;Duplicates: &quot; + findDuplicates(numbers));     // [2, 3]
+        System.out.println(&quot;Duplicates: &quot; + findDuplicatesAlt(numbers));  // [2, 3]
+    }
+}
+</code></pre>
+<p><strong>Key Interview Points:</strong></p>
+<ul>
+<li>The <code>Set::add</code> trick (<code>!seen.add(n)</code>) is a clever single-pass approach — interviewers love it.</li>
+<li>Know both approaches: frequency map for counts, <code>Set.add()</code> for just existence of duplicates.</li>
+</ul>
+<hr>
+<h3>Q17. Grouping &amp; Counting Characters / Words</h3>
+<p><strong>Difficulty:</strong> Medium | <strong>Frequency:</strong> ⭐⭐⭐⭐<br><strong>Category:</strong> Stream API</p>
+<p><strong>Concept:</strong><br>Count the frequency of each character (or word) in a string — a real-world use case for <code>Collectors.groupingBy</code>. This directly demonstrates your understanding of Java 8 Collectors.</p>
+<p><strong>Approach:</strong></p>
+<ul>
+<li>For characters: <code>chars().mapToObj(c -&gt; (char)c)</code> then <code>groupingBy(identity(), counting())</code></li>
+<li>For words: <code>split(&quot;\\s+&quot;)</code> then <code>Arrays.stream()</code> then same groupingBy</li>
+<li>Use <code>LinkedHashMap</code> if order matters</li>
+</ul>
+<p><strong>Stream Solution (Java 8):</strong></p>
+<pre><code class="language-java">import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+public class GroupingAndCounting {
+    public static void main(String[] args) {
+
+        // ── Character frequency ───────────────────────────────────
+        String str = &quot;programming&quot;;
+        Map&lt;Character, Long&gt; charFreq = str.chars()
+            .mapToObj(c -&gt; (char) c)                     // int → Character
+            .collect(Collectors.groupingBy(
+                Function.identity(),                      // group by char itself
+                LinkedHashMap::new,                       // preserve order
+                Collectors.counting()));                  // count each group
+
+        System.out.println(&quot;Char frequency: &quot; + charFreq);
+        // {p=1, r=2, o=1, g=2, a=1, m=2, i=1, n=1}
+
+        // ── Word frequency ────────────────────────────────────────
+        String sentence = &quot;java is great java is fun&quot;;
+        Map&lt;String, Long&gt; wordFreq = Arrays.stream(sentence.split(&quot;\\s+&quot;))
+            .collect(Collectors.groupingBy(
+                Function.identity(),                      // group by word
+                Collectors.counting()));
+
+        System.out.println(&quot;Word frequency: &quot; + wordFreq);
+        // {java=2, is=2, great=1, fun=1}
+
+        // ── Sorted by frequency (most common first) ───────────────
+        wordFreq.entrySet().stream()
+            .sorted(Map.Entry.&lt;String, Long&gt;comparingByValue().reversed())
+            .forEach(e -&gt; System.out.println(e.getKey() + &quot; → &quot; + e.getValue()));
+    }
+}
+</code></pre>
+<p><strong>Key Interview Points:</strong></p>
+<ul>
+<li><code>Collectors.groupingBy</code> has three overloads — know all three: key extractor, map factory, downstream collector.</li>
+<li>Sorting by value (frequency) is often asked as a follow-up.</li>
+</ul>
+<hr>
+<h3>Q18. Sort Custom Employee Objects</h3>
+<p><strong>Difficulty:</strong> Medium | <strong>Frequency:</strong> ⭐⭐⭐⭐<br><strong>Category:</strong> Stream API</p>
+<p><strong>Concept:</strong><br>Sort a list of <code>Employee</code> objects by salary descending, then by name ascending for equal salaries. Uses <code>Comparator.comparing().thenComparing()</code> — a direct test of Java 8 Comparator chaining.</p>
+<p><strong>Approach:</strong></p>
+<ul>
+<li>Define an <code>Employee</code> class with <code>name</code>, <code>salary</code>, <code>department</code></li>
+<li>Use <code>Comparator.comparingInt(Employee::getSalary).reversed()</code> for descending salary</li>
+<li>Chain <code>.thenComparing(Employee::getName)</code> for the secondary sort</li>
+</ul>
+<p><strong>Stream Solution (Java 8):</strong></p>
+<pre><code class="language-java">import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+
+// ── Employee POJO (reused across examples) ────────────────────────
+class Employee {
+    private String name;
+    private int salary;
+    private String department;
+
+    public Employee(String name, int salary, String department) {
+        this.name = name; this.salary = salary; this.department = department;
+    }
+    public String getName()       { return name; }
+    public int getSalary()        { return salary; }
+    public String getDepartment() { return department; }
+
+    @Override
+    public String toString() {
+        return name + &quot; (&quot; + department + &quot;) - ₹&quot; + salary;
+    }
+}
+
+public class SortEmployees {
+    public static void main(String[] args) {
+        List&lt;Employee&gt; employees = Arrays.asList(
+            new Employee(&quot;Alice&quot;, 75000, &quot;IT&quot;),
+            new Employee(&quot;Bob&quot;,   50000, &quot;HR&quot;),
+            new Employee(&quot;Carol&quot;, 75000, &quot;Finance&quot;),
+            new Employee(&quot;Dave&quot;,  60000, &quot;IT&quot;),
+            new Employee(&quot;Eve&quot;,   50000, &quot;HR&quot;)
+        );
+
+        // ── Sort: salary DESC, then name ASC ──────────────────────
+        List&lt;Employee&gt; sorted = employees.stream()
+            .sorted(
+                Comparator.comparingInt(Employee::getSalary)
+                          .reversed()                       // salary high → low
+                          .thenComparing(Employee::getName) // then A → Z by name
+            )
+            .collect(Collectors.toList());
+
+        sorted.forEach(System.out::println);
+        // Alice (IT)      - ₹75000
+        // Carol (Finance) - ₹75000
+        // Dave  (IT)      - ₹60000
+        // Bob   (HR)      - ₹50000
+        // Eve   (HR)      - ₹50000
+
+        // ── Group by department ───────────────────────────────────
+        System.out.println(&quot;\nBy department:&quot;);
+        employees.stream()
+            .collect(Collectors.groupingBy(Employee::getDepartment))
+            .forEach((dept, emps) -&gt; System.out.println(dept + &quot;: &quot; + emps));
+    }
+}
+</code></pre>
+<p><strong>Key Interview Points:</strong></p>
+<ul>
+<li><code>.reversed()</code> should be called on the first comparator, before <code>.thenComparing()</code> — a common mistake is reversing the entire chain.</li>
+<li><code>Comparator.comparing</code> for <code>String</code>, <code>comparingInt/comparingLong/comparingDouble</code> for primitives.</li>
+</ul>
+<hr>
+<h3>Q19. Binary Search</h3>
+<p><strong>Difficulty:</strong> Medium | <strong>Frequency:</strong> ⭐⭐⭐⭐<br><strong>Category:</strong> Algorithms</p>
+<p><strong>Concept:</strong><br>Binary search finds an element in a sorted array in O(log n) by repeatedly halving the search space. Both iterative and recursive variants are expected. Streams are not applicable here — stream operations don&#39;t maintain index state between elements.</p>
+<p><strong>Approach:</strong></p>
+<ul>
+<li>Set <code>low=0</code>, <code>high=arr.length-1</code></li>
+<li><code>mid = low + (high - low) / 2</code> (avoids integer overflow)</li>
+<li>If <code>arr[mid] == target</code>, return <code>mid</code></li>
+<li>If <code>arr[mid] &lt; target</code>, set <code>low = mid + 1</code>; else set <code>high = mid - 1</code></li>
+</ul>
+<p><strong>Solution (Java 8):</strong></p>
+<pre><code class="language-java">public class BinarySearch {
+    // ── Iterative ─────────────────────────────────────────────────
+    public static int binarySearchIterative(int[] arr, int target) {
+        int low = 0, high = arr.length - 1;
+        while (low &lt;= high) {
+            int mid = low + (high - low) / 2;       // avoids overflow vs (low+high)/2
+            if (arr[mid] == target)   return mid;   // found
+            else if (arr[mid] &lt; target) low = mid + 1;  // target is in right half
+            else                      high = mid - 1;  // target is in left half
+        }
+        return -1;                                  // not found
+    }
+
+    // ── Recursive ─────────────────────────────────────────────────
+    public static int binarySearchRecursive(int[] arr, int low, int high, int target) {
+        if (low &gt; high) return -1;
+        int mid = low + (high - low) / 2;
+        if (arr[mid] == target)    return mid;
+        if (arr[mid] &lt; target)     return binarySearchRecursive(arr, mid + 1, high, target);
+        return                            binarySearchRecursive(arr, low, mid - 1, target);
+    }
+
+    public static void main(String[] args) {
+        int[] arr = {2, 5, 8, 12, 16, 23, 38, 56, 72, 91};
+
+        System.out.println(binarySearchIterative(arr, 23));     // 5 (index)
+        System.out.println(binarySearchIterative(arr, 100));    // -1
+
+        System.out.println(binarySearchRecursive(arr, 0, arr.length - 1, 56)); // 7
+    }
+}
+// Note: Streams don&#39;t apply here — binary search requires direct index access
+// and bidirectional navigation which stream pipelines don&#39;t support.
+</code></pre>
+<p><strong>Key Interview Points:</strong></p>
+<ul>
+<li>Use <code>low + (high - low) / 2</code> not <code>(low + high) / 2</code> — prevents integer overflow.</li>
+<li>Time: O(log n), Space: O(1) iterative, O(log n) recursive (call stack).</li>
+</ul>
+<hr>
+<h3>Q20. Singleton Pattern (Thread-Safe)</h3>
+<p><strong>Difficulty:</strong> Medium | <strong>Frequency:</strong> ⭐⭐⭐⭐<br><strong>Category:</strong> Design Patterns</p>
+<p><strong>Concept:</strong><br>Singleton ensures only one instance of a class exists throughout the application. Thread safety is the main challenge. Three approaches: double-checked locking, <code>enum</code>, and Bill Pugh (holder class) — know all three.</p>
+<p><strong>Approach:</strong></p>
+<ul>
+<li><strong>Double-checked locking</strong>: <code>volatile</code> field + <code>synchronized</code> block only on first creation</li>
+<li><strong>Enum Singleton</strong>: JVM guarantees single instance, serialization-safe, simplest</li>
+<li><strong>Bill Pugh</strong>: lazy initialization using a static inner holder class — no synchronization overhead</li>
+</ul>
+<p><strong>Solution (Java 8):</strong></p>
+<pre><code class="language-java">// ── Approach 1: Double-Checked Locking ────────────────────────────
+class SingletonDCL {
+    private static volatile SingletonDCL instance;   // volatile prevents partial init
+
+    private SingletonDCL() { }                        // private constructor
+
+    public static SingletonDCL getInstance() {
+        if (instance == null) {                        // first check (no lock)
+            synchronized (SingletonDCL.class) {        // lock only if null
+                if (instance == null) {                // second check (inside lock)
+                    instance = new SingletonDCL();
+                }
+            }
+        }
+        return instance;
+    }
+}
+
+// ── Approach 2: Enum Singleton (RECOMMENDED — Josh Bloch) ─────────
+enum SingletonEnum {
+    INSTANCE;                                          // JVM ensures single instance
+
+    public void doSomething() {
+        System.out.println(&quot;Singleton via Enum&quot;);
+    }
+}
+
+// ── Approach 3: Bill Pugh (Initialization-on-Demand Holder) ───────
+class SingletonBillPugh {
+    private SingletonBillPugh() { }
+
+    // Inner class loaded only when getInstance() is first called
+    private static class Holder {
+        private static final SingletonBillPugh INSTANCE = new SingletonBillPugh();
+    }
+
+    public static SingletonBillPugh getInstance() {
+        return Holder.INSTANCE;                        // lazy, thread-safe, no sync overhead
+    }
+}
+
+public class SingletonDemo {
+    public static void main(String[] args) {
+        SingletonDCL s1 = SingletonDCL.getInstance();
+        SingletonDCL s2 = SingletonDCL.getInstance();
+        System.out.println(s1 == s2);                  // true (same instance)
+
+        SingletonEnum.INSTANCE.doSomething();
+    }
+}
+</code></pre>
+<p><strong>Key Interview Points:</strong></p>
+<ul>
+<li><code>volatile</code> is mandatory in DCL — without it, another thread can see a partially constructed object.</li>
+<li>Enum Singleton is preferred by Effective Java (Joshua Bloch) — always mention this.</li>
+</ul>
+<hr>
+<h1>HARD TIER</h1>
+<hr>
+<h3>Q21. Rotate an Array</h3>
+<p><strong>Difficulty:</strong> Hard | <strong>Frequency:</strong> ⭐⭐⭐<br><strong>Category:</strong> Arrays</p>
+<p><strong>Concept:</strong><br>Rotate an array by <code>k</code> positions. For example, <code>[1,2,3,4,5]</code> rotated right by 2 becomes <code>[4,5,1,2,3]</code>. The reversal algorithm does this in O(n) time and O(1) space. Streams are used for output but not for the rotation itself.</p>
+<p><strong>Approach:</strong></p>
+<ul>
+<li>Right rotate by <code>k</code>: reverse the entire array, reverse first <code>k</code> elements, reverse remaining</li>
+<li>Normalize <code>k = k % n</code> to handle cases where <code>k &gt;= n</code></li>
+<li>Three reversal operations total</li>
+</ul>
+<p><strong>Solution (Java 8):</strong></p>
+<pre><code class="language-java">import java.util.Arrays;
+import java.util.stream.IntStream;
+
+public class RotateArray {
+    private static void reverse(int[] arr, int start, int end) {
+        while (start &lt; end) {
+            int temp = arr[start];
+            arr[start] = arr[end];
+            arr[end] = temp;
+            start++; end--;
+        }
+    }
+
+    // ── Right rotate by k ─────────────────────────────────────────
+    public static void rotateRight(int[] arr, int k) {
+        int n = arr.length;
+        k = k % n;                      // handle k &gt;= n
+        if (k == 0) return;
+
+        reverse(arr, 0, n - 1);         // step 1: reverse all
+        reverse(arr, 0, k - 1);         // step 2: reverse first k elements
+        reverse(arr, k, n - 1);         // step 3: reverse remaining elements
+    }
+
+    // ── Left rotate by k ──────────────────────────────────────────
+    public static void rotateLeft(int[] arr, int k) {
+        int n = arr.length;
+        k = k % n;
+        if (k == 0) return;
+
+        reverse(arr, 0, k - 1);         // reverse first k elements
+        reverse(arr, k, n - 1);         // reverse remaining
+        reverse(arr, 0, n - 1);         // reverse all
+    }
+
+    public static void main(String[] args) {
+        int[] arr = {1, 2, 3, 4, 5};
+        System.out.println(&quot;Original: &quot; + Arrays.toString(arr));
+
+        rotateRight(arr, 2);
+        System.out.println(&quot;Right by 2: &quot; + Arrays.toString(arr)); // [4, 5, 1, 2, 3]
+
+        int[] arr2 = {1, 2, 3, 4, 5};
+        rotateLeft(arr2, 2);
+        System.out.println(&quot;Left by 2: &quot; + Arrays.toString(arr2));  // [3, 4, 5, 1, 2]
+    }
+}
+// Stream note: Streams don&#39;t support in-place index mutations.
+// Use IntStream.of(arr).forEach() for printing, but the rotation itself is traditional.
+</code></pre>
+<p><strong>Key Interview Points:</strong></p>
+<ul>
+<li>The reversal algorithm is O(n) time, O(1) space — state both explicitly.</li>
+<li>Simpler but O(n) space alternative: create a new array with <code>new_arr[i] = arr[(i - k + n) % n]</code>.</li>
+</ul>
+<hr>
+<h3>Q22. Kadane&#39;s Algorithm</h3>
+<p><strong>Difficulty:</strong> Hard | <strong>Frequency:</strong> ⭐⭐⭐⭐<br><strong>Category:</strong> Arrays / Dynamic Programming</p>
+<p><strong>Concept:</strong><br>Find the maximum sum contiguous subarray in an array containing negative numbers (e.g., <code>[-2,1,-3,4,-1,2,1,-5,4]</code> → answer is <code>[4,-1,2,1]</code> with sum <code>6</code>). Kadane&#39;s algorithm solves this in O(n).</p>
+<p><strong>Approach:</strong></p>
+<ul>
+<li>Maintain <code>currentMax</code> (max sum ending at current index) and <code>globalMax</code> (overall max)</li>
+<li>At each element: <code>currentMax = max(element, currentMax + element)</code></li>
+<li>Update <code>globalMax = max(globalMax, currentMax)</code></li>
+<li>If <code>currentMax &lt; 0</code>, reset it — starting fresh is better</li>
+</ul>
+<p><strong>Solution (Java 8):</strong></p>
+<pre><code class="language-java">import java.util.Arrays;
+
+public class KadanesAlgorithm {
+    // ── Kadane&#39;s: returns max subarray sum ────────────────────────
+    public static int maxSubarraySum(int[] arr) {
+        int currentMax = arr[0];
+        int globalMax  = arr[0];
+
+        for (int i = 1; i &lt; arr.length; i++) {
+            // extend current subarray OR start fresh from arr[i]
+            currentMax = Math.max(arr[i], currentMax + arr[i]);
+            globalMax  = Math.max(globalMax, currentMax);
+        }
+        return globalMax;
+    }
+
+    // ── Extended: also track start and end indices ────────────────
+    public static int[] maxSubarrayWithIndices(int[] arr) {
+        int currentMax = arr[0], globalMax = arr[0];
+        int start = 0, end = 0, tempStart = 0;
+
+        for (int i = 1; i &lt; arr.length; i++) {
+            if (arr[i] &gt; currentMax + arr[i]) {
+                currentMax = arr[i];
+                tempStart  = i;              // new subarray starts here
+            } else {
+                currentMax += arr[i];
+            }
+            if (currentMax &gt; globalMax) {
+                globalMax = currentMax;
+                start = tempStart;           // record start index
+                end   = i;                   // record end index
+            }
+        }
+        return Arrays.copyOfRange(arr, start, end + 1);
+    }
+
+    public static void main(String[] args) {
+        int[] arr = {-2, 1, -3, 4, -1, 2, 1, -5, 4};
+        System.out.println(&quot;Max Sum: &quot; + maxSubarraySum(arr));          // 6
+        System.out.println(&quot;Subarray: &quot; + Arrays.toString(maxSubarrayWithIndices(arr)));
+        // [4, -1, 2, 1]
+    }
+}
+// Stream reduce() note: Stream.reduce can compute a running sum but cannot easily
+// reset the accumulator to 0 (like re-starting a subarray on negative), so
+// the traditional loop is the canonical solution.
+</code></pre>
+<p><strong>Key Interview Points:</strong></p>
+<ul>
+<li>This is a classic Dynamic Programming problem — Kadane&#39;s is essentially DP with O(1) space.</li>
+<li>Always handle all-negative arrays: the answer is the single largest element, not 0.</li>
+</ul>
+<hr>
+<h3>Q23. Longest Substring Without Repeating Characters</h3>
+<p><strong>Difficulty:</strong> Hard | <strong>Frequency:</strong> ⭐⭐⭐⭐⭐<br><strong>Category:</strong> String Manipulation</p>
+<p><strong>Concept:</strong><br>Find the length of the longest substring with no repeated characters (e.g., &quot;abcabcbb&quot; → 3, &quot;pwwkew&quot; → 3). Uses the sliding window pattern with a <code>HashSet</code> or <code>HashMap</code>. Streams cannot solve this because the sliding window requires mutable state and dynamic resizing.</p>
+<p><strong>Approach:</strong></p>
+<ul>
+<li>Use two pointers <code>left</code> and <code>right</code> (the window boundaries)</li>
+<li>Use a <code>HashSet</code> to track characters in the current window</li>
+<li>If <code>str.charAt(right)</code> is already in the set, shrink from <code>left</code></li>
+<li>Track <code>maxLength = max(maxLength, right - left + 1)</code></li>
+</ul>
+<p><strong>Solution (Java 8):</strong></p>
+<pre><code class="language-java">import java.util.HashMap;
+import java.util.Map;
+
+public class LongestSubstringNoRepeat {
+    // ── Approach 1: HashSet sliding window ────────────────────────
+    public static int lengthOfLongestSubstring(String s) {
+        java.util.Set&lt;Character&gt; window = new java.util.HashSet&lt;&gt;();
+        int left = 0, maxLength = 0;
+
+        for (int right = 0; right &lt; s.length(); right++) {
+            char c = s.charAt(right);
+            // Shrink window from left until current char is not in window
+            while (window.contains(c)) {
+                window.remove(s.charAt(left));
+                left++;
+            }
+            window.add(c);
+            maxLength = Math.max(maxLength, right - left + 1);
+        }
+        return maxLength;
+    }
+
+    // ── Approach 2: HashMap for O(n) (jump left pointer directly) ─
+    public static int lengthOptimized(String s) {
+        Map&lt;Character, Integer&gt; lastSeen = new HashMap&lt;&gt;(); // char → last index
+        int left = 0, maxLength = 0;
+
+        for (int right = 0; right &lt; s.length(); right++) {
+            char c = s.charAt(right);
+            if (lastSeen.containsKey(c) &amp;&amp; lastSeen.get(c) &gt;= left) {
+                left = lastSeen.get(c) + 1;              // jump left past the duplicate
+            }
+            lastSeen.put(c, right);                      // update last seen index
+            maxLength = Math.max(maxLength, right - left + 1);
+        }
+        return maxLength;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(lengthOfLongestSubstring(&quot;abcabcbb&quot;)); // 3 (abc)
+        System.out.println(lengthOfLongestSubstring(&quot;bbbbb&quot;));    // 1 (b)
+        System.out.println(lengthOptimized(&quot;pwwkew&quot;));            // 3 (wke)
+        System.out.println(lengthOptimized(&quot;&quot;));                   // 0
+    }
+}
+// Stream note: Streams cannot maintain a mutable sliding window (two-pointer state).
+// This is a state-machine problem requiring direct index control.
+</code></pre>
+<p><strong>Key Interview Points:</strong></p>
+<ul>
+<li>HashMap approach jumps the <code>left</code> pointer directly — O(n) guaranteed, no inner while loop.</li>
+<li>Ask the interviewer: &quot;Does it include spaces and special characters?&quot; Small clarification shows maturity.</li>
+</ul>
+<hr>
+<h3>Q24. Matrix Rotation 90° Clockwise</h3>
+<p><strong>Difficulty:</strong> Hard | <strong>Frequency:</strong> ⭐⭐⭐<br><strong>Category:</strong> Arrays / Matrix</p>
+<p><strong>Concept:</strong><br>Rotate an NxN matrix 90 degrees clockwise in-place. The trick: first transpose the matrix (swap <code>[i][j]</code> with <code>[j][i]</code>), then reverse each row. Two O(n²) passes, O(1) space.</p>
+<p><strong>Approach:</strong></p>
+<ul>
+<li><strong>Transpose</strong>: for <code>i</code> in <code>0..n</code>, for <code>j</code> in <code>i..n</code>, swap <code>matrix[i][j]</code> and <code>matrix[j][i]</code></li>
+<li><strong>Reverse each row</strong>: for each row, reverse its elements</li>
+<li>Combined effect = 90° clockwise rotation</li>
+</ul>
+<p><strong>Solution (Java 8):</strong></p>
+<pre><code class="language-java">import java.util.Arrays;
+import java.util.stream.IntStream;
+
+public class MatrixRotation {
+    // ── Transpose: swap matrix[i][j] ↔ matrix[j][i] ──────────────
+    private static void transpose(int[][] m) {
+        int n = m.length;
+        for (int i = 0; i &lt; n; i++) {
+            for (int j = i + 1; j &lt; n; j++) {   // j starts at i+1 to avoid double swap
+                int temp  = m[i][j];
+                m[i][j]   = m[j][i];
+                m[j][i]   = temp;
+            }
+        }
+    }
+
+    // ── Reverse each row ──────────────────────────────────────────
+    private static void reverseRows(int[][] m) {
+        for (int[] row : m) {
+            int left = 0, right = row.length - 1;
+            while (left &lt; right) {
+                int temp = row[left]; row[left] = row[right]; row[right] = temp;
+                left++; right--;
+            }
+        }
+    }
+
+    public static void rotate90Clockwise(int[][] m) {
+        transpose(m);    // step 1: transpose
+        reverseRows(m);  // step 2: reverse rows → 90° clockwise
+    }
+
+    // ── IntStream for pretty printing ─────────────────────────────
+    private static void printMatrix(int[][] m) {
+        IntStream.range(0, m.length)
+            .forEach(i -&gt; System.out.println(Arrays.toString(m[i])));
+    }
+
+    public static void main(String[] args) {
+        int[][] matrix = {
+            {1, 2, 3},
+            {4, 5, 6},
+            {7, 8, 9}
+        };
+
+        System.out.println(&quot;Original:&quot;);
+        printMatrix(matrix);
+
+        rotate90Clockwise(matrix);
+
+        System.out.println(&quot;Rotated 90° Clockwise:&quot;);
+        printMatrix(matrix);
+        // [7, 4, 1]
+        // [8, 5, 2]
+        // [9, 6, 3]
+    }
+}
+</code></pre>
+<p><strong>Key Interview Points:</strong></p>
+<ul>
+<li>Transpose + reverse rows = 90° clockwise. Reverse rows first + transpose = 90° counter-clockwise.</li>
+<li>This only works for square (NxN) matrices — clarify with the interviewer if rectangular.</li>
+</ul>
+<hr>
+<h3>Q25. LRU Cache (Thread-Safe)</h3>
+<p><strong>Difficulty:</strong> Hard | <strong>Frequency:</strong> ⭐⭐⭐⭐<br><strong>Category:</strong> Concurrent Programming / Data Structures</p>
+<p><strong>Concept:</strong><br>An LRU (Least Recently Used) cache evicts the least recently accessed item when full. <code>LinkedHashMap</code> maintains insertion + access order natively, making it the perfect backing data structure. Thread safety wraps it with <code>synchronized</code>.</p>
+<p><strong>Approach:</strong></p>
+<ul>
+<li>Extend <code>LinkedHashMap</code> with <code>accessOrder = true</code></li>
+<li>Override <code>removeEldestEntry</code> to evict when size exceeds capacity</li>
+<li>Wrap with <code>Collections.synchronizedMap</code> for thread safety</li>
+</ul>
+<p><strong>Solution (Java 8):</strong></p>
+<pre><code class="language-java">import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+public class LRUCache&lt;K, V&gt; {
+    private final Map&lt;K, V&gt; cache;
+    private final int capacity;
+
+    public LRUCache(int capacity) {
+        this.capacity = capacity;
+        // true = access-order (most recently accessed at end), false = insertion-order
+        this.cache = Collections.synchronizedMap(
+            new LinkedHashMap&lt;K, V&gt;(capacity, 0.75f, true) {
+                @Override
+                protected boolean removeEldestEntry(Map.Entry&lt;K, V&gt; eldest) {
+                    return size() &gt; capacity;   // evict when over capacity
+                }
+            }
+        );
+    }
+
+    public V get(K key) {
+        return cache.getOrDefault(key, null);    // access updates order
+    }
+
+    public void put(K key, V value) {
+        cache.put(key, value);                   // put updates order
+    }
+
+    public void display() {
+        System.out.println(cache);
+    }
+
+    public static void main(String[] args) {
+        LRUCache&lt;Integer, String&gt; lru = new LRUCache&lt;&gt;(3);
+
+        lru.put(1, &quot;Medicine A&quot;);
+        lru.put(2, &quot;Medicine B&quot;);
+        lru.put(3, &quot;Medicine C&quot;);
+        lru.get(1);                              // access 1 → moves to most recent
+        lru.put(4, &quot;Medicine D&quot;);               // evicts least recent = 2
+
+        lru.display();         // {3=Medicine C, 1=Medicine A, 4=Medicine D}
+        System.out.println(&quot;Get key 2: &quot; + lru.get(2));   // null (evicted)
+        System.out.println(&quot;Get key 1: &quot; + lru.get(1));   // Medicine A
+    }
+}
+</code></pre>
+<p><strong>Key Interview Points:</strong></p>
+<ul>
+<li><code>LinkedHashMap(capacity, loadFactor, accessOrder=true)</code> — the third <code>true</code> is the key parameter.</li>
+<li>For a fully custom thread-safe solution, interviewers may ask for <code>ReentrantReadWriteLock</code> — mention it.</li>
+</ul>
+<hr>
+<h3>Q26. Create a Deadlock</h3>
+<p><strong>Difficulty:</strong> Hard | <strong>Frequency:</strong> ⭐⭐⭐<br><strong>Category:</strong> Concurrent Programming</p>
+<p><strong>Concept:</strong><br>A deadlock occurs when two or more threads each hold a lock the other needs, causing permanent blocking. This is a demonstration question to show you understand thread synchronization, lock ordering, and the four Coffman conditions.</p>
+<p><strong>Approach:</strong></p>
+<ul>
+<li>Thread 1 acquires <code>lockA</code>, then tries to acquire <code>lockB</code></li>
+<li>Thread 2 acquires <code>lockB</code>, then tries to acquire <code>lockA</code></li>
+<li>Both block waiting for the other — deadlock</li>
+<li>Prevention: always acquire locks in the same order across all threads</li>
+</ul>
+<p><strong>Solution (Java 8):</strong></p>
+<pre><code class="language-java">public class DeadlockDemo {
+    private static final Object lockA = new Object(); // Resource A
+    private static final Object lockB = new Object(); // Resource B
+
+    public static void main(String[] args) {
+
+        // ── Thread 1: acquires A then tries B ─────────────────────
+        Thread thread1 = new Thread(() -&gt; {
+            synchronized (lockA) {
+                System.out.println(&quot;Thread 1 acquired Lock A&quot;);
+                try { Thread.sleep(100); } catch (InterruptedException e) { }
+                System.out.println(&quot;Thread 1 waiting for Lock B...&quot;);
+                synchronized (lockB) {                   // BLOCKS — Thread 2 holds B
+                    System.out.println(&quot;Thread 1 acquired Lock B&quot;);
+                }
+            }
+        }, &quot;Thread-1&quot;);
+
+        // ── Thread 2: acquires B then tries A ─────────────────────
+        Thread thread2 = new Thread(() -&gt; {
+            synchronized (lockB) {
+                System.out.println(&quot;Thread 2 acquired Lock B&quot;);
+                try { Thread.sleep(100); } catch (InterruptedException e) { }
+                System.out.println(&quot;Thread 2 waiting for Lock A...&quot;);
+                synchronized (lockA) {                   // BLOCKS — Thread 1 holds A
+                    System.out.println(&quot;Thread 2 acquired Lock A&quot;);
+                }
+            }
+        }, &quot;Thread-2&quot;);
+
+        thread1.start();
+        thread2.start();
+
+        // Both will hang — detect via: jstack &lt;pid&gt;
+    }
+}
+
+/*  ─── How to PREVENT deadlock ───────────────────────────────────
+    1. Lock Ordering: always acquire locks in the same fixed order.
+    2. tryLock with timeout: ReentrantLock.tryLock(timeout, TimeUnit)
+    3. Avoid nested locks where possible.
+    4. Use java.util.concurrent utilities (Semaphore, CountDownLatch).
+
+    ─── Four Coffman conditions for deadlock ──────────────────────
+    1. Mutual Exclusion  – only one thread can hold a resource
+    2. Hold and Wait     – holding one lock while waiting for another
+    3. No Preemption     – locks can&#39;t be taken away forcibly
+    4. Circular Wait     – circle of threads each waiting on the next
+*/
+</code></pre>
+<p><strong>Key Interview Points:</strong></p>
+<ul>
+<li>Run <code>jstack &lt;pid&gt;</code> on a running JVM to detect deadlock — interviewers ask how to diagnose it.</li>
+<li>Modern alternative: <code>ReentrantLock.tryLock(timeout, unit)</code> avoids indefinite blocking.</li>
+</ul>
+<hr>
+<h1>EASY TIER — CONTINUED</h1>
+<hr>
+<h3>Q27. Sum of Digits</h3>
+<p><strong>Difficulty:</strong> Easy | <strong>Frequency:</strong> ⭐⭐⭐⭐<br><strong>Category:</strong> Mathematical Logic</p>
+<p><strong>Concept:</strong><br>Sum the individual digits of a number (e.g., 1234 → 1+2+3+4 = 10). The stream approach converts the number to a string, streams its characters, maps each back to its numeric value, and sums them.</p>
+<p><strong>Approach:</strong></p>
+<ul>
+<li><code>String.valueOf(n)</code> gives the digit characters</li>
+<li><code>chars()</code> streams each character as an int (ASCII)</li>
+<li>Subtract <code>&#39;0&#39;</code> from each char to get the actual digit value</li>
+<li><code>sum()</code> adds them all up</li>
+</ul>
+<p><strong>Stream Solution (Java 8):</strong></p>
+<pre><code class="language-java">public class SumOfDigits {
+    public static int sumStream(int n) {
+        return String.valueOf(Math.abs(n))   // handle negatives
+            .chars()                          // stream of char ASCII values
+            .map(c -&gt; c - &#39;0&#39;)               // ASCII → digit (e.g. &#39;5&#39;=53 → 5)
+            .sum();
+    }
+
+    // ── Traditional: modulo approach ─────────────────────────────
+    public static int sumTraditional(int n) {
+        n = Math.abs(n);
+        int sum = 0;
+        while (n &gt; 0) { sum += n % 10; n /= 10; }
+        return sum;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(sumStream(1234));       // 10
+        System.out.println(sumStream(-9876));      // 30
+        System.out.println(sumTraditional(9999));  // 36
+    }
+}
+</code></pre>
+<p><strong>Key Interview Points:</strong></p>
+<ul>
+<li>The <code>c - &#39;0&#39;</code> trick converts a char digit to its int value — a fundamental Java pattern.</li>
+<li>Always handle negative numbers with <code>Math.abs()</code> before processing digits.</li>
+</ul>
+<hr>
+<h3>Q28. Even / Odd Partition</h3>
+<p><strong>Difficulty:</strong> Easy | <strong>Frequency:</strong> ⭐⭐⭐⭐⭐<br><strong>Category:</strong> Stream API</p>
+<p><strong>Concept:</strong><br>Split a list into two groups: even numbers and odd numbers. <code>Collectors.partitioningBy</code> does exactly this — it returns a <code>Map&lt;Boolean, List&lt;T&gt;&gt;</code> where <code>true</code> = matches predicate, <code>false</code> = doesn&#39;t match. One of the most practical Stream collector questions.</p>
+<p><strong>Approach:</strong></p>
+<ul>
+<li><code>Collectors.partitioningBy(n -&gt; n % 2 == 0)</code> splits on the even condition</li>
+<li>Result: <code>{true=[2,4,6], false=[1,3,5]}</code></li>
+<li>Access with <code>map.get(true)</code> for evens, <code>map.get(false)</code> for odds</li>
+</ul>
+<p><strong>Stream Solution (Java 8):</strong></p>
+<pre><code class="language-java">import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+public class EvenOddPartition {
+    public static void main(String[] args) {
+        List&lt;Integer&gt; numbers = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+
+        // ── partitioningBy splits into exactly 2 groups ───────────
+        Map&lt;Boolean, List&lt;Integer&gt;&gt; partition = numbers.stream()
+            .collect(Collectors.partitioningBy(n -&gt; n % 2 == 0));
+
+        System.out.println(&quot;Even: &quot; + partition.get(true));   // [2, 4, 6, 8, 10]
+        System.out.println(&quot;Odd:  &quot; + partition.get(false));  // [1, 3, 5, 7, 9]
+
+        // ── Bonus: count each group ───────────────────────────────
+        Map&lt;Boolean, Long&gt; counts = numbers.stream()
+            .collect(Collectors.partitioningBy(
+                n -&gt; n % 2 == 0,
+                Collectors.counting()));                      // downstream collector
+        System.out.println(&quot;Even count: &quot; + counts.get(true));  // 5
+        System.out.println(&quot;Odd count:  &quot; + counts.get(false)); // 5
+    }
+}
+</code></pre>
+<p><strong>Key Interview Points:</strong></p>
+<ul>
+<li><code>partitioningBy</code> is a special case of <code>groupingBy</code> with exactly two groups (true/false).</li>
+<li>Use it when you need a binary split; use <code>groupingBy</code> for 3+ categories.</li>
+</ul>
+<hr>
+<h3>Q29. Reverse Words in a Sentence</h3>
+<p><strong>Difficulty:</strong> Easy | <strong>Frequency:</strong> ⭐⭐⭐⭐<br><strong>Category:</strong> String Manipulation</p>
+<p><strong>Concept:</strong><br>Reverse the order of words in a sentence: &quot;Hello World Java&quot; → &quot;Java World Hello&quot;. Classic two-step stream operation: split into words, collect in reverse order.</p>
+<p><strong>Approach:</strong></p>
+<ul>
+<li>Split sentence by spaces using <code>split(&quot;\\s+&quot;)</code></li>
+<li>Convert to a <code>List</code>, then stream it</li>
+<li>Use <code>sorted</code> with reverse index, or push to a <code>Deque</code> and pop, or use <code>Collections.reverse</code></li>
+</ul>
+<p><strong>Stream Solution (Java 8):</strong></p>
+<pre><code class="language-java">import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class ReverseWords {
+    public static String reverseWords(String sentence) {
+        String[] words = sentence.trim().split(&quot;\\s+&quot;);     // split on any whitespace
+        List&lt;String&gt; list = Arrays.asList(words);
+        Collections.reverse(list);                          // in-place reverse
+        return String.join(&quot; &quot;, list);
+    }
+
+    // ── Pure Stream variant using IntStream index trick ──────────
+    public static String reverseWordsStream(String sentence) {
+        String[] words = sentence.trim().split(&quot;\\s+&quot;);
+        return java.util.stream.IntStream
+            .rangeClosed(1, words.length)
+            .mapToObj(i -&gt; words[words.length - i])         // pick from end
+            .collect(Collectors.joining(&quot; &quot;));
+    }
+
+    public static void main(String[] args) {
+        System.out.println(reverseWords(&quot;Hello World Java&quot;));          // Java World Hello
+        System.out.println(reverseWordsStream(&quot;I love coding&quot;));       // coding love I
+        System.out.println(reverseWords(&quot;  spaces  around  &quot;));        // around spaces
+    }
+}
+</code></pre>
+<p><strong>Key Interview Points:</strong></p>
+<ul>
+<li><code>trim()</code> + <code>split(&quot;\\s+&quot;)</code> handles multiple spaces between words.</li>
+<li>Follow-up: &quot;Reverse characters within each word too&quot; — use the reverse-string method on each word via <code>stream().map()</code>.</li>
+</ul>
+<hr>
+<h3>Q30. Convert List to Uppercase</h3>
+<p><strong>Difficulty:</strong> Easy | <strong>Frequency:</strong> ⭐⭐⭐<br><strong>Category:</strong> Stream API</p>
+<p><strong>Concept:</strong><br>Transform every string in a list to uppercase. This is the simplest <code>map()</code> example — ideal for demonstrating method references with <code>String::toUpperCase</code>.</p>
+<p><strong>Stream Solution (Java 8):</strong></p>
+<pre><code class="language-java">import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class UppercaseList {
+    public static void main(String[] args) {
+        List&lt;String&gt; names = Arrays.asList(&quot;alice&quot;, &quot;bob&quot;, &quot;carol&quot;, &quot;dave&quot;);
+
+        // ── map() with method reference ───────────────────────────
+        List&lt;String&gt; upper = names.stream()
+            .map(String::toUpperCase)                   // method reference
+            .collect(Collectors.toList());
+
+        System.out.println(upper);  // [ALICE, BOB, CAROL, DAVE]
+
+        // ── Chain with filter: only names longer than 3 chars ────
+        names.stream()
+            .filter(n -&gt; n.length() &gt; 3)                // alice, carol, dave
+            .map(String::toUpperCase)
+            .forEach(System.out::println);              // ALICE CAROL DAVE
+    }
+}
+</code></pre>
+<p><strong>Key Interview Points:</strong></p>
+<ul>
+<li><code>String::toUpperCase</code> is a method reference equivalent to <code>s -&gt; s.toUpperCase()</code>.</li>
+<li>Know all four types: static (<code>Integer::parseInt</code>), instance (<code>String::toUpperCase</code>), arbitrary-instance (<code>s -&gt; s.toUpperCase()</code>), constructor (<code>ArrayList::new</code>).</li>
+</ul>
+<hr>
+<h3>Q31. Count Words in a String</h3>
+<p><strong>Difficulty:</strong> Easy | <strong>Frequency:</strong> ⭐⭐⭐<br><strong>Category:</strong> String Manipulation</p>
+<p><strong>Concept:</strong><br>Count distinct words (or total words) in a sentence. Stream makes distinct word counting trivial with <code>distinct().count()</code>.</p>
+<p><strong>Stream Solution (Java 8):</strong></p>
+<pre><code class="language-java">import java.util.Arrays;
+
+public class WordCount {
+    public static void main(String[] args) {
+        String sentence = &quot;java is great and java is fun and easy&quot;;
+
+        // ── Total word count ──────────────────────────────────────
+        long total = Arrays.stream(sentence.split(&quot;\\s+&quot;))
+            .count();
+        System.out.println(&quot;Total words: &quot; + total);       // 9
+
+        // ── Distinct word count ───────────────────────────────────
+        long distinct = Arrays.stream(sentence.split(&quot;\\s+&quot;))
+            .distinct()
+            .count();
+        System.out.println(&quot;Distinct words: &quot; + distinct); // 6
+
+        // ── Longest word ──────────────────────────────────────────
+        Arrays.stream(sentence.split(&quot;\\s+&quot;))
+            .max(java.util.Comparator.comparingInt(String::length))
+            .ifPresent(w -&gt; System.out.println(&quot;Longest: &quot; + w)); // great or easy
+    }
+}
+</code></pre>
+<p><strong>Key Interview Points:</strong></p>
+<ul>
+<li><code>split(&quot;\\s+&quot;)</code> splits on one or more whitespace characters — handles tabs and multiple spaces.</li>
+<li><code>count()</code> is a terminal operation that returns <code>long</code>, not <code>int</code>.</li>
+</ul>
+<hr>
+<h3>Q32. Armstrong Number Check</h3>
+<p><strong>Difficulty:</strong> Easy | <strong>Frequency:</strong> ⭐⭐⭐<br><strong>Category:</strong> Mathematical Logic</p>
+<p><strong>Concept:</strong><br>An Armstrong number (narcissistic number) equals the sum of its own digits each raised to the power of the number of digits. E.g., 153 = 1³ + 5³ + 3³ = 153. Stream makes the digit power-sum computation elegant.</p>
+<p><strong>Stream Solution (Java 8):</strong></p>
+<pre><code class="language-java">public class ArmstrongNumber {
+    public static boolean isArmstrong(int n) {
+        String digits = String.valueOf(n);
+        int power = digits.length();             // number of digits
+
+        int sumOfPowers = digits.chars()
+            .map(c -&gt; c - &#39;0&#39;)                   // char → digit
+            .map(d -&gt; (int) Math.pow(d, power))  // raise each digit to power
+            .sum();
+
+        return sumOfPowers == n;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(isArmstrong(153));    // true  (1³+5³+3³=153)
+        System.out.println(isArmstrong(370));    // true  (3³+7³+0³=370)
+        System.out.println(isArmstrong(9474));   // true  (9⁴+4⁴+7⁴+4⁴=9474)
+        System.out.println(isArmstrong(100));    // false
+
+        // ── Bonus: find all 3-digit Armstrong numbers ─────────────
+        System.out.println(&quot;All 3-digit Armstrong numbers:&quot;);
+        java.util.stream.IntStream.rangeClosed(100, 999)
+            .filter(ArmstrongNumber::isArmstrong)
+            .forEach(System.out::println);   // 153, 370, 371, 407
+    }
+}
+</code></pre>
+<p><strong>Key Interview Points:</strong></p>
+<ul>
+<li><code>Math.pow(d, power)</code> returns <code>double</code> — cast back to <code>int</code> carefully.</li>
+<li>Finding all Armstrong numbers in a range with <code>IntStream.rangeClosed().filter()</code> is a great stream showcase.</li>
+</ul>
+<hr>
+<h3>Q33. Collectors.joining — Build Sentences</h3>
+<p><strong>Difficulty:</strong> Easy | <strong>Frequency:</strong> ⭐⭐⭐⭐<br><strong>Category:</strong> Stream API</p>
+<p><strong>Concept:</strong><br><code>Collectors.joining</code> concatenates stream elements into a single string with optional delimiter, prefix, and suffix. Extremely useful for building CSV rows, SQL <code>IN</code> clauses, or formatted output.</p>
+<p><strong>Stream Solution (Java 8):</strong></p>
+<pre><code class="language-java">import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class JoiningDemo {
+    public static void main(String[] args) {
+        List&lt;String&gt; fruits = Arrays.asList(&quot;Apple&quot;, &quot;Banana&quot;, &quot;Cherry&quot;, &quot;Date&quot;);
+
+        // ── Simple join ───────────────────────────────────────────
+        String simple = fruits.stream()
+            .collect(Collectors.joining());
+        System.out.println(simple);     // AppleBananaCherryDate
+
+        // ── Join with delimiter ───────────────────────────────────
+        String csv = fruits.stream()
+            .collect(Collectors.joining(&quot;, &quot;));
+        System.out.println(csv);        // Apple, Banana, Cherry, Date
+
+        // ── Join with delimiter, prefix, suffix ───────────────────
+        String formatted = fruits.stream()
+            .collect(Collectors.joining(&quot;, &quot;, &quot;[&quot;, &quot;]&quot;));
+        System.out.println(formatted);  // [Apple, Banana, Cherry, Date]
+
+        // ── Practical: build SQL IN clause ────────────────────────
+        List&lt;Integer&gt; ids = Arrays.asList(1, 2, 3, 4);
+        String sql = ids.stream()
+            .map(String::valueOf)
+            .collect(Collectors.joining(&quot;, &quot;, &quot;WHERE id IN (&quot;, &quot;)&quot;));
+        System.out.println(sql);        // WHERE id IN (1, 2, 3, 4)
+    }
+}
+</code></pre>
+<p><strong>Key Interview Points:</strong></p>
+<ul>
+<li>Three overloads: <code>joining()</code>, <code>joining(delimiter)</code>, <code>joining(delimiter, prefix, suffix)</code>.</li>
+<li>Equivalent to <code>String.join()</code> but composable inside a larger stream pipeline.</li>
+</ul>
+<hr>
+<h1>MEDIUM TIER — CONTINUED</h1>
+<hr>
+<h3>Q34. FlatMap — Flatten List of Lists</h3>
+<p><strong>Difficulty:</strong> Medium | <strong>Frequency:</strong> ⭐⭐⭐⭐⭐<br><strong>Category:</strong> Stream API</p>
+<p><strong>Concept:</strong><br><code>flatMap</code> transforms each element into a stream and then merges all those mini-streams into one flat stream. Essential for working with nested collections. One of the most-asked Java 8 Stream questions in mid-level interviews.</p>
+<p><strong>Approach:</strong></p>
+<ul>
+<li><code>stream().flatMap(Collection::stream)</code> flattens <code>List&lt;List&lt;T&gt;&gt;</code> into <code>Stream&lt;T&gt;</code></li>
+<li>Think: <code>map</code> gives <code>Stream&lt;Stream&lt;T&gt;&gt;</code>, <code>flatMap</code> gives <code>Stream&lt;T&gt;</code></li>
+<li>Also used to split strings: <code>flatMap(s -&gt; Arrays.stream(s.split(&quot; &quot;)))</code></li>
+</ul>
+<p><strong>Stream Solution (Java 8):</strong></p>
+<pre><code class="language-java">import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class FlatMapDemo {
+    public static void main(String[] args) {
+
+        // ── Flatten List&lt;List&lt;Integer&gt;&gt; ───────────────────────────
+        List&lt;List&lt;Integer&gt;&gt; nested = Arrays.asList(
+            Arrays.asList(1, 2, 3),
+            Arrays.asList(4, 5),
+            Arrays.asList(6, 7, 8, 9)
+        );
+
+        List&lt;Integer&gt; flat = nested.stream()
+            .flatMap(List::stream)                   // each inner list → stream
+            .collect(Collectors.toList());
+
+        System.out.println(flat);      // [1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+        // ── Flatten all words from list of sentences ──────────────
+        List&lt;String&gt; sentences = Arrays.asList(
+            &quot;Hello World&quot;,
+            &quot;Java Streams are powerful&quot;,
+            &quot;FlatMap rocks&quot;
+        );
+
+        List&lt;String&gt; words = sentences.stream()
+            .flatMap(s -&gt; Arrays.stream(s.split(&quot; &quot;)))  // split each sentence
+            .map(String::toLowerCase)
+            .distinct()
+            .sorted()
+            .collect(Collectors.toList());
+
+        System.out.println(words);
+        // [are, flatmap, hello, java, powerful, rocks, streams, world]
+
+        // ── Unique characters across all strings ──────────────────
+        long uniqueChars = sentences.stream()
+            .flatMapToInt(String::chars)              // each string → IntStream of chars
+            .distinct()
+            .count();
+        System.out.println(&quot;Unique chars: &quot; + uniqueChars);
+    }
+}
+</code></pre>
+<p><strong>Key Interview Points:</strong></p>
+<ul>
+<li><code>flatMap</code> vs <code>map</code>: <code>map</code> = one element → one element; <code>flatMap</code> = one element → zero or more elements.</li>
+<li><code>flatMapToInt</code>, <code>flatMapToLong</code>, <code>flatMapToDouble</code> exist for primitive streams.</li>
+</ul>
+<hr>
+<h3>Q35. Collectors.partitioningBy (Advanced)</h3>
+<p><strong>Difficulty:</strong> Medium | <strong>Frequency:</strong> ⭐⭐⭐⭐<br><strong>Category:</strong> Stream API</p>
+<p><strong>Concept:</strong><br>Use <code>partitioningBy</code> with a downstream collector to not just split into two groups but also perform aggregation within each group. E.g., partition employees into &quot;above average salary&quot; and &quot;below average&quot; groups, then count each.</p>
+<p><strong>Stream Solution (Java 8):</strong></p>
+<pre><code class="language-java">import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+public class PartitioningAdvanced {
+    public static void main(String[] args) {
+        // Using Employee from Q18
+        List&lt;Employee&gt; employees = Arrays.asList(
+            new Employee(&quot;Alice&quot;, 75000, &quot;IT&quot;),
+            new Employee(&quot;Bob&quot;,   45000, &quot;HR&quot;),
+            new Employee(&quot;Carol&quot;, 90000, &quot;Finance&quot;),
+            new Employee(&quot;Dave&quot;,  55000, &quot;IT&quot;),
+            new Employee(&quot;Eve&quot;,   40000, &quot;HR&quot;)
+        );
+
+        // ── Partition: salary &gt;= 60000 vs salary &lt; 60000 ──────────
+        Map&lt;Boolean, List&lt;Employee&gt;&gt; partitioned = employees.stream()
+            .collect(Collectors.partitioningBy(e -&gt; e.getSalary() &gt;= 60000));
+
+        System.out.println(&quot;High earners:&quot;);
+        partitioned.get(true).forEach(System.out::println);
+
+        System.out.println(&quot;\nLow earners:&quot;);
+        partitioned.get(false).forEach(System.out::println);
+
+        // ── Partition + count in each partition ───────────────────
+        Map&lt;Boolean, Long&gt; counts = employees.stream()
+            .collect(Collectors.partitioningBy(
+                e -&gt; e.getSalary() &gt;= 60000,
+                Collectors.counting()));
+        System.out.println(&quot;\nCounts → &quot; + counts);   // {false=2, true=3}
+
+        // ── Partition + average salary in each group ──────────────
+        Map&lt;Boolean, Double&gt; avgSalary = employees.stream()
+            .collect(Collectors.partitioningBy(
+                e -&gt; e.getSalary() &gt;= 60000,
+                Collectors.averagingInt(Employee::getSalary)));
+        System.out.println(&quot;Avg salary high: &quot; + avgSalary.get(true));
+        System.out.println(&quot;Avg salary low:  &quot; + avgSalary.get(false));
+    }
+}
+</code></pre>
+<p><strong>Key Interview Points:</strong></p>
+<ul>
+<li>The two-arg form <code>partitioningBy(predicate, downstream)</code> is what interviewers are looking for.</li>
+<li>Common downstream collectors: <code>counting()</code>, <code>averaging*()</code>, <code>joining()</code>, <code>toList()</code>, <code>summarizingInt()</code>.</li>
+</ul>
+<hr>
+<h3>Q36. Collectors.toMap</h3>
+<p><strong>Difficulty:</strong> Medium | <strong>Frequency:</strong> ⭐⭐⭐⭐<br><strong>Category:</strong> Stream API</p>
+<p><strong>Concept:</strong><br>Convert a list of objects into a <code>Map</code> using <code>Collectors.toMap</code>. The key is knowing how to handle key/value extractors and merge functions for duplicate keys.</p>
+<p><strong>Stream Solution (Java 8):</strong></p>
+<pre><code class="language-java">import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+public class ToMapDemo {
+    public static void main(String[] args) {
+
+        // ── List of Employee → Map&lt;name, salary&gt; ─────────────────
+        List&lt;Employee&gt; employees = Arrays.asList(
+            new Employee(&quot;Alice&quot;, 75000, &quot;IT&quot;),
+            new Employee(&quot;Bob&quot;,   45000, &quot;HR&quot;),
+            new Employee(&quot;Carol&quot;, 90000, &quot;Finance&quot;)
+        );
+
+        Map&lt;String, Integer&gt; nameSalary = employees.stream()
+            .collect(Collectors.toMap(
+                Employee::getName,      // key extractor
+                Employee::getSalary));  // value extractor
+
+        System.out.println(nameSalary);
+        // {Alice=75000, Bob=45000, Carol=90000}
+
+        // ── Map&lt;name, Employee&gt; (value = whole object) ────────────
+        Map&lt;String, Employee&gt; nameToEmp = employees.stream()
+            .collect(Collectors.toMap(
+                Employee::getName,
+                Function.identity()));  // value = the employee object itself
+
+        System.out.println(nameToEmp.get(&quot;Alice&quot;));
+
+        // ── Handle duplicate keys with merge function ─────────────
+        List&lt;String&gt; words = Arrays.asList(&quot;apple&quot;, &quot;ant&quot;, &quot;bear&quot;, &quot;banana&quot;, &quot;cat&quot;);
+        Map&lt;Character, String&gt; firstByLetter = words.stream()
+            .collect(Collectors.toMap(
+                w -&gt; w.charAt(0),           // key = first letter
+                Function.identity(),         // value = word
+                (existing, replacement) -&gt; existing  // on duplicate: keep first
+            ));
+        System.out.println(firstByLetter);
+        // {a=apple, b=bear, c=cat}
+    }
+}
+</code></pre>
+<p><strong>Key Interview Points:</strong></p>
+<ul>
+<li><code>toMap</code> throws <code>IllegalStateException</code> on duplicate keys without a merge function — always provide one for safety.</li>
+<li>Third argument (merge function) determines conflict resolution: keep first, keep last, concatenate, etc.</li>
+</ul>
+<hr>
+<h3>Q37. Optional — Null Safety</h3>
+<p><strong>Difficulty:</strong> Medium | <strong>Frequency:</strong> ⭐⭐⭐⭐⭐<br><strong>Category:</strong> Java Core</p>
+<p><strong>Concept:</strong><br><code>Optional&lt;T&gt;</code> is a container that may or may not hold a non-null value. It eliminates <code>NullPointerException</code> by making absence of a value explicit. Every Java 8 interview asks about <code>Optional</code>.</p>
+<p><strong>Approach:</strong></p>
+<ul>
+<li><code>Optional.of(value)</code> — value must not be null</li>
+<li><code>Optional.ofNullable(value)</code> — value may be null</li>
+<li><code>Optional.empty()</code> — explicitly empty</li>
+<li>Methods: <code>isPresent()</code>, <code>get()</code>, <code>orElse()</code>, <code>orElseGet()</code>, <code>orElseThrow()</code>, <code>map()</code>, <code>filter()</code>, <code>flatMap()</code></li>
+</ul>
+<p><strong>Stream Solution (Java 8):</strong></p>
+<pre><code class="language-java">import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
+public class OptionalDemo {
+    // Simulate a DB lookup that may return null
+    static String findUserById(int id) {
+        if (id == 1) return &quot;Alice&quot;;
+        if (id == 2) return &quot;Bob&quot;;
+        return null;   // not found
+    }
+
+    public static void main(String[] args) {
+
+        // ── Basic usage ───────────────────────────────────────────
+        Optional&lt;String&gt; user = Optional.ofNullable(findUserById(1));
+        System.out.println(user.isPresent());              // true
+        System.out.println(user.get());                    // Alice
+
+        Optional&lt;String&gt; missing = Optional.ofNullable(findUserById(99));
+        System.out.println(missing.orElse(&quot;Guest&quot;));       // Guest
+        System.out.println(missing.orElseGet(() -&gt; &quot;Anonymous&quot;)); // lazy evaluation
+
+        // ── Chain with map() ──────────────────────────────────────
+        Optional.ofNullable(findUserById(2))
+            .map(String::toUpperCase)                      // BOB
+            .filter(n -&gt; n.length() &gt; 2)                   // BOB passes
+            .ifPresent(System.out::println);               // prints BOB
+
+        // ── In a Stream pipeline ──────────────────────────────────
+        List&lt;Integer&gt; ids = Arrays.asList(1, 99, 2, 100);
+        ids.stream()
+            .map(id -&gt; Optional.ofNullable(findUserById(id)))
+            .filter(Optional::isPresent)                   // skip empties
+            .map(Optional::get)
+            .forEach(System.out::println);                 // Alice, Bob
+
+        // ── orElseThrow ───────────────────────────────────────────
+        try {
+            missing.orElseThrow(() -&gt; new RuntimeException(&quot;User not found&quot;));
+        } catch (RuntimeException e) {
+            System.out.println(e.getMessage());            // User not found
+        }
+    }
+}
+</code></pre>
+<p><strong>Key Interview Points:</strong></p>
+<ul>
+<li><code>orElse(default)</code> always evaluates <code>default</code>; <code>orElseGet(supplier)</code> is lazy — use <code>orElseGet</code> when default is expensive.</li>
+<li>Never call <code>optional.get()</code> without checking <code>isPresent()</code> — that defeats the purpose.</li>
+</ul>
+<hr>
+<h3>Q38. String Compression</h3>
+<p><strong>Difficulty:</strong> Medium | <strong>Frequency:</strong> ⭐⭐⭐⭐<br><strong>Category:</strong> String Manipulation</p>
+<p><strong>Concept:</strong><br>Compress a string so that consecutive repeated characters are replaced with the character followed by its count: &quot;aabbbcccc&quot; → &quot;a2b3c4&quot;. If no compression is achieved, return the original. This tests character grouping logic.</p>
+<p><strong>Approach:</strong></p>
+<ul>
+<li>Track current character and its consecutive count using a loop</li>
+<li>When character changes, append <code>char + count</code> to the result</li>
+<li>Stream approach: <code>groupingBy</code> with a run-length key doesn&#39;t preserve consecutive groups — use traditional loop, show stream for verification</li>
+</ul>
+<p><strong>Solution (Java 8):</strong></p>
+<pre><code class="language-java">public class StringCompression {
+    // ── Traditional O(n) ─────────────────────────────────────────
+    public static String compress(String s) {
+        if (s == null || s.isEmpty()) return s;
+        StringBuilder sb = new StringBuilder();
+        int count = 1;
+
+        for (int i = 1; i &lt;= s.length(); i++) {
+            if (i &lt; s.length() &amp;&amp; s.charAt(i) == s.charAt(i - 1)) {
+                count++;                               // same char, increment count
+            } else {
+                sb.append(s.charAt(i - 1));            // append the char
+                if (count &gt; 1) sb.append(count);       // append count if &gt; 1
+                count = 1;                             // reset counter
+            }
+        }
+
+        // Return compressed only if shorter
+        return sb.length() &lt; s.length() ? sb.toString() : s;
+    }
+
+    // ── Stream: verify that compressed decompresses correctly ────
+    public static String decompress(String compressed) {
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i &lt; compressed.length(); i++) {
+            char c = compressed.charAt(i);
+            if (Character.isLetter(c)) {
+                if (i + 1 &lt; compressed.length() &amp;&amp; Character.isDigit(compressed.charAt(i + 1))) {
+                    int count = Character.getNumericValue(compressed.charAt(i + 1));
+                    java.util.stream.IntStream.range(0, count)
+                        .forEach(x -&gt; result.append(c));
+                    i++;
+                } else {
+                    result.append(c);
+                }
+            }
+        }
+        return result.toString();
+    }
+
+    public static void main(String[] args) {
+        System.out.println(compress(&quot;aabbbcccc&quot;));    // a2b3c4
+        System.out.println(compress(&quot;abcd&quot;));         // abcd (no compression)
+        System.out.println(compress(&quot;aaabbaaa&quot;));     // a3b2a3
+        System.out.println(decompress(&quot;a2b3c4&quot;));     // aabbbcccc
+    }
+}
+</code></pre>
+<p><strong>Key Interview Points:</strong></p>
+<ul>
+<li>Off-by-one errors are common — loop to <code>i &lt;= s.length()</code> to catch the last group.</li>
+<li><code>IntStream.range(0, count).forEach(x -&gt; result.append(c))</code> is a good stream showcase for the repeat operation.</li>
+</ul>
+<hr>
+<h3>Q39. Two Sum Problem</h3>
+<p><strong>Difficulty:</strong> Medium | <strong>Frequency:</strong> ⭐⭐⭐⭐⭐<br><strong>Category:</strong> Arrays</p>
+<p><strong>Concept:</strong><br>Given an array and a target, find two indices whose values add up to the target. The brute-force is O(n²); the HashMap approach is O(n). One of the most universally asked coding interview questions.</p>
+<p><strong>Approach:</strong></p>
+<ul>
+<li>One-pass HashMap: store each number&#39;s index as you iterate</li>
+<li>For each number <code>n</code>, check if <code>target - n</code> is already in the map</li>
+<li>If yes, return the pair; if no, add <code>n</code> to the map</li>
+</ul>
+<p><strong>Solution (Java 8):</strong></p>
+<pre><code class="language-java">import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.IntStream;
+
+public class TwoSum {
+    // ── O(n) HashMap approach ────────────────────────────────────
+    public static int[] twoSum(int[] nums, int target) {
+        Map&lt;Integer, Integer&gt; seen = new HashMap&lt;&gt;();   // value → index
+        for (int i = 0; i &lt; nums.length; i++) {
+            int complement = target - nums[i];          // what we need
+            if (seen.containsKey(complement)) {
+                return new int[]{seen.get(complement), i};  // found!
+            }
+            seen.put(nums[i], i);                       // store current
+        }
+        return new int[]{};                             // no solution
+    }
+
+    // ── Brute force O(n²) for comparison ──────────────────────────
+    public static int[] twoSumBrute(int[] nums, int target) {
+        return IntStream.range(0, nums.length)
+            .boxed()
+            .flatMap(i -&gt; IntStream.range(i + 1, nums.length)
+                .filter(j -&gt; nums[i] + nums[j] == target)
+                .mapToObj(j -&gt; new int[]{i, j}))
+            .findFirst()
+            .orElse(new int[]{});
+    }
+
+    public static void main(String[] args) {
+        System.out.println(Arrays.toString(twoSum(new int[]{2, 7, 11, 15}, 9)));  // [0, 1]
+        System.out.println(Arrays.toString(twoSum(new int[]{3, 2, 4}, 6)));       // [1, 2]
+        System.out.println(Arrays.toString(twoSumBrute(new int[]{1, 5, 3, 7}, 8))); // [1, 3]
+    }
+}
+</code></pre>
+<p><strong>Key Interview Points:</strong></p>
+<ul>
+<li>HashMap solution is O(n) time and O(n) space — state both.</li>
+<li>This pattern (store complements while iterating) generalizes to Three Sum, Four Sum, etc.</li>
+</ul>
+<hr>
+<h3>Q40. Comparable vs Comparator</h3>
+<p><strong>Difficulty:</strong> Medium | <strong>Frequency:</strong> ⭐⭐⭐⭐<br><strong>Category:</strong> Java Core</p>
+<p><strong>Concept:</strong><br><code>Comparable</code> defines the &quot;natural ordering&quot; of an object (one fixed sort order implemented inside the class). <code>Comparator</code> defines external, ad-hoc ordering (multiple sort strategies outside the class). Both are essential Java knowledge.</p>
+<p><strong>Solution (Java 8):</strong></p>
+<pre><code class="language-java">import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+
+// ── Comparable: natural order = salary ascending ──────────────────
+class Product implements Comparable&lt;Product&gt; {
+    String name;
+    double price;
+    int stock;
+
+    Product(String name, double price, int stock) {
+        this.name = name; this.price = price; this.stock = stock;
+    }
+
+    @Override
+    public int compareTo(Product other) {
+        return Double.compare(this.price, other.price); // natural = price asc
+    }
+
+    @Override
+    public String toString() { return name + &quot; ₹&quot; + price + &quot; (stock:&quot; + stock + &quot;)&quot;; }
+}
+
+public class ComparableVsComparator {
+    public static void main(String[] args) {
+        List&lt;Product&gt; products = Arrays.asList(
+            new Product(&quot;Paracetamol&quot;, 25.0, 200),
+            new Product(&quot;Aspirin&quot;,     10.0, 500),
+            new Product(&quot;Ibuprofen&quot;,   45.0, 100),
+            new Product(&quot;Amoxicillin&quot;, 30.0, 150)
+        );
+
+        // ── Comparable: sort uses compareTo() ─────────────────────
+        products.stream()
+            .sorted()                               // uses Comparable.compareTo
+            .forEach(System.out::println);
+        // Aspirin, Paracetamol, Amoxicillin, Ibuprofen
+
+        System.out.println();
+
+        // ── Comparator: external, multiple strategies ─────────────
+        Comparator&lt;Product&gt; byName = Comparator.comparing(p -&gt; p.name);
+        Comparator&lt;Product&gt; byStock = Comparator.comparingInt(p -&gt; p.stock);
+        Comparator&lt;Product&gt; byPriceDesc = Comparator.comparingDouble((Product p) -&gt; p.price)
+                                                     .reversed();
+
+        // Sort by name
+        products.stream().sorted(byName).forEach(System.out::println);
+
+        System.out.println();
+        // Sort by price descending then by name
+        products.stream()
+            .sorted(byPriceDesc.thenComparing(byName))
+            .forEach(System.out::println);
+    }
+}
+</code></pre>
+<p><strong>Key Interview Points:</strong></p>
+<ul>
+<li><code>Comparable</code> → <code>compareTo()</code> inside the class. <code>Comparator</code> → <code>compare()</code> outside.</li>
+<li>Use <code>Comparable</code> for one canonical sort; use <code>Comparator</code> for situational/multiple sorts.</li>
+<li><code>Integer.compare(a,b)</code> / <code>Double.compare(a,b)</code> avoid the subtraction pitfall in <code>compareTo</code>.</li>
+</ul>
+<hr>
+<h3>Q41. Sum &amp; Average of Employee Salaries</h3>
+<p><strong>Difficulty:</strong> Medium | <strong>Frequency:</strong> ⭐⭐⭐⭐<br><strong>Category:</strong> Stream API</p>
+<p><strong>Concept:</strong><br>Aggregate numeric fields from a collection of objects using <code>mapToInt().sum()</code>, <code>.average()</code>, <code>.summaryStatistics()</code>. This is a direct test of numeric stream methods available via <code>mapToInt/mapToDouble/mapToLong</code>.</p>
+<p><strong>Stream Solution (Java 8):</strong></p>
+<pre><code class="language-java">import java.util.Arrays;
+import java.util.IntSummaryStatistics;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+public class SalaryAggregation {
+    public static void main(String[] args) {
+        List&lt;Employee&gt; employees = Arrays.asList(
+            new Employee(&quot;Alice&quot;, 75000, &quot;IT&quot;),
+            new Employee(&quot;Bob&quot;,   45000, &quot;HR&quot;),
+            new Employee(&quot;Carol&quot;, 90000, &quot;Finance&quot;),
+            new Employee(&quot;Dave&quot;,  55000, &quot;IT&quot;),
+            new Employee(&quot;Eve&quot;,   40000, &quot;HR&quot;)
+        );
+
+        // ── Total salary ──────────────────────────────────────────
+        int total = employees.stream()
+            .mapToInt(Employee::getSalary)
+            .sum();
+        System.out.println(&quot;Total:   ₹&quot; + total);      // 305000
+
+        // ── Average salary ────────────────────────────────────────
+        double avg = employees.stream()
+            .mapToInt(Employee::getSalary)
+            .average()
+            .orElse(0.0);
+        System.out.println(&quot;Average: ₹&quot; + avg);         // 61000.0
+
+        // ── summaryStatistics: all aggregates in one pass ────────
+        IntSummaryStatistics stats = employees.stream()
+            .mapToInt(Employee::getSalary)
+            .summaryStatistics();
+        System.out.println(&quot;Count: &quot; + stats.getCount());   // 5
+        System.out.println(&quot;Max:   &quot; + stats.getMax());     // 90000
+        System.out.println(&quot;Min:   &quot; + stats.getMin());     // 40000
+        System.out.println(&quot;Sum:   &quot; + stats.getSum());     // 305000
+        System.out.println(&quot;Avg:   &quot; + stats.getAverage()); // 61000.0
+
+        // ── Average salary per department ─────────────────────────
+        Map&lt;String, Double&gt; avgByDept = employees.stream()
+            .collect(Collectors.groupingBy(
+                Employee::getDepartment,
+                Collectors.averagingInt(Employee::getSalary)));
+        System.out.println(&quot;Avg by dept: &quot; + avgByDept);
+    }
+}
+</code></pre>
+<p><strong>Key Interview Points:</strong></p>
+<ul>
+<li><code>summaryStatistics()</code> is a single-pass operation — more efficient than calling sum, average, max, min separately.</li>
+<li><code>average()</code> returns <code>OptionalDouble</code> because an empty stream has no average — always handle it.</li>
+</ul>
+<hr>
+<h3>Q42. Count Elements by Condition</h3>
+<p><strong>Difficulty:</strong> Medium | <strong>Frequency:</strong> ⭐⭐⭐<br><strong>Category:</strong> Stream API</p>
+<p><strong>Concept:</strong><br>Count, check existence, or check universality of elements matching a condition using <code>count()</code>, <code>anyMatch()</code>, <code>allMatch()</code>, <code>noneMatch()</code>. These short-circuit terminal operations are fundamental stream knowledge.</p>
+<p><strong>Stream Solution (Java 8):</strong></p>
+<pre><code class="language-java">import java.util.Arrays;
+import java.util.List;
+
+public class CountAndMatch {
+    public static void main(String[] args) {
+        List&lt;Integer&gt; numbers = Arrays.asList(2, 4, 6, 7, 8, 10, 11, 12);
+
+        // ── count(): how many match a condition ───────────────────
+        long evenCount = numbers.stream()
+            .filter(n -&gt; n % 2 == 0)
+            .count();
+        System.out.println(&quot;Even numbers: &quot; + evenCount);     // 6
+
+        // ── anyMatch(): is there at least one match? ──────────────
+        boolean hasOdd = numbers.stream()
+            .anyMatch(n -&gt; n % 2 != 0);                        // short-circuits at 7
+        System.out.println(&quot;Has odd: &quot; + hasOdd);             // true
+
+        // ── allMatch(): do ALL elements match? ────────────────────
+        boolean allPositive = numbers.stream()
+            .allMatch(n -&gt; n &gt; 0);
+        System.out.println(&quot;All positive: &quot; + allPositive);   // true
+
+        // ── noneMatch(): does NONE of them match? ─────────────────
+        boolean noneNegative = numbers.stream()
+            .noneMatch(n -&gt; n &lt; 0);
+        System.out.println(&quot;None negative: &quot; + noneNegative); // true
+
+        // ── Practical: validate a list of email addresses ─────────
+        List&lt;String&gt; emails = Arrays.asList(&quot;a@b.com&quot;, &quot;user@test.org&quot;, &quot;bad-email&quot;);
+        boolean allValid = emails.stream()
+            .allMatch(e -&gt; e.contains(&quot;@&quot;) &amp;&amp; e.contains(&quot;.&quot;));
+        System.out.println(&quot;All emails valid: &quot; + allValid);  // false
+    }
+}
+</code></pre>
+<p><strong>Key Interview Points:</strong></p>
+<ul>
+<li><code>anyMatch</code>, <code>allMatch</code>, <code>noneMatch</code> short-circuit — they stop processing as soon as the answer is determined.</li>
+<li><code>count()</code> does NOT short-circuit — it must process all elements.</li>
+</ul>
+<hr>
+<h3>Q43. Merge Two Sorted Arrays</h3>
+<p><strong>Difficulty:</strong> Medium | <strong>Frequency:</strong> ⭐⭐⭐⭐<br><strong>Category:</strong> Arrays</p>
+<p><strong>Concept:</strong><br>Merge two sorted arrays into one sorted array. The classic two-pointer approach is O(m+n) without extra sorting cost. <code>Stream.concat</code> provides a clean stream alternative but requires a final sort.</p>
+<p><strong>Solution (Java 8):</strong></p>
+<pre><code class="language-java">import java.util.Arrays;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
+
+public class MergeSortedArrays {
+    // ── Stream approach: concat + sort ───────────────────────────
+    public static int[] mergeStream(int[] a, int[] b) {
+        return IntStream.concat(                         // concat two IntStreams
+            Arrays.stream(a),
+            Arrays.stream(b))
+            .sorted()                                    // sort the result
+            .toArray();
+    }
+
+    // ── Traditional O(m+n) two-pointer (optimal) ─────────────────
+    public static int[] mergeOptimal(int[] a, int[] b) {
+        int[] result = new int[a.length + b.length];
+        int i = 0, j = 0, k = 0;
+        while (i &lt; a.length &amp;&amp; j &lt; b.length) {
+            if (a[i] &lt;= b[j]) result[k++] = a[i++];     // pick smaller
+            else               result[k++] = b[j++];
+        }
+        while (i &lt; a.length) result[k++] = a[i++];      // remaining from a
+        while (j &lt; b.length) result[k++] = b[j++];      // remaining from b
+        return result;
+    }
+
+    public static void main(String[] args) {
+        int[] a = {1, 3, 5, 7};
+        int[] b = {2, 4, 6, 8};
+
+        System.out.println(Arrays.toString(mergeStream(a, b)));   // [1,2,3,4,5,6,7,8]
+        System.out.println(Arrays.toString(mergeOptimal(a, b)));  // [1,2,3,4,5,6,7,8]
+
+        int[] x = {1, 4, 7, 9};
+        int[] y = {2, 3, 5};
+        System.out.println(Arrays.toString(mergeOptimal(x, y)));  // [1,2,3,4,5,7,9]
+    }
+}
+</code></pre>
+<p><strong>Key Interview Points:</strong></p>
+<ul>
+<li>Stream approach is O((m+n) log(m+n)) due to sort; two-pointer is O(m+n) — explain the trade-off.</li>
+<li><code>IntStream.concat</code> vs <code>Stream.concat</code> — use <code>IntStream.concat</code> for primitive arrays.</li>
+</ul>
+<hr>
+<h1>HARD TIER — CONTINUED</h1>
+<hr>
+<h3>Q44. CompletableFuture — Async Tasks</h3>
+<p><strong>Difficulty:</strong> Hard | <strong>Frequency:</strong> ⭐⭐⭐⭐<br><strong>Category:</strong> Concurrent Programming</p>
+<p><strong>Concept:</strong><br><code>CompletableFuture</code> (Java 8) enables asynchronous, non-blocking computation with composable callbacks. It replaces the old <code>Future</code> + <code>ExecutorService.submit</code> pattern. Essential for senior-level interviews.</p>
+<p><strong>Approach:</strong></p>
+<ul>
+<li><code>supplyAsync(supplier)</code> — runs a task asynchronously, returns a result</li>
+<li><code>thenApply(fn)</code> — transforms the result (like <code>map</code>)</li>
+<li><code>thenAccept(consumer)</code> — consumes the result (like <code>forEach</code>)</li>
+<li><code>thenCombine(other, fn)</code> — combines two futures</li>
+<li><code>exceptionally(fn)</code> — fallback on exception</li>
+</ul>
+<p><strong>Solution (Java 8):</strong></p>
+<pre><code class="language-java">import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
+
+public class CompletableFutureDemo {
+    // Simulate slow DB call
+    static String fetchUser(int id) throws Exception {
+        Thread.sleep(500);
+        return &quot;User_&quot; + id;
+    }
+
+    // Simulate slow pricing service
+    static double fetchPrice(String item) throws Exception {
+        Thread.sleep(300);
+        return item.length() * 10.5;
+    }
+
+    public static void main(String[] args) throws Exception {
+
+        // ── Basic async task ──────────────────────────────────────
+        CompletableFuture&lt;String&gt; future = CompletableFuture
+            .supplyAsync(() -&gt; {                         // runs on ForkJoinPool
+                try { return fetchUser(1); }
+                catch (Exception e) { throw new RuntimeException(e); }
+            })
+            .thenApply(String::toUpperCase)              // transform result
+            .thenApply(s -&gt; &quot;Hello, &quot; + s);              // chain another transform
+
+        System.out.println(future.get());                // Hello, USER_1
+
+        // ── Run two tasks in parallel &amp; combine ───────────────────
+        CompletableFuture&lt;String&gt; userFuture = CompletableFuture
+            .supplyAsync(() -&gt; &quot;Alice&quot;);
+
+        CompletableFuture&lt;String&gt; greetFuture = CompletableFuture
+            .supplyAsync(() -&gt; &quot;Good Morning&quot;);
+
+        CompletableFuture&lt;String&gt; combined = userFuture
+            .thenCombine(greetFuture,                    // combine two futures
+                (user, greet) -&gt; greet + &quot;, &quot; + user + &quot;!&quot;);
+
+        System.out.println(combined.get());              // Good Morning, Alice!
+
+        // ── Exception handling ────────────────────────────────────
+        CompletableFuture&lt;String&gt; safe = CompletableFuture
+            .supplyAsync(() -&gt; { throw new RuntimeException(&quot;DB error&quot;); })
+            .exceptionally(ex -&gt; &quot;Fallback: &quot; + ex.getMessage());
+
+        System.out.println(safe.get());                  // Fallback: java.lang.RuntimeException: DB error
+
+        // ── Run all N tasks, wait for all ─────────────────────────
+        CompletableFuture&lt;Void&gt; all = CompletableFuture.allOf(
+            CompletableFuture.runAsync(() -&gt; System.out.println(&quot;Task 1&quot;)),
+            CompletableFuture.runAsync(() -&gt; System.out.println(&quot;Task 2&quot;)),
+            CompletableFuture.runAsync(() -&gt; System.out.println(&quot;Task 3&quot;))
+        );
+        all.get();                                       // waits for all 3
+    }
+}
+</code></pre>
+<p><strong>Key Interview Points:</strong></p>
+<ul>
+<li><code>thenApply</code> is synchronous continuation; <code>thenApplyAsync</code> uses a separate thread.</li>
+<li><code>allOf</code> waits for ALL futures; <code>anyOf</code> returns when the FIRST one completes.</li>
+</ul>
+<hr>
+<h3>Q45. ExecutorService / Thread Pool</h3>
+<p><strong>Difficulty:</strong> Hard | <strong>Frequency:</strong> ⭐⭐⭐⭐<br><strong>Category:</strong> Concurrent Programming</p>
+<p><strong>Concept:</strong><br><code>ExecutorService</code> manages a pool of threads to execute tasks without the overhead of creating a new thread per task. Interviewers expect knowledge of pool types, <code>submit</code> vs <code>execute</code>, and proper shutdown.</p>
+<p><strong>Solution (Java 8):</strong></p>
+<pre><code class="language-java">import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+public class ExecutorServiceDemo {
+    public static void main(String[] args) throws Exception {
+
+        // ── Fixed thread pool: at most 3 threads active at once ───
+        ExecutorService pool = Executors.newFixedThreadPool(3);
+
+        // Submit 5 tasks using Stream
+        List&lt;Future&lt;String&gt;&gt; futures = IntStream.rangeClosed(1, 5)
+            .mapToObj(i -&gt; pool.submit(() -&gt; {           // Callable returns a value
+                Thread.sleep(200);
+                return &quot;Task &quot; + i + &quot; done by &quot; + Thread.currentThread().getName();
+            }))
+            .collect(Collectors.toList());
+
+        // Collect results
+        for (Future&lt;String&gt; f : futures) {
+            System.out.println(f.get());                 // blocks until result ready
+        }
+
+        // ── ALWAYS shutdown to prevent resource leak ───────────────
+        pool.shutdown();
+        pool.awaitTermination(5, TimeUnit.SECONDS);
+
+        // ── Cached thread pool: creates threads on demand ─────────
+        ExecutorService cached = Executors.newCachedThreadPool();
+        cached.execute(() -&gt; System.out.println(&quot;Fire and forget task&quot;));
+        cached.shutdown();
+
+        // ── ScheduledExecutorService: delayed / periodic tasks ────
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+        scheduler.scheduleAtFixedRate(
+            () -&gt; System.out.println(&quot;Heartbeat: &quot; + System.currentTimeMillis()),
+            0, 1, TimeUnit.SECONDS);              // initial delay=0, period=1s
+        Thread.sleep(3000);
+        scheduler.shutdown();
+    }
+}
+</code></pre>
+<p><strong>Key Interview Points:</strong></p>
+<ul>
+<li><code>execute(Runnable)</code> — fire and forget; <code>submit(Callable)</code> — returns a <code>Future</code> for the result.</li>
+<li>Never forget <code>shutdown()</code> + <code>awaitTermination()</code> — thread pools are not GC&#39;d automatically.</li>
+</ul>
+<hr>
+<h3>Q46. Producer-Consumer Using BlockingQueue</h3>
+<p><strong>Difficulty:</strong> Hard | <strong>Frequency:</strong> ⭐⭐⭐⭐<br><strong>Category:</strong> Concurrent Programming</p>
+<p><strong>Concept:</strong><br>The Producer-Consumer pattern decouples data production from consumption. <code>BlockingQueue</code> handles thread synchronization automatically: <code>put()</code> blocks when full, <code>take()</code> blocks when empty. Eliminates the need for manual <code>wait()/notify()</code>.</p>
+<p><strong>Solution (Java 8):</strong></p>
+<pre><code class="language-java">import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+
+public class ProducerConsumer {
+    static final int CAPACITY = 5;
+    static final String POISON_PILL = &quot;DONE&quot;; // signal to stop consumer
+
+    static class Producer implements Runnable {
+        private final BlockingQueue&lt;String&gt; queue;
+        Producer(BlockingQueue&lt;String&gt; q) { this.queue = q; }
+
+        @Override
+        public void run() {
+            try {
+                for (int i = 1; i &lt;= 10; i++) {
+                    String item = &quot;Medicine_&quot; + i;
+                    queue.put(item);                     // blocks if queue is full
+                    System.out.println(&quot;Produced: &quot; + item + &quot; | Queue size: &quot; + queue.size());
+                    Thread.sleep(100);
+                }
+                queue.put(POISON_PILL);                  // signal end of production
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+    }
+
+    static class Consumer implements Runnable {
+        private final BlockingQueue&lt;String&gt; queue;
+        Consumer(BlockingQueue&lt;String&gt; q) { this.queue = q; }
+
+        @Override
+        public void run() {
+            try {
+                while (true) {
+                    String item = queue.take();          // blocks if queue is empty
+                    if (POISON_PILL.equals(item)) break; // stop signal received
+                    System.out.println(&quot;Consumed: &quot; + item);
+                    Thread.sleep(200);                   // consumer is slower
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+    }
+
+    public static void main(String[] args) throws InterruptedException {
+        BlockingQueue&lt;String&gt; queue = new ArrayBlockingQueue&lt;&gt;(CAPACITY);
+
+        Thread producer = new Thread(new Producer(queue), &quot;Producer&quot;);
+        Thread consumer = new Thread(new Consumer(queue), &quot;Consumer&quot;);
+
+        producer.start();
+        consumer.start();
+
+        producer.join();
+        consumer.join();
+        System.out.println(&quot;All done.&quot;);
+    }
+}
+</code></pre>
+<p><strong>Key Interview Points:</strong></p>
+<ul>
+<li><code>ArrayBlockingQueue</code> is bounded; <code>LinkedBlockingQueue</code> can be unbounded (risky — can OOM).</li>
+<li>The &quot;poison pill&quot; (sentinel value) is the cleanest way to signal end-of-stream to consumers.</li>
+</ul>
+<hr>
+<h3>Q47. Top-N Frequent Words</h3>
+<p><strong>Difficulty:</strong> Hard | <strong>Frequency:</strong> ⭐⭐⭐⭐<br><strong>Category:</strong> Stream API</p>
+<p><strong>Concept:</strong><br>Find the top N most frequently occurring words in a text. Combines <code>groupingBy + counting</code>, <code>sorted by value descending</code>, and <code>limit(N)</code>. A practical test of stream chaining depth.</p>
+<p><strong>Stream Solution (Java 8):</strong></p>
+<pre><code class="language-java">import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+public class TopNWords {
+    public static Map&lt;String, Long&gt; topN(String text, int n) {
+        return Arrays.stream(text.toLowerCase().split(&quot;\\W+&quot;))  // split on non-word chars
+            .filter(w -&gt; !w.isEmpty())                           // remove empty tokens
+            .collect(Collectors.groupingBy(
+                Function.identity(),                             // group by word
+                Collectors.counting()))                          // count each word
+            .entrySet().stream()
+            .sorted(Map.Entry.&lt;String, Long&gt;comparingByValue().reversed()) // most frequent first
+            .limit(n)                                            // take top N
+            .collect(Collectors.toMap(
+                Map.Entry::getKey,
+                Map.Entry::getValue,
+                (a, b) -&gt; a,
+                LinkedHashMap::new));                            // preserve rank order
+    }
+
+    public static void main(String[] args) {
+        String text = &quot;java is great java is fun java streams are great streams are powerful&quot;;
+
+        Map&lt;String, Long&gt; top3 = topN(text, 3);
+        System.out.println(&quot;Top 3 words: &quot; + top3);
+        // {java=3, streams=2, great=2}
+
+        // ── Bonus: top 5 from a paragraph ─────────────────────────
+        String para = &quot;the quick brown fox jumps over the lazy dog the fox the&quot;;
+        topN(para, 5).forEach((word, count) -&gt;
+            System.out.printf(&quot;  %-10s → %d%n&quot;, word, count));
+    }
+}
+</code></pre>
+<p><strong>Key Interview Points:</strong></p>
+<ul>
+<li>The <code>LinkedHashMap::new</code> in <code>toMap</code>&#39;s 4th argument preserves insertion (rank) order — without it, order is not guaranteed.</li>
+<li>The <code>\\W+</code> regex splits on any non-word character — handles commas, periods, and other punctuation automatically.</li>
+</ul>
+<hr>
+<h3>Q48. Valid Parentheses</h3>
+<p><strong>Difficulty:</strong> Hard | <strong>Frequency:</strong> ⭐⭐⭐⭐⭐<br><strong>Category:</strong> Stack / String</p>
+<p><strong>Concept:</strong><br>Check if a string of brackets <code>()</code>, <code>[]</code>, <code>{}</code> is valid — every opening bracket must be closed in the correct order. Classic stack problem. Streams help reduce the check but the core logic needs a stack.</p>
+<p><strong>Approach:</strong></p>
+<ul>
+<li>Push every opening bracket onto a stack</li>
+<li>When a closing bracket is encountered, pop and verify it matches</li>
+<li>At the end, the stack must be empty</li>
+</ul>
+<p><strong>Solution (Java 8):</strong></p>
+<pre><code class="language-java">import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.Map;
+
+public class ValidParentheses {
+    public static boolean isValid(String s) {
+        Deque&lt;Character&gt; stack = new ArrayDeque&lt;&gt;();
+
+        // Map each closing bracket to its matching opening bracket (Java 8)
+        Map&lt;Character, Character&gt; pairs = new HashMap&lt;&gt;();
+        pairs.put(&#39;)&#39;, &#39;(&#39;);
+        pairs.put(&#39;]&#39;, &#39;[&#39;);
+        pairs.put(&#39;}&#39;, &#39;{&#39;);
+
+        for (char c : s.toCharArray()) {
+            if (&quot;([{&quot;.indexOf(c) &gt;= 0) {
+                stack.push(c);                           // opening → push onto stack
+            } else if (pairs.containsKey(c)) {           // closing bracket
+                if (stack.isEmpty() || stack.pop() != pairs.get(c)) {
+                    return false;                        // mismatch or unmatched
+                }
+            }
+        }
+        return stack.isEmpty();                          // all brackets matched
+    }
+
+    // ── Stream version: validate character by character ──────────
+    // Note: Stream can&#39;t replace the stack logic (stateful scan needed)
+    // but we can stream over input for processing
+    public static void main(String[] args) {
+        System.out.println(isValid(&quot;()[]{}&quot;));     // true
+        System.out.println(isValid(&quot;([{}])&quot;));     // true
+        System.out.println(isValid(&quot;(]&quot;));         // false
+        System.out.println(isValid(&quot;{[}]&quot;));       // false
+        System.out.println(isValid(&quot;&quot;));           // true (empty is valid)
+
+        // Validate multiple expressions using Stream
+        java.util.stream.Stream.of(&quot;()&quot;, &quot;()[]{}&quot;, &quot;(]&quot;, &quot;([)]&quot;, &quot;{[]}&quot;)
+            .forEach(expr -&gt; System.out.println(expr + &quot; → &quot; + isValid(expr)));
+    }
+}
+</code></pre>
+<p><strong>Key Interview Points:</strong></p>
+<ul>
+<li>Use <code>Deque&lt;Character&gt;</code> (backed by <code>ArrayDeque</code>) not <code>Stack</code> — <code>Stack</code> is legacy and has synchronization overhead.</li>
+<li><code>Map.of</code> (Java 9+) syntax shown; use <code>new HashMap&lt;&gt;()</code> + <code>.put()</code> for Java 8 compatibility.</li>
+</ul>
+<hr>
+<h3>Q49. Immutable Class Design</h3>
+<p><strong>Difficulty:</strong> Hard | <strong>Frequency:</strong> ⭐⭐⭐⭐<br><strong>Category:</strong> Java Core</p>
+<p><strong>Concept:</strong><br>An immutable class cannot be modified after creation (like <code>String</code>, <code>Integer</code>). Safe to share across threads without synchronization. Five rules: <code>final</code> class, <code>private final</code> fields, no setters, deep copy in constructor, return copies of mutable fields.</p>
+<p><strong>Solution (Java 8):</strong></p>
+<pre><code class="language-java">import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+// ── Rule 1: declare the class final ───────────────────────────────
+public final class ImmutableMedicine {
+
+    // ── Rule 2: all fields private final ──────────────────────────
+    private final String name;
+    private final double price;
+    private final List&lt;String&gt; ingredients;  // mutable field!
+
+    // ── Rule 3: set via constructor only ──────────────────────────
+    public ImmutableMedicine(String name, double price, List&lt;String&gt; ingredients) {
+        this.name = name;
+        this.price = price;
+        // ── Rule 4: deep copy mutable parameters in constructor ───
+        this.ingredients = new ArrayList&lt;&gt;(ingredients); // defensive copy
+    }
+
+    // ── Rule 5: getters return copies of mutable fields ───────────
+    public String getName()    { return name; }
+    public double getPrice()   { return price; }
+
+    public List&lt;String&gt; getIngredients() {
+        return Collections.unmodifiableList(ingredients); // read-only view
+    }
+
+    // No setters!
+
+    @Override
+    public String toString() {
+        return &quot;ImmutableMedicine{name=&#39;&quot; + name + &quot;&#39;, price=&quot; + price
+               + &quot;, ingredients=&quot; + ingredients + &quot;}&quot;;
+    }
+
+    public static void main(String[] args) {
+        List&lt;String&gt; ings = new ArrayList&lt;&gt;();
+        ings.add(&quot;Compound A&quot;);
+        ings.add(&quot;Compound B&quot;);
+
+        ImmutableMedicine med = new ImmutableMedicine(&quot;Paracetamol&quot;, 25.0, ings);
+        System.out.println(med);
+
+        // Mutate the original list → does NOT affect immutable object
+        ings.add(&quot;Compound C&quot;);
+        System.out.println(&quot;After mutation: &quot; + med.getIngredients()); // still 2 ingredients
+
+        // Try to modify returned list → UnsupportedOperationException
+        try {
+            med.getIngredients().add(&quot;Compound D&quot;);
+        } catch (UnsupportedOperationException e) {
+            System.out.println(&quot;Cannot modify: &quot; + e.getClass().getSimpleName());
+        }
+    }
+}
+</code></pre>
+<p><strong>Key Interview Points:</strong></p>
+<ul>
+<li>The #1 mistake: forgetting defensive copies for mutable fields (<code>List</code>, <code>Date</code>, <code>arrays</code>).</li>
+<li>Java&#39;s <code>String</code> is immutable which is why <code>String</code> is safe as a <code>HashMap</code> key.</li>
+</ul>
+<hr>
+<h3>Q50. Stream reduce() — Custom Aggregation</h3>
+<p><strong>Difficulty:</strong> Hard | <strong>Frequency:</strong> ⭐⭐⭐⭐<br><strong>Category:</strong> Stream API</p>
+<p><strong>Concept:</strong><br><code>reduce()</code> is the most powerful stream terminal operation — it combines all elements into a single result using an accumulator function. Behind the scenes, <code>sum()</code>, <code>max()</code>, <code>count()</code> are all built on <code>reduce</code>. Understanding it deeply sets you apart in interviews.</p>
+<p><strong>Approach:</strong></p>
+<ul>
+<li><code>reduce(identity, accumulator)</code> — starts with identity, applies accumulator cumulatively</li>
+<li><code>reduce(accumulator)</code> — returns <code>Optional&lt;T&gt;</code> (no identity for empty stream)</li>
+<li><code>reduce(identity, accumulator, combiner)</code> — three-arg form for parallel streams</li>
+</ul>
+<p><strong>Stream Solution (Java 8):</strong></p>
+<pre><code class="language-java">import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
+public class ReduceDemo {
+    public static void main(String[] args) {
+
+        List&lt;Integer&gt; numbers = Arrays.asList(1, 2, 3, 4, 5);
+
+        // ── Sum using reduce (reimplementing .sum()) ──────────────
+        int sum = numbers.stream()
+            .reduce(0, Integer::sum);           // 0 is identity; sum(a,b) = a+b
+        System.out.println(&quot;Sum: &quot; + sum);      // 15
+
+        // ── Product of all numbers ────────────────────────────────
+        int product = numbers.stream()
+            .reduce(1, (a, b) -&gt; a * b);        // identity=1 for multiplication
+        System.out.println(&quot;Product: &quot; + product); // 120
+
+        // ── Max using reduce (reimplementing .max()) ──────────────
+        Optional&lt;Integer&gt; max = numbers.stream()
+            .reduce(Integer::max);              // no identity → Optional
+        System.out.println(&quot;Max: &quot; + max.orElse(0)); // 5
+
+        // ── Concatenate strings with reduce ──────────────────────
+        List&lt;String&gt; words = Arrays.asList(&quot;Java&quot;, &quot;Stream&quot;, &quot;Reduce&quot;);
+        String sentence = words.stream()
+            .reduce(&quot;&quot;, (a, b) -&gt; a.isEmpty() ? b : a + &quot; &quot; + b);
+        System.out.println(sentence);           // Java Stream Reduce
+
+        // ── Factorial using reduce ────────────────────────────────
+        int n = 6;
+        long factorial = java.util.stream.LongStream
+            .rangeClosed(1, n)
+            .reduce(1L, Long::multiplyExact);
+        System.out.println(n + &quot;! = &quot; + factorial); // 6! = 720
+
+        // ── Custom object aggregation: build total order ──────────
+        // Each int[] = {quantity, unitPrice}
+        int totalRevenue = Arrays.asList(
+            new int[]{2, 100},   // 2 units × ₹100
+            new int[]{3, 200},   // 3 units × ₹200
+            new int[]{1, 50})    // 1 unit  × ₹50
+            .stream()
+            .reduce(0,
+                (acc, order) -&gt; acc + order[0] * order[1],  // accumulate qty*price
+                Integer::sum);                               // combiner (for parallel)
+        System.out.println(&quot;Total Revenue: ₹&quot; + totalRevenue); // ₹850
+    }
+}
+</code></pre>
+<p><strong>Key Interview Points:</strong></p>
+<ul>
+<li>Identity value must be neutral for the operation: <code>0</code> for sum, <code>1</code> for product, <code>&quot;&quot;</code> for concatenation.</li>
+<li>The three-arg <code>reduce(identity, accumulator, combiner)</code> is required when the accumulator type differs from the stream element type.</li>
+<li><code>reduce</code> creates a new value each step; for mutable accumulation (building a <code>List</code>), use <code>collect</code> instead.</li>
+</ul>
+<hr>
+<h2>Summary Cheat Sheet</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Question</th>
+<th>One-Line Key Insight</th>
+<th>Frequency</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>Swap Numbers</td>
+<td>XOR avoids overflow</td>
+<td>⭐⭐⭐</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Reverse String</td>
+<td><code>IntStream.rangeClosed</code> + pick from end</td>
+<td>⭐⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Palindrome</td>
+<td><code>IntStream.range(len/2).allMatch(mirror)</code></td>
+<td>⭐⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Vowel Count</td>
+<td><code>chars().filter(&quot;aeiou&quot;.indexOf ≥ 0)</code></td>
+<td>⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Factorial</td>
+<td><code>LongStream.rangeClosed(1,n).reduce(multiplyExact)</code></td>
+<td>⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Prime Check</td>
+<td><code>IntStream(2,√n).noneMatch(n%i==0)</code></td>
+<td>⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Custom Exception</td>
+<td>Extend RuntimeException, add context fields</td>
+<td>⭐⭐⭐</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Max/Min</td>
+<td><code>stream().max(naturalOrder())</code> returns <code>Optional</code></td>
+<td>⭐⭐⭐</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Fibonacci</td>
+<td><code>Stream.iterate({0,1}, f→{f[1],f[0]+f[1]}).limit(n)</code></td>
+<td>⭐⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Anagram</td>
+<td><code>chars().sorted()</code> compare both strings</td>
+<td>⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>11</td>
+<td>Missing Number</td>
+<td>Expected sum − actual sum (IntStream)</td>
+<td>⭐⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>12</td>
+<td>First Non-Repeated</td>
+<td><code>groupingBy + LinkedHashMap</code> (order matters!)</td>
+<td>⭐⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>13</td>
+<td>Second Largest</td>
+<td><code>distinct().sorted(reversed()).skip(1).findFirst()</code></td>
+<td>⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>14</td>
+<td>Remove Duplicates</td>
+<td><code>stream().distinct()</code> or two-pointer</td>
+<td>⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>15</td>
+<td>Filter starts with &#39;1&#39;</td>
+<td><code>filter(n → valueOf(n).startsWith(&quot;1&quot;))</code></td>
+<td>⭐⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>16</td>
+<td>Find Duplicates</td>
+<td><code>groupingBy + counting</code> or <code>!Set.add()</code> trick</td>
+<td>⭐⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>17</td>
+<td>Grouping &amp; Counting</td>
+<td><code>groupingBy(identity(), LinkedHashMap::new, counting())</code></td>
+<td>⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>18</td>
+<td>Sort Employees</td>
+<td><code>comparingInt().reversed().thenComparing()</code></td>
+<td>⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>19</td>
+<td>Binary Search</td>
+<td><code>mid = low + (high-low)/2</code> avoids overflow</td>
+<td>⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>20</td>
+<td>Singleton</td>
+<td>Enum = safest; DCL needs <code>volatile</code></td>
+<td>⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>21</td>
+<td>Rotate Array</td>
+<td>Reverse all → reverse k → reverse rest</td>
+<td>⭐⭐⭐</td>
+</tr>
+<tr>
+<td>22</td>
+<td>Kadane&#39;s</td>
+<td><code>currentMax = max(arr[i], currentMax+arr[i])</code></td>
+<td>⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>23</td>
+<td>Longest Substring</td>
+<td>HashMap jump = O(n); HashSet two-pointer = O(n)</td>
+<td>⭐⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>24</td>
+<td>Matrix Rotation</td>
+<td>Transpose + reverse rows = 90° clockwise</td>
+<td>⭐⭐⭐</td>
+</tr>
+<tr>
+<td>25</td>
+<td>LRU Cache</td>
+<td><code>LinkedHashMap(cap, 0.75f, true)</code> + removeEldest</td>
+<td>⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>26</td>
+<td>Deadlock</td>
+<td>Opposite lock order → fix with consistent ordering</td>
+<td>⭐⭐⭐</td>
+</tr>
+<tr>
+<td>27</td>
+<td>Sum of Digits</td>
+<td><code>chars().map(c → c-&#39;0&#39;).sum()</code></td>
+<td>⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>28</td>
+<td>Even/Odd Partition</td>
+<td><code>partitioningBy(n → n%2==0)</code> → Map&lt;Boolean,List&gt;</td>
+<td>⭐⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>29</td>
+<td>Reverse Words</td>
+<td><code>IntStream.rangeClosed(1,len).mapToObj(pick from end)</code></td>
+<td>⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>30</td>
+<td>List to Uppercase</td>
+<td><code>stream().map(String::toUpperCase)</code> method reference</td>
+<td>⭐⭐⭐</td>
+</tr>
+<tr>
+<td>31</td>
+<td>Count Words</td>
+<td><code>Arrays.stream(split).distinct().count()</code></td>
+<td>⭐⭐⭐</td>
+</tr>
+<tr>
+<td>32</td>
+<td>Armstrong Number</td>
+<td><code>chars().map(d^power).sum() == n</code> + <code>IntStream.rangeClosed</code></td>
+<td>⭐⭐⭐</td>
+</tr>
+<tr>
+<td>33</td>
+<td>Collectors.joining</td>
+<td><code>joining(&quot;, &quot;, &quot;[&quot;, &quot;]&quot;)</code> — delimiter+prefix+suffix</td>
+<td>⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>34</td>
+<td>FlatMap</td>
+<td><code>flatMap(List::stream)</code> turns Stream&lt;List<T>&gt; → Stream<T></td>
+<td>⭐⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>35</td>
+<td>partitioningBy (adv)</td>
+<td><code>partitioningBy(pred, counting())</code> — downstream collector</td>
+<td>⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>36</td>
+<td>Collectors.toMap</td>
+<td><code>toMap(key, value, mergeFunction)</code> — merge handles duplicates</td>
+<td>⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>37</td>
+<td>Optional</td>
+<td><code>ofNullable().map().filter().orElseGet(supplier)</code></td>
+<td>⭐⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>38</td>
+<td>String Compression</td>
+<td>Loop with <code>char + count</code>; stream for repeat</td>
+<td>⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>39</td>
+<td>Two Sum</td>
+<td>HashMap: store complement, check before insert, O(n)</td>
+<td>⭐⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>40</td>
+<td>Comparable vs Comparator</td>
+<td>Comparable=inside class; Comparator=external strategy</td>
+<td>⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>41</td>
+<td>Salary Aggregation</td>
+<td><code>mapToInt().summaryStatistics()</code> — all aggregates in one pass</td>
+<td>⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>42</td>
+<td>Count/Match</td>
+<td><code>anyMatch</code> / <code>allMatch</code> / <code>noneMatch</code> — short-circuit</td>
+<td>⭐⭐⭐</td>
+</tr>
+<tr>
+<td>43</td>
+<td>Merge Sorted Arrays</td>
+<td><code>IntStream.concat()+sorted()</code> or O(m+n) two-pointer</td>
+<td>⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>44</td>
+<td>CompletableFuture</td>
+<td><code>supplyAsync.thenApply.thenCombine.exceptionally</code></td>
+<td>⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>45</td>
+<td>ExecutorService</td>
+<td><code>newFixedThreadPool(n)</code> + <code>submit(Callable)</code> + <code>shutdown()</code></td>
+<td>⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>46</td>
+<td>Producer-Consumer</td>
+<td><code>BlockingQueue.put()/take()</code> + poison-pill stop signal</td>
+<td>⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>47</td>
+<td>Top-N Words</td>
+<td><code>groupingBy+counting → sorted by value → limit(N)</code></td>
+<td>⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>48</td>
+<td>Valid Parentheses</td>
+<td>Stack push opening; pop+match on closing; empty = valid</td>
+<td>⭐⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>49</td>
+<td>Immutable Class</td>
+<td><code>final</code> class + <code>final</code> fields + defensive copy in ctor</td>
+<td>⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>50</td>
+<td>Stream reduce()</td>
+<td><code>reduce(identity, accumulator)</code> — foundation of all aggregations</td>
+<td>⭐⭐⭐⭐</td>
+</tr>
+</tbody></table>
+<hr>
+<p><em>Good luck with your coding round! Focus on ⭐⭐⭐⭐⭐ questions first — they appear in almost every interview.</em></p>
+
+
+</div>
+
+</body>
+</html>
