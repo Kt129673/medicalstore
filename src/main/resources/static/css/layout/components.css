@@ -2878,6 +2878,12 @@ tbody tr.ent-row-removed {
     .bill-card {
         position: static;
     }
+
+    /* Ensure cart table scrolls horizontally on narrow screens */
+    .pos-layout .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
 }
 
 /* ─────────────────────────────────────────────────
