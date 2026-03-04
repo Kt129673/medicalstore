@@ -614,17 +614,6 @@
         flex: 1 1 auto;
     }
 
-    /* POS form footer: wrap Cancel and Complete Sale on mobile */
-    .pos-form-header.border-top {
-        flex-wrap: wrap;
-        gap: 8px;
-    }
-
-    .pos-form-header.border-top .btn {
-        flex: 1 1 auto;
-        text-align: center;
-    }
-
     /* Subscription banner: smaller text on mobile */
     .subscription-banner {
         font-size: 12px;
