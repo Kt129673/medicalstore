@@ -71,7 +71,7 @@
                                         INV-000001
                                     </a>
                                 </td>
-                                <td th:text="${returnItem.saleItem.medicine.name}">Medicine</td>
+                                <td th:text="${returnItem.saleItem != null and returnItem.saleItem.medicine != null ? returnItem.saleItem.medicine.name : 'Deleted Item'}">Medicine</td>
                                 <td><span class="badge bg-warning text-dark" th:text="${returnItem.returnQuantity}">1</span></td>
                                 <td class="fw-bold text-danger"
                                     th:text="'₹' + ${#numbers.formatDecimal(returnItem.refundAmount, 0, 2)}">₹100.00

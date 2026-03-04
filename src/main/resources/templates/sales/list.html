@@ -160,7 +160,7 @@
                                         </div>
                                         <div>
                                             <span th:if="${sale.items.size() > 0}"
-                                                th:text="${sale.items[0].medicine.name}"></span>
+                                                th:text="${sale.items[0].medicine != null ? sale.items[0].medicine.name : 'Deleted item'}"></span>
                                             <span th:if="${sale.items.size() == 0}">No items</span>
                                             <small th:if="${sale.items.size() > 1}" class="text-muted d-block"
                                                 th:text="'+ ' + ${sale.items.size() - 1} + ' more'"></small>

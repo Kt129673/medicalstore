@@ -113,9 +113,10 @@ public class SaleController {
                     "message", "Sale completed successfully!",
                     "saleId", createdSale.getId()));
         } catch (Exception e) {
+            String msg = e.getMessage() != null ? e.getMessage() : "An unexpected error occurred. Please try again.";
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(java.util.Map.of(
                     "success", false,
-                    "message", e.getMessage()));
+                    "message", msg));
         }
     }
 

@@ -135,9 +135,9 @@
                 <td th:text="${iterStat.count}">1</td>
                 <td th:text="${#temporals.format(sale.saleDate, 'dd-MM-yyyy')}">Date</td>
                 <td th:text="'INV-' + ${T(java.lang.String).format('%06d', sale.id)}">INV-000001</td>
-                <td th:text="${sale.medicine.name}">Medicine</td>
+                <td th:text="${sale.items.size() == 1 and sale.items[0].medicine != null ? sale.items[0].medicine.name : (sale.items.size() > 1 ? sale.items.size() + ' Items' : '-')}">Medicine</td>
                 <td th:text="${sale.customer != null ? sale.customer.name : 'Walk-in'}">Customer</td>
-                <td class="text-center" th:text="${sale.quantity}">10</td>
+                <td class="text-center" th:text="${sale.items.size() > 0 ? #aggregates.sum(sale.items.![quantity]) : 0}">10</td>
                 <td class="text-right">₹<span th:text="${#numbers.formatDecimal(sale.totalAmount, 1, 2)}">500.00</span></td>
                 <td th:text="${sale.paymentMethod}">Cash</td>
             </tr>

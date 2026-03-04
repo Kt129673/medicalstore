@@ -30,8 +30,8 @@
                                 <option value="">Choose Sold Item</option>
                                 <th:block th:each="sale : ${sales}">
                                     <option th:each="item : ${sale.items}" th:value="${item.id}"
-                                        th:text="'INV-' + ${#strings.padLeft(sale.id.toString(), 6, '0')} + ' - ' + ${item.medicine.name} + ' (Qty: ' + ${item.quantity} + ')'"
-                                        th:attr="data-saleid=${sale.id},data-medicine=${item.medicine.name},data-quantity=${item.quantity},data-unitprice=${item.unitPrice}">
+                                        th:text="'INV-' + ${#strings.padLeft(sale.id.toString(), 6, '0')} + ' - ' + ${item.medicine != null ? item.medicine.name : 'Deleted Item'} + ' (Qty: ' + ${item.quantity} + ')'"
+                                        th:attr="data-saleid=${sale.id},data-medicine=${item.medicine != null ? item.medicine.name : ''},data-quantity=${item.quantity},data-unitprice=${item.unitPrice}">
                                     </option>
                                 </th:block>
                             </select>
