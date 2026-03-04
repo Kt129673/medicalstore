@@ -150,13 +150,13 @@
                                 <thead class="table-light">
                                     <tr>
                                         <th class="ps-3">Branch</th>
-                                        <th class="text-end">Today's Sales</th>
+                                        <th class="text-end d-none d-sm-table-cell">Today's Sales</th>
                                         <th class="text-end">Monthly Revenue</th>
-                                        <th class="text-center">Medicines</th>
-                                        <th class="text-center">Shopkeepers</th>
-                                        <th class="text-center">Customers</th>
-                                        <th class="text-center">Low Stock</th>
-                                        <th class="text-center">Expiring (30d)</th>
+                                        <th class="text-center d-none d-md-table-cell">Medicines</th>
+                                        <th class="text-center d-none d-lg-table-cell">Shopkeepers</th>
+                                        <th class="text-center d-none d-lg-table-cell">Customers</th>
+                                        <th class="text-center d-none d-md-table-cell">Low Stock</th>
+                                        <th class="text-center d-none d-md-table-cell">Expiring (30d)</th>
                                         <th class="text-center">Actions</th>
                                     </tr>
                                 </thead>
@@ -166,19 +166,19 @@
                                             <div class="fw-semibold" th:text="${stat.branchName}">Branch</div>
                                             <small class="text-muted" th:text="${stat.branchAddress}">Address</small>
                                         </td>
-                                        <td class="text-end fw-bold text-success"
+                                        <td class="text-end fw-bold text-success d-none d-sm-table-cell"
                                             th:text="'₹' + ${#numbers.formatDecimal(stat.todaySales, 1, 'COMMA', 0, 'POINT')}">₹0</td>
                                         <td class="text-end fw-bold text-primary"
                                             th:text="'₹' + ${#numbers.formatDecimal(stat.monthlyRevenue, 1, 'COMMA', 0, 'POINT')}">₹0</td>
-                                        <td class="text-center" th:text="${stat.totalMedicines}">0</td>
-                                        <td class="text-center" th:text="${stat.totalShopkeepers}">0</td>
-                                        <td class="text-center" th:text="${stat.totalCustomers}">0</td>
-                                        <td class="text-center">
+                                        <td class="text-center d-none d-md-table-cell" th:text="${stat.totalMedicines}">0</td>
+                                        <td class="text-center d-none d-lg-table-cell" th:text="${stat.totalShopkeepers}">0</td>
+                                        <td class="text-center d-none d-lg-table-cell" th:text="${stat.totalCustomers}">0</td>
+                                        <td class="text-center d-none d-md-table-cell">
                                             <span class="badge"
                                                   th:classappend="${stat.lowStockCount > 0} ? 'bg-danger' : 'bg-success'"
                                                   th:text="${stat.lowStockCount}">0</span>
                                         </td>
-                                        <td class="text-center">
+                                        <td class="text-center d-none d-md-table-cell">
                                             <span class="badge"
                                                   th:classappend="${stat.expiringCount > 0} ? 'bg-warning text-dark' : 'bg-success'"
                                                   th:text="${stat.expiringCount}">0</span>

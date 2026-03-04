@@ -68,9 +68,9 @@
                                 <th scope="col">Timestamp</th>
                                 <th scope="col">Action</th>
                                 <th scope="col">Performed By</th>
-                                <th scope="col">Role</th>
-                                <th scope="col">Entity</th>
-                                <th scope="col">Description</th>
+                                <th scope="col" class="d-none d-sm-table-cell">Role</th>
+                                <th scope="col" class="d-none d-md-table-cell">Entity</th>
+                                <th scope="col" class="d-none d-lg-table-cell">Description</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -90,18 +90,18 @@
                                           th:text="${log.action}">ACTION</span>
                                 </td>
                                 <td th:text="${log.performedBy}"></td>
-                                <td>
+                                <td class="d-none d-sm-table-cell">
                                     <span class="badge"
                                           th:classappend="${log.performedByRole != null and log.performedByRole.contains('ADMIN')} ? 'bg-warning text-dark' : (${log.performedByRole != null and log.performedByRole.contains('OWNER')} ? 'bg-info text-dark' : 'bg-success')"
                                           th:text="${log.performedByRole}"></span>
                                 </td>
-                                <td>
+                                <td class="d-none d-md-table-cell">
                                     <small class="text-muted">
                                         <span th:if="${log.entityName != null}" th:text="${log.entityName}"></span>
                                         <span th:if="${log.entityId != null}" th:text="' #' + ${log.entityId}"></span>
                                     </small>
                                 </td>
-                                <td>
+                                <td class="d-none d-lg-table-cell">
                                     <small th:text="${log.description}"></small>
                                 </td>
                             </tr>

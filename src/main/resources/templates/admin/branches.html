@@ -25,10 +25,10 @@
                         <thead class="table-light">
                             <tr>
                                 <th>Branch</th>
-                                <th>Address</th>
-                                <th>Phone</th>
-                                <th>GST No.</th>
-                                <th>Owner</th>
+                                <th class="d-none d-md-table-cell">Address</th>
+                                <th class="d-none d-sm-table-cell">Phone</th>
+                                <th class="d-none d-lg-table-cell">GST No.</th>
+                                <th class="d-none d-md-table-cell">Owner</th>
                                 <th>Status</th>
                                 <th>Actions</th>
                             </tr>
@@ -39,10 +39,10 @@
                                     <div class="fw-semibold" th:text="${branch.name}"></div>
                                     <div class="small text-muted" th:text="${branch.licenceNumber}"></div>
                                 </td>
-                                <td th:text="${branch.address}"></td>
-                                <td th:text="${branch.phone}"></td>
-                                <td th:text="${branch.gstNumber}"></td>
-                                <td>
+                                <td class="d-none d-md-table-cell" th:text="${branch.address}"></td>
+                                <td class="d-none d-sm-table-cell" th:text="${branch.phone}"></td>
+                                <td class="d-none d-lg-table-cell" th:text="${branch.gstNumber}"></td>
+                                <td class="d-none d-md-table-cell">
                                     <div th:text="${branch.owner.fullName}"></div>
                                     <div class="small text-muted" th:text="'@' + ${branch.owner.username}"></div>
                                 </td>

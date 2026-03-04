@@ -25,10 +25,10 @@
                         <thead class="table-light">
                             <tr>
                                 <th>Username</th>
-                                <th>Full Name</th>
-                                <th>Email</th>
+                                <th class="d-none d-sm-table-cell">Full Name</th>
+                                <th class="d-none d-md-table-cell">Email</th>
                                 <th>Roles</th>
-                                <th>Deleted At</th>
+                                <th class="d-none d-sm-table-cell">Deleted At</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -41,15 +41,15 @@
                             </tr>
                             <tr th:each="user : ${deletedUsers}">
                                 <td th:text="${user.username}"></td>
-                                <td th:text="${user.fullName}"></td>
-                                <td th:text="${user.email}"></td>
+                                <td class="d-none d-sm-table-cell" th:text="${user.fullName}"></td>
+                                <td class="d-none d-md-table-cell" th:text="${user.email}"></td>
                                 <td>
                                     <span th:each="role : ${user.roles}"
                                           class="badge me-1"
                                           th:classappend="${role == 'ADMIN'} ? 'bg-warning text-dark' : (${role == 'OWNER'} ? 'bg-info text-dark' : 'bg-success')"
                                           th:text="${role}"></span>
                                 </td>
-                                <td>
+                                <td class="d-none d-sm-table-cell">
                                     <small class="text-muted"
                                            th:text="${user.deletedAt != null} ? ${#temporals.format(user.deletedAt, 'dd MMM yyyy HH:mm')} : 'Unknown'">
                                     </small>

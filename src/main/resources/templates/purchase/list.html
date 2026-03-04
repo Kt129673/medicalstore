@@ -77,9 +77,9 @@
                     <thead>
                         <tr>
                             <th>Order #</th>
-                            <th>Date</th>
-                            <th>Supplier</th>
-                            <th>Items</th>
+                            <th class="d-none d-sm-table-cell">Date</th>
+                            <th class="d-none d-md-table-cell">Supplier</th>
+                            <th class="d-none d-lg-table-cell">Items</th>
                             <th>Total</th>
                             <th>Status</th>
                             <th>Actions</th>
@@ -88,9 +88,9 @@
                     <tbody id="poSkeletonBody" aria-hidden="true">
                         <tr class="ent-skeleton--row" th:each="i : ${#numbers.sequence(1,5)}">
                             <td><span class="ent-skeleton ent-skeleton--text" style="width:80px;"></span></td>
-                            <td><span class="ent-skeleton ent-skeleton--text" style="width:90px;"></span></td>
-                            <td><span class="ent-skeleton ent-skeleton--text" style="width:110px;"></span></td>
-                            <td><span class="ent-skeleton ent-skeleton--text" style="width:60px;"></span></td>
+                            <td class="d-none d-sm-table-cell"><span class="ent-skeleton ent-skeleton--text" style="width:90px;"></span></td>
+                            <td class="d-none d-md-table-cell"><span class="ent-skeleton ent-skeleton--text" style="width:110px;"></span></td>
+                            <td class="d-none d-lg-table-cell"><span class="ent-skeleton ent-skeleton--text" style="width:60px;"></span></td>
                             <td><span class="ent-skeleton ent-skeleton--text" style="width:70px;"></span></td>
                             <td><span class="ent-skeleton ent-skeleton--text" style="width:70px;"></span></td>
                             <td><div class="d-flex gap-1"><span class="ent-skeleton" style="width:32px;height:32px;border-radius:6px;display:inline-block;"></span><span class="ent-skeleton" style="width:32px;height:32px;border-radius:6px;display:inline-block;"></span></div></td>
@@ -102,9 +102,9 @@
                                 <a th:href="@{'/purchases/' + ${order.id}}" class="fw-bold text-decoration-none"
                                     th:text="${order.orderNumber}">PO-001</a>
                             </td>
-                            <td th:text="${order.orderDate}">2024-01-01</td>
-                            <td th:text="${order.supplier.name}">Supplier</td>
-                            <td>
+                            <td class="d-none d-sm-table-cell" th:text="${order.orderDate}">2024-01-01</td>
+                            <td class="d-none d-md-table-cell" th:text="${order.supplier.name}">Supplier</td>
+                            <td class="d-none d-lg-table-cell">
                                 <span class="badge bg-light text-dark"
                                     th:text="${#lists.size(order.items)} + ' items'">0 items</span>
                             </td>

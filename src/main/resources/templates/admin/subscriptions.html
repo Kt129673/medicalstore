@@ -28,11 +28,11 @@
                         <thead class="table-light">
                             <tr>
                                 <th>Owner</th>
-                                <th>Username</th>
+                                <th class="d-none d-sm-table-cell">Username</th>
                                 <th>Plan Type</th>
-                                <th>Expiry Date</th>
-                                <th>Max Users</th>
-                                <th>Max Branches</th>
+                                <th class="d-none d-md-table-cell">Expiry Date</th>
+                                <th class="d-none d-lg-table-cell">Max Users</th>
+                                <th class="d-none d-lg-table-cell">Max Branches</th>
                                 <th>Status</th>
                                 <th>Actions</th>
                             </tr>
@@ -40,7 +40,7 @@
                         <tbody>
                             <tr th:each="owner : ${owners}">
                                 <td th:text="${owner.fullName}"></td>
-                                <td><code th:text="${owner.username}"></code></td>
+                                <td class="d-none d-sm-table-cell"><code th:text="${owner.username}"></code></td>
 
                                 <!-- Plan info (or "No Plan") -->
                                 <th:block th:with="plan=${plansByOwner[owner.id]}">
@@ -51,9 +51,9 @@
                                         </span>
                                         <span th:if="${plan == null}" class="badge bg-secondary">No Plan</span>
                                     </td>
-                                    <td th:text="${plan != null} ? ${#temporals.format(plan.expiryDate, 'dd MMM yyyy')} : '—'"></td>
-                                    <td th:text="${plan != null} ? ${plan.maxUsers} : '—'"></td>
-                                    <td th:text="${plan != null} ? ${plan.maxBranches} : '—'"></td>
+                                    <td class="d-none d-md-table-cell" th:text="${plan != null} ? ${#temporals.format(plan.expiryDate, 'dd MMM yyyy')} : '—'"></td>
+                                    <td class="d-none d-lg-table-cell" th:text="${plan != null} ? ${plan.maxUsers} : '—'"></td>
+                                    <td class="d-none d-lg-table-cell" th:text="${plan != null} ? ${plan.maxBranches} : '—'"></td>
                                     <td>
                                         <span th:if="${plan == null}" class="badge bg-secondary">No Subscription</span>
                                         <span th:if="${plan != null and !plan.expired}" class="badge bg-success">Active</span>
