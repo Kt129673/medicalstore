@@ -101,7 +101,7 @@
             <!-- Bulk Action Bar (hidden by default) -->
             <div class="bulk-bar" id="bulkBar">
                 <span class="bulk-count"><span id="selectedCount">0</span> items selected</span>
-                <div class="d-flex gap-2">
+                <div class="d-flex gap-2 flex-wrap">
                     <button class="btn btn-sm btn-outline-danger" onclick="bulkDelete()"
                             sec:authorize="hasRole('ADMIN')">
                         <i class="bi bi-trash"></i> Delete Selected

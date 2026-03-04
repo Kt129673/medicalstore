@@ -625,3 +625,190 @@
         gap: var(--space-2);
     }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   MOBILE POLISH — additional improvements for small screens
+═══════════════════════════════════════════════════════════════ */
+
+/* ── Notification dropdown: full-width on small screens ──────── */
+@media (max-width: 576px) {
+    .notif-dropdown {
+        position: fixed;
+        top: 74px; /* matches --header-height (70px) + 4px gap */
+        left: 8px;
+        right: 8px;
+        width: auto;
+        min-width: unset;
+        border-radius: 12px;
+        z-index: 300;
+    }
+}
+
+/* ── Scroll-to-top: respect iOS safe-area at bottom ─────────── */
+@media (max-width: 992px) {
+    .scroll-to-top {
+        bottom: calc(env(safe-area-inset-bottom, 0px) + 20px);
+        right: 16px;
+        width: 38px;
+        height: 38px;
+        font-size: 16px;
+    }
+}
+
+/* ── KPI cards: reduce value font-size at 576px ─────────────── */
+@media (max-width: 576px) {
+    .kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .kpi-card .kpi-value {
+        font-size: 1.65rem;
+        letter-spacing: -0.5px;
+    }
+
+    .kpi-card .kpi-label {
+        font-size: 0.68rem;
+    }
+}
+
+@media (max-width: 380px) {
+    .kpi-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ── Page title: prevent overflow on narrow headers ─────────── */
+@media (max-width: 576px) {
+    .page-title {
+        font-size: 14px;
+        max-width: 140px;
+    }
+
+    .bc-current {
+        font-size: 13px;
+        max-width: 120px; /* limit but keep readable on narrow headers */
+    }
+}
+
+/* ── Form action row: stack on very small screens ────────────── */
+@media (max-width: 480px) {
+    .form-actions-bottom {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: var(--space-3) !important;
+    }
+
+    .form-actions-bottom .btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .form-actions-bottom small.text-muted {
+        text-align: center;
+    }
+}
+
+/* ── Purchase form: improve line-items table on mobile ────────── */
+@media (max-width: 576px) {
+    /* Make medicine-select full width inside table cell */
+    .medicine-select {
+        min-width: 120px;
+    }
+
+    /* Shrink item-qty and item-price inputs on very small screens */
+    .item-qty,
+    .item-price {
+        min-width: 50px;
+    }
+}
+
+/* ── Inv filter-bar: single-column on small screens ──────────── */
+@media (max-width: 480px) {
+    .inv-filter-bar {
+        padding: 14px 16px;
+    }
+
+    .inv-filter-bar .filter-group {
+        min-width: 100%;
+    }
+}
+
+/* ── Card hover: disable lift on touch devices ───────────────── */
+@media (hover: none) {
+    .card:hover {
+        transform: none;
+        box-shadow: var(--shadow-xs);
+    }
+
+    .btn:hover:not(:disabled) {
+        transform: none;
+        box-shadow: none;
+    }
+
+    .kpi-card:hover {
+        transform: none;
+    }
+
+    .nav-link:hover {
+        transform: none;
+    }
+}
+
+/* ── Touch target sizing: buttons at minimum 44×44px ─────────── */
+@media (max-width: 992px) {
+    .btn-group-sm > .btn,
+    .btn-sm {
+        min-height: 40px;
+        min-width: 40px;
+    }
+
+    /* Header icon buttons: ensure 44×44 tap target */
+    .header-notif-btn,
+    .header-back-btn,
+    .nav-profile-btn {
+        min-width: 44px;
+        min-height: 44px;
+    }
+}
+
+/* ── Sidebar nav links: larger tap targets on touch ─────────── */
+@media (max-width: 992px) {
+    .sidebar .nav-link {
+        padding: 13px 16px;
+        min-height: 48px;
+    }
+}
+
+/* ── Subscription expired alert: prevent icon+text from squishing ─ */
+@media (max-width: 576px) {
+    .subscription-expired-banner {
+        flex-wrap: wrap;
+        font-size: 0.8rem;
+    }
+
+    .subscription-expired-banner .btn-close {
+        margin-top: 4px;
+    }
+}
+
+/* ── Dashboard quick actions: full-width buttons on 360px ─────── */
+@media (max-width: 400px) {
+    .dashboard-quick-actions .d-flex.gap-2.flex-wrap .btn {
+        flex: 1 1 100%;
+    }
+}
+
+/* ── Empty state icon: smaller on mobile ────────────────────── */
+@media (max-width: 576px) {
+    .empty-state-icon {
+        font-size: 3rem;
+        width: 90px;
+        height: 90px;
+        line-height: 90px;
+    }
+
+    .empty-state {
+        padding: var(--space-8) var(--space-4);
+    }
+}
