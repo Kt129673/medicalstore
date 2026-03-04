@@ -114,7 +114,8 @@
                                             </div>
                                         </td>
                                         <td>
-                                            <span th:if="${!sale.items.isEmpty()}" th:text="${sale.items[0].medicine.name}"></span>
+                                            <span th:if="${!sale.items.isEmpty()}"
+                                                th:text="${sale.items[0].medicine != null ? sale.items[0].medicine.name : 'Deleted item'}"></span>
                                             <small th:if="${sale.items.size() > 1}" class="text-muted d-block"
                                                 th:text="'+ ' + ${sale.items.size() - 1} + ' more'"></small>
                                         </td>

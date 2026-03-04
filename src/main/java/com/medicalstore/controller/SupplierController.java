@@ -49,13 +49,21 @@ public class SupplierController {
     @PostMapping("/save")
     @PreAuthorize("hasRole('SHOPKEEPER')")
     public String saveSupplier(@ModelAttribute Supplier supplier, RedirectAttributes redirectAttributes) {
-        // Auto-assign branch for shopkeeper
-        if (supplier.getId() == null && securityUtils.isShopkeeper()) {
-            Long branchId = securityUtils.getCurrentBranchId();
-            branchService.getBranchById(branchId).ifPresent(supplier::setBranch);
+        try {
+            // Auto-assign branch for shopkeeper
+            if (supplier.getId() == null && securityUtils.isShopkeeper()) {
+                Long branchId = securityUtils.getCurrentBranchId();
+                if (branchId != null) {
+                    branchService.getBranchById(branchId).ifPresent(supplier::setBranch);
+                }
+            }
+            supplierService.saveSupplier(supplier);
+            redirectAttributes.addFlashAttribute("success", "Supplier saved successfully!");
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+            redirectAttributes.addFlashAttribute("error", "A supplier with this phone number or email already exists.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Failed to save supplier: " + e.getMessage());
         }
-        supplierService.saveSupplier(supplier);
-        redirectAttributes.addFlashAttribute("success", "Supplier saved successfully!");
         return RoutePaths.redirectTo(RoutePaths.SUPPLIERS);
     }
     

@@ -108,8 +108,8 @@
                     <tbody>
                         <tr th:each="item,stat : ${order.items}">
                             <td th:text="${stat.index + 1}">1</td>
-                            <td class="fw-bold" th:text="${item.medicine.name}">Medicine</td>
-                            <td><span class="badge bg-light text-dark" th:text="${item.medicine.category}">Tablet</span>
+                            <td class="fw-bold" th:text="${item.medicine != null ? item.medicine.name : 'Deleted Item'}">Medicine</td>
+                            <td><span class="badge bg-light text-dark" th:text="${item.medicine != null ? item.medicine.category : ''}">Tablet</span>
                             </td>
                             <td class="text-end" th:text="${item.quantity}">0</td>
                             <td class="text-end" th:text="'₹' + ${#numbers.formatDecimal(item.unitPrice, 1, 2)}">₹0.00
@@ -154,7 +154,7 @@
                             </thead>
                             <tbody>
                                 <tr th:each="item : ${order.items}">
-                                    <td th:text="${item.medicine.name}">Medicine</td>
+                                    <td th:text="${item.medicine != null ? item.medicine.name : 'Deleted Item'}">Medicine</td>
                                     <td class="text-end" th:text="${item.quantity}">0</td>
                                     <td>
                                         <input type="number" class="form-control form-control-sm" name="receivedQty"

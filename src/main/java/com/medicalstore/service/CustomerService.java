@@ -64,7 +64,7 @@ public class CustomerService {
         Optional<Customer> c = customerRepository.findByPhone(ph);
         if (c.isPresent()) {
             Long tenantId = com.medicalstore.common.TenantContext.getTenantId();
-            if (tenantId != null && !tenantId.equals(c.get().getBranch().getId()))
+            if (tenantId != null && c.get().getBranch() != null && !tenantId.equals(c.get().getBranch().getId()))
                 return Optional.empty();
         }
         return c;

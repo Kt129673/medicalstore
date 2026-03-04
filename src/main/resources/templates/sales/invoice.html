@@ -132,10 +132,10 @@
                 <tr th:each="item, stat : ${sale.items}">
                     <td th:text="${stat.count}">1</td>
                     <td>
-                        <strong th:text="${item.medicine.name}">Medicine Name</strong><br>
-                        <small class="text-muted" th:text="${item.medicine.category}">Category</small>
+                        <strong th:text="${item.medicine != null ? item.medicine.name : 'Deleted Item'}">Medicine Name</strong><br>
+                        <small class="text-muted" th:text="${item.medicine != null ? item.medicine.category : ''}">Category</small>
                     </td>
-                    <td th:text="${item.medicine.batchNumber ?: 'N/A'}">BATCH123</td>
+                    <td th:text="${item.medicine != null ? (item.medicine.batchNumber ?: 'N/A') : 'N/A'}">BATCH123</td>
                     <td th:text="${item.quantity}">10</td>
                     <td th:text="'â‚¹' + ${#numbers.formatDecimal(item.unitPrice != null ? item.unitPrice : 0, 0, 2)}">
                         â‚¹100.00</td>
