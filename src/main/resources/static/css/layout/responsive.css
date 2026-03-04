@@ -221,6 +221,10 @@
         display: none;
     }
 
+    .main-header .plan-pill {
+        display: none;
+    }
+
     .header-clock .clock-time {
         font-size: 13px;
     }
