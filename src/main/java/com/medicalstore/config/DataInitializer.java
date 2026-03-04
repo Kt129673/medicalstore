@@ -5,6 +5,7 @@ import com.medicalstore.model.Customer;
 import com.medicalstore.model.Medicine;
 import com.medicalstore.model.Permission;
 import com.medicalstore.model.Sale;
+import com.medicalstore.model.SaleItem;
 import com.medicalstore.model.SubscriptionFeature;
 import com.medicalstore.model.Supplier;
 import com.medicalstore.model.SubscriptionPlan;
@@ -225,11 +226,190 @@ public class DataInitializer implements CommandLineRunner {
             log.info("Migrated {} existing records to Default Branch", migrated);
         }
 
-        // 5. Seed fine-grained permission codes (idempotent)
+        // 5. Seed sample data for testing / bug discovery (idempotent)
+        seedSampleData(defaultBranch);
+
+        // 6. Seed fine-grained permission codes (idempotent)
         seedPermissions();
 
-        // 6. Seed subscription feature flags per plan tier (idempotent)
+        // 7. Seed subscription feature flags per plan tier (idempotent)
         seedSubscriptionFeatures();
+    }
+
+    /**
+     * Seeds sample suppliers, medicines, customers, and sales for the Default Branch
+     * so that all application features can be exercised and bugs discovered.
+     * All operations are idempotent — existing records are never duplicated.
+     */
+    private void seedSampleData(Branch branch) {
+
+        // --- Suppliers ---
+        Supplier sunPharma = seedSupplier(branch, "Sun Pharma", "Raj Kumar",
+                "9001000001", "sunpharma@example.com", "Mumbai, Maharashtra", "GST27SUNPH0001");
+        Supplier cipla = seedSupplier(branch, "Cipla Ltd", "Anita Sharma",
+                "9001000002", "cipla@example.com", "Pune, Maharashtra", "GST27CIPLA0001");
+        Supplier drReddy = seedSupplier(branch, "Dr. Reddy's Labs", "Suresh Reddy",
+                "9001000003", "drreddy@example.com", "Hyderabad, Telangana", "GST36DRRDY0001");
+
+        // --- Medicines: normal stock ---
+        seedMedicine(branch, sunPharma, "Paracetamol 500mg", "Analgesics",
+                "Sun Pharma", 10.0, 200, LocalDate.now().plusYears(2),
+                "BATCH-P001", "MED-BC-001", "30049099", "Paracetamol", 7.0, 12.0, 5.0, "OTC");
+        seedMedicine(branch, sunPharma, "Amoxicillin 250mg", "Antibiotics",
+                "Sun Pharma", 45.0, 150, LocalDate.now().plusYears(1),
+                "BATCH-A001", "MED-BC-002", "30041000", "Amoxicillin Trihydrate", 35.0, 55.0, 12.0, "H");
+        seedMedicine(branch, cipla, "Cetirizine 10mg", "Antihistamines",
+                "Cipla Ltd", 8.0, 300, LocalDate.now().plusYears(2),
+                "BATCH-C001", "MED-BC-003", "30045090", "Cetirizine Hydrochloride", 5.0, 10.0, 5.0, "OTC");
+        seedMedicine(branch, cipla, "Metformin 500mg", "Antidiabetic",
+                "Cipla Ltd", 25.0, 180, LocalDate.now().plusYears(2),
+                "BATCH-M001", "MED-BC-004", "30046000", "Metformin Hydrochloride", 18.0, 30.0, 5.0, "H");
+        seedMedicine(branch, drReddy, "Omeprazole 20mg", "Antacids",
+                "Dr. Reddy's Labs", 30.0, 120, LocalDate.now().plusMonths(18),
+                "BATCH-O001", "MED-BC-005", "30049099", "Omeprazole", 22.0, 38.0, 12.0, "H");
+        seedMedicine(branch, drReddy, "Atorvastatin 10mg", "Statins",
+                "Dr. Reddy's Labs", 55.0, 90, LocalDate.now().plusMonths(20),
+                "BATCH-AT001", "MED-BC-006", "30046000", "Atorvastatin Calcium", 40.0, 65.0, 12.0, "H");
+
+        // --- Medicines: low stock (to exercise low-stock alerts) ---
+        seedMedicine(branch, sunPharma, "Azithromycin 500mg", "Antibiotics",
+                "Sun Pharma", 85.0, 5, LocalDate.now().plusYears(1),
+                "BATCH-AZ001", "MED-BC-007", "30041000", "Azithromycin", 60.0, 100.0, 12.0, "H");
+        seedMedicine(branch, cipla, "Pantoprazole 40mg", "Antacids",
+                "Cipla Ltd", 35.0, 3, LocalDate.now().plusMonths(16),
+                "BATCH-PAN001", "MED-BC-008", "30049099", "Pantoprazole Sodium", 25.0, 42.0, 12.0, "H");
+
+        // --- Medicine: near-expiry (to exercise expiry alerts) ---
+        seedMedicine(branch, drReddy, "Vitamin C 500mg", "Vitamins",
+                "Dr. Reddy's Labs", 15.0, 50, LocalDate.now().plusDays(20),
+                "BATCH-VTC001", "MED-BC-009", "30049099", "Ascorbic Acid", 10.0, 18.0, 5.0, "OTC");
+
+        // --- Medicine: out-of-stock ---
+        seedMedicine(branch, sunPharma, "Dolo 650", "Analgesics",
+                "Sun Pharma", 12.0, 0, LocalDate.now().plusYears(2),
+                "BATCH-DL001", "MED-BC-010", "30049099", "Paracetamol 650mg", 8.0, 15.0, 5.0, "OTC");
+
+        // --- Customers ---
+        Customer c1 = seedCustomer(branch, "Ramesh Patel", "ramesh.patel@example.com",
+                "9100000001", "12 MG Road, Bangalore", LocalDate.of(1985, 6, 15));
+        Customer c2 = seedCustomer(branch, "Priya Singh", "priya.singh@example.com",
+                "9100000002", "45 Park Street, Kolkata", LocalDate.of(1990, 3, 22));
+        Customer c3 = seedCustomer(branch, "Suresh Kumar", null,
+                "9100000003", "78 Anna Salai, Chennai", LocalDate.of(1975, 11, 8));
+
+        // --- Sales (only when the branch has no existing sales) ---
+        if (saleRepository.countByBranchId(branch.getId()) == 0) {
+            Medicine med1 = medicineRepository.findByBarcode("MED-BC-001").orElse(null);
+            Medicine med2 = medicineRepository.findByBarcode("MED-BC-002").orElse(null);
+            Medicine med3 = medicineRepository.findByBarcode("MED-BC-003").orElse(null);
+            Medicine med4 = medicineRepository.findByBarcode("MED-BC-004").orElse(null);
+            Medicine med5 = medicineRepository.findByBarcode("MED-BC-005").orElse(null);
+
+            if (med1 != null && med3 != null) {
+                createSampleSale(branch, c1, "Cash", 0.0, 5.0,
+                        List.of(new SaleItemData(med1, 3, 10.0, 7.0),
+                                new SaleItemData(med3, 2, 8.0, 5.0)));
+            }
+            if (med2 != null && med4 != null) {
+                createSampleSale(branch, c2, "Card", 5.0, 12.0,
+                        List.of(new SaleItemData(med2, 2, 45.0, 35.0),
+                                new SaleItemData(med4, 1, 25.0, 18.0)));
+            }
+            if (med5 != null) {
+                createSampleSale(branch, c3, "UPI", 0.0, 12.0,
+                        List.of(new SaleItemData(med5, 1, 30.0, 22.0)));
+            }
+            if (med1 != null && med5 != null) {
+                createSampleSale(branch, null, "Cash", 10.0, 5.0,
+                        List.of(new SaleItemData(med1, 5, 10.0, 7.0),
+                                new SaleItemData(med5, 2, 30.0, 22.0)));
+            }
+            log.info("Sample sales created for Default Branch");
+        }
+
+        log.info("Sample data seed complete for branch '{}'", branch.getName());
+    }
+
+    private Supplier seedSupplier(Branch branch, String name, String contactPerson,
+            String phone, String email, String address, String gstNumber) {
+        boolean exists = supplierRepository.findByBranchId(branch.getId())
+                .stream().anyMatch(s -> s.getName().equalsIgnoreCase(name));
+        if (!exists) {
+            Supplier s = new Supplier();
+            s.setName(name);
+            s.setContactPerson(contactPerson);
+            s.setPhone(phone);
+            s.setEmail(email);
+            s.setAddress(address);
+            s.setGstNumber(gstNumber);
+            s.setBranch(branch);
+            return supplierRepository.save(s);
+        }
+        return supplierRepository.findByBranchId(branch.getId())
+                .stream().filter(s -> s.getName().equalsIgnoreCase(name)).findFirst().orElseThrow();
+    }
+
+    private void seedMedicine(Branch branch, Supplier supplier, String name, String category,
+            String manufacturer, Double price, Integer quantity, LocalDate expiryDate,
+            String batchNumber, String barcode, String hsnCode, String saltComposition,
+            Double purchasePrice, Double mrp, Double gstPercentage, String scheduleType) {
+        if (medicineRepository.findByBarcode(barcode).isEmpty()) {
+            Medicine m = new Medicine();
+            m.setName(name);
+            m.setCategory(category);
+            m.setManufacturer(manufacturer);
+            m.setPrice(price);
+            m.setQuantity(quantity);
+            m.setExpiryDate(expiryDate);
+            m.setBatchNumber(batchNumber);
+            m.setBarcode(barcode);
+            m.setHsnCode(hsnCode);
+            m.setSaltComposition(saltComposition);
+            m.setPurchasePrice(purchasePrice);
+            m.setMrp(mrp);
+            m.setGstPercentage(gstPercentage);
+            m.setScheduleType(scheduleType);
+            m.setBranch(branch);
+            m.setSupplier(supplier);
+            medicineRepository.save(m);
+        }
+    }
+
+    private Customer seedCustomer(Branch branch, String name, String email, String phone,
+            String address, LocalDate dateOfBirth) {
+        return customerRepository.findByPhone(phone).orElseGet(() -> {
+            Customer c = new Customer();
+            c.setName(name);
+            c.setEmail(email);
+            c.setPhone(phone);
+            c.setAddress(address);
+            c.setDateOfBirth(dateOfBirth);
+            c.setLoyaltyPoints(0);
+            c.setBranch(branch);
+            return customerRepository.save(c);
+        });
+    }
+
+    /** Holds data for a single line-item in a sample sale. */
+    private record SaleItemData(Medicine medicine, int quantity, double unitPrice, double costPrice) {}
+
+    private void createSampleSale(Branch branch, Customer customer, String paymentMethod,
+            Double discountPercentage, Double gstPercentage, List<SaleItemData> itemData) {
+        Sale sale = new Sale();
+        sale.setBranch(branch);
+        sale.setCustomer(customer);
+        sale.setPaymentMethod(paymentMethod);
+        sale.setDiscountPercentage(discountPercentage);
+        sale.setGstPercentage(gstPercentage);
+        for (SaleItemData row : itemData) {
+            SaleItem si = new SaleItem();
+            si.setMedicine(row.medicine());
+            si.setQuantity(row.quantity());
+            si.setUnitPrice(row.unitPrice());
+            si.setCostPrice(row.costPrice());
+            sale.addItem(si);
+        }
+        saleRepository.save(sale);
     }
 
     /**
