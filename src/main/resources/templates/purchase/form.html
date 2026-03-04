@@ -7,8 +7,9 @@
         <!-- Page Header -->
         <div class="page-header mb-4">
             <div>
-                <h2 th:text="${order.id != null ? 'Edit Purchase Order' : 'New Purchase Order'}">
-                    New Purchase Order
+                <h2>
+                    <i class="bi bi-bag-plus-fill text-primary"></i>
+                    <span th:text="${order.id != null ? 'Edit Purchase Order' : 'New Purchase Order'}">New Purchase Order</span>
                 </h2>
                 <p class="text-muted mb-0">Fill in order details and add line items</p>
             </div>
