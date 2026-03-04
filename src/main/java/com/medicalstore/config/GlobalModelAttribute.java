@@ -106,4 +106,34 @@ public class GlobalModelAttribute {
             return java.util.Collections.emptySet();
         }
     }
+
+    /**
+     * Lightweight plan summary for premium UI badge (UI-only; no feature gating).
+     */
+    @ModelAttribute("planBadge")
+    public PlanBadge planBadge() {
+        try {
+            if (!securityUtils.isOwnerOrShopkeeper()) {
+                return null;
+            }
+            Long ownerId = securityUtils.getCurrentOwnerId();
+            if (ownerId == null) {
+                return null;
+            }
+
+            SubscriptionPlan plan = subscriptionService.getPlanForOwner(ownerId).orElse(null);
+            if (plan == null) {
+                return null;
+            }
+
+            long daysLeft = Math.max(0, plan.getDaysUntilExpiry());
+            return new PlanBadge(plan.getPlanType(), plan.isExpired(), daysLeft);
+        } catch (Exception e) {
+            log.debug("Unable to load plan badge: {}", e.getMessage());
+            return null;
+        }
+    }
+
+    public record PlanBadge(String planType, boolean expired, long daysLeft) {
+    }
 }

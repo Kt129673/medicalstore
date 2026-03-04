@@ -271,6 +271,24 @@
                     </div>
 
 
+                    <!-- Subscription plan badge (UI-only) -->
+                    <div th:if="${planBadge != null}" class="plan-pill"
+                        th:classappend="${planBadge.expired ? ' plan-expired' : ' plan-' + #strings.toLowerCase(planBadge.planType)}">
+                        <div class="plan-pill__icon">
+                            <i class="bi bi-stars"></i>
+                        </div>
+                        <div class="plan-pill__content">
+                            <span class="plan-pill__label" th:text="${planBadge.planType + ' plan'}">PRO plan</span>
+                            <small th:if="${planBadge.expired}" class="plan-pill__status text-danger fw-semibold">
+                                Expired - renew
+                            </small>
+                            <small th:unless="${planBadge.expired}" class="plan-pill__status"
+                                th:text="${planBadge.planType == 'FREE' ? 'Free tier • explore premium any time' : planBadge.daysLeft + ' days left of premium'}">
+                                Premium active
+                            </small>
+                        </div>
+                    </div>
+
                     <!-- Live clock -->
                     <div class="header-clock">
                         <span class="clock-time" id="liveClock">--:--:--</span>
