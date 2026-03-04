@@ -7,7 +7,9 @@
     <title>Sign In &ndash; MedStore Management System</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap"
+        rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 
@@ -16,7 +18,7 @@
            DESIGN TOKENS & RESET
         =========================================== */
         :root {
-            --brand-50:  #eff6ff;
+            --brand-50: #eff6ff;
             --brand-100: #dbeafe;
             --brand-200: #bfdbfe;
             --brand-500: #3b82f6;
@@ -29,30 +31,38 @@
             --indigo-600: #4f46e5;
             --emerald-400: #34d399;
             --emerald-500: #10b981;
-            --amber-400:  #fbbf24;
+            --amber-400: #fbbf24;
 
-            --surface:    #ffffff;
-            --bg:         #f1f5f9;
-            --border:     #e2e8f0;
-            --text-900:   #0f172a;
-            --text-700:   #334155;
-            --text-500:   #64748b;
-            --text-400:   #94a3b8;
-            --text-300:   #cbd5e1;
+            --surface: #ffffff;
+            --bg: #f1f5f9;
+            --border: #e2e8f0;
+            --text-900: #0f172a;
+            --text-700: #334155;
+            --text-500: #64748b;
+            --text-400: #94a3b8;
+            --text-300: #cbd5e1;
 
-            --radius-card:  18px;
+            --radius-card: 18px;
             --radius-input: 11px;
-            --radius-btn:   9px;
+            --radius-btn: 9px;
             --shadow-card:
-                0 0 0 1px rgba(99,102,241,.07),
-                0 2px 4px  rgba(15,23,42,.04),
-                0 8px 16px rgba(15,23,42,.06),
-                0 32px 64px rgba(15,23,42,.10);
-            --ease: 200ms cubic-bezier(.4,0,.2,1);
+                0 0 0 1px rgba(99, 102, 241, .07),
+                0 2px 4px rgba(15, 23, 42, .04),
+                0 8px 16px rgba(15, 23, 42, .06),
+                0 32px 64px rgba(15, 23, 42, .10);
+            --ease: 200ms cubic-bezier(.4, 0, .2, 1);
         }
 
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        html, body {
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html,
+        body {
             height: 100%;
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             -webkit-font-smoothing: antialiased;
@@ -79,8 +89,8 @@
             flex-direction: column;
             padding: 48px 52px 44px;
             background:
-                radial-gradient(ellipse 70% 55% at 18% 22%, rgba(255,255,255,.14) 0%, transparent 60%),
-                radial-gradient(ellipse 55% 48% at 82% 78%, rgba(99,102,241,.22) 0%, transparent 55%),
+                radial-gradient(ellipse 70% 55% at 18% 22%, rgba(255, 255, 255, .14) 0%, transparent 60%),
+                radial-gradient(ellipse 55% 48% at 82% 78%, rgba(99, 102, 241, .22) 0%, transparent 55%),
                 linear-gradient(148deg, #1e3a8a 0%, #1d4ed8 36%, #2563eb 60%, #6366f1 100%);
         }
 
@@ -90,8 +100,8 @@
             position: absolute;
             inset: 0;
             background-image:
-                linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px);
+                linear-gradient(rgba(255, 255, 255, .05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, .05) 1px, transparent 1px);
             background-size: 36px 36px;
             pointer-events: none;
         }
@@ -100,16 +110,19 @@
         .panel-left::after {
             content: '';
             position: absolute;
-            top: -150px; right: -100px;
-            width: 500px; height: 500px;
+            top: -150px;
+            right: -100px;
+            width: 500px;
+            height: 500px;
             border-radius: 50%;
-            background: radial-gradient(circle, rgba(147,197,253,.16) 0%, transparent 65%);
+            background: radial-gradient(circle, rgba(147, 197, 253, .16) 0%, transparent 65%);
             pointer-events: none;
         }
 
         /* Brand header */
         .brand-header {
-            position: relative; z-index: 2;
+            position: relative;
+            z-index: 2;
             display: flex;
             align-items: center;
             gap: 13px;
@@ -118,14 +131,18 @@
 
         .brand-icon {
             flex-shrink: 0;
-            width: 46px; height: 46px;
+            width: 46px;
+            height: 46px;
             border-radius: 13px;
-            background: rgba(255,255,255,.18);
-            border: 1.5px solid rgba(255,255,255,.32);
+            background: rgba(255, 255, 255, .18);
+            border: 1.5px solid rgba(255, 255, 255, .32);
             backdrop-filter: blur(12px);
-            display: flex; align-items: center; justify-content: center;
-            font-size: 22px; color: #fff;
-            box-shadow: 0 0 0 5px rgba(255,255,255,.08), 0 8px 20px rgba(30,58,138,.28);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            color: #fff;
+            box-shadow: 0 0 0 5px rgba(255, 255, 255, .08), 0 8px 20px rgba(30, 58, 138, .28);
         }
 
         .brand-name {
@@ -140,14 +157,15 @@
             display: block;
             font-size: 11px;
             font-weight: 500;
-            color: rgba(191,219,254,.85);
+            color: rgba(191, 219, 254, .85);
             letter-spacing: .3px;
             margin-top: 2px;
         }
 
         /* Hero block */
         .hero-block {
-            position: relative; z-index: 2;
+            position: relative;
+            z-index: 2;
             flex: 1;
         }
 
@@ -155,20 +173,22 @@
             display: inline-flex;
             align-items: center;
             gap: 7px;
-            background: rgba(255,255,255,.12);
-            border: 1px solid rgba(255,255,255,.2);
+            background: rgba(255, 255, 255, .12);
+            border: 1px solid rgba(255, 255, 255, .2);
             backdrop-filter: blur(8px);
             border-radius: 100px;
             padding: 5px 14px;
             font-size: 11px;
             font-weight: 700;
-            color: rgba(219,234,254,.95);
+            color: rgba(219, 234, 254, .95);
             letter-spacing: .6px;
             text-transform: uppercase;
             margin-bottom: 22px;
         }
 
-        .hero-eyebrow i { color: var(--amber-400); }
+        .hero-eyebrow i {
+            color: var(--amber-400);
+        }
 
         .hero-title {
             font-size: 2.45rem;
@@ -177,7 +197,7 @@
             letter-spacing: -1.2px;
             line-height: 1.14;
             margin-bottom: 18px;
-            text-shadow: 0 2px 16px rgba(0,0,0,.14);
+            text-shadow: 0 2px 16px rgba(0, 0, 0, .14);
         }
 
         .hero-title .accent {
@@ -189,7 +209,7 @@
 
         .hero-desc {
             font-size: 13.5px;
-            color: rgba(219,234,254,.88);
+            color: rgba(219, 234, 254, .88);
             line-height: 1.72;
             max-width: 330px;
             margin-bottom: 36px;
@@ -197,8 +217,8 @@
 
         /* Dashboard preview card */
         .illo-card {
-            background: rgba(255,255,255,.12);
-            border: 1px solid rgba(255,255,255,.2);
+            background: rgba(255, 255, 255, .12);
+            border: 1px solid rgba(255, 255, 255, .2);
             backdrop-filter: blur(16px);
             border-radius: 18px;
             padding: 20px 22px;
@@ -212,15 +232,18 @@
             gap: 12px;
             margin-bottom: 15px;
         }
-        .illo-row:last-child { margin-bottom: 0; }
+
+        .illo-row:last-child {
+            margin-bottom: 0;
+        }
 
         /* Live badge */
         .badge-live {
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            background: rgba(16,185,129,.2);
-            border: 1px solid rgba(52,211,153,.3);
+            background: rgba(16, 185, 129, .2);
+            border: 1px solid rgba(52, 211, 153, .3);
             border-radius: 100px;
             padding: 4px 11px;
             font-size: 11px;
@@ -230,84 +253,153 @@
 
         .badge-live::before {
             content: '';
-            width: 6px; height: 6px;
+            width: 6px;
+            height: 6px;
             border-radius: 50%;
             background: var(--emerald-400);
-            box-shadow: 0 0 0 3px rgba(52,211,153,.25);
+            box-shadow: 0 0 0 3px rgba(52, 211, 153, .25);
             animation: pulse 1.8s ease-in-out infinite;
         }
 
         @keyframes pulse {
-            0%,100% { box-shadow: 0 0 0 3px rgba(52,211,153,.25); }
-            50%      { box-shadow: 0 0 0 6px rgba(52,211,153,.1);  }
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 3px rgba(52, 211, 153, .25);
+            }
+
+            50% {
+                box-shadow: 0 0 0 6px rgba(52, 211, 153, .1);
+            }
         }
 
         /* Avatars */
-        .avatars { display: flex; }
+        .avatars {
+            display: flex;
+        }
+
         .av {
-            width: 28px; height: 28px;
+            width: 28px;
+            height: 28px;
             border-radius: 50%;
-            border: 2px solid rgba(30,58,138,.45);
-            display: flex; align-items: center; justify-content: center;
-            font-size: 10.5px; font-weight: 700; color: #fff;
+            border: 2px solid rgba(30, 58, 138, .45);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10.5px;
+            font-weight: 700;
+            color: #fff;
             margin-left: -7px;
         }
-        .av:first-child { margin-left: 0; }
-        .av-r { background: #be185d; }
-        .av-b { background: #0369a1; }
-        .av-g { background: #047857; }
-        .av-a { background: #b45309; }
+
+        .av:first-child {
+            margin-left: 0;
+        }
+
+        .av-r {
+            background: #be185d;
+        }
+
+        .av-b {
+            background: #0369a1;
+        }
+
+        .av-g {
+            background: #047857;
+        }
+
+        .av-a {
+            background: #b45309;
+        }
 
         /* Progress bars */
-        .bar-group { display: flex; flex-direction: column; gap: 5px; flex: 1; }
-        .bar-label {
-            display: flex; justify-content: space-between;
-            font-size: 10.5px; font-weight: 600;
-            color: rgba(219,234,254,.82);
+        .bar-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            flex: 1;
         }
+
+        .bar-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 10.5px;
+            font-weight: 600;
+            color: rgba(219, 234, 254, .82);
+        }
+
         .bar-track {
             height: 5px;
-            background: rgba(255,255,255,.12);
+            background: rgba(255, 255, 255, .12);
             border-radius: 100px;
             overflow: hidden;
         }
+
         .bar-fill {
             height: 100%;
             border-radius: 100px;
             background: linear-gradient(90deg, #93c5fd, #c4b5fd);
         }
 
-        .metric { text-align: right; margin-left: 16px; }
-        .metric-val {
-            font-size: 20px; font-weight: 800; color: #fff;
-            letter-spacing: -.5px; line-height: 1;
+        .metric {
+            text-align: right;
+            margin-left: 16px;
         }
+
+        .metric-val {
+            font-size: 20px;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: -.5px;
+            line-height: 1;
+        }
+
         .metric-lbl {
-            font-size: 9.5px; font-weight: 600;
-            color: rgba(191,219,254,.7);
-            text-transform: uppercase; letter-spacing: .6px; margin-top: 2px;
+            font-size: 9.5px;
+            font-weight: 600;
+            color: rgba(191, 219, 254, .7);
+            text-transform: uppercase;
+            letter-spacing: .6px;
+            margin-top: 2px;
         }
 
         /* Feature pills */
         .pill {
-            display: inline-flex; align-items: center; gap: 6px;
-            background: rgba(255,255,255,.13);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 255, 255, .13);
             border-radius: 100px;
             padding: 5px 11px;
-            font-size: 11.5px; font-weight: 600; color: #fff;
+            font-size: 11.5px;
+            font-weight: 600;
+            color: #fff;
             white-space: nowrap;
         }
-        .pill-g i { color: var(--emerald-400); }
-        .pill-b i { color: #93c5fd; }
-        .pill-a i { color: var(--amber-400); }
-        .pill-p i { color: #c4b5fd; }
+
+        .pill-g i {
+            color: var(--emerald-400);
+        }
+
+        .pill-b i {
+            color: #93c5fd;
+        }
+
+        .pill-a i {
+            color: var(--amber-400);
+        }
+
+        .pill-p i {
+            color: #c4b5fd;
+        }
 
         /* Stats row */
         .brand-stats {
-            position: relative; z-index: 2;
+            position: relative;
+            z-index: 2;
             display: flex;
             padding-top: 24px;
-            border-top: 1px solid rgba(255,255,255,.18);
+            border-top: 1px solid rgba(255, 255, 255, .18);
             margin-top: auto;
         }
 
@@ -315,30 +407,45 @@
             flex: 1;
             text-align: center;
             padding: 0 14px;
-            border-right: 1px solid rgba(255,255,255,.14);
+            border-right: 1px solid rgba(255, 255, 255, .14);
         }
-        .stat-block:first-child { padding-left: 0; }
-        .stat-block:last-child  { padding-right: 0; border-right: none; }
+
+        .stat-block:first-child {
+            padding-left: 0;
+        }
+
+        .stat-block:last-child {
+            padding-right: 0;
+            border-right: none;
+        }
 
         .stat-val {
-            font-size: 20px; font-weight: 800; color: #fff;
-            letter-spacing: -.5px; line-height: 1; margin-bottom: 4px;
+            font-size: 20px;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: -.5px;
+            line-height: 1;
+            margin-bottom: 4px;
         }
+
         .stat-lbl {
-            font-size: 10px; font-weight: 600;
-            color: rgba(191,219,254,.7);
-            text-transform: uppercase; letter-spacing: .7px;
+            font-size: 10px;
+            font-weight: 600;
+            color: rgba(191, 219, 254, .7);
+            text-transform: uppercase;
+            letter-spacing: .7px;
         }
 
         .panel-footer {
-            position: relative; z-index: 2;
+            position: relative;
+            z-index: 2;
             margin-top: 20px;
             font-size: 11.5px;
-            color: rgba(191,219,254,.6);
+            color: rgba(191, 219, 254, .6);
         }
 
         /* ===========================================
-           RIGHT PANEL â€” FORM
+           RIGHT PANEL - FORM
         =========================================== */
         .panel-right {
             flex: 1;
@@ -356,7 +463,7 @@
             content: '';
             position: absolute;
             inset: 0;
-            background-image: radial-gradient(rgba(99,102,241,.07) 1.2px, transparent 1.2px);
+            background-image: radial-gradient(rgba(99, 102, 241, .07) 1.2px, transparent 1.2px);
             background-size: 24px 24px;
             pointer-events: none;
         }
@@ -365,14 +472,15 @@
            LOGIN CARD
         =========================================== */
         .login-card {
-            position: relative; z-index: 1;
+            position: relative;
+            z-index: 1;
             background: var(--surface);
             border-radius: var(--radius-card);
             box-shadow: var(--shadow-card);
             padding: 2.6rem 2.4rem 2rem;
             width: 100%;
             max-width: 432px;
-            animation: slideUp .5s cubic-bezier(.16,1,.3,1) both;
+            animation: slideUp .5s cubic-bezier(.16, 1, .3, 1) both;
         }
 
         /* Card logo area */
@@ -385,13 +493,15 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 64px; height: 64px;
+            width: 64px;
+            height: 64px;
             border-radius: 20px;
             background: linear-gradient(140deg, var(--brand-600), var(--indigo-500));
             box-shadow:
-                0 0 0 6px rgba(99,102,241,.1),
-                0 10px 30px rgba(37,99,235,.32);
-            font-size: 30px; color: #fff;
+                0 0 0 6px rgba(99, 102, 241, .1),
+                0 10px 30px rgba(37, 99, 235, .32);
+            font-size: 30px;
+            color: #fff;
             position: relative;
         }
 
@@ -401,13 +511,22 @@
             position: absolute;
             inset: -9px;
             border-radius: 29px;
-            border: 1.5px solid rgba(99,102,241,.2);
+            border: 1.5px solid rgba(99, 102, 241, .2);
             animation: ringPulse 3s ease-in-out infinite;
         }
 
         @keyframes ringPulse {
-            0%,100% { opacity: .4; transform: scale(1); }
-            50%      { opacity: .9; transform: scale(1.06); }
+
+            0%,
+            100% {
+                opacity: .4;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: .9;
+                transform: scale(1.06);
+            }
         }
 
         .card-title {
@@ -427,7 +546,9 @@
         /* ===========================================
            FORM FIELDS
         =========================================== */
-        .field-block { margin-bottom: 1.1rem; }
+        .field-block {
+            margin-bottom: 1.1rem;
+        }
 
         .form-label {
             display: block;
@@ -438,11 +559,14 @@
             letter-spacing: .05px;
         }
 
-        .input-wrap { position: relative; }
+        .input-wrap {
+            position: relative;
+        }
 
         .input-icon {
             position: absolute;
-            left: 13px; top: 50%;
+            left: 13px;
+            top: 50%;
             transform: translateY(-50%);
             font-size: 15px;
             color: var(--text-400);
@@ -464,34 +588,50 @@
             border-radius: var(--radius-input);
             outline: none;
             -webkit-appearance: none;
+            appearance: none;
             transition: border-color var(--ease), box-shadow var(--ease), background var(--ease);
         }
 
-        .form-control::placeholder { color: var(--text-300); font-size: 13px; }
+        .form-control::placeholder {
+            color: var(--text-300);
+            font-size: 13px;
+        }
 
         .form-control:focus {
             border-color: var(--brand-600);
-            box-shadow: 0 0 0 4px rgba(37,99,235,.1);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, .1);
             background: #fff;
         }
 
-        .input-wrap:focus-within .input-icon { color: var(--brand-600); }
+        .input-wrap:focus-within .input-icon {
+            color: var(--brand-600);
+        }
 
         /* Show / Hide password toggle */
         .pw-toggle {
             position: absolute;
-            right: 6px; top: 50%;
+            right: 6px;
+            top: 50%;
             transform: translateY(-50%);
-            width: 34px; height: 34px;
-            border: none; background: transparent;
+            width: 34px;
+            height: 34px;
+            border: none;
+            background: transparent;
             border-radius: 8px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 15px; color: var(--text-400);
-            cursor: pointer; z-index: 3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            color: var(--text-400);
+            cursor: pointer;
+            z-index: 3;
             transition: background var(--ease), color var(--ease);
         }
 
-        .pw-toggle:hover { background: var(--brand-50); color: var(--brand-700); }
+        .pw-toggle:hover {
+            background: var(--brand-50);
+            color: var(--brand-700);
+        }
 
         /* Caps-lock warning */
         .caps-lock-hint {
@@ -502,9 +642,14 @@
             padding: 4px 9px;
             border-radius: 7px;
             background: #fffbeb;
-            font-size: 11.5px; font-weight: 600; color: #92400e;
+            font-size: 11.5px;
+            font-weight: 600;
+            color: #92400e;
         }
-        .caps-lock-hint.show { display: flex; }
+
+        .caps-lock-hint.show {
+            display: flex;
+        }
 
         /* Remember-me row */
         .remember-row {
@@ -515,7 +660,8 @@
         }
 
         .form-check-input {
-            width: 16px; height: 16px;
+            width: 16px;
+            height: 16px;
             border: 1.5px solid var(--border);
             border-radius: 5px;
             cursor: pointer;
@@ -524,8 +670,15 @@
             accent-color: var(--brand-600);
         }
 
-        .form-check-input:checked { background-color: var(--brand-600); border-color: var(--brand-600); }
-        .form-check-input:focus   { box-shadow: 0 0 0 3px rgba(37,99,235,.12); outline: none; }
+        .form-check-input:checked {
+            background-color: var(--brand-600);
+            border-color: var(--brand-600);
+        }
+
+        .form-check-input:focus {
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, .12);
+            outline: none;
+        }
 
         .form-check-label {
             margin-left: 8px;
@@ -553,53 +706,68 @@
             cursor: pointer;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 4px 16px rgba(37,99,235,.38), 0 1px 3px rgba(99,102,241,.22);
+            box-shadow: 0 4px 16px rgba(37, 99, 235, .38), 0 1px 3px rgba(99, 102, 241, .22);
             transition: box-shadow var(--ease), transform var(--ease), filter var(--ease);
         }
 
         /* Shimmer sweep on hover */
         .btn-login::before {
             content: '';
-            position: absolute; inset: 0;
-            background: linear-gradient(105deg, transparent 38%, rgba(255,255,255,.2) 50%, transparent 62%);
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(105deg, transparent 38%, rgba(255, 255, 255, .2) 50%, transparent 62%);
             transform: translateX(-100%);
             transition: transform .55s ease;
         }
 
-        .btn-login:hover:not(:disabled)::before { transform: translateX(100%); }
+        .btn-login:hover:not(:disabled)::before {
+            transform: translateX(100%);
+        }
 
         .btn-login:hover:not(:disabled) {
             filter: brightness(1.09);
-            box-shadow: 0 8px 28px rgba(37,99,235,.45), 0 2px 6px rgba(99,102,241,.28);
+            box-shadow: 0 8px 28px rgba(37, 99, 235, .45), 0 2px 6px rgba(99, 102, 241, .28);
             transform: translateY(-1.5px);
             color: #fff;
         }
 
         .btn-login:active:not(:disabled) {
             transform: translateY(0) scale(.98);
-            box-shadow: 0 2px 8px rgba(37,99,235,.3);
+            box-shadow: 0 2px 8px rgba(37, 99, 235, .3);
         }
 
-        .btn-login.loading { color: transparent !important; pointer-events: none; }
+        .btn-login.loading {
+            color: transparent !important;
+            pointer-events: none;
+        }
 
         .btn-spinner {
             display: none;
-            position: absolute; inset: 0;
-            align-items: center; justify-content: center;
+            position: absolute;
+            inset: 0;
+            align-items: center;
+            justify-content: center;
         }
 
-        .btn-login.loading .btn-spinner { display: flex; }
+        .btn-login.loading .btn-spinner {
+            display: flex;
+        }
 
         .btn-spinner::after {
             content: '';
-            width: 20px; height: 20px;
-            border: 2.5px solid rgba(255,255,255,.3);
+            width: 20px;
+            height: 20px;
+            border: 2.5px solid rgba(255, 255, 255, .3);
             border-top-color: #fff;
             border-radius: 50%;
             animation: spin .7s linear infinite;
         }
 
-        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
 
         /* ===========================================
            ALERTS
@@ -615,9 +783,23 @@
             margin-bottom: 0;
         }
 
-        .alert-danger  { background: #fff5f5; color: #7f1d1d; border-left: 3.5px solid #ef4444; }
-        .alert-success { background: #f0fdf4; color: #14532d; border-left: 3.5px solid #22c55e; }
-        .alert i { font-size: 17px; flex-shrink: 0; margin-top: 1px; }
+        .alert-danger {
+            background: #fff5f5;
+            color: #7f1d1d;
+            border-left: 3.5px solid #ef4444;
+        }
+
+        .alert-success {
+            background: #f0fdf4;
+            color: #14532d;
+            border-left: 3.5px solid #22c55e;
+        }
+
+        .alert i {
+            font-size: 17px;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
 
         /* ===========================================
            OR DIVIDER
@@ -638,9 +820,11 @@
         }
 
         .or-divider span {
-            font-size: 10.5px; font-weight: 700;
+            font-size: 10.5px;
+            font-weight: 700;
             color: var(--text-400);
-            text-transform: uppercase; letter-spacing: 1px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
             white-space: nowrap;
         }
 
@@ -654,17 +838,24 @@
         }
 
         .quick-box-header {
-            display: flex; align-items: center; justify-content: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             gap: 6px;
             background: #f8fafc;
             border-bottom: 1px solid var(--border);
             padding: 9px 16px;
-            font-size: 10.5px; font-weight: 700;
+            font-size: 10.5px;
+            font-weight: 700;
             color: var(--text-400);
-            text-transform: uppercase; letter-spacing: 1px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
-        .quick-box-header i { color: var(--amber-400); font-size: 12px; }
+        .quick-box-header i {
+            color: var(--amber-400);
+            font-size: 12px;
+        }
 
         .role-grid {
             display: grid;
@@ -676,51 +867,92 @@
             border: none;
             border-right: 1px solid var(--border);
             padding: 16px 10px 13px;
-            display: flex; flex-direction: column;
-            align-items: center; gap: 7px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 7px;
             cursor: pointer;
             transition: background var(--ease), transform var(--ease);
             position: relative;
         }
 
-        .role-btn:last-child { border-right: none; }
-        .role-btn:hover  { background: #f8fafc; }
-        .role-btn:active { transform: scale(.97); }
+        .role-btn:last-child {
+            border-right: none;
+        }
+
+        .role-btn:hover {
+            background: #f8fafc;
+        }
+
+        .role-btn:active {
+            transform: scale(.97);
+        }
 
         .role-icon {
-            width: 42px; height: 42px;
+            width: 42px;
+            height: 42px;
             border-radius: 12px;
-            display: flex; align-items: center; justify-content: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-size: 18px;
             position: relative;
         }
 
-        .role-btn.admin      .role-icon { background: #fff1f2; color: #dc2626; }
-        .role-btn.owner      .role-icon { background: #eff6ff; color: #1d4ed8; }
-        .role-btn.shopkeeper .role-icon { background: #f0fdf4; color: #15803d; }
+        .role-btn.admin .role-icon {
+            background: #fff1f2;
+            color: #dc2626;
+        }
 
-        .role-name { font-size: 12.5px; font-weight: 700; color: var(--text-900); }
-        .role-user { font-size: 10.5px; color: var(--text-400); }
+        .role-btn.owner .role-icon {
+            background: #eff6ff;
+            color: #1d4ed8;
+        }
+
+        .role-btn.shopkeeper .role-icon {
+            background: #f0fdf4;
+            color: #15803d;
+        }
+
+        .role-name {
+            font-size: 12.5px;
+            font-weight: 700;
+            color: var(--text-900);
+        }
+
+        .role-user {
+            font-size: 10.5px;
+            color: var(--text-400);
+        }
 
         .role-spinner {
             display: none;
-            position: absolute; inset: 0;
-            background: rgba(255,255,255,.85);
+            position: absolute;
+            inset: 0;
+            background: rgba(255, 255, 255, .85);
             border-radius: inherit;
-            align-items: center; justify-content: center;
+            align-items: center;
+            justify-content: center;
         }
 
         .role-spinner::after {
             content: '';
-            width: 16px; height: 16px;
+            width: 16px;
+            height: 16px;
             border: 2px solid #dbeafe;
             border-top-color: var(--brand-600);
             border-radius: 50%;
             animation: spin .7s linear infinite;
         }
 
-        .role-btn.loading-role .role-spinner { display: flex; }
-        .role-btn.loading-role { pointer-events: none; opacity: .65; }
+        .role-btn.loading-role .role-spinner {
+            display: flex;
+        }
+
+        .role-btn.loading-role {
+            pointer-events: none;
+            opacity: .65;
+        }
 
         /* Card footer */
         .card-footer-text {
@@ -733,392 +965,441 @@
         /* Input error state */
         .input-error {
             border-color: #ef4444 !important;
-            box-shadow: 0 0 0 4px rgba(239,68,68,.1) !important;
+            box-shadow: 0 0 0 4px rgba(239, 68, 68, .1) !important;
         }
 
         /* ===========================================
            KEYFRAME ANIMATIONS
         =========================================== */
         @keyframes slideUp {
-            from { opacity: 0; transform: translateY(22px); }
-            to   { opacity: 1; transform: translateY(0);    }
+            from {
+                opacity: 0;
+                transform: translateY(22px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         @keyframes brandIn {
-            from { opacity: 0; transform: translateY(16px); }
-            to   { opacity: 1; transform: translateY(0);    }
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        .brand-header { animation: brandIn .55s cubic-bezier(.16,1,.3,1) .05s both; }
-        .hero-block   { animation: brandIn .55s cubic-bezier(.16,1,.3,1) .12s both; }
-        .brand-stats  { animation: brandIn .55s cubic-bezier(.16,1,.3,1) .22s both; }
+        .brand-header {
+            animation: brandIn .55s cubic-bezier(.16, 1, .3, 1) .05s both;
+        }
+
+        .hero-block {
+            animation: brandIn .55s cubic-bezier(.16, 1, .3, 1) .12s both;
+        }
+
+        .brand-stats {
+            animation: brandIn .55s cubic-bezier(.16, 1, .3, 1) .22s both;
+        }
 
         @keyframes shake {
-            0%,100% { transform: translateX(0); }
-            20%     { transform: translateX(-7px); }
-            40%     { transform: translateX(7px); }
-            60%     { transform: translateX(-4px); }
-            80%     { transform: translateX(4px); }
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            20% {
+                transform: translateX(-7px);
+            }
+
+            40% {
+                transform: translateX(7px);
+            }
+
+            60% {
+                transform: translateX(-4px);
+            }
+
+            80% {
+                transform: translateX(4px);
+            }
         }
-        .shake { animation: shake .44s ease; }
+
+        .shake {
+            animation: shake .44s ease;
+        }
 
         /* ===========================================
            RESPONSIVE
         =========================================== */
         @media (max-width: 900px) {
-            .panel-left { display: none; }
-            .panel-right { background: linear-gradient(160deg, #eff6ff 0%, #eef2ff 100%); }
+            .panel-left {
+                display: none;
+            }
+
+            .panel-right {
+                background: linear-gradient(160deg, #eff6ff 0%, #eef2ff 100%);
+            }
         }
 
         @media (max-width: 480px) {
-            .login-card { border-radius: 18px; padding: 2rem 1.4rem 1.6rem; }
-            .panel-right { padding: 16px 12px; }
+            .login-card {
+                border-radius: 18px;
+                padding: 2rem 1.4rem 1.6rem;
+            }
+
+            .panel-right {
+                padding: 16px 12px;
+            }
         }
     </style>
 </head>
 
 <body>
 
-<div class="page">
+    <div class="page">
 
-    <!-- ==========================================
+        <!-- ==========================================
          LEFT â€” BRANDING & ILLUSTRATION PANEL
     ========================================== -->
-    <aside class="panel-left">
+        <aside class="panel-left">
 
-        <!-- Logo -->
-        <div class="brand-header">
-            <div class="brand-icon"><i class="bi bi-capsule-pill"></i></div>
-            <div>
-                <div class="brand-name">MedStore
-                    <small>Enterprise Management System</small>
+            <!-- Logo -->
+            <div class="brand-header">
+                <div class="brand-icon"><i class="bi bi-capsule-pill"></i></div>
+                <div>
+                    <div class="brand-name">MedStore
+                        <small>Enterprise Management System</small>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Hero text -->
-        <div class="hero-block">
+            <!-- Hero text -->
+            <div class="hero-block">
 
-            <div class="hero-eyebrow">
-                <i class="bi bi-lightning-charge-fill"></i>
-                Pharmacy Management &bull; v1.0
+                <div class="hero-eyebrow">
+                    <i class="bi bi-lightning-charge-fill"></i>
+                    Pharmacy Management &bull; v1.0
+                </div>
+
+                <h1 class="hero-title">
+                    Smart Pharmacy<br><span class="accent">Management</span><br>Platform
+                </h1>
+
+                <p class="hero-desc">
+                    A complete end-to-end solution to manage medicines, sales, purchases, suppliers and analytics â€”
+                    all in one secure place.
+                </p>
+
+                <!-- Dashboard preview card (illustration) -->
+                <div class="illo-card">
+
+                    <!-- Avatars + live badge -->
+                    <div class="illo-row">
+                        <div class="avatars">
+                            <div class="av av-r">A</div>
+                            <div class="av av-b">O</div>
+                            <div class="av av-g">S</div>
+                            <div class="av av-a">+1</div>
+                        </div>
+                        <div class="badge-live">Live Dashboard</div>
+                    </div>
+
+                    <!-- Progress bars + metric -->
+                    <div class="illo-row" style="align-items:center;">
+                        <div class="bar-group">
+                            <div class="bar-label"><span>Monthly Revenue</span><span>&#8377;&nbsp;82k</span></div>
+                            <div class="bar-track">
+                                <div class="bar-fill" style="width:82%;"></div>
+                            </div>
+                            <div class="bar-label" style="margin-top:6px;"><span>Stock
+                                    Utilization</span><span>64%</span></div>
+                            <div class="bar-track">
+                                <div class="bar-fill"
+                                    style="width:64%;background:linear-gradient(90deg,#6ee7b7,#a5b4fc);"></div>
+                            </div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-val">347</div>
+                            <div class="metric-lbl">Sales Today</div>
+                        </div>
+                    </div>
+
+                    <!-- Feature pills -->
+                    <div class="illo-row" style="flex-wrap:wrap;gap:6px;justify-content:flex-start;">
+                        <span class="pill pill-g"><i class="bi bi-shield-check"></i> RBAC</span>
+                        <span class="pill pill-b"><i class="bi bi-graph-up-arrow"></i> Analytics</span>
+                        <span class="pill pill-a"><i class="bi bi-bell-fill"></i> Alerts</span>
+                        <span class="pill pill-p"><i class="bi bi-receipt-cutoff"></i> Invoices</span>
+                    </div>
+
+                </div><!-- /.illo-card -->
+
+            </div><!-- /.hero-block -->
+
+            <!-- Stats row -->
+            <div class="brand-stats">
+                <div class="stat-block">
+                    <div class="stat-val">99.9%</div>
+                    <div class="stat-lbl">Uptime</div>
+                </div>
+                <div class="stat-block">
+                    <div class="stat-val">3 Roles</div>
+                    <div class="stat-lbl">Access Levels</div>
+                </div>
+                <div class="stat-block">
+                    <div class="stat-val">v1.0</div>
+                    <div class="stat-lbl">Release</div>
+                </div>
             </div>
 
-            <h1 class="hero-title">
-                Smart Pharmacy<br><span class="accent">Management</span><br>Platform
-            </h1>
-
-            <p class="hero-desc">
-                A complete end-to-end solution to manage medicines, sales, purchases, suppliers and analytics â€” all in one secure place.
+            <p class="panel-footer">
+                &copy; <span id="brandYear">2026</span> MedStore Management System &nbsp;&bull;&nbsp; Secure
+                &nbsp;&bull;&nbsp; Reliable
             </p>
 
-            <!-- Dashboard preview card (illustration) -->
-            <div class="illo-card">
+        </aside>
 
-                <!-- Avatars + live badge -->
-                <div class="illo-row">
-                    <div class="avatars">
-                        <div class="av av-r">A</div>
-                        <div class="av av-b">O</div>
-                        <div class="av av-g">S</div>
-                        <div class="av av-a">+1</div>
-                    </div>
-                    <div class="badge-live">Live Dashboard</div>
-                </div>
-
-                <!-- Progress bars + metric -->
-                <div class="illo-row" style="align-items:center;">
-                    <div class="bar-group">
-                        <div class="bar-label"><span>Monthly Revenue</span><span>&#8377;&nbsp;82k</span></div>
-                        <div class="bar-track"><div class="bar-fill" style="width:82%;"></div></div>
-                        <div class="bar-label" style="margin-top:6px;"><span>Stock Utilization</span><span>64%</span></div>
-                        <div class="bar-track"><div class="bar-fill" style="width:64%;background:linear-gradient(90deg,#6ee7b7,#a5b4fc);"></div></div>
-                    </div>
-                    <div class="metric">
-                        <div class="metric-val">347</div>
-                        <div class="metric-lbl">Sales Today</div>
-                    </div>
-                </div>
-
-                <!-- Feature pills -->
-                <div class="illo-row" style="flex-wrap:wrap;gap:6px;justify-content:flex-start;">
-                    <span class="pill pill-g"><i class="bi bi-shield-check"></i> RBAC</span>
-                    <span class="pill pill-b"><i class="bi bi-graph-up-arrow"></i> Analytics</span>
-                    <span class="pill pill-a"><i class="bi bi-bell-fill"></i> Alerts</span>
-                    <span class="pill pill-p"><i class="bi bi-receipt-cutoff"></i> Invoices</span>
-                </div>
-
-            </div><!-- /.illo-card -->
-
-        </div><!-- /.hero-block -->
-
-        <!-- Stats row -->
-        <div class="brand-stats">
-            <div class="stat-block">
-                <div class="stat-val">99.9%</div>
-                <div class="stat-lbl">Uptime</div>
-            </div>
-            <div class="stat-block">
-                <div class="stat-val">3 Roles</div>
-                <div class="stat-lbl">Access Levels</div>
-            </div>
-            <div class="stat-block">
-                <div class="stat-val">v1.0</div>
-                <div class="stat-lbl">Release</div>
-            </div>
-        </div>
-
-        <p class="panel-footer">
-            &copy; <span id="brandYear">2026</span> MedStore Management System &nbsp;&bull;&nbsp; Secure &nbsp;&bull;&nbsp; Reliable
-        </p>
-
-    </aside>
-
-    <!-- ==========================================
+        <!-- ==========================================
          RIGHT â€” LOGIN FORM
     ========================================== -->
-    <main class="panel-right">
+        <main class="panel-right">
 
-        <div class="login-card">
+            <div class="login-card">
 
-            <!-- Company logo area -->
-            <div class="card-logo-wrap">
-                <div class="logo-ring"><i class="bi bi-capsule-pill"></i></div>
-                <h2 class="card-title">Welcome back</h2>
-                <p class="card-subtitle">Sign in to your account to continue</p>
-            </div>
-
-            <!-- Error alert -->
-            <div th:if="${error}" class="alert alert-danger mb-4" id="errorAlert" role="alert">
-                <i class="bi bi-shield-exclamation"></i>
-                <div>
-                    <div style="font-weight:700;" th:text="${error}">Invalid credentials</div>
-                    <div style="font-size:12px;opacity:.8;margin-top:2px;">Please check your username and password.</div>
+                <!-- Company logo area -->
+                <div class="card-logo-wrap">
+                    <div class="logo-ring"><i class="bi bi-capsule-pill"></i></div>
+                    <h2 class="card-title">Welcome back</h2>
+                    <p class="card-subtitle">Sign in to your account to continue</p>
                 </div>
-            </div>
 
-            <!-- Success alert -->
-            <div th:if="${message}" class="alert alert-success mb-4" role="alert">
-                <i class="bi bi-check-circle-fill"></i>
-                <span th:text="${message}">Success</span>
-            </div>
-
-            <!-- Login form â€” th:action, field names/IDs and validation logic are preserved exactly -->
-            <form th:action="@{/login}" method="post" id="loginForm" novalidate>
-
-                <!-- Username field -->
-                <div class="field-block">
-                    <label class="form-label" for="username">Username</label>
-                    <div class="input-wrap">
-                        <i class="bi bi-person-fill input-icon"></i>
-                        <input type="text"
-                               class="form-control"
-                               id="username"
-                               name="username"
-                               placeholder="Enter your username"
-                               required
-                               autofocus
-                               autocomplete="username">
+                <!-- Error alert -->
+                <div th:if="${error}" class="alert alert-danger mb-4" id="errorAlert" role="alert">
+                    <i class="bi bi-shield-exclamation"></i>
+                    <div>
+                        <div style="font-weight:700;" th:text="${error}">Invalid credentials</div>
+                        <div style="font-size:12px;opacity:.8;margin-top:2px;">Please check your username and password.
+                        </div>
                     </div>
                 </div>
 
-                <!-- Password field -->
-                <div class="field-block">
-                    <label class="form-label" for="password">Password</label>
-                    <div class="input-wrap">
-                        <i class="bi bi-lock-fill input-icon"></i>
-                        <input type="password"
-                               class="form-control"
-                               id="password"
-                               name="password"
-                               placeholder="Enter your password"
-                               required
-                               autocomplete="current-password"
-                               style="padding-right:44px;">
-                        <!-- Show / Hide password toggle -->
-                        <button type="button" class="pw-toggle" id="passwordToggle"
-                                aria-label="Show password" aria-pressed="false">
-                            <i class="bi bi-eye" id="eyeIcon"></i>
-                        </button>
-                    </div>
-                    <!-- Caps-lock warning -->
-                    <div class="caps-lock-hint" id="capsLockHint">
-                        <i class="bi bi-exclamation-triangle-fill" style="font-size:12px;"></i>
-                        Caps Lock is on
-                    </div>
+                <!-- Success alert -->
+                <div th:if="${message}" class="alert alert-success mb-4" role="alert">
+                    <i class="bi bi-check-circle-fill"></i>
+                    <span th:text="${message}">Success</span>
                 </div>
 
-                <!-- Remember me -->
-                <div class="remember-row">
-                    <div class="form-check mb-0">
-                        <input class="form-check-input" type="checkbox" id="remember" name="remember-me">
-                        <label class="form-check-label" for="remember">Remember me</label>
+                <!-- Login form â€” th:action, field names/IDs and validation logic are preserved exactly -->
+                <form th:action="@{/login}" method="post" id="loginForm" novalidate>
+
+                    <!-- Username field -->
+                    <div class="field-block">
+                        <label class="form-label" for="username">Username</label>
+                        <div class="input-wrap">
+                            <i class="bi bi-person-fill input-icon"></i>
+                            <input type="text" class="form-control" id="username" name="username"
+                                placeholder="Enter your username" required autofocus autocomplete="username">
+                        </div>
                     </div>
-                </div>
 
-                <!-- Sign-in button -->
-                <button type="submit" class="btn-login" id="loginBtn">
-                    <span class="btn-text">Sign In &nbsp;<i class="bi bi-arrow-right-short" style="font-size:18px;vertical-align:-1px;"></i></span>
-                    <span class="btn-spinner"></span>
-                </button>
+                    <!-- Password field -->
+                    <div class="field-block">
+                        <label class="form-label" for="password">Password</label>
+                        <div class="input-wrap">
+                            <i class="bi bi-lock-fill input-icon"></i>
+                            <input type="password" class="form-control" id="password" name="password"
+                                placeholder="Enter your password" required autocomplete="current-password"
+                                style="padding-right:44px;">
+                            <!-- Show / Hide password toggle -->
+                            <button type="button" class="pw-toggle" id="passwordToggle" aria-label="Show password"
+                                aria-pressed="false">
+                                <i class="bi bi-eye" id="eyeIcon"></i>
+                            </button>
+                        </div>
+                        <!-- Caps-lock warning -->
+                        <div class="caps-lock-hint" id="capsLockHint">
+                            <i class="bi bi-exclamation-triangle-fill" style="font-size:12px;"></i>
+                            Caps Lock is on
+                        </div>
+                    </div>
 
-            </form>
+                    <!-- Remember me -->
+                    <div class="remember-row">
+                        <div class="form-check mb-0">
+                            <input class="form-check-input" type="checkbox" id="remember" name="remember-me">
+                            <label class="form-check-label" for="remember">Remember me</label>
+                        </div>
+                    </div>
 
-            <!-- Quick login divider -->
-            <div class="or-divider"><span>or continue as</span></div>
+                    <!-- Sign-in button -->
+                    <button type="submit" class="btn-login" id="loginBtn">
+                        <span class="btn-text">Sign In &nbsp;<i class="bi bi-arrow-right-short"
+                                style="font-size:18px;vertical-align:-1px;"></i></span>
+                        <span class="btn-spinner"></span>
+                    </button>
 
-            <!-- Quick login demo accounts -->
-            <div class="quick-box">
-                <div class="quick-box-header">
-                    <i class="bi bi-lightning-charge-fill"></i>
-                    Quick Login &mdash; Demo Accounts
-                </div>
-                <div class="role-grid">
+                </form>
 
-                    <!-- Admin -->
-                    <button type="button" class="role-btn admin"
-                            onclick="quickLogin(this,'admin','admin123')"
+                <!-- Quick login divider -->
+                <div class="or-divider"><span>or continue as</span></div>
+
+                <!-- Quick login demo accounts -->
+                <div class="quick-box">
+                    <div class="quick-box-header">
+                        <i class="bi bi-lightning-charge-fill"></i>
+                        Quick Login &mdash; Demo Accounts
+                    </div>
+                    <div class="role-grid">
+
+                        <!-- Admin -->
+                        <button type="button" class="role-btn admin" onclick="quickLogin(this,'admin','admin123')"
                             title="Login as Admin">
-                        <div class="role-icon">
-                            <i class="bi bi-shield-fill-check"></i>
-                            <span class="role-spinner"></span>
-                        </div>
-                        <div class="role-name">Admin</div>
-                        <div class="role-user">admin</div>
-                    </button>
+                            <div class="role-icon">
+                                <i class="bi bi-shield-fill-check"></i>
+                                <span class="role-spinner"></span>
+                            </div>
+                            <div class="role-name">Admin</div>
+                            <div class="role-user">admin</div>
+                        </button>
 
-                    <!-- Owner -->
-                    <button type="button" class="role-btn owner"
-                            onclick="quickLogin(this,'default_owner','Owner@123')"
-                            title="Login as Owner">
-                        <div class="role-icon">
-                            <i class="bi bi-person-badge-fill"></i>
-                            <span class="role-spinner"></span>
-                        </div>
-                        <div class="role-name">Owner</div>
-                        <div class="role-user">default_owner</div>
-                    </button>
+                        <!-- Owner -->
+                        <button type="button" class="role-btn owner"
+                            onclick="quickLogin(this,'default_owner','Owner@123')" title="Login as Owner">
+                            <div class="role-icon">
+                                <i class="bi bi-person-badge-fill"></i>
+                                <span class="role-spinner"></span>
+                            </div>
+                            <div class="role-name">Owner</div>
+                            <div class="role-user">default_owner</div>
+                        </button>
 
-                    <!-- Shopkeeper -->
-                    <button type="button" class="role-btn shopkeeper"
-                            onclick="quickLogin(this,'shop1','shop123')"
+                        <!-- Shopkeeper -->
+                        <button type="button" class="role-btn shopkeeper" onclick="quickLogin(this,'shop1','shop123')"
                             title="Login as Shopkeeper">
-                        <div class="role-icon">
-                            <i class="bi bi-shop-window"></i>
-                            <span class="role-spinner"></span>
-                        </div>
-                        <div class="role-name">Shopkeeper</div>
-                        <div class="role-user">shop1</div>
-                    </button>
+                            <div class="role-icon">
+                                <i class="bi bi-shop-window"></i>
+                                <span class="role-spinner"></span>
+                            </div>
+                            <div class="role-name">Shopkeeper</div>
+                            <div class="role-user">shop1</div>
+                        </button>
 
-                </div>
-            </div><!-- /.quick-box -->
+                    </div>
+                </div><!-- /.quick-box -->
 
-            <!-- Card footer -->
-            <p class="card-footer-text">
-                &copy; <span id="footerYear">2026</span> MedStore Management &bull; v1.0.0
-            </p>
+                <!-- Card footer -->
+                <p class="card-footer-text">
+                    &copy; <span id="footerYear">2026</span> MedStore Management &bull; v1.0.0
+                </p>
 
-        </div><!-- /.login-card -->
+            </div><!-- /.login-card -->
 
-    </main>
+        </main>
 
-</div><!-- /.page -->
+    </div><!-- /.page -->
 
-<script>
-(function () {
-    'use strict';
+    <script>
+        (function () {
+            'use strict';
 
-    var loginForm      = document.getElementById('loginForm');
-    var loginBtn       = document.getElementById('loginBtn');
-    var usernameInput  = document.getElementById('username');
-    var passwordInput  = document.getElementById('password');
-    var passwordToggle = document.getElementById('passwordToggle');
-    var eyeIcon        = document.getElementById('eyeIcon');
-    var capsLockHint   = document.getElementById('capsLockHint');
+            var loginForm = document.getElementById('loginForm');
+            var loginBtn = document.getElementById('loginBtn');
+            var usernameInput = document.getElementById('username');
+            var passwordInput = document.getElementById('password');
+            var passwordToggle = document.getElementById('passwordToggle');
+            var eyeIcon = document.getElementById('eyeIcon');
+            var capsLockHint = document.getElementById('capsLockHint');
 
-    /* Year stamps */
-    var now = new Date().getFullYear();
-    document.querySelectorAll('#footerYear,#brandYear').forEach(function (el) { el.textContent = now; });
+            /* Year stamps */
+            var now = new Date().getFullYear();
+            document.querySelectorAll('#footerYear,#brandYear').forEach(function (el) { el.textContent = now; });
 
-    /* Quick Login */
-    window.quickLogin = function (btn, user, pass) {
-        btn.classList.add('loading-role');
-        usernameInput.value = user;
-        passwordInput.value = pass;
-        loginBtn.classList.add('loading');
-        loginForm.submit();
-    };
+            /* Quick Login */
+            window.quickLogin = function (btn, user, pass) {
+                btn.classList.add('loading-role');
+                usernameInput.value = user;
+                passwordInput.value = pass;
+                loginBtn.classList.add('loading');
+                loginForm.submit();
+            };
 
-    /* Form Submit */
-    if (loginForm) {
-        loginForm.addEventListener('submit', function (e) {
-            var u = usernameInput.value.trim();
-            var p = passwordInput.value;
-            if (!u || !p) {
-                e.preventDefault();
-                [usernameInput, passwordInput].forEach(function (inp) {
-                    if (!inp.value.trim()) {
-                        inp.classList.add('input-error', 'shake');
-                        inp.addEventListener('animationend', function () {
-                            inp.classList.remove('shake');
-                        }, { once: true });
+            /* Form Submit */
+            if (loginForm) {
+                loginForm.addEventListener('submit', function (e) {
+                    var u = usernameInput.value.trim();
+                    var p = passwordInput.value;
+                    if (!u || !p) {
+                        e.preventDefault();
+                        [usernameInput, passwordInput].forEach(function (inp) {
+                            if (!inp.value.trim()) {
+                                inp.classList.add('input-error', 'shake');
+                                inp.addEventListener('animationend', function () {
+                                    inp.classList.remove('shake');
+                                }, { once: true });
+                            }
+                        });
+                        return;
                     }
+                    loginBtn.classList.add('loading');
+                    loginBtn.disabled = true;
                 });
-                return;
+
+                [usernameInput, passwordInput].forEach(function (inp) {
+                    inp.addEventListener('input', function () {
+                        inp.classList.remove('input-error');
+                    });
+                });
             }
-            loginBtn.classList.add('loading');
-            loginBtn.disabled = true;
-        });
 
-        [usernameInput, passwordInput].forEach(function (inp) {
-            inp.addEventListener('input', function () {
-                inp.classList.remove('input-error');
-            });
-        });
-    }
+            /* Password Toggle */
+            if (passwordToggle && passwordInput) {
+                passwordToggle.addEventListener('click', function () {
+                    var isPwd = passwordInput.type === 'password';
+                    passwordInput.type = isPwd ? 'text' : 'password';
+                    eyeIcon.className = isPwd ? 'bi bi-eye-slash' : 'bi bi-eye';
+                    passwordToggle.setAttribute('aria-label', isPwd ? 'Hide password' : 'Show password');
+                    passwordToggle.setAttribute('aria-pressed', String(isPwd));
+                    passwordInput.focus();
+                });
+            }
 
-    /* Password Toggle */
-    if (passwordToggle && passwordInput) {
-        passwordToggle.addEventListener('click', function () {
-            var isPwd = passwordInput.type === 'password';
-            passwordInput.type = isPwd ? 'text' : 'password';
-            eyeIcon.className  = isPwd ? 'bi bi-eye-slash' : 'bi bi-eye';
-            passwordToggle.setAttribute('aria-label',   isPwd ? 'Hide password' : 'Show password');
-            passwordToggle.setAttribute('aria-pressed', String(isPwd));
-            passwordInput.focus();
-        });
-    }
+            /* Caps Lock Detection */
+            if (passwordInput && capsLockHint) {
+                passwordInput.addEventListener('keydown', function (e) {
+                    capsLockHint.classList.toggle('show', e.getModifierState('CapsLock'));
+                });
+                passwordInput.addEventListener('blur', function () {
+                    capsLockHint.classList.remove('show');
+                });
+            }
 
-    /* Caps Lock Detection */
-    if (passwordInput && capsLockHint) {
-        passwordInput.addEventListener('keydown', function (e) {
-            capsLockHint.classList.toggle('show', e.getModifierState('CapsLock'));
-        });
-        passwordInput.addEventListener('blur', function () {
-            capsLockHint.classList.remove('show');
-        });
-    }
+            /* Auto-dismiss alerts after 8 s */
+            setTimeout(function () {
+                document.querySelectorAll('.alert').forEach(function (el) {
+                    el.style.transition = 'opacity 0.5s, transform 0.5s';
+                    el.style.opacity = '0';
+                    el.style.transform = 'translateY(-6px)';
+                    setTimeout(function () { el.remove(); }, 540);
+                });
+            }, 8000);
 
-    /* Auto-dismiss alerts after 8 s */
-    setTimeout(function () {
-        document.querySelectorAll('.alert').forEach(function (el) {
-            el.style.transition = 'opacity 0.5s, transform 0.5s';
-            el.style.opacity = '0';
-            el.style.transform = 'translateY(-6px)';
-            setTimeout(function () { el.remove(); }, 540);
-        });
-    }, 8000);
-
-    /* Shake card on error load */
-    if (document.getElementById('errorAlert') && loginForm) {
-        loginForm.parentElement.classList.add('shake');
-        loginForm.parentElement.addEventListener('animationend', function () {
-            loginForm.parentElement.classList.remove('shake');
-        }, { once: true });
-    }
-})();
-</script>
+            /* Shake card on error load */
+            if (document.getElementById('errorAlert') && loginForm) {
+                loginForm.parentElement.classList.add('shake');
+                loginForm.parentElement.addEventListener('animationend', function () {
+                    loginForm.parentElement.classList.remove('shake');
+                }, { once: true });
+            }
+        })();
+    </script>
 
 </body>
+
 </html>

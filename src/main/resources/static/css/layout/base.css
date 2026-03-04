@@ -140,18 +140,8 @@
     }
 }
 
-.main-body {
-    animation: fadeInUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-    height: calc(100vh - var(--header-height));
-    overflow-y: auto;
-    position: relative;
-    /* contain:layout is safe — does NOT create a stacking context by itself */
-    contain: layout;
-    /* NOTE: will-change:transform must NOT be set here permanently.
-       It creates a new stacking context which traps Bootstrap modal
-       z-indices inside this element, making the backdrop appear above
-       the modal dialog (faded/blocked). */
-}
+/* .main-body definition lives in header.css (flex:1, overflow-y:auto) */
+/* Kept the fadeInUp animation reference here for other elements */
 
 /* Premium styled scrollbar for main-body & sidebar */
 .main-body::-webkit-scrollbar,

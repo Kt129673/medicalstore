@@ -19,22 +19,26 @@
                 overflow: hidden;
                 transition: box-shadow var(--transition-base), transform var(--transition-base);
             }
+
             .chart-card:hover {
                 box-shadow: var(--shadow-lg);
                 transform: translateY(-2px);
             }
+
             .chart-card .chart-header {
                 padding: 18px 24px 0;
                 display: flex;
                 align-items: center;
                 justify-content: space-between;
             }
+
             .chart-card .chart-header h6 {
                 font-weight: 700;
                 font-size: var(--text-md);
                 color: var(--text-primary);
                 margin: 0;
             }
+
             .chart-card .chart-header .chart-badge {
                 font-size: var(--text-xs);
                 padding: 4px 10px;
@@ -43,7 +47,10 @@
                 background: var(--bg-tertiary);
                 color: var(--text-secondary);
             }
-            .chart-card .chart-body { padding: 16px 24px 20px; }
+
+            .chart-card .chart-body {
+                padding: 16px 24px 20px;
+            }
 
             /* Alert Section */
             .alert-section {
@@ -53,6 +60,7 @@
                 border: 1px solid var(--border-color);
                 overflow: hidden;
             }
+
             .alert-section .alert-header {
                 padding: 16px 24px;
                 border-bottom: 1px solid var(--border-color);
@@ -61,12 +69,14 @@
                 align-items: center;
                 justify-content: space-between;
             }
+
             .alert-section .alert-header h6 {
                 font-weight: 700;
                 font-size: var(--text-md);
                 color: var(--text-primary);
                 margin: 0;
             }
+
             .stock-item {
                 display: flex;
                 align-items: center;
@@ -74,8 +84,15 @@
                 border-bottom: 1px solid var(--border-color);
                 transition: background var(--transition-fast);
             }
-            .stock-item:hover { background: var(--bg-secondary); }
-            .stock-item:last-child { border-bottom: none; }
+
+            .stock-item:hover {
+                background: var(--bg-secondary);
+            }
+
+            .stock-item:last-child {
+                border-bottom: none;
+            }
+
             .stock-badge {
                 display: inline-flex;
                 align-items: center;
@@ -86,9 +103,21 @@
                 font-weight: 700;
                 font-size: var(--text-xs);
             }
-            .stock-critical { background: #fee2e2; color: var(--danger-color); }
-            .stock-warning  { background: #fef3c7; color: #d97706; }
-            .stock-ok       { background: #dcfce7; color: var(--success-color); }
+
+            .stock-critical {
+                background: #fee2e2;
+                color: var(--danger-color);
+            }
+
+            .stock-warning {
+                background: #fef3c7;
+                color: #d97706;
+            }
+
+            .stock-ok {
+                background: #dcfce7;
+                color: var(--success-color);
+            }
 
             /* Expiry Alert Cards */
             .expiry-grid {
@@ -166,6 +195,7 @@
                 border: 1px solid var(--border-color);
                 overflow: hidden;
             }
+
             .txn-card .txn-header {
                 padding: 16px 24px;
                 border-bottom: 1px solid var(--border-color);
@@ -174,13 +204,19 @@
                 align-items: center;
                 justify-content: space-between;
             }
+
             .txn-card .txn-header h6 {
                 font-weight: 700;
                 font-size: var(--text-md);
                 color: var(--text-primary);
                 margin: 0;
             }
-            .txn-table { width: 100%; border-collapse: collapse; }
+
+            .txn-table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+
             .txn-table thead th {
                 padding: 10px 16px;
                 font-size: var(--text-xs);
@@ -191,14 +227,21 @@
                 background: var(--bg-tertiary);
                 border-bottom: 2px solid var(--border-color);
             }
+
             .txn-table tbody td {
                 padding: 12px 16px;
                 font-size: var(--text-sm);
                 color: var(--text-primary);
                 border-bottom: 1px solid var(--border-color);
             }
-            .txn-table tbody tr:hover { background: var(--bg-secondary); }
-            .txn-table tbody tr:last-child td { border-bottom: none; }
+
+            .txn-table tbody tr:hover {
+                background: var(--bg-secondary);
+            }
+
+            .txn-table tbody tr:last-child td {
+                border-bottom: none;
+            }
 
             /* Section heading */
             .section-heading {
@@ -210,11 +253,15 @@
                 align-items: center;
                 gap: var(--space-2);
             }
-            .section-heading i { font-size: var(--text-lg); color: var(--primary-color); }
+
+            .section-heading i {
+                font-size: var(--text-lg);
+                color: var(--primary-color);
+            }
 
             /* Skeleton shimmer for async KPI loading */
             .skeleton {
-                background: linear-gradient(90deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.38) 40%, rgba(255,255,255,0.18) 80%);
+                background: linear-gradient(90deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.38) 40%, rgba(255, 255, 255, 0.18) 80%);
                 background-size: 400px 100%;
                 border-radius: 4px;
                 display: inline-block;
@@ -224,15 +271,60 @@
                 vertical-align: middle;
                 animation: skeleton-shimmer 1.4s linear infinite;
             }
+
             /* KPI value size override for dashboard */
-            .kpi-card .kpi-value { font-size: 1.75rem; letter-spacing: -0.8px; }
+            .kpi-card .kpi-value {
+                font-size: 1.75rem;
+                letter-spacing: -0.8px;
+            }
+
+            /* Skeleton shimmer keyframe (used by .skeleton class below) */
+            @keyframes skeleton-shimmer {
+                0% {
+                    background-position: -400px 0;
+                }
+
+                100% {
+                    background-position: 400px 0;
+                }
+            }
+
+            /* Payment method badges */
+            .payment-badge {
+                display: inline-flex;
+                align-items: center;
+                padding: 3px 9px;
+                border-radius: 999px;
+                font-size: 11px;
+                font-weight: 700;
+                letter-spacing: 0.3px;
+                white-space: nowrap;
+            }
+
+            .payment-cash {
+                background: #dcfce7;
+                color: #15803d;
+            }
+
+            .payment-card {
+                background: #dbeafe;
+                color: #1d4ed8;
+            }
+
+            .payment-upi {
+                background: #fdf4ff;
+                color: #7e22ce;
+            }
         </style>
 
         <!-- ═══════════ PAGE HEADER ═══════════ -->
-        <div th:insert="~{fragments :: page-header('Dashboard', 'Store overview &amp; daily operations', 'bi bi-speedometer2', null, null, null)}"></div>
+        <div
+            th:insert="~{fragments :: page-header('Dashboard', 'Store overview &amp; daily operations', 'bi bi-speedometer2', null, null, null)}">
+        </div>
 
         <!-- ═══════════ QUICK ACTIONS (Admin + Shopkeeper only) ═══════════ -->
-        <div sec:authorize="hasAnyRole('ADMIN','SHOPKEEPER')" class="d-flex align-items-center justify-content-between mb-4 p-4 bg-white rounded-3 border shadow-sm">
+        <div sec:authorize="hasAnyRole('ADMIN','SHOPKEEPER')"
+            class="d-flex align-items-center justify-content-between mb-4 p-4 bg-white rounded-3 border shadow-sm">
             <div>
                 <h5 class="mb-0 fw-bold text-dark">
                     <i class="bi bi-speedometer2 me-2 text-primary"></i>Daily Operations
@@ -241,19 +333,19 @@
             </div>
             <div class="d-flex gap-2 flex-wrap">
                 <a href="/sales/new" class="btn btn-success btn-sm">
-                    <i class="bi bi-cart-plus"></i>New Sale
+                    <i class="bi bi-cart-plus me-1"></i>New Sale
                 </a>
                 <a href="/medicines" class="btn btn-info btn-sm text-white">
-                    <i class="bi bi-capsule-pill"></i>Medicines
+                    <i class="bi bi-capsule-pill me-1"></i>Medicines
                 </a>
                 <a href="/customers" class="btn btn-primary btn-sm">
-                    <i class="bi bi-person-plus"></i>Customers
+                    <i class="bi bi-person-plus me-1"></i>Customers
                 </a>
                 <a href="/purchases" class="btn btn-warning btn-sm text-dark">
-                    <i class="bi bi-bag-plus"></i>Purchase
+                    <i class="bi bi-bag-plus me-1"></i>Purchase
                 </a>
                 <a href="/reports" class="btn btn-outline-secondary btn-sm">
-                    <i class="bi bi-file-earmark-text"></i>Reports
+                    <i class="bi bi-file-earmark-text me-1"></i>Reports
                 </a>
             </div>
         </div>
@@ -517,10 +609,10 @@
                                 let totalQty = '—';
                                 if (sale.items && sale.items.length > 0) {
                                     if (sale.items.length === 1) {
-                                        medName  = sale.items[0].medicine ? sale.items[0].medicine.name : '—';
+                                        medName = sale.items[0].medicine ? sale.items[0].medicine.name : '—';
                                         totalQty = sale.items[0].quantity;
                                     } else {
-                                        medName  = sale.items.map(i => i.medicine ? i.medicine.name : '—').join(', ');
+                                        medName = sale.items.map(i => i.medicine ? i.medicine.name : '—').join(', ');
                                         totalQty = sale.items.reduce((s, i) => s + (i.quantity || 0), 0);
                                     }
                                 }
