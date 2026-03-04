@@ -234,6 +234,211 @@ public class DataInitializer implements CommandLineRunner {
 
         // 7. Seed subscription feature flags per plan tier (idempotent)
         seedSubscriptionFeatures();
+
+        // 8. Seed additional demo owners with multiple branches and different subscriptions
+        seedDemoOwners();
+    }
+
+    /**
+     * Seeds two additional demo owners demonstrating the full hierarchy:
+     * admin → multiple owners → multiple branches per owner → different subscriptions.
+     * All operations are idempotent — nothing is duplicated on re-run.
+     */
+    private void seedDemoOwners() {
+
+        // ── Owner 2: PRO plan, 2 branches ─────────────────────────────────────────
+        User ownerPro = ensureOwner("owner_pro", "Amit Sharma",
+                "owner.pro@medicalstore.com", "OwnerPro@123");
+        ensureSubscription(ownerPro, "PRO", 12, 10, 5);
+
+        Branch b2a = ensureBranch(ownerPro,
+                "Sharma Medicals - Main Branch",
+                "45 Connaught Place, New Delhi",
+                "9811000001", "GST07SHRM0001");
+        Branch b2b = ensureBranch(ownerPro,
+                "Sharma Medicals - North Branch",
+                "12 Kamla Nagar, Delhi",
+                "9811000002", "GST07SHRM0002");
+
+        ensureShopkeeper("shop_pro_1", "Shopkeeper Pro 1",
+                "shop.pro1@medicalstore.com", "ShopPro@123", b2a);
+        ensureShopkeeper("shop_pro_2", "Shopkeeper Pro 2",
+                "shop.pro2@medicalstore.com", "ShopPro@123", b2b);
+
+        seedBranchSampleData(b2a, "B2A", 200_000_000L);
+        seedBranchSampleData(b2b, "B2B", 200_100_000L);
+
+        // ── Owner 3: ENTERPRISE plan, 3 branches ──────────────────────────────────
+        User ownerEnt = ensureOwner("owner_enterprise", "Priya Patel",
+                "owner.enterprise@medicalstore.com", "OwnerEnt@123");
+        ensureSubscription(ownerEnt, "ENTERPRISE", 24, 30, 20);
+
+        Branch b3a = ensureBranch(ownerEnt,
+                "Patel HealthCare - Central Store",
+                "101 Marine Drive, Mumbai",
+                "9922000001", "GST27PATL0001");
+        Branch b3b = ensureBranch(ownerEnt,
+                "Patel HealthCare - West Store",
+                "78 Linking Road, Mumbai",
+                "9922000002", "GST27PATL0002");
+        Branch b3c = ensureBranch(ownerEnt,
+                "Patel HealthCare - East Store",
+                "56 LBS Marg, Mumbai",
+                "9922000003", "GST27PATL0003");
+
+        ensureShopkeeper("shop_ent_1", "Shopkeeper Ent 1",
+                "shop.ent1@medicalstore.com", "ShopEnt@123", b3a);
+        ensureShopkeeper("shop_ent_2", "Shopkeeper Ent 2",
+                "shop.ent2@medicalstore.com", "ShopEnt@123", b3b);
+        ensureShopkeeper("shop_ent_3", "Shopkeeper Ent 3",
+                "shop.ent3@medicalstore.com", "ShopEnt@123", b3c);
+
+        seedBranchSampleData(b3a, "B3A", 300_000_000L);
+        seedBranchSampleData(b3b, "B3B", 300_100_000L);
+        seedBranchSampleData(b3c, "B3C", 300_200_000L);
+    }
+
+    /** Creates an OWNER user if one with the given username does not already exist. */
+    private User ensureOwner(String username, String fullName, String email, String password) {
+        if (!userRepository.existsByUsername(username)) {
+            User owner = new User();
+            owner.setUsername(username);
+            owner.setFullName(fullName);
+            owner.setEmail(email);
+            owner.setRoles(Set.of("OWNER"));
+            owner.setPassword(passwordEncoder.encode(password));
+            owner.setEnabled(true);
+            owner.setAccountNonLocked(true);
+            owner = userRepository.save(owner);
+            log.info("Demo owner created: {} / {}", username, password);
+            return owner;
+        }
+        return userRepository.findByUsername(username).orElseThrow();
+    }
+
+    /** Creates a SubscriptionPlan for the given owner if one does not already exist. */
+    private void ensureSubscription(User owner, String planType,
+            int monthsUntilExpiry, int maxUsers, int maxBranches) {
+        if (subscriptionPlanRepository.findByOwnerId(owner.getId()).isEmpty()) {
+            SubscriptionPlan plan = new SubscriptionPlan();
+            plan.setOwner(owner);
+            plan.setPlanType(planType);
+            plan.setExpiryDate(LocalDate.now().plusMonths(monthsUntilExpiry));
+            plan.setMaxUsers(maxUsers);
+            plan.setMaxBranches(maxBranches);
+            plan.setActive(true);
+            subscriptionPlanRepository.save(plan);
+            log.info("{} subscription plan created for {}", planType, owner.getUsername());
+        }
+    }
+
+    /** Returns an existing Branch (matched by name + owner) or creates a new one. */
+    private Branch ensureBranch(User owner, String name, String address,
+            String phone, String gstNumber) {
+        return branchRepository.findByOwnerId(owner.getId()).stream()
+                .filter(b -> b.getName().equalsIgnoreCase(name))
+                .findFirst()
+                .orElseGet(() -> {
+                    Branch b = new Branch();
+                    b.setName(name);
+                    b.setAddress(address);
+                    b.setPhone(phone);
+                    b.setGstNumber(gstNumber);
+                    b.setIsActive(true);
+                    b.setOwner(owner);
+                    Branch saved = branchRepository.save(b);
+                    log.info("Branch created: '{}' for owner '{}'", name, owner.getUsername());
+                    return saved;
+                });
+    }
+
+    /** Creates a SHOPKEEPER user assigned to the given branch if one does not already exist. */
+    private void ensureShopkeeper(String username, String fullName,
+            String email, String password, Branch branch) {
+        if (!userRepository.existsByUsername(username)) {
+            User sk = new User();
+            sk.setUsername(username);
+            sk.setFullName(fullName);
+            sk.setEmail(email);
+            sk.setRoles(Set.of("SHOPKEEPER"));
+            sk.setPassword(passwordEncoder.encode(password));
+            sk.setEnabled(true);
+            sk.setAccountNonLocked(true);
+            sk.setBranch(branch);
+            userRepository.save(sk);
+            log.info("Demo shopkeeper created: {} (branch={})", username, branch.getName());
+        }
+    }
+
+    /**
+     * Seeds a representative set of medicines, customers and sales for any branch.
+     * All barcodes are namespaced with {@code prefix} to remain globally unique.
+     * Phone numbers are derived from {@code phoneBase} to avoid conflicts.
+     * All operations are idempotent.
+     */
+    private void seedBranchSampleData(Branch branch, String prefix, long phoneBase) {
+
+        // --- Suppliers ---
+        Supplier sup1 = seedSupplier(branch, "Sun Pharma", "Raj Kumar",
+                "9001000001", "sunpharma@example.com", "Mumbai, Maharashtra", "GST27SUNPH0001");
+        Supplier sup2 = seedSupplier(branch, "Cipla Ltd", "Anita Sharma",
+                "9001000002", "cipla@example.com", "Pune, Maharashtra", "GST27CIPLA0001");
+
+        // --- Medicines: normal stock ---
+        seedMedicine(branch, sup1, "Paracetamol 500mg", "Analgesics",
+                "Sun Pharma", 10.0, 200, LocalDate.now().plusYears(2),
+                prefix + "-BATCH-P001", prefix + "-BC-001", "30049099", "Paracetamol", 7.0, 12.0, 5.0, "OTC");
+        seedMedicine(branch, sup1, "Amoxicillin 250mg", "Antibiotics",
+                "Sun Pharma", 45.0, 150, LocalDate.now().plusYears(1),
+                prefix + "-BATCH-A001", prefix + "-BC-002", "30041000", "Amoxicillin Trihydrate", 35.0, 55.0, 12.0, "H");
+        seedMedicine(branch, sup2, "Cetirizine 10mg", "Antihistamines",
+                "Cipla Ltd", 8.0, 300, LocalDate.now().plusYears(2),
+                prefix + "-BATCH-C001", prefix + "-BC-003", "30045090", "Cetirizine Hydrochloride", 5.0, 10.0, 5.0, "OTC");
+        seedMedicine(branch, sup2, "Metformin 500mg", "Antidiabetic",
+                "Cipla Ltd", 25.0, 180, LocalDate.now().plusYears(2),
+                prefix + "-BATCH-M001", prefix + "-BC-004", "30046000", "Metformin Hydrochloride", 18.0, 30.0, 5.0, "H");
+
+        // --- Medicine: low stock ---
+        seedMedicine(branch, sup1, "Azithromycin 500mg", "Antibiotics",
+                "Sun Pharma", 85.0, 4, LocalDate.now().plusYears(1),
+                prefix + "-BATCH-AZ001", prefix + "-BC-005", "30041000", "Azithromycin", 60.0, 100.0, 12.0, "H");
+
+        // --- Medicine: near-expiry ---
+        seedMedicine(branch, sup2, "Vitamin C 500mg", "Vitamins",
+                "Cipla Ltd", 15.0, 50, LocalDate.now().plusDays(25),
+                prefix + "-BATCH-VTC001", prefix + "-BC-006", "30049099", "Ascorbic Acid", 10.0, 18.0, 5.0, "OTC");
+
+        // --- Customers (phone numbers derived from phoneBase to stay unique) ---
+        Customer c1 = seedCustomer(branch, "Ramesh Patel", null,
+                branchPhone(phoneBase, 1), "12 Main Road, Bangalore",
+                LocalDate.of(1985, 6, 15));
+        Customer c2 = seedCustomer(branch, "Priya Singh", null,
+                branchPhone(phoneBase, 2), "45 Park Street, Kolkata",
+                LocalDate.of(1990, 3, 22));
+
+        // --- Sales ---
+        if (saleRepository.countByBranchId(branch.getId()) == 0) {
+            Medicine med1 = medicineRepository.findByBarcode(prefix + "-BC-001").orElse(null);
+            Medicine med3 = medicineRepository.findByBarcode(prefix + "-BC-003").orElse(null);
+            Medicine med4 = medicineRepository.findByBarcode(prefix + "-BC-004").orElse(null);
+            if (med1 != null && med3 != null) {
+                createSampleSale(branch, c1, "Cash", 0.0, 5.0,
+                        List.of(new SaleItemData(med1, 3, 10.0, 7.0),
+                                new SaleItemData(med3, 2, 8.0, 5.0)));
+            }
+            if (med4 != null) {
+                createSampleSale(branch, c2, "UPI", 5.0, 12.0,
+                        List.of(new SaleItemData(med4, 1, 25.0, 18.0)));
+            }
+            log.info("Sample sales created for branch '{}'", branch.getName());
+        }
+
+        log.info("Branch sample data seed complete for '{}'", branch.getName());
+    }
+
+    /** Builds a 10-digit Indian mobile number from a base value and a per-customer offset. */
+    private static String branchPhone(long phoneBase, int offset) {
+        return String.format("9%09d", phoneBase + offset);
     }
 
     /**
