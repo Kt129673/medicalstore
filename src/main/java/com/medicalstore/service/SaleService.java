@@ -138,11 +138,11 @@ public class SaleService {
 
     @Transactional
     @Caching(evict = {
-        @CacheEvict(value = "medicines_search",    allEntries = true),
-        @CacheEvict(value = "dashboard_kpis",      allEntries = true),
-        @CacheEvict(value = "analytics_profit",    allEntries = true),
-        @CacheEvict(value = "analytics_fastmoving",allEntries = true),
-        @CacheEvict(value = "analytics_deadstock", allEntries = true)
+            @CacheEvict(value = "medicines_search", allEntries = true),
+            @CacheEvict(value = "dashboard_kpis", allEntries = true),
+            @CacheEvict(value = "analytics_profit", allEntries = true),
+            @CacheEvict(value = "analytics_fastmoving", allEntries = true),
+            @CacheEvict(value = "analytics_deadstock", allEntries = true)
     })
     public Sale createSale(Sale sale) {
         if (sale.getItems() == null || sale.getItems().isEmpty()) {
@@ -193,25 +193,26 @@ public class SaleService {
             sale.setBranch(b);
         }
 
-        // Award loyalty points (1 point for every ₹100 spent)
+        // Always calculate discount / GST / final amount (regardless of customer)
+        double discountAmt = 0.0;
+        if (sale.getDiscountPercentage() != null && sale.getDiscountPercentage() > 0) {
+            discountAmt = (calculatedTotalAmt * sale.getDiscountPercentage()) / 100;
+        }
+        sale.setDiscountAmount(discountAmt);
+        double amtAfterDiscount = calculatedTotalAmt - discountAmt;
+
+        double gstAmt = 0.0;
+        if (sale.getGstPercentage() != null && sale.getGstPercentage() > 0) {
+            gstAmt = (amtAfterDiscount * sale.getGstPercentage()) / 100;
+        }
+        sale.setGstAmount(gstAmt);
+        sale.setFinalAmount(amtAfterDiscount + gstAmt);
+
+        // Award loyalty points (1 point for every ₹100 spent) — only when customer is
+        // attached
         if (sale.getCustomer() != null && sale.getCustomer().getId() != null) {
             Customer customer = customerRepository.findById(sale.getCustomer().getId()).orElse(null);
             if (customer != null) {
-                // To accurately reward points, we calculate discount and final amount first
-                double discountAmt = 0.0;
-                if (sale.getDiscountPercentage() != null && sale.getDiscountPercentage() > 0) {
-                    discountAmt = (calculatedTotalAmt * sale.getDiscountPercentage()) / 100;
-                }
-                sale.setDiscountAmount(discountAmt);
-                double amtAfterDiscount = calculatedTotalAmt - discountAmt;
-
-                double gstAmt = 0.0;
-                if (sale.getGstPercentage() != null && sale.getGstPercentage() > 0) {
-                    gstAmt = (amtAfterDiscount * sale.getGstPercentage()) / 100;
-                }
-                sale.setGstAmount(gstAmt);
-                sale.setFinalAmount(amtAfterDiscount + gstAmt);
-
                 int pointsToAdd = (int) (sale.getFinalAmount() / 100);
                 customer.setLoyaltyPoints(customer.getLoyaltyPoints() + pointsToAdd);
                 customerRepository.save(customer);
@@ -224,8 +225,8 @@ public class SaleService {
 
     @Transactional
     @Caching(evict = {
-        @CacheEvict(value = "medicines_search", allEntries = true),
-        @CacheEvict(value = "dashboard_kpis",   allEntries = true)
+            @CacheEvict(value = "medicines_search", allEntries = true),
+            @CacheEvict(value = "dashboard_kpis", allEntries = true)
     })
     public void deleteSale(Long id) {
         Sale sale = saleRepository.findByIdWithDetails(id)

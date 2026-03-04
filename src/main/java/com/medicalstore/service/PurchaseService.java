@@ -65,16 +65,17 @@ public class PurchaseService {
         Optional<PurchaseOrder> order = purchaseOrderRepository.findById(id);
         if (order.isPresent()) {
             Long tenantId = TenantContext.getTenantId();
-            if (tenantId != null && order.get().getBranch() != null 
-                && !tenantId.equals(order.get().getBranch().getId())) {
+            if (tenantId != null && order.get().getBranch() != null
+                    && !tenantId.equals(order.get().getBranch().getId())) {
                 roleAuditService.logEscalationAttempt("/purchases/" + id, "SHOPKEEPER",
-                        "Attempted to access purchase order from different branch (branchId=" + order.get().getBranch().getId() + ")");
+                        "Attempted to access purchase order from different branch (branchId="
+                                + order.get().getBranch().getId() + ")");
                 throw new AccessDeniedException("Access denied: purchase order belongs to a different branch");
             }
             Long ownerId = TenantContext.getOwnerId();
-            if (ownerId != null && order.get().getBranch() != null 
-                && order.get().getBranch().getOwner() != null
-                && !ownerId.equals(order.get().getBranch().getOwner().getId())) {
+            if (ownerId != null && order.get().getBranch() != null
+                    && order.get().getBranch().getOwner() != null
+                    && !ownerId.equals(order.get().getBranch().getOwner().getId())) {
                 roleAuditService.logEscalationAttempt("/purchases/" + id, "OWNER",
                         "Attempted to access purchase order belonging to different owner");
                 throw new AccessDeniedException("Access denied: purchase order belongs to a different owner");
@@ -101,8 +102,8 @@ public class PurchaseService {
 
     @Transactional
     @Caching(evict = {
-        @CacheEvict(value = "medicines_search", allEntries = true),
-        @CacheEvict(value = "dashboard_kpis",   allEntries = true)
+            @CacheEvict(value = "medicines_search", allEntries = true),
+            @CacheEvict(value = "dashboard_kpis", allEntries = true)
     })
     public PurchaseOrder receiveOrder(Long orderId, List<Integer> receivedQuantities) {
         PurchaseOrder order = purchaseOrderRepository.findById(orderId)
@@ -163,7 +164,7 @@ public class PurchaseService {
 
     private String generateOrderNumber() {
         String prefix = "PO-" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")) + "-";
-        long count = purchaseOrderRepository.count() + 1;
-        return prefix + String.format("%04d", count);
+        String uniqueSuffix = java.util.UUID.randomUUID().toString().substring(0, 6).toUpperCase();
+        return prefix + uniqueSuffix;
     }
 }

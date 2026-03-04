@@ -124,15 +124,15 @@ public class MedicineService {
         if (medicine.isPresent()) {
             Long tenantId = com.medicalstore.common.TenantContext.getTenantId();
             if (tenantId != null && medicine.get().getBranch() != null
-                && !tenantId.equals(medicine.get().getBranch().getId())) {
+                    && !tenantId.equals(medicine.get().getBranch().getId())) {
                 // Throw rather than silently return empty — consistent with all other services
                 throw new org.springframework.security.access.AccessDeniedException(
                         "Access denied: medicine belongs to a different branch");
             }
             Long ownerId = com.medicalstore.common.TenantContext.getOwnerId();
             if (ownerId != null && medicine.get().getBranch() != null
-                && medicine.get().getBranch().getOwner() != null
-                && !ownerId.equals(medicine.get().getBranch().getOwner().getId())) {
+                    && medicine.get().getBranch().getOwner() != null
+                    && !ownerId.equals(medicine.get().getBranch().getOwner().getId())) {
                 throw new org.springframework.security.access.AccessDeniedException(
                         "Access denied: medicine belongs to a different owner");
             }
@@ -150,7 +150,7 @@ public class MedicineService {
     }
 
     // --- Performance optimized search for POS ---
-    @org.springframework.cache.annotation.Cacheable(value = "medicines_search", key = "#query + '-' + T(com.medicalstore.config.TenantContext).getTenantId()")
+    @org.springframework.cache.annotation.Cacheable(value = "medicines_search", key = "#query + '-' + T(com.medicalstore.common.TenantContext).getTenantId()")
     public List<com.medicalstore.dto.MedicineDTO> searchMedicinesForPos(String query) {
         org.springframework.data.domain.Pageable top20 = org.springframework.data.domain.PageRequest.of(0, 20);
         Long tenantId = com.medicalstore.common.TenantContext.getTenantId();
@@ -186,7 +186,9 @@ public class MedicineService {
         return medicineRepository.findByExpiryDateBetween(LocalDate.now(), LocalDate.now().plusDays(days));
     }
 
-    /** COUNT-only query — avoids loading full Medicine entities just to call .size() */
+    /**
+     * COUNT-only query — avoids loading full Medicine entities just to call .size()
+     */
     public long countExpiringSoonMedicines(int days) {
         Long tenantId = com.medicalstore.common.TenantContext.getTenantId();
         Long ownerId = com.medicalstore.common.TenantContext.getOwnerId();
@@ -204,7 +206,10 @@ public class MedicineService {
         return medicineRepository.findByCategory(category);
     }
 
-    /** Explicitly fetch medicines for a specific branch (used by Owner branch detail). */
+    /**
+     * Explicitly fetch medicines for a specific branch (used by Owner branch
+     * detail).
+     */
     public List<Medicine> getMedicinesByBranch(Long branchId) {
         return medicineRepository.findByBranchId(branchId);
     }

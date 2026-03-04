@@ -129,7 +129,7 @@ public class MedicineController {
     }
 
     @PostMapping("/bulk-delete")
-    @PreAuthorize("hasPermission(null, 'MEDICINE_BULK_IMPORT')")
+    @PreAuthorize("hasPermission(null, 'MEDICINE_BULK_DELETE')")
     public String bulkDeleteMedicines(@RequestParam("ids") java.util.List<Long> ids, RedirectAttributes ra) {
         int count = 0;
         if (ids != null && !ids.isEmpty()) {

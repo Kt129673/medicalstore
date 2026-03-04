@@ -219,6 +219,27 @@ class SaleServiceTest {
         verify(customerRepository).save(customer);
     }
 
+    @Test
+    @DisplayName("createSale – sets finalAmount/discount/gst even when no customer (walk-in sale)")
+    void createSale_noCustomer_setsFinalAmountCorrectly() {
+        Medicine med = buildMedicine(4L, "Ibuprofen", 50, 100.0);
+        Sale sale = buildSale(med, 2, 100.0); // total = 200
+        sale.setDiscountPercentage(10.0); // 10% discount → 20 off → 180
+        sale.setGstPercentage(5.0); // 5% GST on 180 → 9 → final = 189
+
+        when(medicineRepository.findAllById(List.of(4L))).thenReturn(List.of(med));
+        when(medicineRepository.deductStock(4L, 2)).thenReturn(1);
+        when(saleRepository.save(any(Sale.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        Sale result = saleService.createSale(sale);
+
+        assertThat(result.getDiscountAmount()).isEqualTo(20.0);
+        assertThat(result.getGstAmount()).isEqualTo(9.0);
+        assertThat(result.getFinalAmount()).isEqualTo(189.0);
+        // No customer interaction
+        verify(customerRepository, never()).save(any());
+    }
+
     // ─────────────────────────────────────────────────────────────────────────
     // getTodaySales
     // ─────────────────────────────────────────────────────────────────────────
