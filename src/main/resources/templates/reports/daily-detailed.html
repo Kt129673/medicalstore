@@ -110,6 +110,34 @@
                 font-weight: 600;
                 padding: 1rem 1.25rem;
             }
+
+            @media (max-width: 767.98px) {
+                .report-header {
+                    padding: 22px 18px;
+                }
+                .report-header h1 {
+                    font-size: 1.4rem;
+                }
+                .report-header h4 {
+                    font-size: 1rem;
+                }
+                .report-header .btn-group {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 6px;
+                    margin-top: 14px;
+                }
+                .report-header .btn-group .btn {
+                    flex: 1 1 calc(50% - 3px);
+                    min-width: 0;
+                }
+                .col-md-4.text-end {
+                    text-align: left !important;
+                }
+                .metric-card h2 {
+                    font-size: 1.5rem;
+                }
+            }
         </style>
         <!-- Report Header -->
         <div class="report-header">
@@ -152,7 +180,7 @@
                     </div>
                     <div class="col-md-4">
                         <button type="button"
-                            onclick="location.href='/reports/daily?date=' + new Date().toISOString().split('T')[0]"
+                            onclick="location.href='/reports/daily-detailed?date=' + new Date().toISOString().split('T')[0]"
                             class="btn btn-primary">
                             <i class="bi bi-calendar-today"></i> Today
                         </button>
@@ -174,7 +202,7 @@
                 <p class="text-muted mb-4">There are no sales records found for the selected date. Please choose another
                     date or check back later.</p>
                 <button type="button"
-                    onclick="location.href='/reports/daily?date=' + new Date().toISOString().split('T')[0]"
+                    onclick="location.href='/reports/daily-detailed?date=' + new Date().toISOString().split('T')[0]"
                     class="btn btn-primary px-4 py-2">
                     <i class="bi bi-calendar-event me-2"></i>View Today's Report
                 </button>
@@ -532,13 +560,12 @@
             </div>
         </div>
 
-        <script>
+        <script th:inline="javascript">
             function exportToExcel() {
-                alert('Excel export functionality - Implementation pending');
+                const reportDate = /*[[${#temporals.format(reportDate, 'yyyy-MM-dd')}]]*/ '';
+                window.location.href = '/reports/export/excel?startDate=' + reportDate + '&endDate=' + reportDate;
             }
         </script>
-    </div>
-    </div>
     </div>
 </body>
 
