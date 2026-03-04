@@ -76,3 +76,4 @@ nul
 *.key
 *.p12
 *.jks
+wget-log
