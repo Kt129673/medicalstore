@@ -190,7 +190,7 @@
     justify-content: center;
     gap: var(--space-2);
     min-height: 38px;
-    border: 1px solid transparent;
+    border: 1px solid var(--bs-btn-border-color, transparent);
 }
 
 .btn i {
@@ -299,6 +299,102 @@
     border-color: #cbd5e1;
     color: var(--text-primary);
     box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+    transform: translateY(-1px);
+}
+
+/* Light button — needs a visible border on white backgrounds */
+.btn-light {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    color: #495057;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.btn-light:hover:not(:disabled) {
+    background: #e9ecef;
+    border-color: #ced4da;
+    color: #212529;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+    transform: translateY(-1px);
+}
+
+/* Outline button variants */
+.btn-outline-secondary {
+    background: transparent;
+    border: 1.5px solid #6c757d;
+    color: #6c757d;
+}
+
+.btn-outline-secondary:hover:not(:disabled) {
+    background: #6c757d;
+    border-color: #6c757d;
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+.btn-outline-success {
+    background: transparent;
+    border: 1.5px solid #198754;
+    color: #198754;
+}
+
+.btn-outline-success:hover:not(:disabled) {
+    background: #198754;
+    border-color: #198754;
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+.btn-outline-danger {
+    background: transparent;
+    border: 1.5px solid #dc3545;
+    color: #dc3545;
+}
+
+.btn-outline-danger:hover:not(:disabled) {
+    background: #dc3545;
+    border-color: #dc3545;
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+.btn-outline-warning {
+    background: transparent;
+    border: 1.5px solid #ffc107;
+    color: #664d03;
+}
+
+.btn-outline-warning:hover:not(:disabled) {
+    background: #ffc107;
+    border-color: #ffc107;
+    color: #000;
+    transform: translateY(-1px);
+}
+
+.btn-outline-info {
+    background: transparent;
+    border: 1.5px solid #0dcaf0;
+    color: #055160;
+}
+
+.btn-outline-info:hover:not(:disabled) {
+    background: #0dcaf0;
+    border-color: #0dcaf0;
+    color: #000;
+    transform: translateY(-1px);
+}
+
+/* Used on dark-background headers for buttons that need white outline */
+.btn-outline-light {
+    background: transparent;
+    border: 1.5px solid rgba(255, 255, 255, 0.7);
+    color: #fff;
+}
+
+.btn-outline-light:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: #fff;
+    color: #fff;
     transform: translateY(-1px);
 }
 
