@@ -2,18 +2,33 @@
 <html xmlns:th="http://www.thymeleaf.org"
     th:replace="~{layout :: layout(title='My Shopkeepers', page='owner', content=~{::main}, pageIcon='bi bi-person-gear')}">
 <main>
+    <style>
+        .shopkeepers-header {
+            align-items: center;
+        }
+        @media (max-width: 576px) {
+            .shopkeepers-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+            .shopkeepers-header .btn-label {
+                display: none;
+            }
+        }
+    </style>
     <div class="container-fluid py-4">
-        <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="d-flex justify-content-between mb-4 flex-wrap gap-2 shopkeepers-header">
             <div>
                 <h2 class="fw-bold mb-0"><i class="bi bi-people-fill me-2"></i>My Shopkeepers</h2>
                 <p class="text-muted mb-0">Manage and monitor shopkeepers across your branches</p>
             </div>
-            <div class="d-flex gap-2">
-                <a href="/owner/compare" class="btn btn-outline-primary">
-                    <i class="bi bi-bar-chart-line me-1"></i>Branch Comparison
+            <div class="d-flex gap-2 flex-wrap">
+                <a href="/owner/compare" class="btn btn-outline-primary" aria-label="Branch Comparison">
+                    <i class="bi bi-bar-chart-line me-1"></i><span class="btn-label">Branch Comparison</span>
                 </a>
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addShopkeeperModal">
-                    <i class="bi bi-person-plus me-1"></i>Add Shopkeeper
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addShopkeeperModal" aria-label="Add Shopkeeper">
+                    <i class="bi bi-person-plus me-1"></i><span class="btn-label">Add Shopkeeper</span>
                 </button>
             </div>
         </div>
