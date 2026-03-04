@@ -316,6 +316,12 @@
                 color: #7e22ce;
             }
 
+            /* Utility: allow flex items to shrink below their content width
+               (required for text-truncate to work inside a flex container) */
+            .min-width-0 {
+                min-width: 0;
+            }
+
             @media (max-width: 768px) {
                 .dashboard-quick-actions.d-flex {
                     flex-direction: column;
@@ -333,6 +339,13 @@
 
                 .chart-card .chart-body {
                     padding: 12px 16px 16px;
+                }
+
+                /* Give the transactions table a minimum width so that
+                   table-responsive can scroll it horizontally on small screens
+                   instead of squeezing all 7 columns into a narrow viewport. */
+                .txn-table {
+                    min-width: 560px;
                 }
             }
         </style>
@@ -702,7 +715,7 @@
                                         </div>
                                         <div class="flex-grow-1 min-width-0">
                                             <h6 class="mb-0 text-truncate" style="font-size:0.85rem; font-weight:700; color:#334155;">${act.title}</h6>
-                                            <div class="text-muted small">${act.sub}</div>
+                                            <div class="text-muted small text-truncate">${act.sub}</div>
                                         </div>
                                         <div class="flex-shrink-0 text-muted" style="font-size:0.75rem; font-weight:600;">
                                             ${dStr}
