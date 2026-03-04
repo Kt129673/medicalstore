@@ -784,26 +784,6 @@
     padding: 0;
 }
 
-.mobile-logout-form {
-    display: none;
-    margin: 0;
-}
-
-.mobile-logout-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    height: 38px;
-    border: 1.5px solid #fecaca;
-    background: #fef2f2;
-    color: #b91c1c;
-    border-radius: 10px;
-    padding: 0 10px;
-    font-size: 12px;
-    font-weight: 700;
-    font-family: inherit;
-}
-
 /* ═════════════════ RESPONSIVE ═════════════════ */
 
 /* Mobile: hide username + role pill — show avatar only */
@@ -823,28 +803,9 @@
         display: none;
     }
 
-    /* Hide clock on small screens to prevent logout button overflow */
-    .header-clock {
-        display: none;
-    }
-
     /* Tighten spacing so all header-right items fit within the viewport */
     .header-right {
         gap: var(--space-2);
-    }
-
-    .mobile-logout-form {
-        display: block;
-    }
-
-    .mobile-logout-btn {
-        width: 38px;
-        justify-content: center;
-        padding: 0;
-    }
-
-    .mobile-logout-btn span {
-        display: none;
     }
 
     /* Full-width dropdown on very small screens */
