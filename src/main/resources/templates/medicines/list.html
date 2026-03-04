@@ -98,20 +98,6 @@
                 </div>
             </div>
 
-            <!-- Bulk Action Bar (hidden by default) -->
-            <div class="bulk-bar" id="bulkBar">
-                <span class="bulk-count"><span id="selectedCount">0</span> items selected</span>
-                <div class="d-flex gap-2 flex-wrap">
-                    <button class="btn btn-sm btn-outline-danger" onclick="bulkDelete()"
-                            sec:authorize="hasRole('ADMIN')">
-                        <i class="bi bi-trash"></i> Delete Selected
-                    </button>
-                    <button class="btn btn-sm btn-outline-secondary" onclick="clearSelection()">
-                        <i class="bi bi-x-lg"></i> Clear
-                    </button>
-                </div>
-            </div>
-
             <!-- Table -->
             <div th:if="${medicinePage.isEmpty()}" class="inv-empty">
                 <i class="bi bi-box-seam text-primary" style="opacity: 0.8;"></i>
@@ -125,10 +111,6 @@
                 <table class="inv-table table-animate-rows table-sticky-right" id="inventoryTable">
                     <thead>
                         <tr>
-                            <th style="width:36px;">
-                                <input type="checkbox" id="selectAll" onchange="toggleSelectAll()"
-                                    style="cursor:pointer;">
-                            </th>
                             <th class="ent-sortable" data-col="1">Medicine</th>
                             <th class="ent-sortable" data-col="2">Category</th>
                             <th class="ent-sortable d-none d-md-table-cell" data-col="3">Manufacturer</th>
@@ -142,7 +124,6 @@
                     <!-- ░░ SKELETON ROWS ░░ shown while page is loading; JS hides these and reveals real rows -->
                     <tbody id="skeletonBody" aria-hidden="true">
                         <tr class="ent-skeleton--row">
-                            <td><span class="ent-skeleton" style="width:16px;height:16px;border-radius:3px;display:inline-block;"></span></td>
                             <td><div class="d-flex align-items-center gap-2"><span class="ent-skeleton ent-skeleton--avatar"></span><div><span class="ent-skeleton ent-skeleton--text" style="width:100px;margin-bottom:6px;"></span><span class="ent-skeleton ent-skeleton--text" style="width:65px;height:10px;"></span></div></div></td>
                             <td><span class="ent-skeleton ent-skeleton--text" style="width:72px;"></span></td>
                             <td class="d-none d-md-table-cell"><span class="ent-skeleton ent-skeleton--text" style="width:88px;"></span></td>
@@ -153,7 +134,6 @@
                             <td class="text-center"><div class="d-flex gap-1 justify-content-center"><span class="ent-skeleton" style="width:28px;height:28px;border-radius:6px;display:inline-block;"></span><span class="ent-skeleton" style="width:28px;height:28px;border-radius:6px;display:inline-block;"></span><span class="ent-skeleton" style="width:28px;height:28px;border-radius:6px;display:inline-block;"></span></div></td>
                         </tr>
                         <tr class="ent-skeleton--row">
-                            <td><span class="ent-skeleton" style="width:16px;height:16px;border-radius:3px;display:inline-block;"></span></td>
                             <td><div class="d-flex align-items-center gap-2"><span class="ent-skeleton ent-skeleton--avatar"></span><div><span class="ent-skeleton ent-skeleton--text" style="width:130px;margin-bottom:6px;"></span><span class="ent-skeleton ent-skeleton--text" style="width:80px;height:10px;"></span></div></div></td>
                             <td><span class="ent-skeleton ent-skeleton--text" style="width:58px;"></span></td>
                             <td class="d-none d-md-table-cell"><span class="ent-skeleton ent-skeleton--text" style="width:100px;"></span></td>
@@ -164,7 +144,6 @@
                             <td class="text-center"><div class="d-flex gap-1 justify-content-center"><span class="ent-skeleton" style="width:28px;height:28px;border-radius:6px;display:inline-block;"></span><span class="ent-skeleton" style="width:28px;height:28px;border-radius:6px;display:inline-block;"></span><span class="ent-skeleton" style="width:28px;height:28px;border-radius:6px;display:inline-block;"></span></div></td>
                         </tr>
                         <tr class="ent-skeleton--row">
-                            <td><span class="ent-skeleton" style="width:16px;height:16px;border-radius:3px;display:inline-block;"></span></td>
                             <td><div class="d-flex align-items-center gap-2"><span class="ent-skeleton ent-skeleton--avatar"></span><div><span class="ent-skeleton ent-skeleton--text" style="width:115px;margin-bottom:6px;"></span><span class="ent-skeleton ent-skeleton--text" style="width:55px;height:10px;"></span></div></div></td>
                             <td><span class="ent-skeleton ent-skeleton--text" style="width:80px;"></span></td>
                             <td class="d-none d-md-table-cell"><span class="ent-skeleton ent-skeleton--text" style="width:75px;"></span></td>
@@ -175,7 +154,6 @@
                             <td class="text-center"><div class="d-flex gap-1 justify-content-center"><span class="ent-skeleton" style="width:28px;height:28px;border-radius:6px;display:inline-block;"></span><span class="ent-skeleton" style="width:28px;height:28px;border-radius:6px;display:inline-block;"></span><span class="ent-skeleton" style="width:28px;height:28px;border-radius:6px;display:inline-block;"></span></div></td>
                         </tr>
                         <tr class="ent-skeleton--row">
-                            <td><span class="ent-skeleton" style="width:16px;height:16px;border-radius:3px;display:inline-block;"></span></td>
                             <td><div class="d-flex align-items-center gap-2"><span class="ent-skeleton ent-skeleton--avatar"></span><div><span class="ent-skeleton ent-skeleton--text" style="width:90px;margin-bottom:6px;"></span><span class="ent-skeleton ent-skeleton--text" style="width:75px;height:10px;"></span></div></div></td>
                             <td><span class="ent-skeleton ent-skeleton--text" style="width:64px;"></span></td>
                             <td class="d-none d-md-table-cell"><span class="ent-skeleton ent-skeleton--text" style="width:92px;"></span></td>
@@ -186,7 +164,6 @@
                             <td class="text-center"><div class="d-flex gap-1 justify-content-center"><span class="ent-skeleton" style="width:28px;height:28px;border-radius:6px;display:inline-block;"></span><span class="ent-skeleton" style="width:28px;height:28px;border-radius:6px;display:inline-block;"></span><span class="ent-skeleton" style="width:28px;height:28px;border-radius:6px;display:inline-block;"></span></div></td>
                         </tr>
                         <tr class="ent-skeleton--row">
-                            <td><span class="ent-skeleton" style="width:16px;height:16px;border-radius:3px;display:inline-block;"></span></td>
                             <td><div class="d-flex align-items-center gap-2"><span class="ent-skeleton ent-skeleton--avatar"></span><div><span class="ent-skeleton ent-skeleton--text" style="width:122px;margin-bottom:6px;"></span><span class="ent-skeleton ent-skeleton--text" style="width:60px;height:10px;"></span></div></div></td>
                             <td><span class="ent-skeleton ent-skeleton--text" style="width:76px;"></span></td>
                             <td class="d-none d-md-table-cell"><span class="ent-skeleton ent-skeleton--text" style="width:82px;"></span></td>
@@ -197,7 +174,6 @@
                             <td class="text-center"><div class="d-flex gap-1 justify-content-center"><span class="ent-skeleton" style="width:28px;height:28px;border-radius:6px;display:inline-block;"></span><span class="ent-skeleton" style="width:28px;height:28px;border-radius:6px;display:inline-block;"></span><span class="ent-skeleton" style="width:28px;height:28px;border-radius:6px;display:inline-block;"></span></div></td>
                         </tr>
                         <tr class="ent-skeleton--row">
-                            <td><span class="ent-skeleton" style="width:16px;height:16px;border-radius:3px;display:inline-block;"></span></td>
                             <td><div class="d-flex align-items-center gap-2"><span class="ent-skeleton ent-skeleton--avatar"></span><div><span class="ent-skeleton ent-skeleton--text" style="width:105px;margin-bottom:6px;"></span><span class="ent-skeleton ent-skeleton--text" style="width:70px;height:10px;"></span></div></div></td>
                             <td><span class="ent-skeleton ent-skeleton--text" style="width:68px;"></span></td>
                             <td class="d-none d-md-table-cell"><span class="ent-skeleton ent-skeleton--text" style="width:95px;"></span></td>
@@ -213,10 +189,6 @@
                         <tr th:each="medicine : ${medicinePage.content}" class="inv-row"
                             th:data-category="${medicine.category}" th:data-stock="${medicine.quantity}"
                             th:data-expiry="${medicine.expiryDate}">
-                            <td>
-                                <input type="checkbox" class="row-check" th:value="${medicine.id}"
-                                    onchange="updateBulkBar()">
-                            </td>
                             <td>
                                 <div class="d-flex align-items-center gap-2">
                                     <div class="med-icon"><i class="bi bi-capsule-pill"></i></div>
@@ -426,68 +398,19 @@
 
             /* ── Discarded JS Filtering & Pagination (Moved to Server) ── */
 
-            /* ── Bulk selection ──────────────────────────────────────── */
-            function toggleSelectAll() {
-                const checked = document.getElementById('selectAll').checked;
-                document.querySelectorAll('.row-check').forEach(cb => cb.checked = checked);
-                updateBulkBar();
-            }
-            function updateBulkBar() {
-                const checked = document.querySelectorAll('.row-check:checked').length;
-                document.getElementById('selectedCount').textContent = checked;
-                document.getElementById('bulkBar').classList.toggle('show', checked > 0);
-            }
-            function clearSelection() {
-                document.getElementById('selectAll').checked = false;
-                document.querySelectorAll('.row-check').forEach(cb => cb.checked = false);
-                updateBulkBar();
-            }
-            function bulkDelete() {
-                const ids = Array.from(document.querySelectorAll('.row-check:checked')).map(cb => cb.value);
-                if (ids.length) {
-                    confirmAction('Delete Medicines?', `Delete ${ids.length} medicines? This cannot be undone.`, 'Delete')
-                        .then((result) => {
-                            if (result.isConfirmed) {
-                                const form = document.createElement('form');
-                                form.method = 'POST';
-                                form.action = '/medicines/bulk-delete';
-                                // Add CSRF token
-                                const csrfMeta = document.querySelector('meta[name="_csrf"]');
-                                const csrfHeaderMeta = document.querySelector('meta[name="_csrf_header"]');
-                                if (csrfMeta) {
-                                    const csrfInput = document.createElement('input');
-                                    csrfInput.type = 'hidden';
-                                    csrfInput.name = '_csrf';
-                                    csrfInput.value = csrfMeta.getAttribute('content');
-                                    form.appendChild(csrfInput);
-                                }
-                                ids.forEach(id => {
-                                    const input = document.createElement('input');
-                                    input.type = 'hidden';
-                                    input.name = 'ids';
-                                    input.value = id;
-                                    form.appendChild(input);
-                                });
-                                document.body.appendChild(form);
-                                form.submit();
-                            }
-                        });
-                }
-            }
-
             /* ── CSV Export ──────────────────────────────────────────── */
             function exportCSV() {
                 const rows = allRows.filter(r => r.style.display !== 'none');
                 let csv = 'Name,Category,Manufacturer,Price,Stock,Batch,Expiry\n';
                 rows.forEach(r => {
                     const cells = r.querySelectorAll('td');
-                    const name = cells[1].querySelector('.fw-semibold')?.textContent?.trim() || '';
-                    const cat = cells[2].textContent.trim();
-                    const mfg = cells[3].textContent.trim();
-                    const price = cells[4].textContent.trim().replace('₹', '');
-                    const stock = cells[5].textContent.trim();
-                    const batch = cells[6].textContent.trim();
-                    const exp = cells[7].textContent.trim();
+                    const name = cells[0].querySelector('.fw-semibold')?.textContent?.trim() || '';
+                    const cat = cells[1].textContent.trim();
+                    const mfg = cells[2].textContent.trim();
+                    const price = cells[3].textContent.trim().replace('₹', '');
+                    const stock = cells[4].textContent.trim();
+                    const batch = cells[5].textContent.trim();
+                    const exp = cells[6].textContent.trim();
                     csv += `"${name}","${cat}","${mfg}","${price}","${stock}","${batch}","${exp}"\n`;
                 });
                 const blob = new Blob([csv], { type: 'text/csv' });
