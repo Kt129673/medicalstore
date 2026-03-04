@@ -46,6 +46,7 @@
             display: flex;
             justify-content: space-between;
             margin-bottom: 30px;
+            gap: 16px;
         }
 
         .invoice-table {
@@ -69,6 +70,51 @@
             padding: 15px;
             border-radius: 5px;
             margin-top: 20px;
+        }
+
+        /* Mobile responsive styles */
+        @media (max-width: 576px) {
+            .invoice-container {
+                padding: 16px;
+                margin: 8px;
+                border-width: 1px;
+            }
+
+            .invoice-details {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .invoice-details .text-end {
+                text-align: left !important;
+            }
+
+            .invoice-header h1 {
+                font-size: 1.4rem;
+            }
+
+            .no-print .btn {
+                display: block;
+                width: 100%;
+                margin-bottom: 8px;
+                margin-right: 0 !important;
+            }
+
+            .no-print .btn-lg {
+                font-size: 14px;
+                padding: 10px 16px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .invoice-container {
+                padding: 20px;
+                margin: 10px;
+            }
+
+            .invoice-header h1 {
+                font-size: 1.5rem;
+            }
         }
     </style>
 </head>
@@ -117,6 +163,7 @@
         </div>
 
         <!-- Items Table -->
+        <div class="table-responsive">
         <table class="table table-bordered invoice-table">
             <thead>
                 <tr>
@@ -144,6 +191,7 @@
                 </tr>
             </tbody>
         </table>
+        </div>
 
         <!-- Total Section -->
         <div class="total-section">
@@ -209,11 +257,11 @@
         </div>
 
         <!-- Action Buttons -->
-        <div class="text-center mt-4 no-print">
-            <a th:href="@{/sales/pdf/{id}(id=${sale.id})}" class="btn btn-danger btn-lg me-2">
+        <div class="text-center mt-4 no-print d-flex flex-wrap justify-content-center gap-2">
+            <a th:href="@{/sales/pdf/{id}(id=${sale.id})}" class="btn btn-danger btn-lg">
                 <i class="bi bi-file-pdf"></i> Download PDF
             </a>
-            <button onclick="window.print()" class="btn btn-primary btn-lg me-2">
+            <button onclick="window.print()" class="btn btn-primary btn-lg">
                 <i class="bi bi-printer"></i> Print Invoice
             </button>
             <button th:if="${whatsappEnabled && sale.customer != null && sale.customer.phone != null}"
