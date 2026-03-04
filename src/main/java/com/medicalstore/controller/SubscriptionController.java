@@ -4,6 +4,7 @@ import com.medicalstore.model.SubscriptionPlan;
 import com.medicalstore.service.SubscriptionService;
 import com.medicalstore.common.SecurityUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +13,7 @@ import java.time.LocalDate;
 
 @Controller
 @RequiredArgsConstructor
+@Slf4j
 public class SubscriptionController {
 
     private final SubscriptionService subscriptionService;
@@ -24,20 +26,21 @@ public class SubscriptionController {
      */
     @GetMapping("/subscription/billing")
     public String billingPage(Model model) {
-        // For owners, load their actual plan details
-        Long ownerId = securityUtils.getCurrentOwnerId();
-        if (ownerId != null) {
-            SubscriptionPlan plan = subscriptionService.getPlanForOwner(ownerId).orElse(null);
-            model.addAttribute("plan", plan);
-            if (plan != null && plan.isExpired()) {
-                long daysExpired = plan.getExpiryDate().until(LocalDate.now(),
-                        java.time.temporal.ChronoUnit.DAYS);
-                model.addAttribute("daysExpired", daysExpired);
+        try {
+            Long ownerId = securityUtils.getCurrentOwnerId();
+            if (ownerId != null) {
+                SubscriptionPlan plan = subscriptionService.getPlanForOwner(ownerId).orElse(null);
+                model.addAttribute("plan", plan);
+                if (plan != null && plan.isExpired()) {
+                    long daysExpired = plan.getExpiryDate().until(LocalDate.now(),
+                            java.time.temporal.ChronoUnit.DAYS);
+                    model.addAttribute("daysExpired", daysExpired);
+                }
+            } else {
+                model.addAttribute("plan", null);
             }
-        }
-        // For shopkeepers, also try to load plan via their owner chain
-        else if (securityUtils.isOwnerOrShopkeeper()) {
-            // Shopkeeper without resolved ownerId — plan can't be loaded
+        } catch (Exception e) {
+            log.warn("Failed to load subscription plan for billing page: {}", e.getMessage());
             model.addAttribute("plan", null);
         }
         return "subscription/billing";

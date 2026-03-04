@@ -6,11 +6,13 @@ import com.medicalstore.service.SubscriptionService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class SubscriptionInterceptor implements HandlerInterceptor {
 
     /** Request attribute name to signal templates that the subscription is expired. */
@@ -39,24 +41,29 @@ public class SubscriptionInterceptor implements HandlerInterceptor {
 
         // Only enforce for Owners and Shopkeepers
         if (securityUtils.isOwnerOrShopkeeper()) {
-            Long userId = securityUtils.getCurrentUserId();
-            if (userId != null) {
-                Long ownerId = securityUtils.getCurrentOwnerId();
-                if (ownerId == null) {
-                    // Orphan shopkeeper with no owning branch — treat as expired
-                    response.sendRedirect(RoutePaths.SUBSCRIPTION_BILLING + "?expired=true");
-                    return false;
-                }
-                var plan = subscriptionService.getPlanForOwner(ownerId);
-                if (plan.isEmpty() || plan.get().isExpired()) {
-                    if (WRITE_METHODS.contains(request.getMethod().toUpperCase())) {
-                        // Block all mutation requests when subscription is expired
+            try {
+                Long userId = securityUtils.getCurrentUserId();
+                if (userId != null) {
+                    Long ownerId = securityUtils.getCurrentOwnerId();
+                    if (ownerId == null) {
+                        // Orphan shopkeeper with no owning branch — treat as expired
                         response.sendRedirect(RoutePaths.SUBSCRIPTION_BILLING + "?expired=true");
                         return false;
                     }
-                    // For read-only (GET/HEAD) requests, allow through but flag the template
-                    request.setAttribute(ATTR_SUBSCRIPTION_EXPIRED, Boolean.TRUE);
+                    var plan = subscriptionService.getPlanForOwner(ownerId);
+                    if (plan.isEmpty() || plan.get().isExpired()) {
+                        if (WRITE_METHODS.contains(request.getMethod().toUpperCase())) {
+                            // Block all mutation requests when subscription is expired
+                            response.sendRedirect(RoutePaths.SUBSCRIPTION_BILLING + "?expired=true");
+                            return false;
+                        }
+                        // For read-only (GET/HEAD) requests, allow through but flag the template
+                        request.setAttribute(ATTR_SUBSCRIPTION_EXPIRED, Boolean.TRUE);
+                    }
                 }
+            } catch (Exception e) {
+                log.warn("Subscription check failed for URI {}: {}", uri, e.getMessage());
+                // Allow the request through to avoid a 500 error on subscription lookup failure
             }
         }
 

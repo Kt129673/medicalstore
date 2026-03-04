@@ -6,11 +6,13 @@ import com.medicalstore.service.SubscriptionService;
 import com.medicalstore.common.SecurityUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
 @ControllerAdvice
 @RequiredArgsConstructor
+@Slf4j
 public class GlobalModelAttribute {
 
     private final SubscriptionService subscriptionService;
@@ -38,32 +40,37 @@ public class GlobalModelAttribute {
 
     @ModelAttribute("subscriptionWarning")
     public String subscriptionWarning() {
-        if (!securityUtils.isOwnerOrShopkeeper()) {
+        try {
+            if (!securityUtils.isOwnerOrShopkeeper()) {
+                return null;
+            }
+
+            Long ownerId = securityUtils.getCurrentOwnerId();
+            if (ownerId == null) {
+                return null;
+            }
+
+            SubscriptionPlan plan = subscriptionService.getPlanForOwner(ownerId).orElse(null);
+
+            if (plan == null) {
+                return "No active subscription found. Please contact administration.";
+            }
+
+            if (plan.isExpired()) {
+                return "Subscription expired on " + plan.getExpiryDate()
+                        + ". Please renew to restore full access.";
+            }
+
+            long daysLeft = plan.getDaysUntilExpiry();
+            if (daysLeft <= 7 && daysLeft >= 0) {
+                return "Warning: Your subscription expires in " + daysLeft + " days (" + plan.getExpiryDate() + ").";
+            }
+
+            return null;
+        } catch (Exception e) {
+            log.warn("Failed to load subscription warning: {}", e.getMessage());
             return null;
         }
-
-        Long ownerId = securityUtils.getCurrentOwnerId();
-        if (ownerId == null) {
-            return null;
-        }
-
-        SubscriptionPlan plan = subscriptionService.getPlanForOwner(ownerId).orElse(null);
-
-        if (plan == null) {
-            return "No active subscription found. Please contact administration.";
-        }
-
-        if (plan.isExpired()) {
-            return "Your subscription expired on " + plan.getExpiryDate()
-                    + ". Please renew immediately to avoid service interruption.";
-        }
-
-        long daysLeft = plan.getDaysUntilExpiry();
-        if (daysLeft <= 7 && daysLeft >= 0) {
-            return "Warning: Your subscription expires in " + daysLeft + " days (" + plan.getExpiryDate() + ").";
-        }
-
-        return null;
     }
 
     /**
