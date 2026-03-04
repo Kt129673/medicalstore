@@ -4,159 +4,449 @@
 
 <body>
     <div id="content">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2><i class="bi bi-file-earmark-bar-graph"></i> <span th:text="${reportType}">Sales</span> Report</h2>
-            <a href="/reports" class="btn btn-secondary">
-                <i class="bi bi-arrow-left"></i> Back to Reports
-            </a>
+        <style>
+            @media print {
+                .no-print { display: none !important; }
+                .card { border: 1px solid #dee2e6 !important; box-shadow: none !important; }
+            }
+
+            .report-page-header {
+                background: linear-gradient(135deg, #1d4ed8 0%, #3b82f6 100%);
+                color: white;
+                border-radius: 16px;
+                padding: 32px 30px;
+                margin-bottom: 28px;
+                box-shadow: 0 10px 25px -5px rgba(29, 78, 216, 0.4);
+                position: relative;
+                overflow: hidden;
+            }
+
+            .report-page-header::after {
+                content: '';
+                position: absolute;
+                top: -50%;
+                left: -50%;
+                width: 200%;
+                height: 200%;
+                background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 60%);
+                transform: rotate(30deg);
+                pointer-events: none;
+            }
+
+            .report-page-header h4 {
+                margin: 0;
+                font-weight: 700;
+                color: white;
+                font-size: 1.4rem;
+            }
+
+            .report-page-header .subtitle {
+                margin: 5px 0 0;
+                opacity: 0.85;
+                font-size: 13.5px;
+                color: rgba(255,255,255,0.9);
+            }
+
+            .kpi-card {
+                border: none;
+                border-radius: 14px;
+                color: white;
+                padding: 22px 20px;
+                box-shadow: 0 4px 15px -3px rgba(0,0,0,0.15);
+                transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
+                position: relative;
+                overflow: hidden;
+                height: 100%;
+            }
+
+            .kpi-card:hover {
+                transform: translateY(-6px) scale(1.02);
+                box-shadow: 0 18px 28px -5px rgba(0,0,0,0.15);
+            }
+
+            .kpi-card::after {
+                content: '';
+                position: absolute;
+                top: -15px;
+                right: -15px;
+                width: 80px;
+                height: 80px;
+                border-radius: 50%;
+                background: rgba(255,255,255,0.12);
+            }
+
+            .kpi-icon {
+                width: 44px;
+                height: 44px;
+                border-radius: 10px;
+                background: rgba(255,255,255,0.2);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-bottom: 14px;
+                font-size: 20px;
+            }
+
+            .kpi-label {
+                font-size: 12px;
+                text-transform: uppercase;
+                letter-spacing: 0.6px;
+                opacity: 0.85;
+                margin-bottom: 4px;
+            }
+
+            .kpi-value {
+                font-size: 26px;
+                font-weight: 800;
+                line-height: 1.1;
+            }
+
+            .kpi-sub {
+                font-size: 12px;
+                opacity: 0.8;
+                margin-top: 4px;
+            }
+
+            .kpi-blue   { background: linear-gradient(135deg, #1d4ed8, #3b82f6); }
+            .kpi-green  { background: linear-gradient(135deg, #059669, #10b981); }
+            .kpi-indigo { background: linear-gradient(135deg, #4338ca, #6366f1); }
+
+            .filters-card {
+                border: none;
+                border-radius: 12px;
+                background: #ffffff;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+                margin-bottom: 24px;
+            }
+
+            .filters-card .card-header {
+                background: transparent;
+                border-bottom: 1px solid #f1f5f9;
+                padding: 14px 20px;
+                font-weight: 600;
+                font-size: 14px;
+                color: #374151;
+            }
+
+            .quick-filter-btn {
+                font-size: 12px;
+                padding: 5px 12px;
+                border-radius: 20px;
+                font-weight: 600;
+                transition: all 0.2s;
+            }
+
+            .data-card {
+                border: none;
+                border-radius: 14px;
+                background: #ffffff;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+                overflow: hidden;
+            }
+
+            .data-card .card-header {
+                background: #f8fafc;
+                border-bottom: 1px solid #e9ecef;
+                padding: 16px 20px;
+                font-weight: 600;
+                color: #1e293b;
+            }
+
+            .report-table thead th {
+                background: #1e293b;
+                color: #e2e8f0;
+                font-weight: 600;
+                font-size: 12.5px;
+                text-transform: uppercase;
+                letter-spacing: 0.4px;
+                padding: 13px 14px;
+                border: none;
+                white-space: nowrap;
+                position: sticky;
+                top: 0;
+                z-index: 1;
+            }
+
+            .report-table tbody tr {
+                transition: background-color 0.15s;
+            }
+
+            .report-table tbody tr:hover {
+                background-color: #f0f7ff;
+            }
+
+            .report-table tbody td {
+                padding: 11px 14px;
+                vertical-align: middle;
+                font-size: 13.5px;
+                border-color: #f1f5f9;
+            }
+
+            .report-table tfoot th {
+                background: #f8fafc;
+                padding: 12px 14px;
+                font-weight: 700;
+                font-size: 13.5px;
+                border-top: 2px solid #e2e8f0;
+            }
+
+            .empty-state-box {
+                padding: 60px 20px;
+                text-align: center;
+            }
+
+            .empty-state-box .empty-icon-wrap {
+                width: 90px;
+                height: 90px;
+                border-radius: 50%;
+                background: #f1f5f9;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                margin-bottom: 20px;
+            }
+
+            .empty-state-box .empty-icon-wrap i {
+                font-size: 2.8rem;
+                color: #94a3b8;
+            }
+
+            .filter-label { font-size: 13px; }
+            .table-scroll-wrap { max-height: 520px; overflow-y: auto; }
+            .empty-guidance { font-size: 14px; }
+            .invoice-code { font-size: 12px; }
+
+            @media (max-width: 767.98px) {
+                .report-page-header { padding: 22px 18px; }
+                .report-page-header h4 { font-size: 1.1rem; }
+                .kpi-value { font-size: 22px; }
+                .report-table tbody td,
+                .report-table thead th { font-size: 12px; padding: 9px 10px; }
+                .export-btn-group { flex-direction: column; gap: 8px; }
+                .export-btn-group .btn { width: 100%; }
+            }
+        </style>
+
+        <!-- ═══════════════ REPORT HEADER ═══════════════ -->
+        <div class="report-page-header mb-4 no-print">
+            <div class="row align-items-center gy-3">
+                <div class="col-md-6">
+                    <h4><i class="bi bi-file-earmark-bar-graph me-2"></i><span th:text="${reportType}">Sales</span> Report</h4>
+                    <p class="subtitle mb-0">
+                        <span th:if="${reportDate != null}" th:text="${#temporals.format(reportDate, 'EEEE, dd MMMM yyyy')}"></span>
+                        <span th:if="${reportMonth != null}" th:text="${#temporals.format(reportMonth, 'MMMM yyyy')}"></span>
+                        <span th:if="${reportYear != null}" th:text="'Year ' + ${reportYear}"></span>
+                        <span th:if="${reportDate == null and reportMonth == null and reportYear == null}">Select a period to view report</span>
+                    </p>
+                </div>
+                <div class="col-md-6 d-flex justify-content-md-end align-items-center gap-2 flex-wrap">
+                    <div class="export-btn-group d-flex gap-2 flex-wrap">
+                        <a th:href="@{/pdf/report/sales(type=${reportType},startDate=${reportDate})}"
+                            class="btn btn-light btn-sm px-3">
+                            <i class="bi bi-file-pdf text-danger me-1"></i> PDF
+                        </a>
+                        <button type="button" onclick="window.print()" class="btn btn-light btn-sm px-3">
+                            <i class="bi bi-printer me-1"></i> Print
+                        </button>
+                        <a href="/reports" class="btn btn-outline-light btn-sm px-3">
+                            <i class="bi bi-arrow-left me-1"></i> Back
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <!-- Date Filter -->
-        <div class="card mb-4">
-            <div class="card-body">
-                <form method="get" class="row g-3">
+        <!-- ═══════════════ FILTERS PANEL ═══════════════ -->
+        <div class="filters-card card no-print">
+            <div class="card-header d-flex align-items-center gap-2">
+                <i class="bi bi-funnel text-primary"></i> Filters &amp; Date Range
+            </div>
+            <div class="card-body py-3 px-4">
+                <form method="get" class="row g-3 align-items-end">
                     <!-- Daily Filter -->
-                    <div th:if="${reportType == 'Daily'}" class="col-md-4">
-                        <label class="form-label">Select Date</label>
+                    <div th:if="${reportType == 'Daily'}" class="col-sm-6 col-md-4">
+                        <label class="form-label fw-semibold filter-label">Select Date</label>
                         <input type="date" name="date" class="form-control" th:value="${reportDate}"
                             onchange="this.form.submit()">
                     </div>
 
                     <!-- Monthly Filter -->
-                    <div th:if="${reportType == 'Monthly'}" class="col-md-4">
-                        <label class="form-label">Select Month</label>
+                    <div th:if="${reportType == 'Monthly'}" class="col-sm-6 col-md-4">
+                        <label class="form-label fw-semibold filter-label">Select Month</label>
                         <input type="month" name="month" class="form-control" th:value="${reportMonth}"
                             onchange="this.form.submit()">
                     </div>
 
                     <!-- Yearly Filter -->
-                    <div th:if="${reportType == 'Yearly'}" class="col-md-4">
-                        <label class="form-label">Select Year</label>
-                        <select name="year" class="form-control" onchange="this.form.submit()">
+                    <div th:if="${reportType == 'Yearly'}" class="col-sm-6 col-md-4">
+                        <label class="form-label fw-semibold filter-label">Select Year</label>
+                        <select name="year" class="form-select" onchange="this.form.submit()">
                             <option th:each="y : ${#numbers.sequence(2020, 2030)}" th:value="${y}" th:text="${y}"
                                 th:selected="${y == reportYear}">2025</option>
                         </select>
                     </div>
 
-                    <div class="col-md-4">
-                        <label class="form-label">&nbsp;</label>
-                        <div class="btn-group w-100">
-                            <a th:href="@{/pdf/report/sales(type=${reportType},startDate=${reportDate})}"
-                                class="btn btn-danger">
-                                <i class="bi bi-file-pdf"></i> Download PDF
-                            </a>
-                            <button type="button" onclick="window.print()" class="btn btn-primary">
-                                <i class="bi bi-printer"></i> Print
-                            </button>
+                    <!-- Quick Filters (Daily only) -->
+                    <div th:if="${reportType == 'Daily'}" class="col-sm-6 col-md-4">
+                        <label class="form-label fw-semibold d-block filter-label">Quick Select</label>
+                        <div class="d-flex gap-2 flex-wrap">
+                            <button type="button" class="btn btn-outline-primary quick-filter-btn"
+                                onclick="setDate(0)">Today</button>
+                            <button type="button" class="btn btn-outline-secondary quick-filter-btn"
+                                onclick="setDate(-1)">Yesterday</button>
+                        </div>
+                    </div>
+
+                    <!-- Quick Filters (Monthly only) -->
+                    <div th:if="${reportType == 'Monthly'}" class="col-sm-6 col-md-4">
+                        <label class="form-label fw-semibold d-block filter-label">Quick Select</label>
+                        <div class="d-flex gap-2 flex-wrap">
+                            <button type="button" class="btn btn-outline-primary quick-filter-btn"
+                                onclick="setMonth(0)">This Month</button>
+                            <button type="button" class="btn btn-outline-secondary quick-filter-btn"
+                                onclick="setMonth(-1)">Last Month</button>
                         </div>
                     </div>
                 </form>
             </div>
         </div>
 
-        <!-- Summary Cards -->
-        <div class="row mb-4">
-            <div class="col-md-4">
-                <div class="card text-white bg-primary">
-                    <div class="card-body text-center">
-                        <h5>Total Sales</h5>
-                        <h2 th:text="${sales.size()}">0</h2>
-                        <p class="mb-0">Transactions</p>
-                    </div>
+        <!-- ═══════════════ KPI SUMMARY ═══════════════ -->
+        <div class="row g-3 mb-4">
+            <div class="col-sm-6 col-md-4">
+                <div class="kpi-card kpi-blue">
+                    <div class="kpi-icon"><i class="bi bi-receipt"></i></div>
+                    <div class="kpi-label">Total Transactions</div>
+                    <div class="kpi-value" th:text="${sales.size()}">0</div>
+                    <div class="kpi-sub">Sales records found</div>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="card text-white bg-success">
-                    <div class="card-body text-center">
-                        <h5>Total Revenue</h5>
-                        <h2 th:text="'₹' + ${#numbers.formatDecimal(totalSales, 0, 2)}">₹0.00</h2>
-                        <p class="mb-0">Earned</p>
-                    </div>
+            <div class="col-sm-6 col-md-4">
+                <div class="kpi-card kpi-green">
+                    <div class="kpi-icon"><i class="bi bi-currency-rupee"></i></div>
+                    <div class="kpi-label">Total Revenue</div>
+                    <div class="kpi-value" th:text="'₹' + ${#numbers.formatDecimal(totalSales, 0, 2)}">₹0.00</div>
+                    <div class="kpi-sub">Gross sales amount</div>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="card text-white bg-info">
-                    <div class="card-body text-center">
-                        <h5>Average Sale</h5>
-                        <h2
-                            th:text="'₹' + ${#numbers.formatDecimal(sales.size() > 0 ? totalSales / sales.size() : 0, 0, 2)}">
-                            ₹0.00</h2>
-                        <p class="mb-0">Per Transaction</p>
-                    </div>
+            <div class="col-sm-6 col-md-4">
+                <div class="kpi-card kpi-indigo">
+                    <div class="kpi-icon"><i class="bi bi-graph-up-arrow"></i></div>
+                    <div class="kpi-label">Average Sale Value</div>
+                    <div class="kpi-value"
+                        th:text="'₹' + ${#numbers.formatDecimal(sales.size() > 0 ? totalSales / sales.size() : 0, 0, 2)}">
+                        ₹0.00</div>
+                    <div class="kpi-sub">Per transaction</div>
                 </div>
             </div>
         </div>
 
-        <!-- Sales Table -->
-        <div class="card">
-            <div class="card-header bg-primary text-white">
-                <h5 class="mb-0">
+        <!-- ═══════════════ DATA TABLE ═══════════════ -->
+        <div class="data-card card">
+            <div class="card-header d-flex align-items-center gap-2">
+                <i class="bi bi-table text-primary"></i>
+                <span>
                     <span th:text="${reportType}">Sales</span> Transactions
                     <span th:if="${reportDate != null}"
-                        th:text="' - ' + ${#temporals.format(reportDate, 'dd MMMM yyyy')}"></span>
+                        th:text="'— ' + ${#temporals.format(reportDate, 'dd MMMM yyyy')}"></span>
                     <span th:if="${reportMonth != null}"
-                        th:text="' - ' + ${#temporals.format(reportMonth, 'MMMM yyyy')}"></span>
-                    <span th:if="${reportYear != null}" th:text="' - ' + ${reportYear}"></span>
-                </h5>
+                        th:text="'— ' + ${#temporals.format(reportMonth, 'MMMM yyyy')}"></span>
+                    <span th:if="${reportYear != null}" th:text="'— ' + ${reportYear}"></span>
+                </span>
+                <span class="ms-auto badge bg-primary rounded-pill" th:text="${sales.size()} + ' records'">0 records</span>
             </div>
-            <div class="card-body">
-                <div th:if="${#lists.isEmpty(sales)}" class="text-center text-muted py-4">
-                    <i class="bi bi-inbox" style="font-size: 3rem;"></i>
-                    <p class="mt-2">No sales found for this period</p>
+
+            <!-- Empty State -->
+            <div th:if="${#lists.isEmpty(sales)}" class="empty-state-box">
+                <div class="empty-icon-wrap">
+                    <i class="bi bi-inbox"></i>
                 </div>
-                <div th:unless="${#lists.isEmpty(sales)}" class="table-responsive">
-                    <table class="table table-hover table-striped">
-                        <thead class="table-dark">
-                            <tr>
-                                <th>Sr. No.</th>
-                                <th>Date & Time</th>
-                                <th>Invoice #</th>
-                                <th>Medicine(s)</th>
-                                <th>Customer</th>
-                                <th class="text-center">Total Qty</th>
-                                <th>Base Amount</th>
-                                <th>Final Amount</th>
-                                <th>Payment</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr th:each="sale, iterStat : ${sales}">
-                                <td th:text="${iterStat.count}">1</td>
-                                <td th:text="${#temporals.format(sale.saleDate, 'dd-MM-yyyy HH:mm')}">17-11-2025 10:30
-                                </td>
-                                <td th:text="'INV-' + ${T(java.lang.String).format('%06d', sale.id)}">INV-000001</td>
-                                <td>
-                                    <span th:if="${sale.items.size() == 1}"
-                                        th:text="${sale.items[0].medicine != null ? sale.items[0].medicine.name : 'Deleted item'}">Medicine</span>
-                                    <span th:if="${sale.items.size() > 1}" th:text="${sale.items.size()} + ' Items'"
-                                        class="badge bg-info bg-opacity-25 text-info border border-info"></span>
-                                    <span th:if="${sale.items.size() == 0}">-</span>
-                                </td>
-                                <td th:text="${sale.customer != null ? sale.customer.name : 'Walk-in'}">Customer</td>
-                                <td class="text-center"
-                                    th:text="${sale.items.size() > 0 ? #aggregates.sum(sale.items.![quantity]) : 0}">10
-                                </td>
-                                <td
-                                    th:text="'₹' + ${#numbers.formatDecimal(sale.totalAmount != null ? sale.totalAmount : 0, 0, 2)}">
-                                    ₹100.00</td>
-                                <td class="fw-bold"
-                                    th:text="'₹' + ${#numbers.formatDecimal(sale.finalAmount != null ? sale.finalAmount : (sale.totalAmount != null ? sale.totalAmount : 0), 0, 2)}">
-                                    ₹1000.00</td>
-                                <td><span class="badge bg-success" th:text="${sale.paymentMethod}">Cash</span></td>
-                            </tr>
-                        </tbody>
-                        <tfoot class="table-light">
-                            <tr>
-                                <th colspan="7" class="text-end">TOTAL:</th>
-                                <th colspan="2"
-                                    th:text="'₹' + ${#numbers.formatDecimal(totalSales != null ? totalSales : 0, 0, 2)}">
-                                    ₹0.00</th>
-                            </tr>
+                <h5 class="fw-semibold text-secondary mb-2">No data available for selected filters</h5>
+                <p class="text-muted mb-0 empty-guidance">
+                    Try selecting a different date or period to view sales data.
+                </p>
+            </div>
+
+            <!-- Table -->
+            <div th:unless="${#lists.isEmpty(sales)}" class="table-responsive table-scroll-wrap">
+                <table class="table report-table mb-0">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Date &amp; Time</th>
+                            <th>Invoice #</th>
+                            <th>Medicine(s)</th>
+                            <th>Customer</th>
+                            <th class="text-center">Qty</th>
+                            <th class="text-end">Base Amt</th>
+                            <th class="text-end">Final Amt</th>
+                            <th class="text-center">Payment</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="sale, iterStat : ${sales}">
+                            <td class="text-muted" th:text="${iterStat.count}">1</td>
+                            <td th:text="${#temporals.format(sale.saleDate, 'dd-MM-yyyy HH:mm')}">17-11-2025 10:30</td>
+                            <td>
+                                <code class="text-primary invoice-code"
+                                    th:text="'INV-' + ${T(java.lang.String).format('%06d', sale.id)}">INV-000001</code>
+                            </td>
+                            <td>
+                                <span th:if="${sale.items.size() == 1}"
+                                    th:text="${sale.items[0].medicine != null ? sale.items[0].medicine.name : 'Deleted item'}">Medicine</span>
+                                <span th:if="${sale.items.size() > 1}" th:text="${sale.items.size()} + ' Items'"
+                                    class="badge bg-info bg-opacity-25 text-info border border-info"></span>
+                                <span th:unless="${sale.items.size() >= 1}" class="text-muted">—</span>
+                            </td>
+                            <td>
+                                <span th:if="${sale.customer != null}" th:text="${sale.customer.name}">Customer</span>
+                                <span th:unless="${sale.customer != null}" class="text-muted">Walk-in</span>
+                            </td>
+                            <td class="text-center fw-semibold"
+                                th:text="${sale.items.size() > 0 ? #aggregates.sum(sale.items.![quantity]) : 0}">10</td>
+                            <td class="text-end"
+                                th:text="'₹' + ${#numbers.formatDecimal(sale.totalAmount != null ? sale.totalAmount : 0, 0, 2)}">
+                                ₹100.00</td>
+                            <td class="text-end fw-bold"
+                                th:text="'₹' + ${#numbers.formatDecimal(sale.finalAmount != null ? sale.finalAmount : (sale.totalAmount != null ? sale.totalAmount : 0), 0, 2)}">
+                                ₹1000.00</td>
+                            <td class="text-center">
+                                <span class="badge rounded-pill"
+                                    th:classappend="${sale.paymentMethod == 'Cash'} ? 'bg-success' : (${sale.paymentMethod == 'Card'} ? 'bg-primary' : 'bg-secondary')"
+                                    th:text="${sale.paymentMethod}">Cash</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                        <tfoot>
+                        <tr>
+                            <th colspan="6" class="text-end text-muted">Grand Total</th>
+                            <th class="text-end text-muted fst-italic">subtotal</th>
+                            <th class="text-end text-success"
+                                th:text="'₹' + ${#numbers.formatDecimal(totalSales != null ? totalSales : 0, 0, 2)}">
+                                ₹0.00</th>
+                            <th></th>
+                        </tr>
                         </tfoot>
-                    </table>
-                </div>
+                </table>
             </div>
         </div>
+
+        <script>
+            function setDate(offsetDays) {
+                const d = new Date();
+                d.setDate(d.getDate() + offsetDays);
+                const iso = d.toISOString().slice(0, 10);
+                const input = document.querySelector('input[name="date"]');
+                if (input) { input.value = iso; input.form.submit(); }
+            }
+            function setMonth(offsetMonths) {
+                const d = new Date();
+                d.setMonth(d.getMonth() + offsetMonths);
+                const iso = d.toISOString().slice(0, 7);
+                const input = document.querySelector('input[name="month"]');
+                if (input) { input.value = iso; input.form.submit(); }
+            }
+        </script>
     </div>
 </body>
 
