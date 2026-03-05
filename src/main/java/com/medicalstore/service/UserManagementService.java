@@ -195,6 +195,11 @@ public class UserManagementService {
         }
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User", id));
+        // Prevent lockout: block deletion of the last active ADMIN account
+        if (user.getRoles().contains("ADMIN") && userRepository.countByRole("ADMIN") <= 1) {
+            throw new BusinessException("LAST_ADMIN",
+                    "Cannot delete the last administrator account. Create another admin first.");
+        }
         userRepository.delete(user); // triggers @SQLDelete — soft delete
     }
 

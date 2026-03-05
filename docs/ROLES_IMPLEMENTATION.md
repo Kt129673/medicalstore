@@ -206,12 +206,12 @@ OwnerController.dashboard()
   → securityUtils.getCurrentUserId() → ownerId
   → dashboardService.buildOwnerDashboard(ownerId)
        → aggregate todaySales, monthlyRevenue, etc. across all owner's branches
-  → userRepository.countByRole("SHOPKEEPER") (total platform — use findShopkeepersByOwnerId for owner-specific)
+  → userManagementService.findShopkeepersByOwnerId(ownerId).size() → owner-scoped shopkeeper count
   → branchService.getBranchesByOwner(ownerId) → branchCount
 Model: all KPI keys from dashboardService map + lowStock alias + branchCount + shopkeeperCount
 ```
 
-### Owner Branch Detail (`/owner/branch/{id}`)
+### Owner Branch Detail (`/owner/branches/{id}`)
 ```
 OwnerController.branchDetail(id)
   → verifies branch belongs to this owner
@@ -265,7 +265,7 @@ HomeController.home()
 | Method | Path | Description |
 |--------|------|-------------|
 | GET | `/owner` | Owner dashboard (aggregated KPIs + charts) |
-| GET | `/owner/branch/{id}` | Branch detail (per-branch KPIs + charts) |
+| GET | `/owner/branches/{id}` | Branch detail (per-branch KPIs + charts) |
 | GET | `/owner/compare` | Branch comparison (side-by-side + charts) |
 | GET | `/owner/shopkeepers` | List shopkeepers with last-login & activity |
 | POST | `/owner/shopkeepers/create` | Create new shopkeeper |
