@@ -3,6 +3,9 @@ package com.medicalstore.service;
 import com.medicalstore.model.Sale;
 import com.medicalstore.model.Medicine;
 import com.medicalstore.model.Customer;
+import com.medicalstore.exception.BusinessException;
+import com.medicalstore.exception.ResourceNotFoundException;
+import com.medicalstore.exception.StockConflictException;
 import com.medicalstore.repository.SaleRepository;
 import com.medicalstore.repository.MedicineRepository;
 import com.medicalstore.repository.CustomerRepository;
@@ -146,7 +149,7 @@ public class SaleService {
     })
     public Sale createSale(Sale sale) {
         if (sale.getItems() == null || sale.getItems().isEmpty()) {
-            throw new RuntimeException("Sale must have at least one item.");
+            throw new BusinessException("INVALID_SALE", "Sale must have at least one item.");
         }
 
         // Batch-load all medicines in ONE query instead of N individual findById calls
@@ -161,18 +164,18 @@ public class SaleService {
         for (com.medicalstore.model.SaleItem item : sale.getItems()) {
             Medicine medicine = medicineMap.get(item.getMedicine().getId());
             if (medicine == null) {
-                throw new RuntimeException("Medicine not found: id=" + item.getMedicine().getId());
+                throw new ResourceNotFoundException("Medicine", item.getMedicine().getId());
             }
 
             if (medicine.getQuantity() < item.getQuantity()) {
-                throw new RuntimeException("Insufficient stock for medicine: " + medicine.getName());
+                throw new BusinessException("INSUFFICIENT_STOCK",
+                        "Insufficient stock for medicine: " + medicine.getName());
             }
 
             // Deduct stock atomically
             int updatedRows = medicineRepository.deductStock(medicine.getId(), item.getQuantity());
             if (updatedRows == 0) {
-                throw new RuntimeException(
-                        "Insufficient stock for medicine: " + medicine.getName() + " or it does not exist.");
+                throw new StockConflictException(medicine.getName());
             }
             medicine.setQuantity(medicine.getQuantity() - item.getQuantity());
 
@@ -230,14 +233,11 @@ public class SaleService {
     })
     public void deleteSale(Long id) {
         Sale sale = saleRepository.findByIdWithDetails(id)
-                .orElseThrow(() -> new RuntimeException("Sale not found: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Sale", id));
 
-        // Restore stock for each item before deleting
+        // Restore stock for each item using a direct UPDATE query (no load-then-save per row)
         for (com.medicalstore.model.SaleItem item : sale.getItems()) {
-            medicineRepository.findById(item.getMedicine().getId()).ifPresent(medicine -> {
-                medicine.setQuantity(medicine.getQuantity() + item.getQuantity());
-                medicineRepository.save(medicine);
-            });
+            medicineRepository.addStock(item.getMedicine().getId(), item.getQuantity());
         }
 
         saleRepository.delete(sale);

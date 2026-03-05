@@ -53,6 +53,14 @@ public class SupplierService {
     
     @Transactional
     public Supplier saveSupplier(Supplier supplier) {
+        if (supplier.getName() == null || supplier.getName().trim().isEmpty())
+            throw new IllegalArgumentException("Supplier name is required");
+        if (supplier.getContactPerson() == null || supplier.getContactPerson().trim().isEmpty())
+            throw new IllegalArgumentException("Supplier contact person is required");
+        if (supplier.getPhone() == null || supplier.getPhone().trim().isEmpty())
+            throw new IllegalArgumentException("Supplier phone is required");
+        if (supplier.getAddress() == null || supplier.getAddress().trim().isEmpty())
+            throw new IllegalArgumentException("Supplier address is required");
         return supplierRepository.save(supplier);
     }
     
