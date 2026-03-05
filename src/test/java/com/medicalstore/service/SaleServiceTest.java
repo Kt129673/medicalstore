@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -133,7 +134,7 @@ class SaleServiceTest {
     // ─────────────────────────────────────────────────────────────────────────
 
     @Test
-    @DisplayName("createSale – throws RuntimeException when items list is empty")
+    @DisplayName("createSale – throws BusinessException when items list is empty")
     void createSale_noItems_throwsException() {
         Sale sale = new Sale();
         sale.setItems(new ArrayList<>());
@@ -144,7 +145,7 @@ class SaleServiceTest {
     }
 
     @Test
-    @DisplayName("createSale – throws RuntimeException when medicine not found in DB")
+    @DisplayName("createSale – throws ResourceNotFoundException when medicine not found in DB")
     void createSale_medicineNotFound_throwsException() {
         Medicine ghost = buildMedicine(999L, "Ghost", 10, 50.0);
         Sale sale = buildSale(ghost, 2, 50.0);
@@ -157,7 +158,7 @@ class SaleServiceTest {
     }
 
     @Test
-    @DisplayName("createSale – throws RuntimeException when insufficient stock")
+    @DisplayName("createSale – throws BusinessException when insufficient stock")
     void createSale_insufficientStock_throwsException() {
         Medicine med = buildMedicine(1L, "Aspirin", 5, 10.0); // only 5 in stock
         Sale sale = buildSale(med, 10, 10.0); // try to sell 10
@@ -269,7 +270,7 @@ class SaleServiceTest {
     // ─────────────────────────────────────────────────────────────────────────
 
     @Test
-    @DisplayName("deleteSale – throws RuntimeException when sale not found")
+    @DisplayName("deleteSale – throws ResourceNotFoundException when sale not found")
     void deleteSale_notFound_throwsException() {
         when(saleRepository.findByIdWithDetails(88L)).thenReturn(Optional.empty());
 
@@ -279,7 +280,7 @@ class SaleServiceTest {
     }
 
     @Test
-    @DisplayName("deleteSale – restores stock and deletes sale")
+    @DisplayName("deleteSale – uses addStock() to restore stock and deletes sale")
     void deleteSale_found_restoresStockAndDeletes() {
         Medicine med = buildMedicine(1L, "Aspirin", 40, 10.0);
 
@@ -289,13 +290,12 @@ class SaleServiceTest {
         sale.addItem(item);
 
         when(saleRepository.findByIdWithDetails(7L)).thenReturn(Optional.of(sale));
-        when(medicineRepository.findById(1L)).thenReturn(Optional.of(med));
+        when(medicineRepository.addStock(1L, 10)).thenReturn(1);
 
         saleService.deleteSale(7L);
 
-        // Stock should be restored: 40 + 10 = 50
-        assertThat(med.getQuantity()).isEqualTo(50);
-        verify(medicineRepository).save(med);
+        verify(medicineRepository).addStock(1L, 10);
+        verify(medicineRepository, never()).save(any());
         verify(saleRepository).delete(sale);
     }
 

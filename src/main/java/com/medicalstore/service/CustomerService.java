@@ -85,6 +85,10 @@ public class CustomerService {
     // ── Writes ───────────────────────────────────────────────────────────────
     @Transactional
     public Customer saveCustomer(Customer customer) {
+        if (customer.getName() == null || customer.getName().trim().isEmpty())
+            throw new IllegalArgumentException("Customer name is required");
+        if (customer.getPhone() == null || customer.getPhone().trim().isEmpty())
+            throw new IllegalArgumentException("Customer phone is required");
         return customerRepository.save(customer);
     }
 

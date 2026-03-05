@@ -126,6 +126,26 @@ class CustomerServiceTest {
         verify(customerRepository).save(c);
     }
 
+    @Test
+    @DisplayName("saveCustomer – throws IllegalArgumentException when name is blank")
+    void saveCustomer_blankName_throwsException() {
+        Customer c = buildCustomer(null, "  ", "9000000004", null);
+
+        assertThatThrownBy(() -> customerService.saveCustomer(c))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("name is required");
+    }
+
+    @Test
+    @DisplayName("saveCustomer – throws IllegalArgumentException when phone is blank")
+    void saveCustomer_blankPhone_throwsException() {
+        Customer c = buildCustomer(null, "Alice", "", null);
+
+        assertThatThrownBy(() -> customerService.saveCustomer(c))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("phone is required");
+    }
+
     // ─────────────────────────────────────────────────────────────────────────
     // deleteCustomer
     // ─────────────────────────────────────────────────────────────────────────
