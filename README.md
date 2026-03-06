@@ -3,6 +3,8 @@
 [![Java](https://img.shields.io/badge/Java-17-orange?logo=openjdk)](https://openjdk.org/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.7-brightgreen?logo=springboot)](https://spring.io/projects/spring-boot)
 [![MySQL](https://img.shields.io/badge/MySQL-8.x-blue?logo=mysql&logoColor=white)](https://www.mysql.com/)
+[![Swagger](https://img.shields.io/badge/Swagger-OpenAPI%203-85EA2D?logo=swagger)](http://localhost:8081/swagger-ui.html)
+[![CI](https://github.com/Kt129673/medicalstore/actions/workflows/bug-detection.yml/badge.svg)](https://github.com/Kt129673/medicalstore/actions/workflows/bug-detection.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 A **production-ready**, multi-branch pharmacy management system built with **Spring Boot 3.5**. It covers end-to-end pharmacy operations — from purchase orders and sales billing to analytics dashboards, PDF/Excel reporting, WhatsApp notifications, and subscription-based access control.
@@ -20,6 +22,10 @@ A **production-ready**, multi-branch pharmacy management system built with **Spr
 - [Role-Based Access Control](#-role-based-access-control)
 - [Modules](#-modules)
 - [API Endpoints](#-api-endpoints)
+- [Swagger / OpenAPI](#-swagger--openapi)
+- [Actuator / Monitoring](#-actuator--monitoring)
+- [MCP Testing Server](#-mcp-testing-server)
+- [CI/CD & Bug Detection](#-cicd--automated-bug-detection)
 - [Scheduled Jobs](#-scheduled-jobs)
 - [Project Structure](#-project-structure)
 - [Building & Testing](#-building--testing)
@@ -49,6 +55,11 @@ A **production-ready**, multi-branch pharmacy management system built with **Spr
 | **Audit Logging** | Comprehensive audit trail for user and role changes |
 | **Soft Deletes** | Safe deletion with configurable retention and hard-delete purge |
 | **Responsive UI** | Thymeleaf server-rendered pages with a modern, responsive design |
+| **REST APIs** | 25+ JSON API endpoints for medicines, sales, customers, suppliers, analytics, and app info |
+| **Swagger / OpenAPI** | Auto-generated interactive API documentation at `/swagger-ui.html` |
+| **Actuator Monitoring** | Health, info, metrics, caches, and environment endpoints at `/actuator/**` |
+| **MCP Testing Server** | Node.js-based Model Context Protocol server for AI-assisted testing |
+| **CI/CD Bug Detection** | GitHub Actions pipeline with SpotBugs, PMD, and auto-created GitHub Issues |
 
 ---
 
@@ -66,6 +77,11 @@ A **production-ready**, multi-branch pharmacy management system built with **Spr
 | **Excel Export** | Apache POI 5.2 |
 | **Rate Limiting** | Bucket4j 8.1 |
 | **Notifications** | Twilio SDK 10.0 (WhatsApp) |
+| **API Docs** | SpringDoc OpenAPI 2.8 + Swagger UI |
+| **Monitoring** | Spring Boot Actuator |
+| **Static Analysis** | SpotBugs 4.8 + PMD 3.26 |
+| **MCP Server** | Node.js + `@modelcontextprotocol/sdk` |
+| **CI/CD** | GitHub Actions (build, test, bug detection, deploy) |
 | **Build Tool** | Maven 3.8+ (with Maven Wrapper included) |
 | **Packaging** | WAR (deployable to external Tomcat or embedded) |
 | **Code Gen** | Lombok |
@@ -179,6 +195,9 @@ All configuration is in `src/main/resources/application.properties`:
 | `twilio.account.sid` | `YOUR_ACCOUNT_SID` | Twilio Account SID |
 | `twilio.auth.token` | `YOUR_AUTH_TOKEN` | Twilio Auth Token |
 | `twilio.whatsapp.enabled` | `true` | Enable/disable WhatsApp alerts |
+| `management.endpoints.web.exposure.include` | `health,info,metrics,caches,env` | Actuator endpoints to expose |
+| `springdoc.swagger-ui.path` | `/swagger-ui.html` | Swagger UI URL path |
+| `springdoc.api-docs.path` | `/v3/api-docs` | OpenAPI spec URL path |
 
 ---
 
@@ -263,11 +282,37 @@ Full platform control — user CRUD, branch setup, subscription plan management,
 
 ### REST APIs (JSON)
 
-| Method | Endpoint | Description |
-|---|---|---|
-| `GET` | `/api/dashboard/stats` | Dashboard statistics |
-| `POST` | `/api/pos/sale` | Create a sale via POS |
-| `GET` | `/api/pos/search?q=...` | Medicine search (auto-complete) |
+| Method | Endpoint | Description | Role(s) |
+|---|---|---|---|
+| `GET` | `/api/v1/info` | App version, Java, Spring Boot info | All |
+| `GET` | `/api/v1/dashboard/kpis` | Dashboard KPIs (sales, revenue, stock) | All |
+| `GET` | `/api/v1/medicines` | List all medicines | Admin, Shopkeeper |
+| `GET` | `/api/v1/medicines/{id}` | Get medicine by ID | Admin, Shopkeeper |
+| `GET` | `/api/v1/medicines/count` | Count total medicines | Admin, Shopkeeper |
+| `GET` | `/api/v1/medicines/search?q=...` | Search medicines (POS auto-complete) | Admin, Shopkeeper |
+| `GET` | `/api/v1/medicines/low-stock` | Low stock medicines | Admin, Shopkeeper |
+| `GET` | `/api/v1/medicines/expiring-soon` | Expiring within N days | Admin, Shopkeeper |
+| `GET` | `/api/v1/medicines/expired` | Expired medicines | Admin, Shopkeeper |
+| `GET` | `/api/v1/medicines/categories` | Unique category list | Admin, Shopkeeper |
+| `GET` | `/api/v1/medicines/by-category` | Medicines by category | Admin, Shopkeeper |
+| `GET` | `/api/v1/sales` | Paginated sales list | Admin, Shopkeeper |
+| `GET` | `/api/v1/sales/{id}` | Get sale by ID | Admin, Shopkeeper |
+| `GET` | `/api/v1/sales/today` | Today's total sales amount | Admin, Shopkeeper |
+| `GET` | `/api/v1/sales/recent` | Recent sales | Admin, Shopkeeper |
+| `GET` | `/api/v1/sales/by-customer/{id}` | Sales by customer | Admin, Shopkeeper |
+| `GET` | `/api/v1/customers` | List all customers | Admin, Shopkeeper |
+| `GET` | `/api/v1/customers/{id}` | Get customer by ID | Admin, Shopkeeper |
+| `GET` | `/api/v1/customers/count` | Count total customers | Admin, Shopkeeper |
+| `GET` | `/api/v1/customers/search?q=...` | Search customers by name | Admin, Shopkeeper |
+| `GET` | `/api/v1/customers/by-phone` | Find customer by phone | Admin, Shopkeeper |
+| `GET` | `/api/v1/suppliers` | List all suppliers | Admin, Shopkeeper |
+| `GET` | `/api/v1/suppliers/{id}` | Get supplier by ID | Admin, Shopkeeper |
+| `GET` | `/api/v1/suppliers/search?q=...` | Search suppliers | Admin, Shopkeeper |
+| `GET` | `/api/v1/analytics/profit-per-medicine` | Profit per medicine | All |
+| `GET` | `/api/v1/analytics/dead-stock` | Dead stock items | All |
+| `GET` | `/api/v1/analytics/fast-moving` | Fast-moving items | All |
+| `GET` | `/api/v1/analytics/gst-summary` | Monthly GST summary | All |
+| `POST` | `/api/v1/pos/sale` | Create a sale via POS | Admin, Shopkeeper |
 
 ### Web Routes (Thymeleaf HTML)
 
@@ -281,8 +326,8 @@ Full platform control — user CRUD, branch setup, subscription plan management,
 | `/customers/**` | `CustomerController` | Shopkeeper, Admin |
 | `/returns/**` | `ReturnController` | Shopkeeper, Admin |
 | `/suppliers/**` | `SupplierController` | Shopkeeper, Admin |
-| `/reports/**` | `ReportController` | Owner, Admin |
-| `/analytics/**` | `AnalyticsController` | Owner, Admin |
+| `/reports/**` | `ReportController` | All |
+| `/analytics/**` | `AnalyticsController` | All |
 | `/owner/**` | `OwnerController` | Owner, Admin |
 | `/admin/**` | `AdminController` | Admin |
 | `/subscription/**` | `SubscriptionController` | Owner, Admin |
@@ -290,6 +335,82 @@ Full platform control — user CRUD, branch setup, subscription plan management,
 | `/pdf/**` | `PdfController` | Owner, Admin |
 
 > See [`docs/API_PERMISSIONS_MATRIX.md`](docs/API_PERMISSIONS_MATRIX.md) for the full permissions matrix.
+
+---
+
+## 📖 Swagger / OpenAPI
+
+Interactive API documentation is auto-generated and available at:
+
+| URL | Description |
+|---|---|
+| [`/swagger-ui.html`](http://localhost:8081/swagger-ui.html) | Swagger UI — interactive API explorer |
+| [`/v3/api-docs`](http://localhost:8081/v3/api-docs) | OpenAPI 3 JSON specification |
+
+All REST endpoints are annotated with `@Operation` and grouped by tags (Medicines, Sales, Customers, Suppliers, Analytics, App Info).
+
+---
+
+## 📊 Actuator / Monitoring
+
+Spring Boot Actuator provides production-grade monitoring endpoints:
+
+| Endpoint | Description |
+|---|---|
+| `/actuator/health` | Application health status |
+| `/actuator/info` | App name, version, Java version |
+| `/actuator/metrics` | JVM, HTTP, and custom metrics |
+| `/actuator/caches` | Cache statistics (Caffeine) |
+| `/actuator/env` | Environment properties |
+
+> Actuator endpoints are publicly accessible without authentication.
+
+---
+
+## 🤖 MCP Testing Server
+
+A [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) server for AI-assisted application testing. Located in the `mcp-server/` directory.
+
+### Available Tools
+
+| Tool | Description |
+|---|---|
+| `health_check` | Check if the app is running |
+| `login` / `logout` | Session authentication |
+| `get_dashboard_kpis` | Fetch dashboard stats |
+| `search_medicines` | Search medicines via POS API |
+| `check_page` | Verify route accessibility |
+| `test_all_routes` | Test all 16 major routes |
+| `test_role_access` | Verify RBAC for all roles |
+| `make_request` | Custom HTTP requests |
+| `session_status` | Check auth state |
+
+See [`mcp-server/README.md`](mcp-server/README.md) for setup and usage.
+
+---
+
+## 🔍 CI/CD & Automated Bug Detection
+
+The project uses **GitHub Actions** for CI/CD with automated bug detection:
+
+### Pipelines
+
+| Workflow | Trigger | Description |
+|---|---|---|
+| **Bug Detection & Quality Analysis** | Push, PR, Nightly (2 AM IST) | Build → Test → SpotBugs → PMD → Notify |
+| **Deploy to EC2** | Push to `main` | Build WAR → SCP to EC2 → Restart |
+
+### Bug Detection Tools
+
+| Tool | What It Finds |
+|---|---|
+| **SpotBugs** | Null pointers, resource leaks, concurrency bugs |
+| **PMD** | Unused variables, empty catches, complexity, security |
+| **JUnit Tests** | Regression bugs, broken APIs, failed assertions |
+
+### Notifications
+
+When bugs are found, a **GitHub Issue** is automatically created with labels `bug-detection` and `automated`, listing all detected bugs with their categories and priorities.
 
 ---
 
@@ -320,6 +441,7 @@ medicalstore/
 │   │   │   │   └── TenantContext.java          # Thread-local tenant (branch) context
 │   │   │   ├── config/                         # Configuration & filters
 │   │   │   │   ├── SecurityConfig.java         # Spring Security setup
+│   │   │   │   ├── OpenApiConfig.java          # Swagger/OpenAPI configuration
 │   │   │   │   ├── CacheConfig.java            # Caffeine cache beans
 │   │   │   │   ├── FeatureFlags.java           # Role-based feature toggles
 │   │   │   │   ├── DataInitializer.java        # Seed data on first run
@@ -328,49 +450,45 @@ medicalstore/
 │   │   │   │   ├── TwilioConfig.java           # Twilio client setup
 │   │   │   │   ├── VelocityConfig.java         # Velocity template engine
 │   │   │   │   └── WebMvcConfig.java           # MVC interceptors & static resources
-│   │   │   ├── controller/                     # MVC + API controllers (17 controllers)
+│   │   │   ├── controller/                     # MVC + API controllers (24 controllers)
 │   │   │   │   ├── api/                        # REST API controllers
-│   │   │   │   │   ├── DashboardApiController.java
-│   │   │   │   │   └── PosApiController.java
+│   │   │   │   │   ├── MedicineApiController.java   # Medicine CRUD + stock alerts
+│   │   │   │   │   ├── SaleApiController.java       # Sales listing + today/recent
+│   │   │   │   │   ├── CustomerApiController.java   # Customer CRUD + search
+│   │   │   │   │   ├── SupplierApiController.java   # Supplier listing + search
+│   │   │   │   │   ├── AnalyticsApiController.java  # Profit, dead stock, GST
+│   │   │   │   │   ├── AppInfoController.java       # App version/runtime info
+│   │   │   │   │   ├── DashboardApiController.java  # Dashboard KPIs
+│   │   │   │   │   ├── PosApiController.java        # Point-of-Sale operations
+│   │   │   │   │   └── ApiExceptionHandler.java     # JSON error responses
 │   │   │   │   ├── MedicineController.java
 │   │   │   │   ├── SaleController.java
 │   │   │   │   └── ...
 │   │   │   ├── dto/                            # Data Transfer Objects (7 DTOs)
 │   │   │   ├── exception/                      # Custom exceptions
 │   │   │   ├── model/                          # JPA entities (16 models)
-│   │   │   │   ├── User.java
-│   │   │   │   ├── Medicine.java
-│   │   │   │   ├── Sale.java / SaleItem.java
-│   │   │   │   ├── PurchaseOrder.java / PurchaseOrderItem.java
-│   │   │   │   ├── Branch.java
-│   │   │   │   ├── Customer.java
-│   │   │   │   ├── Supplier.java / SupplierCredit.java
-│   │   │   │   ├── Role.java / Permission.java
-│   │   │   │   ├── SubscriptionPlan.java / SubscriptionFeature.java
-│   │   │   │   ├── Return.java
-│   │   │   │   └── AuditLog.java
 │   │   │   ├── repository/                     # Spring Data JPA repositories (14)
 │   │   │   └── service/                        # Business logic (21 services)
-│   │   │       ├── MedicineService.java
-│   │   │       ├── SaleService.java
-│   │   │       ├── ScheduledJobService.java
-│   │   │       ├── WhatsAppService.java
-│   │   │       └── ...
 │   │   └── resources/
 │   │       ├── application.properties          # App configuration
 │   │       ├── templates/                      # Thymeleaf templates (58+ pages)
-│   │       │   ├── layout.html                 # Master layout
-│   │       │   ├── login.html                  # Login page
-│   │       │   ├── admin/                      # Admin panel views
-│   │       │   ├── analytics/                  # Analytics dashboards
-│   │       │   ├── medicines/                  # Medicine CRUD views
-│   │       │   ├── sales/                      # Sales views
-│   │       │   ├── reports/                    # Report views
-│   │       │   ├── owner/                      # Owner dashboard views
-│   │       │   ├── pdf/                        # PDF report templates
-│   │       │   └── ...
 │   │       └── static/                         # CSS, JS, images
-│   └── test/                                   # Unit & integration tests
+│   └── test/                                   # Unit & integration tests (12 test classes)
+│       └── java/com/medicalstore/
+│           └── controller/api/
+│               ├── MedicineApiControllerTest.java     # Medicine API RBAC tests
+│               ├── ApiEndpointsIntegrationTest.java   # All API endpoint tests
+│               └── ActuatorSwaggerTest.java           # Actuator & Swagger tests
+├── mcp-server/                                 # MCP Testing Server (Node.js)
+│   ├── index.js                                # MCP server with 10 tools
+│   ├── cookie-jar.js                           # Session cookie management
+│   ├── package.json                            # Dependencies
+│   └── README.md                               # MCP setup guide
+├── .github/workflows/
+│   ├── bug-detection.yml                       # CI: Build → Test → SpotBugs → PMD → Notify
+│   └── deploy.yml                              # CD: Build → Deploy to EC2
+├── .gemini/settings.json                       # MCP server configuration
+├── spotbugs-exclude.xml                        # SpotBugs false-positive filters
 ├── docs/                                       # Developer documentation (30 files)
 ├── pom.xml                                     # Maven build configuration
 ├── mvnw / mvnw.cmd                             # Maven Wrapper scripts
@@ -396,6 +514,17 @@ medicalstore/
 
 # Skip tests during build
 ./mvnw package -DskipTests
+
+# Run SpotBugs (bug detection)
+./mvnw compile spotbugs:spotbugs
+# Results → target/spotbugs/spotbugsXml.xml
+
+# Run SpotBugs with GUI viewer
+./mvnw compile spotbugs:gui
+
+# Run PMD (code quality)
+./mvnw compile pmd:pmd
+# Results → target/pmd.xml
 ```
 
 ---
