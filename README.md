@@ -74,38 +74,32 @@ A **production-ready**, multi-branch pharmacy management system built with **Spr
 
 ## 🏗 Architecture Overview
 
-```
-┌───────────────────────────────────────────────────────────────┐
-│                        Browser / Client                       │
-└──────────────────┬──────────────────┬─────────────────────────┘
-                   │ HTML (Thymeleaf) │ JSON (REST API)
-                   ▼                  ▼
-┌──────────────────────────────────────────────────────────────┐
-│                    Spring Security Filter Chain               │
-│  TenantFilter → RateLimitFilter → CsrfCookieFilter → Auth   │
-└──────────────────┬───────────────────────────────────────────┘
-                   ▼
-┌──────────────────────────────────────────────────────────────┐
-│                       Controller Layer                        │
-│  HomeController · MedicineController · SaleController · ...  │
-│  API: DashboardApiController · PosApiController              │
-└──────────────────┬───────────────────────────────────────────┘
-                   ▼
-┌──────────────────────────────────────────────────────────────┐
-│                        Service Layer                          │
-│  MedicineService · SaleService · ReportService · PdfService  │
-│  AnalyticsService · ScheduledJobService · WhatsAppService    │
-└──────────────────┬───────────────────────────────────────────┘
-                   ▼
-┌──────────────────────────────────────────────────────────────┐
-│                      Repository Layer                         │
-│  Spring Data JPA Repositories (14 repositories)              │
-└──────────────────┬───────────────────────────────────────────┘
-                   ▼
-┌──────────────────────────────────────────────────────────────┐
-│                    MySQL 8.x / H2 Database                    │
-│  16 entity tables + user_roles join table                     │
-└──────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    A["🌐 Browser / Client"]
+    A -->|"HTML (Thymeleaf)"| B
+    A -->|"JSON (REST API)"| B
+
+    B["🔒 Spring Security Filter Chain\nTenantFilter → RateLimitFilter → CsrfCookieFilter → Auth"]
+    B --> C
+
+    C["🎮 Controller Layer\nHomeController · MedicineController · SaleController\nAPI: DashboardApiController · PosApiController"]
+    C --> D
+
+    D["⚙️ Service Layer\nMedicineService · SaleService · ReportService · PdfService\nAnalyticsService · ScheduledJobService · WhatsAppService"]
+    D --> E
+
+    E["📂 Repository Layer\nSpring Data JPA Repositories — 14 repositories"]
+    E --> F
+
+    F["🗄️ MySQL 8.x / H2 Database\n16 entity tables + user_roles join table"]
+
+    style A fill:#4A90D9,stroke:#2C5F8A,color:#fff
+    style B fill:#E74C3C,stroke:#C0392B,color:#fff
+    style C fill:#27AE60,stroke:#1E8449,color:#fff
+    style D fill:#F39C12,stroke:#D68910,color:#fff
+    style E fill:#8E44AD,stroke:#6C3483,color:#fff
+    style F fill:#2C3E50,stroke:#1A252F,color:#fff
 ```
 
 ---
