@@ -25,7 +25,7 @@ jobs:
                   chmod +x mvnw
                   ./mvnw clean package -DskipTests
 
-            # --- DEPLOYMENT ---
+            # --- DEPLOY WAR ---
             - name: Deploy WAR to EC2
               uses: appleboy/scp-action@master
               with:
@@ -37,6 +37,19 @@ jobs:
                   target: "/tmp/medicalstore-deploy"
                   strip_components: 1
 
+            # --- DEPLOY KAFKA SETUP SCRIPT ---
+            - name: Deploy Kafka setup script
+              uses: appleboy/scp-action@master
+              with:
+                  host: ${{ secrets.EC2_HOST }}
+                  username: ${{ secrets.EC2_USER }}
+                  key: ${{ secrets.EC2_SSH_KEY }}
+                  port: 22
+                  source: "scripts/setup-kafka-ec2.sh"
+                  target: "/tmp/medicalstore-deploy"
+                  strip_components: 1
+
+            # --- CONFIGURE EC2 & RESTART ---
             - name: Configure EC2 & Restart
               uses: appleboy/ssh-action@master
               with:
@@ -44,29 +57,38 @@ jobs:
                   username: ${{ secrets.EC2_USER }}
                   key: ${{ secrets.EC2_SSH_KEY }}
                   script: |
-                      echo "Starting Deployment..."
+                      echo "════════════════════════════════════════════"
+                      echo "  Starting Deployment (Free Tier EC2)"
+                      echo "════════════════════════════════════════════"
 
-                      # Update Application
+                      # ── Step 1: Install Kafka (idempotent — skips if already installed)
+                      echo "Setting up Kafka (KRaft mode, no Zookeeper)..."
+                      chmod +x /tmp/medicalstore-deploy/setup-kafka-ec2.sh
+                      sudo bash /tmp/medicalstore-deploy/setup-kafka-ec2.sh
+
+                      # ── Step 2: Start Kafka broker
+                      echo "Starting Kafka broker..."
+                      sudo systemctl start kafka || true
+                      sleep 5  # Wait for Kafka to be ready
+
+                      # ── Step 3: Stop app, deploy new WAR
                       echo "Updating Medicalstore App..."
                       sudo systemctl stop medicalstore-backend || true
 
                       sudo rm -rf /opt/medicalstore/app.war
                       sudo cp /tmp/medicalstore-deploy/medicalstore-0.0.1-SNAPSHOT.war /opt/medicalstore/app.war
 
-                      # Configure Kafka (AWS MSK) environment variables
-                      sudo mkdir -p /etc/systemd/system/medicalstore-backend.service.d
-                      sudo tee /etc/systemd/system/medicalstore-backend.service.d/kafka.conf > /dev/null <<EOF
-                      [Service]
-                      Environment="KAFKA_ENABLED=${{ secrets.KAFKA_ENABLED }}"
-                      Environment="KAFKA_BOOTSTRAP_SERVERS=${{ secrets.MSK_BOOTSTRAP_SERVERS }}"
-                      EOF
-                      sudo systemctl daemon-reload
-
-                      # Restart
-                      echo "Restarting services..."
+                      # ── Step 4: Start app (Kafka env vars set by setup script)
+                      echo "Starting Medicalstore..."
                       sudo systemctl start medicalstore-backend || true
 
-                      # Cleanup
+                      # ── Step 5: Cleanup
                       rm -rf /tmp/medicalstore-deploy
 
-                      echo "Deployment Success!"
+                      echo ""
+                      echo "════════════════════════════════════════════"
+                      echo "  ✅ Deployment Success!"
+                      echo "  Kafka:  localhost:9092 (KRaft mode)"
+                      echo "  App:    port 8081"
+                      echo "  Cost:   $0 (Free Tier)"
+                      echo "════════════════════════════════════════════"

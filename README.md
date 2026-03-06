@@ -60,7 +60,7 @@ A **production-ready**, multi-branch pharmacy management system built with **Spr
 | **Actuator Monitoring** | Health, info, metrics, caches, and environment endpoints at `/actuator/**` |
 | **MCP Testing Server** | Node.js-based Model Context Protocol server for AI-assisted testing |
 | **CI/CD Bug Detection** | GitHub Actions pipeline with SpotBugs, PMD, and auto-created GitHub Issues |
-| **Event-Driven Architecture** | Apache Kafka (AWS MSK) for async sales events, inventory alerts, audit logging, and WhatsApp notifications |
+| **Event-Driven Architecture** | Apache Kafka (KRaft mode on EC2) for async sales events, inventory alerts, audit logging, and WhatsApp notifications |
 
 ---
 
@@ -80,11 +80,11 @@ A **production-ready**, multi-branch pharmacy management system built with **Spr
 | **Notifications** | Twilio SDK 10.0 (WhatsApp) |
 | **API Docs** | SpringDoc OpenAPI 2.8 + Swagger UI |
 | **Monitoring** | Spring Boot Actuator |
-| **Messaging** | Spring Kafka + Apache Kafka (AWS MSK) |
+| **Messaging** | Spring Kafka + Apache Kafka (KRaft mode on EC2) |
 | **Static Analysis** | SpotBugs 4.8 + PMD 3.26 |
 | **MCP Server** | Node.js + `@modelcontextprotocol/sdk` |
 | **CI/CD** | GitHub Actions (build, test, bug detection, deploy) |
-| **Cloud** | AWS EC2 (app server), AWS RDS (MySQL), AWS MSK (Kafka) |
+| **Cloud** | AWS EC2 t2.micro (app + Kafka), AWS RDS db.t3.micro (MySQL) — **100% Free Tier** |
 | **Build Tool** | Maven 3.8+ (with Maven Wrapper included) |
 | **Packaging** | WAR (deployable to external Tomcat or embedded) |
 | **Code Gen** | Lombok |
@@ -123,12 +123,142 @@ flowchart TD
 
 ---
 
-## 📋 Prerequisites
+## � Kafka Event-Driven Architecture
+
+The application uses **Apache Kafka** (KRaft mode — no Zookeeper) for asynchronous event processing.
+Kafka is **100% optional** — controlled by `kafka.enabled` property. When disabled, the app works without a broker.
+
+### Event Flow
+
+```mermaid
+flowchart LR
+    subgraph producers["🏭 Producers (Service Layer)"]
+        S1["SaleService"]
+        S2["MedicineService"]
+        S3["PurchaseService"]
+        S4["ReturnService"]
+    end
+
+    subgraph kafka["📨 Kafka Broker (localhost:9092)"]
+        T1["sales.events"]
+        T2["inventory.events"]
+        T3["audit.events"]
+        T4["notification.events"]
+        T5["purchase.events"]
+    end
+
+    subgraph consumers["🔄 Consumers"]
+        C1["NotificationConsumer\n(WhatsApp)"]
+        C2["AuditLogConsumer\n(DB persistence)"]
+        C3["InventoryAlertConsumer\n(Low-stock alerts)"]
+    end
+
+    S1 --> T1
+    S2 --> T2
+    S3 --> T5
+    S4 --> T1
+
+    T1 --> C1 & C2
+    T2 --> C3
+    T3 --> C2
+    T4 --> C1
+    T5 --> C2
+```
+
+### Kafka Topics
+
+| Topic | Events | Partitions |
+|---|---|---|
+| `medicalstore.sales.events` | `SALE_CREATED`, `SALE_DELETED`, `SALE_RETURNED` | 3 |
+| `medicalstore.inventory.events` | `MEDICINE_CREATED`, `MEDICINE_UPDATED`, `MEDICINE_DELETED` | 3 |
+| `medicalstore.audit.events` | `USER_CREATED`, `ROLE_CHANGED`, etc. | 2 |
+| `medicalstore.notification.events` | `EXPIRY_ALERT`, `LOW_STOCK_ALERT` | 2 |
+| `medicalstore.purchase.events` | `PURCHASE_ORDER_CREATED`, `PURCHASE_ORDER_RECEIVED` | 2 |
+
+### Consumers
+
+| Consumer | Listens To | Action |
+|---|---|---|
+| `NotificationConsumer` | sales, notifications | Sends WhatsApp invoices & alerts via Twilio |
+| `AuditLogConsumer` | sales, audit, purchases | Persists audit records to database |
+| `InventoryAlertConsumer` | inventory | Detects low-stock and triggers real-time alerts |
+
+### Feature Toggle
+
+```properties
+# application.properties
+kafka.enabled=${KAFKA_ENABLED:false}    # false = app runs without Kafka
+```
+
+---
+
+## ☁️ AWS Free Tier Deployment Architecture
+
+All infrastructure runs within **AWS Free Tier limits** — estimated monthly cost: **$0.00**.
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│                  EC2 t2.micro (Free Tier)                    │
+│                  1 vCPU · 1 GB RAM                           │
+│                                                              │
+│  ┌────────────────────┐    ┌─────────────────────────────┐  │
+│  │  Spring Boot App   │───▶│  Apache Kafka (KRaft mode)  │  │
+│  │  -Xmx384m          │    │  -Xmx256m                   │  │
+│  │  Port 8081          │    │  Port 9092                   │  │
+│  │  (app + consumers)  │    │  (no Zookeeper)              │  │
+│  └────────┬───────────┘    └─────────────────────────────┘  │
+│           │ JDBC                                             │
+│  ┌────────▼──────────────────────────────────────────────┐  │
+│  │            AWS RDS db.t3.micro (Free Tier)             │  │
+│  │            MySQL 8.x · 20 GB gp2                       │  │
+│  └───────────────────────────────────────────────────────┘  │
+│                                                              │
+│  Swap: 512 MB (safety buffer)                                │
+└──────────────────────────────────────────────────────────────┘
+```
+
+### AWS Free Tier Verification
+
+| Service | Instance | Free Tier Limit | Our Usage | Cost |
+|---|---|---|---|---|
+| EC2 | `t2.micro` | 750 hrs/month | ~730 hrs (24/7) | $0 |
+| EBS | `gp2` | 30 GB/month | 8 GB | $0 |
+| RDS | `db.t3.micro` | 750 hrs/month | ~730 hrs (24/7) | $0 |
+| RDS Storage | `gp2` | 20 GB | 20 GB | $0 |
+| Data Transfer | Outbound | 100 GB/month | < 5 GB | $0 |
+| **Total** | | | | **$0** |
+
+### Services Avoided (Cost Savings)
+
+| ❌ Service | Why Avoided | ✅ Free Alternative |
+|---|---|---|
+| AWS MSK | ~$200/month | Kafka on EC2 (KRaft mode) |
+| NAT Gateway | ~$32/month | Public subnet + Security Groups |
+| ALB/NLB | ~$16/month | Direct EC2 public IP |
+| ElastiCache | Not Free Tier | Caffeine (in-app cache) |
+
+### Kafka Setup on EC2
+
+Kafka is auto-installed by the `scripts/setup-kafka-ec2.sh` script during deployment:
+
+```bash
+# What the setup script does (idempotent):
+# 1. Creates 512 MB swap file (safety buffer)
+# 2. Installs Java 17 (if missing)
+# 3. Downloads Apache Kafka 3.7.0
+# 4. Configures KRaft mode (no Zookeeper)
+# 5. Creates systemd service (auto-start on boot)
+# 6. Sets KAFKA_ENABLED=true for the app
+```
+
+---
+
+## �📋 Prerequisites
 
 - **Java 17** (JDK) — [Download](https://adoptium.net/)
 - **Maven 3.8+** (or use the included Maven Wrapper `./mvnw`)
 - **MySQL 8.x** — [Download](https://dev.mysql.com/downloads/)
-- **Apache Kafka** (optional) — AWS MSK in production; local broker for dev ([Download](https://kafka.apache.org/downloads))
+- **Apache Kafka** (optional) — auto-installed on EC2 by deploy workflow; or local broker for dev ([Download](https://kafka.apache.org/downloads))
 - **Git** — [Download](https://git-scm.com/)
 
 ---
@@ -542,7 +672,7 @@ medicalstore/
 ├── docs/                                       # Developer documentation (30 files)
 ├── pom.xml                                     # Maven build configuration
 ├── mvnw / mvnw.cmd                             # Maven Wrapper scripts
-└── .gitignore
+├── scripts/\r\n│   └── setup-kafka-ec2.sh                     # Kafka KRaft setup for EC2 (Free Tier)\r\n└── .gitignore
 ```
 
 ---
@@ -604,9 +734,9 @@ export SPRING_DATASOURCE_PASSWORD=your_password
 export TWILIO_ACCOUNT_SID=your_sid
 export TWILIO_AUTH_TOKEN=your_token
 
-# Kafka (AWS MSK)
+# Kafka (auto-configured on EC2 by deploy workflow)
 export KAFKA_ENABLED=true
-export KAFKA_BOOTSTRAP_SERVERS=b-1.msk-cluster.xxx.kafka.eu-north-1.amazonaws.com:9092,b-2...
+export KAFKA_BOOTSTRAP_SERVERS=localhost:9092
 ```
 
 ### GitHub Secrets Required
@@ -616,8 +746,10 @@ export KAFKA_BOOTSTRAP_SERVERS=b-1.msk-cluster.xxx.kafka.eu-north-1.amazonaws.co
 | `EC2_HOST` | EC2 instance public IP/hostname |
 | `EC2_USER` | SSH username (e.g. `ec2-user`) |
 | `EC2_SSH_KEY` | Private SSH key for EC2 |
-| `KAFKA_ENABLED` | `true` to enable Kafka on EC2 |
-| `MSK_BOOTSTRAP_SERVERS` | AWS MSK broker endpoints |
+
+> **Note:** Kafka environment variables (`KAFKA_ENABLED`, `KAFKA_BOOTSTRAP_SERVERS`) are
+> automatically configured by the `scripts/setup-kafka-ec2.sh` script during deployment.
+> No Kafka-related GitHub Secrets are needed.
 
 ---
 
