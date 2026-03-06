@@ -47,3 +47,12 @@ Use conventional commit format:
 - Fix lint warnings before committing
 - Add Javadoc to all public classes and methods
 - Add OpenAPI `@Operation` annotations to all REST endpoints
+
+## Dynamic Problem Solving & Troubleshooting
+
+**MANDATORY**: If you encounter an error (build failure, bug, or unexpected behavior) while working, follow this dynamic troubleshooting process:
+
+1. **Analyze First**: Do not guess or repeatedly apply identical fixes. Read execution logs, stack traces, and the actual error output carefully before modifying any code.
+2. **Consult Previous Context (KIs)**: The system "remembers" past problem resolutions. Before spending time debugging a complex and unusual issue, check the Knowledge Items (KIs) or previous conversations for similar issues previously solved either by yourself or the user.
+3. **Ask the User if Truly Stuck**: If you have tried to resolve a bug dynamically and failed twice, or if the solution requires business logic clarification, **STOP**. Clearly state what you attempted, the outcome, and ask the user for input or clarification to prevent making destructive changes.
+4. **Document New Solutions**: If you or the user successfully debug and resolve a tricky or recurring issue that previously blocked progress, note the solution down (perhaps in a temporary artifact or mention it explicitly so the Knowledge System can capture it) so the identical problem can be avoided in the future.
