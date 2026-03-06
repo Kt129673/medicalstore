@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+    <!--
+        SpotBugs Exclusion Filter for MedicalStore.
+        Excludes false positives from Lombok-generated code and
+        known suppressed patterns.
+    -->
+
+    <!-- Exclude Lombok-generated equals/hashCode/toString -->
+    <Match>
+        <Bug pattern="EQ_UNUSUAL"/>
+        <Or>
+            <Class name="~com\.medicalstore\.model\..*"/>
+            <Class name="~com\.medicalstore\.dto\..*"/>
+        </Or>
+    </Match>
+
+    <!-- Exclude test classes -->
+    <Match>
+        <Class name="~.*Test"/>
+    </Match>
+    <Match>
+        <Class name="~.*Tests"/>
+    </Match>
+
+    <!-- Exclude Spring Configuration beans (commonly flagged for DI patterns) -->
+    <Match>
+        <Bug pattern="URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD"/>
+        <Class name="~com\.medicalstore\.config\..*"/>
+    </Match>
+</FindBugsFilter>

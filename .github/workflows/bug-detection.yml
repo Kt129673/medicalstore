@@ -1,0 +1,382 @@
+name: 🔍 Bug Detection & Quality Analysis
+
+on:
+    push:
+        branches: ["main", "develop"]
+    pull_request:
+        branches: ["main"]
+    # Scheduled nightly analysis at 2:00 AM IST (8:30 PM UTC)
+    schedule:
+        - cron: "30 20 * * *"
+    workflow_dispatch:
+
+permissions:
+    contents: read
+    issues: write
+    checks: write
+    pull-requests: write
+
+jobs:
+    # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    # Job 1: Build & Test
+    # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    build-and-test:
+        name: 🏗️ Build & Test
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: 📥 Checkout code
+              uses: actions/checkout@v4
+
+            - name: ☕ Set up JDK 17
+              uses: actions/setup-java@v4
+              with:
+                  java-version: "17"
+                  distribution: "temurin"
+                  cache: maven
+
+            - name: 🔨 Build & Run Tests
+              run: |
+                  chmod +x mvnw
+                  ./mvnw clean verify -B 2>&1 | tee build_output.log
+              continue-on-error: true
+
+            - name: 📊 Publish Test Results
+              uses: dorny/test-reporter@v1
+              if: always()
+              with:
+                  name: "JUnit Test Results"
+                  path: "target/surefire-reports/*.xml"
+                  reporter: java-junit
+                  fail-on-error: false
+
+            - name: 📤 Upload build artifacts
+              uses: actions/upload-artifact@v4
+              if: always()
+              with:
+                  name: build-output
+                  path: |
+                      target/surefire-reports/
+                      build_output.log
+                  retention-days: 7
+
+    # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    # Job 2: SpotBugs (Bug Detection)
+    # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    spotbugs:
+        name: 🐛 SpotBugs Analysis
+        runs-on: ubuntu-latest
+        needs: build-and-test
+
+        steps:
+            - name: 📥 Checkout code
+              uses: actions/checkout@v4
+
+            - name: ☕ Set up JDK 17
+              uses: actions/setup-java@v4
+              with:
+                  java-version: "17"
+                  distribution: "temurin"
+                  cache: maven
+
+            - name: 🐛 Run SpotBugs
+              run: |
+                  chmod +x mvnw
+                  ./mvnw compile spotbugs:spotbugs -B 2>&1 | tee spotbugs_output.log
+
+            - name: 📋 Parse SpotBugs Results
+              id: spotbugs_results
+              if: always()
+              run: |
+                  REPORT_FILE="target/spotbugs/spotbugsXml.xml"
+                  if [ -f "$REPORT_FILE" ]; then
+                    BUG_COUNT=$(grep -c '<BugInstance' "$REPORT_FILE" 2>/dev/null || echo "0")
+                    echo "bug_count=$BUG_COUNT" >> $GITHUB_OUTPUT
+                    echo "### 🐛 SpotBugs Found $BUG_COUNT bug(s)" >> $GITHUB_STEP_SUMMARY
+
+                    if [ "$BUG_COUNT" -gt 0 ]; then
+                      echo "" >> $GITHUB_STEP_SUMMARY
+                      echo "| Priority | Category | Class | Message |" >> $GITHUB_STEP_SUMMARY
+                      echo "|----------|----------|-------|---------|" >> $GITHUB_STEP_SUMMARY
+
+                      # Extract bug details using grep/sed
+                      grep -oP '<BugInstance[^>]*type="[^"]*"[^>]*priority="[^"]*"[^>]*category="[^"]*"' "$REPORT_FILE" | head -20 | while read line; do
+                        TYPE=$(echo "$line" | grep -oP 'type="\K[^"]*')
+                        PRIORITY=$(echo "$line" | grep -oP 'priority="\K[^"]*')
+                        CATEGORY=$(echo "$line" | grep -oP 'category="\K[^"]*')
+                        echo "| P$PRIORITY | $CATEGORY | - | $TYPE |" >> $GITHUB_STEP_SUMMARY
+                      done
+                    fi
+                  else
+                    echo "bug_count=0" >> $GITHUB_OUTPUT
+                    echo "### ✅ SpotBugs — No report generated" >> $GITHUB_STEP_SUMMARY
+                  fi
+
+            - name: 📤 Upload SpotBugs Report
+              uses: actions/upload-artifact@v4
+              if: always()
+              with:
+                  name: spotbugs-report
+                  path: |
+                      target/spotbugs/
+                      spotbugs_output.log
+                  retention-days: 7
+
+    # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    # Job 3: PMD (Code Quality)
+    # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    pmd:
+        name: 📏 PMD Code Quality
+        runs-on: ubuntu-latest
+        needs: build-and-test
+
+        steps:
+            - name: 📥 Checkout code
+              uses: actions/checkout@v4
+
+            - name: ☕ Set up JDK 17
+              uses: actions/setup-java@v4
+              with:
+                  java-version: "17"
+                  distribution: "temurin"
+                  cache: maven
+
+            - name: 📏 Run PMD Analysis
+              run: |
+                  chmod +x mvnw
+                  ./mvnw compile pmd:pmd -B 2>&1 | tee pmd_output.log
+
+            - name: 📋 Parse PMD Results
+              id: pmd_results
+              if: always()
+              run: |
+                  REPORT_FILE="target/pmd.xml"
+                  if [ -f "$REPORT_FILE" ]; then
+                    VIOLATION_COUNT=$(grep -c '<violation' "$REPORT_FILE" 2>/dev/null || echo "0")
+                    echo "violation_count=$VIOLATION_COUNT" >> $GITHUB_OUTPUT
+                    echo "### 📏 PMD Found $VIOLATION_COUNT violation(s)" >> $GITHUB_STEP_SUMMARY
+
+                    if [ "$VIOLATION_COUNT" -gt 0 ]; then
+                      echo "" >> $GITHUB_STEP_SUMMARY
+                      echo "| File | Line | Rule | Priority |" >> $GITHUB_STEP_SUMMARY
+                      echo "|------|------|------|----------|" >> $GITHUB_STEP_SUMMARY
+
+                      grep '<violation' "$REPORT_FILE" | head -20 | while read line; do
+                        LINE_NUM=$(echo "$line" | grep -oP 'beginline="\K[^"]*')
+                        RULE=$(echo "$line" | grep -oP 'rule="\K[^"]*')
+                        PRIORITY=$(echo "$line" | grep -oP 'priority="\K[^"]*')
+                        echo "| - | $LINE_NUM | $RULE | P$PRIORITY |" >> $GITHUB_STEP_SUMMARY
+                      done
+                    fi
+                  else
+                    echo "violation_count=0" >> $GITHUB_OUTPUT
+                    echo "### ✅ PMD — No report generated" >> $GITHUB_STEP_SUMMARY
+                  fi
+
+            - name: 📤 Upload PMD Report
+              uses: actions/upload-artifact@v4
+              if: always()
+              with:
+                  name: pmd-report
+                  path: |
+                      target/pmd.xml
+                      pmd_output.log
+                  retention-days: 7
+
+    # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    # Job 4: Dependency Vulnerability Check
+    # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    dependency-check:
+        name: 🔒 Dependency Vulnerabilities
+        runs-on: ubuntu-latest
+        needs: build-and-test
+
+        steps:
+            - name: 📥 Checkout code
+              uses: actions/checkout@v4
+
+            - name: ☕ Set up JDK 17
+              uses: actions/setup-java@v4
+              with:
+                  java-version: "17"
+                  distribution: "temurin"
+                  cache: maven
+
+            - name: 🔒 Check for vulnerable dependencies
+              run: |
+                  chmod +x mvnw
+                  ./mvnw dependency:tree -B > dependency_tree.txt 2>&1
+                  echo "### 🔒 Dependency Tree Generated" >> $GITHUB_STEP_SUMMARY
+
+            - name: 📤 Upload Dependency Report
+              uses: actions/upload-artifact@v4
+              if: always()
+              with:
+                  name: dependency-report
+                  path: dependency_tree.txt
+                  retention-days: 7
+
+    # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    # Job 5: Notify — Create GitHub Issues for bugs found
+    # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    notify:
+        name: 🔔 Notify & Create Issues
+        runs-on: ubuntu-latest
+        needs: [build-and-test, spotbugs, pmd]
+        if: always()
+
+        steps:
+            - name: 📥 Checkout code
+              uses: actions/checkout@v4
+
+            - name: 📥 Download SpotBugs Report
+              uses: actions/download-artifact@v4
+              with:
+                  name: spotbugs-report
+                  path: reports/spotbugs
+              continue-on-error: true
+
+            - name: 📥 Download PMD Report
+              uses: actions/download-artifact@v4
+              with:
+                  name: pmd-report
+                  path: reports/pmd
+              continue-on-error: true
+
+            - name: 📥 Download Build Output
+              uses: actions/download-artifact@v4
+              with:
+                  name: build-output
+                  path: reports/build
+              continue-on-error: true
+
+            - name: 🔔 Create GitHub Issue for Bugs
+              uses: actions/github-script@v7
+              with:
+                  script: |
+                      const fs = require('fs');
+
+                      // Count bugs from SpotBugs
+                      let spotbugsCount = 0;
+                      let spotbugsDetails = '';
+                      try {
+                        const spotbugsXml = fs.readFileSync('reports/spotbugs/spotbugsXml.xml', 'utf8');
+                        const bugMatches = spotbugsXml.match(/<BugInstance/g);
+                        spotbugsCount = bugMatches ? bugMatches.length : 0;
+
+                        if (spotbugsCount > 0) {
+                          const typeMatches = [...spotbugsXml.matchAll(/type="([^"]+)"/g)].slice(0, 15);
+                          spotbugsDetails = typeMatches.map(m => `- \`${m[1]}\``).join('\n');
+                        }
+                      } catch (e) {
+                        console.log('SpotBugs report not found or empty');
+                      }
+
+                      // Count violations from PMD
+                      let pmdCount = 0;
+                      let pmdDetails = '';
+                      try {
+                        const pmdXml = fs.readFileSync('reports/pmd/pmd.xml', 'utf8');
+                        const violationMatches = pmdXml.match(/<violation/g);
+                        pmdCount = violationMatches ? violationMatches.length : 0;
+
+                        if (pmdCount > 0) {
+                          const ruleMatches = [...pmdXml.matchAll(/rule="([^"]+)"/g)].slice(0, 15);
+                          const uniqueRules = [...new Set(ruleMatches.map(m => m[1]))];
+                          pmdDetails = uniqueRules.map(r => `- \`${r}\``).join('\n');
+                        }
+                      } catch (e) {
+                        console.log('PMD report not found or empty');
+                      }
+
+                      // Check test failures
+                      let testFailures = 0;
+                      try {
+                        const buildLog = fs.readFileSync('reports/build/build_output.log', 'utf8');
+                        const failMatch = buildLog.match(/Tests run: \d+, Failures: (\d+), Errors: (\d+)/);
+                        if (failMatch) {
+                          testFailures = parseInt(failMatch[1]) + parseInt(failMatch[2]);
+                        }
+                      } catch (e) {
+                        console.log('Build log not found');
+                      }
+
+                      const totalIssues = spotbugsCount + pmdCount + testFailures;
+
+                      if (totalIssues === 0) {
+                        console.log('✅ No bugs found! Skipping issue creation.');
+                        core.summary.addRaw('## ✅ All Clean!\nNo bugs, violations, or test failures detected.');
+                        await core.summary.write();
+                        return;
+                      }
+
+                      // Check for existing open issue to avoid duplicates
+                      const existingIssues = await github.rest.issues.listForRepo({
+                        owner: context.repo.owner,
+                        repo: context.repo.repo,
+                        state: 'open',
+                        labels: 'bug-detection,automated'
+                      });
+
+                      const today = new Date().toISOString().split('T')[0];
+                      const title = `🐛 Automated Bug Report — ${today} (${totalIssues} issue${totalIssues > 1 ? 's' : ''})`;
+
+                      let body = `## 🤖 Automated Bug Detection Report\n\n`;
+                      body += `**Date:** ${today}\n`;
+                      body += `**Commit:** ${context.sha.substring(0, 7)}\n`;
+                      body += `**Branch:** ${context.ref}\n\n`;
+
+                      if (spotbugsCount > 0) {
+                        body += `### 🐛 SpotBugs — ${spotbugsCount} bug(s) found\n`;
+                        body += `These are potential real bugs detected by static analysis:\n\n`;
+                        body += spotbugsDetails + '\n\n';
+                        body += `> Run \`./mvnw compile spotbugs:gui\` locally to see full details with source locations.\n\n`;
+                      }
+
+                      if (pmdCount > 0) {
+                        body += `### 📏 PMD — ${pmdCount} violation(s) found\n`;
+                        body += `Code quality issues that may cause bugs:\n\n`;
+                        body += pmdDetails + '\n\n';
+                        body += `> Run \`./mvnw compile pmd:pmd\` and check \`target/pmd.xml\` for details.\n\n`;
+                      }
+
+                      if (testFailures > 0) {
+                        body += `### ❌ Test Failures — ${testFailures} test(s) failed\n`;
+                        body += `Check the test reports in the Actions tab for details.\n\n`;
+                      }
+
+                      body += `---\n`;
+                      body += `*This issue was automatically created by the Bug Detection workflow.*\n`;
+                      body += `*Close this issue after fixing the reported problems.*`;
+
+                      // Create or update the issue
+                      if (existingIssues.data.length > 0) {
+                        // Update existing issue
+                        await github.rest.issues.update({
+                          owner: context.repo.owner,
+                          repo: context.repo.repo,
+                          issue_number: existingIssues.data[0].number,
+                          title: title,
+                          body: body
+                        });
+                        console.log(`Updated existing issue #${existingIssues.data[0].number}`);
+                      } else {
+                        // Create new issue
+                        await github.rest.issues.create({
+                          owner: context.repo.owner,
+                          repo: context.repo.repo,
+                          title: title,
+                          body: body,
+                          labels: ['bug-detection', 'automated']
+                        });
+                        console.log('Created new bug detection issue');
+                      }
+
+                      // Write summary
+                      core.summary.addRaw(`## 🐛 Bug Detection Summary\n`);
+                      core.summary.addRaw(`| Tool | Issues Found |\n|---|---|\n`);
+                      core.summary.addRaw(`| 🐛 SpotBugs | ${spotbugsCount} |\n`);
+                      core.summary.addRaw(`| 📏 PMD | ${pmdCount} |\n`);
+                      core.summary.addRaw(`| ❌ Test Failures | ${testFailures} |\n`);
+                      core.summary.addRaw(`| **Total** | **${totalIssues}** |\n`);
+                      await core.summary.write();
