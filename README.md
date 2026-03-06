@@ -60,6 +60,7 @@ A **production-ready**, multi-branch pharmacy management system built with **Spr
 | **Actuator Monitoring** | Health, info, metrics, caches, and environment endpoints at `/actuator/**` |
 | **MCP Testing Server** | Node.js-based Model Context Protocol server for AI-assisted testing |
 | **CI/CD Bug Detection** | GitHub Actions pipeline with SpotBugs, PMD, and auto-created GitHub Issues |
+| **Event-Driven Architecture** | Apache Kafka (AWS MSK) for async sales events, inventory alerts, audit logging, and WhatsApp notifications |
 
 ---
 
@@ -79,9 +80,11 @@ A **production-ready**, multi-branch pharmacy management system built with **Spr
 | **Notifications** | Twilio SDK 10.0 (WhatsApp) |
 | **API Docs** | SpringDoc OpenAPI 2.8 + Swagger UI |
 | **Monitoring** | Spring Boot Actuator |
+| **Messaging** | Spring Kafka + Apache Kafka (AWS MSK) |
 | **Static Analysis** | SpotBugs 4.8 + PMD 3.26 |
 | **MCP Server** | Node.js + `@modelcontextprotocol/sdk` |
 | **CI/CD** | GitHub Actions (build, test, bug detection, deploy) |
+| **Cloud** | AWS EC2 (app server), AWS RDS (MySQL), AWS MSK (Kafka) |
 | **Build Tool** | Maven 3.8+ (with Maven Wrapper included) |
 | **Packaging** | WAR (deployable to external Tomcat or embedded) |
 | **Code Gen** | Lombok |
@@ -125,6 +128,7 @@ flowchart TD
 - **Java 17** (JDK) — [Download](https://adoptium.net/)
 - **Maven 3.8+** (or use the included Maven Wrapper `./mvnw`)
 - **MySQL 8.x** — [Download](https://dev.mysql.com/downloads/)
+- **Apache Kafka** (optional) — AWS MSK in production; local broker for dev ([Download](https://kafka.apache.org/downloads))
 - **Git** — [Download](https://git-scm.com/)
 
 ---
@@ -198,6 +202,9 @@ All configuration is in `src/main/resources/application.properties`:
 | `management.endpoints.web.exposure.include` | `health,info,metrics,caches,env` | Actuator endpoints to expose |
 | `springdoc.swagger-ui.path` | `/swagger-ui.html` | Swagger UI URL path |
 | `springdoc.api-docs.path` | `/v3/api-docs` | OpenAPI spec URL path |
+| `kafka.enabled` | `false` | Master toggle for Kafka (via `KAFKA_ENABLED` env var) |
+| `spring.kafka.bootstrap-servers` | `localhost:9092` | Kafka broker(s) (via `KAFKA_BOOTSTRAP_SERVERS` env var) |
+| `inventory.low-stock-threshold` | `10` | Units below which low-stock alerts fire |
 
 ---
 
@@ -469,6 +476,8 @@ medicalstore/
 │   │   │   │   ├── SecurityConfig.java         # Spring Security setup
 │   │   │   │   ├── OpenApiConfig.java          # Swagger/OpenAPI configuration
 │   │   │   │   ├── CacheConfig.java            # Caffeine cache beans
+│   │   │   │   ├── KafkaConfig.java            # Kafka producer/consumer beans
+│   │   │   │   ├── KafkaTopicConfig.java       # Auto-create Kafka topics
 │   │   │   │   ├── FeatureFlags.java           # Role-based feature toggles
 │   │   │   │   ├── DataInitializer.java        # Seed data on first run
 │   │   │   │   ├── RateLimitFilter.java        # Bucket4j API rate limiter
@@ -490,8 +499,23 @@ medicalstore/
 │   │   │   │   ├── MedicineController.java
 │   │   │   │   ├── SaleController.java
 │   │   │   │   └── ...
-│   │   │   ├── dto/                            # Data Transfer Objects (7 DTOs)
+│   │   │   ├── dto/                            # Data Transfer Objects (13 DTOs)
+│   │   │   │   ├── event/                      # Kafka event payloads
+│   │   │   │   │   ├── BaseEvent.java          # Abstract base (eventId, timestamp)
+│   │   │   │   │   ├── SaleEvent.java          # Sale created/deleted/returned
+│   │   │   │   │   ├── InventoryEvent.java     # Medicine CRUD, stock changes
+│   │   │   │   │   ├── AuditEvent.java         # User/role changes
+│   │   │   │   │   ├── NotificationEvent.java  # WhatsApp alert payloads
+│   │   │   │   │   └── PurchaseEvent.java      # Purchase order events
+│   │   │   │   └── ...                         # Other DTOs
 │   │   │   ├── exception/                      # Custom exceptions
+│   │   │   ├── kafka/                          # Kafka infrastructure
+│   │   │   │   ├── KafkaConstants.java         # Topic names, group IDs
+│   │   │   │   ├── EventPublisher.java         # Central KafkaTemplate wrapper
+│   │   │   │   └── consumer/                   # Event consumers
+│   │   │   │       ├── NotificationConsumer.java    # WhatsApp sending
+│   │   │   │       ├── AuditLogConsumer.java        # DB audit persistence
+│   │   │   │       └── InventoryAlertConsumer.java  # Low-stock/expiry alerts
 │   │   │   ├── model/                          # JPA entities (16 models)
 │   │   │   ├── repository/                     # Spring Data JPA repositories (14)
 │   │   │   └── service/                        # Business logic (21 services)
@@ -579,7 +603,21 @@ export SPRING_DATASOURCE_USERNAME=your_user
 export SPRING_DATASOURCE_PASSWORD=your_password
 export TWILIO_ACCOUNT_SID=your_sid
 export TWILIO_AUTH_TOKEN=your_token
+
+# Kafka (AWS MSK)
+export KAFKA_ENABLED=true
+export KAFKA_BOOTSTRAP_SERVERS=b-1.msk-cluster.xxx.kafka.eu-north-1.amazonaws.com:9092,b-2...
 ```
+
+### GitHub Secrets Required
+
+| Secret | Description |
+|---|---|
+| `EC2_HOST` | EC2 instance public IP/hostname |
+| `EC2_USER` | SSH username (e.g. `ec2-user`) |
+| `EC2_SSH_KEY` | Private SSH key for EC2 |
+| `KAFKA_ENABLED` | `true` to enable Kafka on EC2 |
+| `MSK_BOOTSTRAP_SERVERS` | AWS MSK broker endpoints |
 
 ---
 

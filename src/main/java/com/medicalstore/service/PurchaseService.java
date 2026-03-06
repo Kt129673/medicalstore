@@ -1,6 +1,8 @@
 package com.medicalstore.service;
 
 import com.medicalstore.common.TenantContext;
+import com.medicalstore.dto.event.PurchaseEvent;
+import com.medicalstore.kafka.EventPublisher;
 import com.medicalstore.model.PurchaseOrder;
 import com.medicalstore.model.PurchaseOrderItem;
 import com.medicalstore.repository.MedicineRepository;
@@ -28,6 +30,7 @@ public class PurchaseService {
     private final PurchaseOrderRepository purchaseOrderRepository;
     private final MedicineRepository medicineRepository;
     private final RoleAuditService roleAuditService;
+    private final EventPublisher eventPublisher;
 
     public List<PurchaseOrder> getAllOrders() {
         Long tenantId = TenantContext.getTenantId();
@@ -97,7 +100,12 @@ public class PurchaseService {
             }
         }
         order.recalculateTotal();
-        return purchaseOrderRepository.save(order);
+        PurchaseOrder saved = purchaseOrderRepository.save(order);
+
+        // ── Kafka: publish PURCHASE_ORDER_CREATED event ────────────────────
+        publishPurchaseEvent(saved, "PURCHASE_ORDER_CREATED");
+
+        return saved;
     }
 
     @Transactional
@@ -134,7 +142,12 @@ public class PurchaseService {
 
         order.setStatus("RECEIVED");
         order.setReceivedDate(LocalDate.now());
-        return purchaseOrderRepository.save(order);
+        PurchaseOrder saved = purchaseOrderRepository.save(order);
+
+        // ── Kafka: publish PURCHASE_ORDER_RECEIVED event ───────────────────
+        publishPurchaseEvent(saved, "PURCHASE_ORDER_RECEIVED");
+
+        return saved;
     }
 
     @Transactional
@@ -166,5 +179,26 @@ public class PurchaseService {
         String prefix = "PO-" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")) + "-";
         String uniqueSuffix = java.util.UUID.randomUUID().toString().substring(0, 6).toUpperCase(java.util.Locale.ROOT);
         return prefix + uniqueSuffix;
+    }
+
+    /**
+     * Builds and publishes a {@link PurchaseEvent} with order data.
+     *
+     * @param order     the purchase order entity
+     * @param eventType the event discriminator
+     */
+    private void publishPurchaseEvent(PurchaseOrder order, String eventType) {
+        PurchaseEvent event = PurchaseEvent.builder()
+                .eventType(eventType)
+                .purchaseOrderId(order.getId())
+                .orderNumber(order.getOrderNumber())
+                .supplierId(order.getSupplier() != null ? order.getSupplier().getId() : null)
+                .supplierName(order.getSupplier() != null ? order.getSupplier().getName() : null)
+                .totalAmount(order.getTotalAmount())
+                .itemCount(order.getItems() != null ? order.getItems().size() : 0)
+                .status(order.getStatus())
+                .branchId(order.getBranch() != null ? order.getBranch().getId() : null)
+                .build();
+        eventPublisher.publishPurchaseEvent(event);
     }
 }

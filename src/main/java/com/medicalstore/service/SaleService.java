@@ -1,5 +1,7 @@
 package com.medicalstore.service;
 
+import com.medicalstore.dto.event.SaleEvent;
+import com.medicalstore.kafka.EventPublisher;
 import com.medicalstore.model.Sale;
 import com.medicalstore.model.Medicine;
 import com.medicalstore.model.Customer;
@@ -28,6 +30,7 @@ public class SaleService {
     private final SaleRepository saleRepository;
     private final MedicineRepository medicineRepository;
     private final CustomerRepository customerRepository;
+    private final EventPublisher eventPublisher;
 
     @Transactional(readOnly = true)
     public Optional<Sale> getSaleById(Long id) {
@@ -223,7 +226,12 @@ public class SaleService {
             }
         }
 
-        return saleRepository.save(sale);
+        Sale saved = saleRepository.save(sale);
+
+        // ── Kafka: publish SALE_CREATED event ──────────────────────────────
+        publishSaleEvent(saved, "SALE_CREATED");
+
+        return saved;
     }
 
     @Transactional
@@ -242,6 +250,9 @@ public class SaleService {
         }
 
         saleRepository.delete(sale);
+
+        // ── Kafka: publish SALE_DELETED event ──────────────────────────────
+        publishSaleEvent(sale, "SALE_DELETED");
     }
 
     public List<Sale> getSalesByCustomer(Long customerId) {
@@ -302,5 +313,42 @@ public class SaleService {
         if (ownerId != null)
             return saleRepository.findTop5ByOwnerIdOrderBySaleDateDesc(ownerId);
         return saleRepository.findTop5ByOrderBySaleDateDesc();
+    }
+
+    // ─── Kafka event helper ─────────────────────────────────────────────────
+
+    /**
+     * Builds and publishes a {@link SaleEvent} with lightweight sale data.
+     *
+     * @param sale      the sale entity
+     * @param eventType the event discriminator (e.g. {@code SALE_CREATED})
+     */
+    private void publishSaleEvent(Sale sale, String eventType) {
+        List<SaleEvent.SaleItemInfo> items = sale.getItems() != null
+                ? sale.getItems().stream()
+                        .map(item -> SaleEvent.SaleItemInfo.builder()
+                                .medicineId(item.getMedicine().getId())
+                                .medicineName(item.getMedicine().getName())
+                                .quantity(item.getQuantity())
+                                .unitPrice(item.getUnitPrice())
+                                .build())
+                        .toList()
+                : List.of();
+
+        SaleEvent event = SaleEvent.builder()
+                .eventType(eventType)
+                .saleId(sale.getId())
+                .branchId(sale.getBranch() != null ? sale.getBranch().getId() : null)
+                .customerId(sale.getCustomer() != null ? sale.getCustomer().getId() : null)
+                .customerName(sale.getCustomer() != null ? sale.getCustomer().getName() : null)
+                .customerPhone(sale.getCustomer() != null ? sale.getCustomer().getPhone() : null)
+                .totalAmount(sale.getTotalAmount())
+                .finalAmount(sale.getFinalAmount())
+                .paymentMethod(sale.getPaymentMethod())
+                .itemCount(items.size())
+                .items(items)
+                .build();
+
+        eventPublisher.publishSaleEvent(event);
     }
 }

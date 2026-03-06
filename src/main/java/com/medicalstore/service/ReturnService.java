@@ -1,6 +1,8 @@
 package com.medicalstore.service;
 
 import com.medicalstore.common.TenantContext;
+import com.medicalstore.dto.event.SaleEvent;
+import com.medicalstore.kafka.EventPublisher;
 import com.medicalstore.model.Return;
 import com.medicalstore.model.Sale;
 import com.medicalstore.model.SaleItem;
@@ -27,6 +29,7 @@ public class ReturnService {
     private final MedicineRepository medicineRepository;
     private final SaleItemRepository saleItemRepository;
     private final RoleAuditService roleAuditService;
+    private final EventPublisher eventPublisher;
 
     public List<Return> getAllReturns() {
         Long tenantId = TenantContext.getTenantId();
@@ -44,7 +47,8 @@ public class ReturnService {
             Long tenantId = TenantContext.getTenantId();
             if (tenantId != null && !tenantId.equals(ret.get().getSale().getBranch().getId())) {
                 roleAuditService.logEscalationAttempt("/returns/" + id, "SHOPKEEPER",
-                        "Attempted to access return from different branch (branchId=" + ret.get().getSale().getBranch().getId() + ")");
+                        "Attempted to access return from different branch (branchId="
+                                + ret.get().getSale().getBranch().getId() + ")");
                 throw new AccessDeniedException("Access denied: return belongs to a different branch");
             }
             Long ownerId = TenantContext.getOwnerId();
@@ -60,15 +64,16 @@ public class ReturnService {
 
     @Transactional
     @Caching(evict = {
-        @CacheEvict(value = "medicines_search", allEntries = true),
-        @CacheEvict(value = "dashboard_kpis",   allEntries = true)
+            @CacheEvict(value = "medicines_search", allEntries = true),
+            @CacheEvict(value = "dashboard_kpis", allEntries = true)
     })
     public Return createReturn(Return returnItem) {
         if (returnItem.getSaleItem() == null || returnItem.getSaleItem().getId() == null) {
             throw new IllegalArgumentException("A specific Sale Item must be selected for return.");
         }
 
-        // Reload SaleItem from DB (form binding only provides the ID, not a managed entity)
+        // Reload SaleItem from DB (form binding only provides the ID, not a managed
+        // entity)
         SaleItem item = saleItemRepository.findById(returnItem.getSaleItem().getId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid Sale Item selected."));
 
@@ -86,7 +91,29 @@ public class ReturnService {
         medicine.setQuantity(medicine.getQuantity() + returnItem.getReturnQuantity());
         medicineRepository.save(medicine);
 
-        return returnRepository.save(returnItem);
+        Return savedReturn = returnRepository.save(returnItem);
+
+        // ── Kafka: publish SALE_RETURNED event ─────────────────────────────
+        Sale parentSale = item.getSale();
+        SaleEvent event = SaleEvent.builder()
+                .eventType("SALE_RETURNED")
+                .saleId(parentSale != null ? parentSale.getId() : null)
+                .branchId(parentSale != null && parentSale.getBranch() != null
+                        ? parentSale.getBranch().getId()
+                        : null)
+                .customerId(parentSale != null && parentSale.getCustomer() != null
+                        ? parentSale.getCustomer().getId()
+                        : null)
+                .customerName(parentSale != null && parentSale.getCustomer() != null
+                        ? parentSale.getCustomer().getName()
+                        : null)
+                .totalAmount((double) returnItem.getReturnQuantity())
+                .finalAmount(null)
+                .itemCount(1)
+                .build();
+        eventPublisher.publishSaleEvent(event);
+
+        return savedReturn;
     }
 
     public List<Return> getReturnsBySale(Long saleId) {
@@ -95,8 +122,8 @@ public class ReturnService {
 
     @Transactional
     @Caching(evict = {
-        @CacheEvict(value = "medicines_search", allEntries = true),
-        @CacheEvict(value = "dashboard_kpis",   allEntries = true)
+            @CacheEvict(value = "medicines_search", allEntries = true),
+            @CacheEvict(value = "dashboard_kpis", allEntries = true)
     })
     public void deleteReturn(Long id) {
         Return returnItem = returnRepository.findById(id)

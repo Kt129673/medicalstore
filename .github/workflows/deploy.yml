@@ -53,6 +53,15 @@ jobs:
                       sudo rm -rf /opt/medicalstore/app.war
                       sudo cp /tmp/medicalstore-deploy/medicalstore-0.0.1-SNAPSHOT.war /opt/medicalstore/app.war
 
+                      # Configure Kafka (AWS MSK) environment variables
+                      sudo mkdir -p /etc/systemd/system/medicalstore-backend.service.d
+                      sudo tee /etc/systemd/system/medicalstore-backend.service.d/kafka.conf > /dev/null <<EOF
+                      [Service]
+                      Environment="KAFKA_ENABLED=${{ secrets.KAFKA_ENABLED }}"
+                      Environment="KAFKA_BOOTSTRAP_SERVERS=${{ secrets.MSK_BOOTSTRAP_SERVERS }}"
+                      EOF
+                      sudo systemctl daemon-reload
+
                       # Restart
                       echo "Restarting services..."
                       sudo systemctl start medicalstore-backend || true

@@ -1,5 +1,7 @@
 package com.medicalstore.service;
 
+import com.medicalstore.dto.event.InventoryEvent;
+import com.medicalstore.kafka.EventPublisher;
 import com.medicalstore.model.Medicine;
 import com.medicalstore.repository.MedicineRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +20,7 @@ import java.util.Optional;
 public class MedicineService {
 
     private final MedicineRepository medicineRepository;
+    private final EventPublisher eventPublisher;
 
     // ── Context-Aware Lookups ───────────────────────────────────────────────
     public java.util.List<String> getAllCategories() {
@@ -232,14 +235,58 @@ public class MedicineService {
             medicine.setBarcode(
                     "BAR-" + java.util.UUID.randomUUID().toString().substring(0, 8).toUpperCase(java.util.Locale.ROOT));
         }
-        if (medicine.getId() == null && medicine.getCreatedDate() == null)
+
+        boolean isNew = medicine.getId() == null;
+        Integer previousQty = null;
+        if (!isNew) {
+            previousQty = medicineRepository.findById(medicine.getId())
+                    .map(Medicine::getQuantity).orElse(null);
+        }
+
+        if (isNew && medicine.getCreatedDate() == null)
             medicine.setCreatedDate(LocalDate.now());
-        return medicineRepository.save(medicine);
+
+        Medicine saved = medicineRepository.save(medicine);
+
+        // ── Kafka: publish inventory event ─────────────────────────────────
+        String eventType = isNew ? "MEDICINE_CREATED" : "MEDICINE_UPDATED";
+        InventoryEvent event = InventoryEvent.builder()
+                .eventType(eventType)
+                .medicineId(saved.getId())
+                .medicineName(saved.getName())
+                .batchNumber(saved.getBatchNumber())
+                .previousQuantity(previousQty)
+                .newQuantity(saved.getQuantity())
+                .expiryDate(saved.getExpiryDate())
+                .category(saved.getCategory())
+                .branchId(saved.getBranch() != null ? saved.getBranch().getId() : null)
+                .build();
+        eventPublisher.publishInventoryEvent(event);
+
+        return saved;
     }
 
     @Transactional
     @CacheEvict(value = "medicines_search", allEntries = true)
     public void deleteMedicine(Long id) {
+        // Capture info before deletion for the event
+        Medicine medicine = medicineRepository.findById(id).orElse(null);
+
         medicineRepository.deleteById(id);
+
+        // ── Kafka: publish MEDICINE_DELETED event ──────────────────────────
+        if (medicine != null) {
+            InventoryEvent event = InventoryEvent.builder()
+                    .eventType("MEDICINE_DELETED")
+                    .medicineId(id)
+                    .medicineName(medicine.getName())
+                    .batchNumber(medicine.getBatchNumber())
+                    .previousQuantity(medicine.getQuantity())
+                    .newQuantity(0)
+                    .category(medicine.getCategory())
+                    .branchId(medicine.getBranch() != null ? medicine.getBranch().getId() : null)
+                    .build();
+            eventPublisher.publishInventoryEvent(event);
+        }
     }
 }
