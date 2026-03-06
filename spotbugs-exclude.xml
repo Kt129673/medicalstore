@@ -28,4 +28,35 @@
         <Bug pattern="URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD"/>
         <Class name="~com\.medicalstore\.config\..*"/>
     </Match>
+
+    <!--
+        Suppress EI_EXPOSE_REP2 on Spring-managed beans (controllers, services, config).
+        Lombok's @RequiredArgsConstructor stores injected service references directly,
+        which SpotBugs flags as "exposing internal representation". These are Spring
+        singletons injected via DI — storing them by reference is safe and expected.
+    -->
+    <Match>
+        <Bug pattern="EI_EXPOSE_REP2"/>
+        <Or>
+            <Class name="~com\.medicalstore\.controller\..*"/>
+            <Class name="~com\.medicalstore\.service\..*"/>
+            <Class name="~com\.medicalstore\.config\..*"/>
+            <Class name="~com\.medicalstore\.common\..*"/>
+        </Or>
+    </Match>
+
+    <!--
+        Suppress EI_EXPOSE_REP / EI_EXPOSE_REP2 on DTOs.
+        Lombok @Data / @Builder / @AllArgsConstructor generates getters that return
+        mutable collections directly and constructors that store them. For DTOs used
+        as data-transfer objects this is intentional — defensive copying adds overhead
+        with no security benefit.
+    -->
+    <Match>
+        <Or>
+            <Bug pattern="EI_EXPOSE_REP"/>
+            <Bug pattern="EI_EXPOSE_REP2"/>
+        </Or>
+        <Class name="~com\.medicalstore\.dto\..*"/>
+    </Match>
 </FindBugsFilter>

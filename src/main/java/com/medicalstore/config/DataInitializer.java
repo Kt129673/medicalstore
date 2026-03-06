@@ -235,13 +235,15 @@ public class DataInitializer implements CommandLineRunner {
         // 7. Seed subscription feature flags per plan tier (idempotent)
         seedSubscriptionFeatures();
 
-        // 8. Seed additional demo owners with multiple branches and different subscriptions
+        // 8. Seed additional demo owners with multiple branches and different
+        // subscriptions
         seedDemoOwners();
     }
 
     /**
      * Seeds two additional demo owners demonstrating the full hierarchy:
-     * admin → multiple owners → multiple branches per owner → different subscriptions.
+     * admin → multiple owners → multiple branches per owner → different
+     * subscriptions.
      * All operations are idempotent — nothing is duplicated on re-run.
      */
     private void seedDemoOwners() {
@@ -298,7 +300,9 @@ public class DataInitializer implements CommandLineRunner {
         seedBranchSampleData(b3c, "B3C", 300_200_000L);
     }
 
-    /** Creates an OWNER user if one with the given username does not already exist. */
+    /**
+     * Creates an OWNER user if one with the given username does not already exist.
+     */
     private User ensureOwner(String username, String fullName, String email, String password) {
         if (!userRepository.existsByUsername(username)) {
             User owner = new User();
@@ -316,7 +320,9 @@ public class DataInitializer implements CommandLineRunner {
         return userRepository.findByUsername(username).orElseThrow();
     }
 
-    /** Creates a SubscriptionPlan for the given owner if one does not already exist. */
+    /**
+     * Creates a SubscriptionPlan for the given owner if one does not already exist.
+     */
     private void ensureSubscription(User owner, String planType,
             int monthsUntilExpiry, int maxUsers, int maxBranches) {
         if (subscriptionPlanRepository.findByOwnerId(owner.getId()).isEmpty()) {
@@ -332,7 +338,9 @@ public class DataInitializer implements CommandLineRunner {
         }
     }
 
-    /** Returns an existing Branch (matched by name + owner) or creates a new one. */
+    /**
+     * Returns an existing Branch (matched by name + owner) or creates a new one.
+     */
     private Branch ensureBranch(User owner, String name, String address,
             String phone, String gstNumber) {
         return branchRepository.findByOwnerId(owner.getId()).stream()
@@ -352,7 +360,10 @@ public class DataInitializer implements CommandLineRunner {
                 });
     }
 
-    /** Creates a SHOPKEEPER user assigned to the given branch if one does not already exist. */
+    /**
+     * Creates a SHOPKEEPER user assigned to the given branch if one does not
+     * already exist.
+     */
     private void ensureShopkeeper(String username, String fullName,
             String email, String password, Branch branch) {
         if (!userRepository.existsByUsername(username)) {
@@ -390,13 +401,16 @@ public class DataInitializer implements CommandLineRunner {
                 prefix + "-BATCH-P001", prefix + "-BC-001", "30049099", "Paracetamol", 7.0, 12.0, 5.0, "OTC");
         seedMedicine(branch, sup1, "Amoxicillin 250mg", "Antibiotics",
                 "Sun Pharma", 45.0, 150, LocalDate.now().plusYears(1),
-                prefix + "-BATCH-A001", prefix + "-BC-002", "30041000", "Amoxicillin Trihydrate", 35.0, 55.0, 12.0, "H");
+                prefix + "-BATCH-A001", prefix + "-BC-002", "30041000", "Amoxicillin Trihydrate", 35.0, 55.0, 12.0,
+                "H");
         seedMedicine(branch, sup2, "Cetirizine 10mg", "Antihistamines",
                 "Cipla Ltd", 8.0, 300, LocalDate.now().plusYears(2),
-                prefix + "-BATCH-C001", prefix + "-BC-003", "30045090", "Cetirizine Hydrochloride", 5.0, 10.0, 5.0, "OTC");
+                prefix + "-BATCH-C001", prefix + "-BC-003", "30045090", "Cetirizine Hydrochloride", 5.0, 10.0, 5.0,
+                "OTC");
         seedMedicine(branch, sup2, "Metformin 500mg", "Antidiabetic",
                 "Cipla Ltd", 25.0, 180, LocalDate.now().plusYears(2),
-                prefix + "-BATCH-M001", prefix + "-BC-004", "30046000", "Metformin Hydrochloride", 18.0, 30.0, 5.0, "H");
+                prefix + "-BATCH-M001", prefix + "-BC-004", "30046000", "Metformin Hydrochloride", 18.0, 30.0, 5.0,
+                "H");
 
         // --- Medicine: low stock ---
         seedMedicine(branch, sup1, "Azithromycin 500mg", "Antibiotics",
@@ -436,13 +450,17 @@ public class DataInitializer implements CommandLineRunner {
         log.info("Branch sample data seed complete for '{}'", branch.getName());
     }
 
-    /** Builds a 10-digit Indian mobile number from a base value and a per-customer offset. */
+    /**
+     * Builds a 10-digit Indian mobile number from a base value and a per-customer
+     * offset.
+     */
     private static String branchPhone(long phoneBase, int offset) {
         return String.format("9%09d", phoneBase + offset);
     }
 
     /**
-     * Seeds sample suppliers, medicines, customers, and sales for the Default Branch
+     * Seeds sample suppliers, medicines, customers, and sales for the Default
+     * Branch
      * so that all application features can be exercised and bugs discovered.
      * All operations are idempotent — existing records are never duplicated.
      */
@@ -596,7 +614,8 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     /** Holds data for a single line-item in a sample sale. */
-    private record SaleItemData(Medicine medicine, int quantity, double unitPrice, double costPrice) {}
+    private record SaleItemData(Medicine medicine, int quantity, double unitPrice, double costPrice) {
+    }
 
     private void createSampleSale(Branch branch, Customer customer, String paymentMethod,
             Double discountPercentage, Double gstPercentage, List<SaleItemData> itemData) {
@@ -628,25 +647,24 @@ public class DataInitializer implements CommandLineRunner {
     private void seedPermissions() {
         // permission code → roles that are directly granted it
         Map<String, Set<String>> matrix = Map.ofEntries(
-            Map.entry("MEDICINE_DELETE",       Set.of("ADMIN", "OWNER")),
-            Map.entry("MEDICINE_BULK_IMPORT",  Set.of("ADMIN", "OWNER")),
-            Map.entry("USER_DELETE",           Set.of("ADMIN")),
-            Map.entry("USER_RESTORE",          Set.of("ADMIN")),
-            Map.entry("CUSTOMER_DELETE",       Set.of("ADMIN", "OWNER")),
-            Map.entry("REPORT_EXPORT_EXCEL",   Set.of("ADMIN", "OWNER")),
-            Map.entry("REPORT_VIEW_ANALYTICS", Set.of("ADMIN", "OWNER", "SHOPKEEPER")),
-            Map.entry("SALE_DELETE",           Set.of("ADMIN")),
-            Map.entry("INVOICE_PRINT",         Set.of("ADMIN", "OWNER", "SHOPKEEPER")),
-            Map.entry("SUPPLIER_MANAGE",       Set.of("ADMIN", "OWNER")),
-            Map.entry("BULK_EXPORT",           Set.of("ADMIN", "OWNER"))
-        );
+                Map.entry("MEDICINE_DELETE", Set.of("ADMIN", "OWNER")),
+                Map.entry("MEDICINE_BULK_IMPORT", Set.of("ADMIN", "OWNER")),
+                Map.entry("USER_DELETE", Set.of("ADMIN")),
+                Map.entry("USER_RESTORE", Set.of("ADMIN")),
+                Map.entry("CUSTOMER_DELETE", Set.of("ADMIN", "OWNER")),
+                Map.entry("REPORT_EXPORT_EXCEL", Set.of("ADMIN", "OWNER")),
+                Map.entry("REPORT_VIEW_ANALYTICS", Set.of("ADMIN", "OWNER", "SHOPKEEPER")),
+                Map.entry("SALE_DELETE", Set.of("ADMIN")),
+                Map.entry("INVOICE_PRINT", Set.of("ADMIN", "OWNER", "SHOPKEEPER")),
+                Map.entry("SUPPLIER_MANAGE", Set.of("ADMIN", "OWNER")),
+                Map.entry("BULK_EXPORT", Set.of("ADMIN", "OWNER")));
 
         int seeded = 0;
         for (var entry : matrix.entrySet()) {
             if (!permissionRepository.existsByCode(entry.getKey())) {
                 Permission p = Permission.builder()
                         .code(entry.getKey())
-                        .description(entry.getKey().replace('_', ' ').toLowerCase())
+                        .description(entry.getKey().replace('_', ' ').toLowerCase(java.util.Locale.ROOT))
                         .roles(new java.util.HashSet<>(entry.getValue()))
                         .build();
                 permissionRepository.save(p);
@@ -665,13 +683,12 @@ public class DataInitializer implements CommandLineRunner {
     private void seedSubscriptionFeatures() {
         // feature code → plan tiers that include it
         Map<String, Set<String>> featureMatrix = Map.ofEntries(
-            Map.entry("INVOICE_PRINT",       Set.of("FREE", "PRO", "ENTERPRISE")),
-            Map.entry("BASIC_REPORTS",        Set.of("FREE", "PRO", "ENTERPRISE")),
-            Map.entry("ADVANCED_ANALYTICS",   Set.of("PRO",  "ENTERPRISE")),
-            Map.entry("EXCEL_EXPORT",         Set.of("PRO",  "ENTERPRISE")),
-            Map.entry("BULK_EXPORT",          Set.of("ENTERPRISE")),
-            Map.entry("API_ACCESS",           Set.of("ENTERPRISE"))
-        );
+                Map.entry("INVOICE_PRINT", Set.of("FREE", "PRO", "ENTERPRISE")),
+                Map.entry("BASIC_REPORTS", Set.of("FREE", "PRO", "ENTERPRISE")),
+                Map.entry("ADVANCED_ANALYTICS", Set.of("PRO", "ENTERPRISE")),
+                Map.entry("EXCEL_EXPORT", Set.of("PRO", "ENTERPRISE")),
+                Map.entry("BULK_EXPORT", Set.of("ENTERPRISE")),
+                Map.entry("API_ACCESS", Set.of("ENTERPRISE")));
 
         int seeded = 0;
         for (var entry : featureMatrix.entrySet()) {
@@ -679,11 +696,10 @@ public class DataInitializer implements CommandLineRunner {
             for (String planType : entry.getValue()) {
                 if (!subscriptionFeatureRepository.existsByPlanTypeAndFeatureCode(planType, featureCode)) {
                     subscriptionFeatureRepository.save(
-                        SubscriptionFeature.builder()
-                                .planType(planType)
-                                .featureCode(featureCode)
-                                .build()
-                    );
+                            SubscriptionFeature.builder()
+                                    .planType(planType)
+                                    .featureCode(featureCode)
+                                    .build());
                     seeded++;
                 }
             }

@@ -15,11 +15,12 @@ import org.springframework.web.servlet.HandlerInterceptor;
 @Slf4j
 public class SubscriptionInterceptor implements HandlerInterceptor {
 
-    /** Request attribute name to signal templates that the subscription is expired. */
+    /**
+     * Request attribute name to signal templates that the subscription is expired.
+     */
     public static final String ATTR_SUBSCRIPTION_EXPIRED = "subscriptionExpired";
 
-    private static final java.util.Set<String> WRITE_METHODS =
-            java.util.Set.of("POST", "PUT", "DELETE", "PATCH");
+    private static final java.util.Set<String> WRITE_METHODS = java.util.Set.of("POST", "PUT", "DELETE", "PATCH");
 
     private final SubscriptionService subscriptionService;
     private final SecurityUtils securityUtils;
@@ -52,7 +53,7 @@ public class SubscriptionInterceptor implements HandlerInterceptor {
                     }
                     var plan = subscriptionService.getPlanForOwner(ownerId);
                     if (plan.isEmpty() || plan.get().isExpired()) {
-                        if (WRITE_METHODS.contains(request.getMethod().toUpperCase())) {
+                        if (WRITE_METHODS.contains(request.getMethod().toUpperCase(java.util.Locale.ROOT))) {
                             // Block all mutation requests when subscription is expired
                             response.sendRedirect(RoutePaths.SUBSCRIPTION_BILLING + "?expired=true");
                             return false;

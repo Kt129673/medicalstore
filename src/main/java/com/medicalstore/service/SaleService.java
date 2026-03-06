@@ -107,7 +107,7 @@ public class SaleService {
             }
 
             // Customer name search — only join when actually filtering
-            if (search != null && !search.trim().isEmpty()) {
+            if (search != null && !search.isBlank()) {
                 String like = "%" + search.toLowerCase() + "%";
                 jakarta.persistence.criteria.Join<?, ?> customerJoin = root.join("customer",
                         jakarta.persistence.criteria.JoinType.LEFT);
@@ -124,7 +124,7 @@ public class SaleService {
             }
 
             // Payment method
-            if (paymentMethod != null && !paymentMethod.trim().isEmpty()) {
+            if (paymentMethod != null && !paymentMethod.isBlank()) {
                 predicates.add(cb.equal(cb.lower(root.get("paymentMethod")), paymentMethod.toLowerCase()));
             }
 
@@ -235,7 +235,8 @@ public class SaleService {
         Sale sale = saleRepository.findByIdWithDetails(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Sale", id));
 
-        // Restore stock for each item using a direct UPDATE query (no load-then-save per row)
+        // Restore stock for each item using a direct UPDATE query (no load-then-save
+        // per row)
         for (com.medicalstore.model.SaleItem item : sale.getItems()) {
             medicineRepository.addStock(item.getMedicine().getId(), item.getQuantity());
         }

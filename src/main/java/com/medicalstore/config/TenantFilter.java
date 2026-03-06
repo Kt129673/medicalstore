@@ -36,7 +36,7 @@ public class TenantFilter extends OncePerRequestFilter {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication != null && authentication.isAuthenticated()
-                && !authentication.getPrincipal().equals("anonymousUser")) {
+                && !"anonymousUser".equals(authentication.getPrincipal())) {
             String username = authentication.getName();
             userRepository.findByUsernameWithBranch(username).ifPresent(user -> {
                 try {

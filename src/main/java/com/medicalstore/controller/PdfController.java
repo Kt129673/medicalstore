@@ -13,10 +13,12 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 @Controller
 @RequestMapping("/pdf")
@@ -41,7 +43,7 @@ public class PdfController {
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_PDF);
-            headers.setContentDispositionFormData("attachment", 
+            headers.setContentDispositionFormData("attachment",
                     String.format("Invoice_INV-%06d.pdf", sale.getId()));
             headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
 
@@ -49,7 +51,7 @@ public class PdfController {
 
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(("Error generating PDF: " + e.getMessage()).getBytes());
+                    .body(("Error generating PDF: " + e.getMessage()).getBytes(StandardCharsets.UTF_8));
         }
     }
 
@@ -60,21 +62,19 @@ public class PdfController {
     public ResponseEntity<byte[]> downloadDailyReportPdf(
             @RequestParam(required = false) String date) {
         try {
-            LocalDate reportDate = date != null ? 
-                    LocalDate.parse(date, DateTimeFormatter.ISO_DATE) : 
-                    LocalDate.now();
+            LocalDate reportDate = date != null ? LocalDate.parse(date, DateTimeFormatter.ISO_DATE) : LocalDate.now();
 
             LocalDateTime startOfDay = reportDate.atStartOfDay();
             LocalDateTime endOfDay = reportDate.atTime(23, 59, 59);
 
             Object reportData = reportService.generateDailyReport(startOfDay, endOfDay);
             String dateStr = reportDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-            
+
             byte[] pdfBytes = pdfService.generateDailyReportPdf(dateStr, reportData);
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_PDF);
-            headers.setContentDispositionFormData("attachment", 
+            headers.setContentDispositionFormData("attachment",
                     String.format("Daily_Report_%s.pdf", reportDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))));
             headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
 
@@ -82,7 +82,7 @@ public class PdfController {
 
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(("Error generating PDF: " + e.getMessage()).getBytes());
+                    .body(("Error generating PDF: " + e.getMessage()).getBytes(StandardCharsets.UTF_8));
         }
     }
 
@@ -103,14 +103,14 @@ public class PdfController {
             LocalDateTime endOfMonth = yearMonth.atEndOfMonth().atTime(23, 59, 59);
 
             Object reportData = reportService.generateMonthlyReport(startOfMonth, endOfMonth, yearMonth);
-            
+
             String monthName = yearMonth.format(DateTimeFormatter.ofPattern("MMMM"));
-            
+
             byte[] pdfBytes = pdfService.generateMonthlyReportPdf(monthName, String.valueOf(reportYear), reportData);
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_PDF);
-            headers.setContentDispositionFormData("attachment", 
+            headers.setContentDispositionFormData("attachment",
                     String.format("Monthly_Report_%s_%d.pdf", monthName, reportYear));
             headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
 
@@ -118,7 +118,7 @@ public class PdfController {
 
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(("Error generating PDF: " + e.getMessage()).getBytes());
+                    .body(("Error generating PDF: " + e.getMessage()).getBytes(StandardCharsets.UTF_8));
         }
     }
 
@@ -133,21 +133,22 @@ public class PdfController {
         try {
             // Get report data based on type
             Object reportData;
-            String start, end;
-            
-            switch (type.toLowerCase()) {
+            String start;
+            String end;
+
+            switch (type.toLowerCase(Locale.ROOT)) {
                 case "daily":
-                    LocalDate daily = (startDate != null && !startDate.trim().isEmpty()) ? 
-                            LocalDate.parse(startDate) : LocalDate.now();
+                    LocalDate daily = (startDate != null && !startDate.isBlank()) ? LocalDate.parse(startDate)
+                            : LocalDate.now();
                     LocalDateTime dailyStart = daily.atStartOfDay();
                     LocalDateTime dailyEnd = daily.atTime(23, 59, 59);
                     reportData = saleService.getSalesByDateRange(dailyStart, dailyEnd);
                     start = end = daily.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
                     break;
-                    
+
                 case "monthly":
-                    LocalDate monthly = (startDate != null && !startDate.trim().isEmpty()) ? 
-                            LocalDate.parse(startDate) : LocalDate.now();
+                    LocalDate monthly = (startDate != null && !startDate.isBlank()) ? LocalDate.parse(startDate)
+                            : LocalDate.now();
                     YearMonth ym = YearMonth.of(monthly.getYear(), monthly.getMonthValue());
                     LocalDateTime monthStart = ym.atDay(1).atStartOfDay();
                     LocalDateTime monthEnd = ym.atEndOfMonth().atTime(23, 59, 59);
@@ -155,27 +156,27 @@ public class PdfController {
                     start = monthly.format(DateTimeFormatter.ofPattern("MMMM yyyy"));
                     end = start;
                     break;
-                    
+
                 case "yearly":
-                    int year = (startDate != null && !startDate.trim().isEmpty()) ? 
-                            Integer.parseInt(startDate.substring(0, 4)) : LocalDate.now().getYear();
+                    int year = (startDate != null && !startDate.isBlank()) ? Integer.parseInt(startDate.substring(0, 4))
+                            : LocalDate.now().getYear();
                     LocalDateTime yearStart = LocalDate.of(year, 1, 1).atStartOfDay();
                     LocalDateTime yearEnd = LocalDate.of(year, 12, 31).atTime(23, 59, 59);
                     reportData = saleService.getSalesByDateRange(yearStart, yearEnd);
                     start = "January " + year;
                     end = "December " + year;
                     break;
-                    
+
                 default:
                     throw new IllegalArgumentException("Invalid report type: " + type);
             }
-            
+
             byte[] pdfBytes = pdfService.generateSalesReportPdf(
-                    type.toUpperCase(), start, end, reportData);
+                    type.toUpperCase(Locale.ROOT), start, end, reportData);
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_PDF);
-            headers.setContentDispositionFormData("attachment", 
+            headers.setContentDispositionFormData("attachment",
                     String.format("%s_Sales_Report.pdf", type));
             headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
 
@@ -183,7 +184,7 @@ public class PdfController {
 
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(("Error generating PDF: " + e.getMessage()).getBytes());
+                    .body(("Error generating PDF: " + e.getMessage()).getBytes(StandardCharsets.UTF_8));
         }
     }
 }

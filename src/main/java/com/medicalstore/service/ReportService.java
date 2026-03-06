@@ -746,8 +746,9 @@ public class ReportService {
                                 for (int i = 0; i < headers.length; i++) {
                                         sheet.autoSizeColumn(i);
                                 }
-                        } catch (Throwable t) {
+                        } catch (Exception ignored) {
                                 // Ignore font manager errors in environments without AWT support
+                                // (e.g. headless servers) — column widths will remain at default.
                         }
 
                         ByteArrayOutputStream bos = new ByteArrayOutputStream();

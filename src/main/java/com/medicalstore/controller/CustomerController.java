@@ -18,12 +18,12 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequiredArgsConstructor
 @PreAuthorize("hasAnyRole('ADMIN', 'SHOPKEEPER')")
 public class CustomerController {
-    
+
     private final CustomerService customerService;
     private final SecurityUtils securityUtils;
     private final BranchService branchService;
     private final SaleService saleService;
-    
+
     @GetMapping
     public String listCustomers(@RequestParam(required = false) String search, Model model) {
         if (search != null && !search.isEmpty()) {
@@ -33,7 +33,7 @@ public class CustomerController {
         }
         return "customers/list";
     }
-    
+
     @GetMapping("/{id}")
     public String viewCustomer(@PathVariable Long id, Model model) {
         Customer customer = customerService.getCustomerById(id)
@@ -48,7 +48,7 @@ public class CustomerController {
         model.addAttribute("customer", new Customer());
         return "customers/form";
     }
-    
+
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable Long id, Model model) {
         Customer customer = customerService.getCustomerById(id)
@@ -56,13 +56,13 @@ public class CustomerController {
         model.addAttribute("customer", customer);
         return "customers/form";
     }
-    
+
     @PostMapping("/save")
     @PreAuthorize("hasRole('SHOPKEEPER')")
     public String saveCustomer(@ModelAttribute Customer customer, RedirectAttributes redirectAttributes) {
         try {
             // Convert empty email to null to avoid UNIQUE constraint violation
-            if (customer.getEmail() != null && customer.getEmail().trim().isEmpty()) {
+            if (customer.getEmail() != null && customer.getEmail().isBlank()) {
                 customer.setEmail(null);
             }
 
@@ -101,7 +101,7 @@ public class CustomerController {
         }
         return RoutePaths.redirectTo(RoutePaths.CUSTOMERS);
     }
-    
+
     @PostMapping("/delete/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public String deleteCustomer(@PathVariable Long id, RedirectAttributes redirectAttributes) {

@@ -412,6 +412,32 @@ The project uses **GitHub Actions** for CI/CD with automated bug detection:
 
 When bugs are found, a **GitHub Issue** is automatically created with labels `bug-detection` and `automated`, listing all detected bugs with their categories and priorities.
 
+### Code Quality Standards
+
+The codebase enforces the following quality rules via SpotBugs and PMD:
+
+| Rule | Standard |
+|---|---|
+| **String checks** | Use `String.isBlank()` instead of `trim().isEmpty()` |
+| **Case conversions** | Always pass `Locale.ROOT` to `toLowerCase()` / `toUpperCase()` |
+| **Comparisons** | Literal-first: `"value".equals(var)` (null-safe) |
+| **Logging** | SLF4J only — no `System.out.println`; guard expensive `log.warn()` calls |
+| **Exception handling** | Catch specific exceptions — never `Throwable` |
+| **Character encoding** | Use `StandardCharsets.UTF_8` explicitly in `getBytes()` |
+| **Switch statements** | Always include a `default` case |
+| **Mutable constants** | Expose `String[]` constants as `List.of(...)` with defensive-copy getters |
+
+### SpotBugs Exclusion Filters
+
+The [`spotbugs-exclude.xml`](spotbugs-exclude.xml) file suppresses known false positives:
+
+| Pattern | Scope | Reason |
+|---|---|---|
+| `EI_EXPOSE_REP2` | Controllers, Services, Config | Lombok `@RequiredArgsConstructor` stores Spring singletons — safe by design |
+| `EI_EXPOSE_REP` / `EI_EXPOSE_REP2` | DTOs | Lombok `@Data`/`@Builder` returns mutable collections — intentional for data transfer |
+| `EQ_UNUSUAL` | Models, DTOs | Lombok-generated `equals()` flagged incorrectly |
+| `URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD` | Config | Spring-injected fields used externally |
+
 ---
 
 ## ⏰ Scheduled Jobs

@@ -46,19 +46,19 @@ public class MedicineService {
                 predicates.add(cb.equal(root.get("branch").get("owner").get("id"), ownerId));
             }
 
-            if (search != null && !search.trim().isEmpty()) {
-                String likePattern = "%" + search.toLowerCase() + "%";
+            if (search != null && !search.isBlank()) {
+                String likePattern = "%" + search.toLowerCase(java.util.Locale.ROOT) + "%";
                 predicates.add(cb.or(
                         cb.like(cb.lower(root.get("name")), likePattern),
                         cb.like(cb.lower(root.get("barcode")), likePattern),
                         cb.like(cb.lower(root.get("manufacturer")), likePattern)));
             }
 
-            if (category != null && !category.trim().isEmpty()) {
+            if (category != null && !category.isBlank()) {
                 predicates.add(cb.equal(root.get("category"), category));
             }
 
-            if (stockLevel != null && !stockLevel.trim().isEmpty()) {
+            if (stockLevel != null && !stockLevel.isBlank()) {
                 if ("critical".equals(stockLevel)) {
                     predicates.add(cb.le(root.get("quantity"), 5));
                 } else if ("low".equals(stockLevel)) {
@@ -68,7 +68,7 @@ public class MedicineService {
                 }
             }
 
-            if (expiryRange != null && !expiryRange.trim().isEmpty()) {
+            if (expiryRange != null && !expiryRange.isBlank()) {
                 java.time.LocalDate now = java.time.LocalDate.now();
                 if ("expired".equals(expiryRange)) {
                     predicates.add(cb.lessThan(root.get("expiryDate"), now));
@@ -220,16 +220,17 @@ public class MedicineService {
     @Transactional
     @CacheEvict(value = "medicines_search", allEntries = true)
     public Medicine saveMedicine(Medicine medicine) {
-        if (medicine.getName() == null || medicine.getName().trim().isEmpty())
+        if (medicine.getName() == null || medicine.getName().isBlank())
             throw new IllegalArgumentException("Medicine name is required");
-        if (medicine.getCategory() == null || medicine.getCategory().trim().isEmpty())
+        if (medicine.getCategory() == null || medicine.getCategory().isBlank())
             throw new IllegalArgumentException("Category is required");
         if (medicine.getPrice() == null || medicine.getPrice() <= 0)
             throw new IllegalArgumentException("Valid price is required");
         if (medicine.getQuantity() == null || medicine.getQuantity() < 0)
             throw new IllegalArgumentException("Valid quantity is required");
-        if (medicine.getBarcode() == null || medicine.getBarcode().trim().isEmpty()) {
-            medicine.setBarcode("BAR-" + java.util.UUID.randomUUID().toString().substring(0, 8).toUpperCase());
+        if (medicine.getBarcode() == null || medicine.getBarcode().isBlank()) {
+            medicine.setBarcode(
+                    "BAR-" + java.util.UUID.randomUUID().toString().substring(0, 8).toUpperCase(java.util.Locale.ROOT));
         }
         if (medicine.getId() == null && medicine.getCreatedDate() == null)
             medicine.setCreatedDate(LocalDate.now());

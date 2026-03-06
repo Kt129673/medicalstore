@@ -15,10 +15,10 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class SupplierService {
-    
+
     private final SupplierRepository supplierRepository;
     private final RoleAuditService roleAuditService;
-    
+
     public List<Supplier> getAllSuppliers() {
         Long tenantId = TenantContext.getTenantId();
         Long ownerId = TenantContext.getOwnerId();
@@ -28,7 +28,7 @@ public class SupplierService {
             return supplierRepository.findByOwnerId(ownerId);
         return supplierRepository.findAll();
     }
-    
+
     public Optional<Supplier> getSupplierById(Long id) {
         Optional<Supplier> supplier = supplierRepository.findById(id);
         if (supplier.isPresent()) {
@@ -36,7 +36,8 @@ public class SupplierService {
             if (tenantId != null && supplier.get().getBranch() != null
                     && !tenantId.equals(supplier.get().getBranch().getId())) {
                 roleAuditService.logEscalationAttempt("/suppliers/" + id, "SHOPKEEPER",
-                        "Attempted to access supplier from different branch (branchId=" + supplier.get().getBranch().getId() + ")");
+                        "Attempted to access supplier from different branch (branchId="
+                                + supplier.get().getBranch().getId() + ")");
                 throw new AccessDeniedException("Access denied: supplier belongs to a different branch");
             }
             Long ownerId = TenantContext.getOwnerId();
@@ -50,25 +51,25 @@ public class SupplierService {
         }
         return supplier;
     }
-    
+
     @Transactional
     public Supplier saveSupplier(Supplier supplier) {
-        if (supplier.getName() == null || supplier.getName().trim().isEmpty())
+        if (supplier.getName() == null || supplier.getName().isBlank())
             throw new IllegalArgumentException("Supplier name is required");
-        if (supplier.getContactPerson() == null || supplier.getContactPerson().trim().isEmpty())
+        if (supplier.getContactPerson() == null || supplier.getContactPerson().isBlank())
             throw new IllegalArgumentException("Supplier contact person is required");
-        if (supplier.getPhone() == null || supplier.getPhone().trim().isEmpty())
+        if (supplier.getPhone() == null || supplier.getPhone().isBlank())
             throw new IllegalArgumentException("Supplier phone is required");
-        if (supplier.getAddress() == null || supplier.getAddress().trim().isEmpty())
+        if (supplier.getAddress() == null || supplier.getAddress().isBlank())
             throw new IllegalArgumentException("Supplier address is required");
         return supplierRepository.save(supplier);
     }
-    
+
     @Transactional
     public void deleteSupplier(Long id) {
         supplierRepository.deleteById(id);
     }
-    
+
     public List<Supplier> searchSuppliers(String name) {
         Long tenantId = com.medicalstore.common.TenantContext.getTenantId();
         Long ownerId = com.medicalstore.common.TenantContext.getOwnerId();

@@ -42,15 +42,15 @@ public class CustomerService {
         if (customer.isPresent()) {
             Long tenantId = com.medicalstore.common.TenantContext.getTenantId();
             if (tenantId != null && customer.get().getBranch() != null
-                && !tenantId.equals(customer.get().getBranch().getId())) {
+                    && !tenantId.equals(customer.get().getBranch().getId())) {
                 // Throw rather than silently return empty — consistent with all other services
                 throw new org.springframework.security.access.AccessDeniedException(
                         "Access denied: customer belongs to a different branch");
             }
             Long ownerId = com.medicalstore.common.TenantContext.getOwnerId();
             if (ownerId != null && customer.get().getBranch() != null
-                && customer.get().getBranch().getOwner() != null
-                && !ownerId.equals(customer.get().getBranch().getOwner().getId())) {
+                    && customer.get().getBranch().getOwner() != null
+                    && !ownerId.equals(customer.get().getBranch().getOwner().getId())) {
                 throw new org.springframework.security.access.AccessDeniedException(
                         "Access denied: customer belongs to a different owner");
             }
@@ -85,9 +85,9 @@ public class CustomerService {
     // ── Writes ───────────────────────────────────────────────────────────────
     @Transactional
     public Customer saveCustomer(Customer customer) {
-        if (customer.getName() == null || customer.getName().trim().isEmpty())
+        if (customer.getName() == null || customer.getName().isBlank())
             throw new IllegalArgumentException("Customer name is required");
-        if (customer.getPhone() == null || customer.getPhone().trim().isEmpty())
+        if (customer.getPhone() == null || customer.getPhone().isBlank())
             throw new IllegalArgumentException("Customer phone is required");
         return customerRepository.save(customer);
     }

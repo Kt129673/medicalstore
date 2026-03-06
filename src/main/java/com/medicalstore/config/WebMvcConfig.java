@@ -17,9 +17,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
         // Add cache control interceptor for login page
         registry.addInterceptor(new CacheControlInterceptor())
                 .addPathPatterns("/login");
-        
+
         registry.addInterceptor(subscriptionInterceptor)
                 .addPathPatterns("/**")
-                .excludePathPatterns(RoutePaths.MVC_EXCLUDE_PATTERNS);
+                .excludePathPatterns(RoutePaths.getMvcExcludePatterns());
     }
 }

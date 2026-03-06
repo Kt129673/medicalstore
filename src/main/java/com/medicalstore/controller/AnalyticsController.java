@@ -161,6 +161,8 @@ public class AnalyticsController {
                                                                 year != null ? year : LocalDate.now().getYear()));
                                 filename = "gst-monthly-summary.xlsx";
                                 break;
+                        default:
+                                break;
                 }
 
                 if (excelBytes != null) {

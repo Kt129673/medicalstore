@@ -10,15 +10,15 @@ package com.medicalstore.config;
  * - Gradual rollout to all roles
  * 
  * Example:
- *   if (FeatureFlags.isFeatureEnabled("ADVANCED_ANALYTICS", userRole)) {
- *       // Show advanced analytics to this role
- *   }
+ * if (FeatureFlags.isFeatureEnabled("ADVANCED_ANALYTICS", userRole)) {
+ * // Show advanced analytics to this role
+ * }
  */
 public class FeatureFlags {
 
     // ───── FEATURE DEFINITIONS ─────
     // Format: "FEATURE_NAME" → {ADMIN, OWNER, SHOPKEEPER, ...}
-    
+
     public static final String ADVANCED_ANALYTICS = "ADVANCED_ANALYTICS";
     public static final String BULK_OPERATIONS = "BULK_OPERATIONS";
     public static final String EXPORT_REPORTS = "EXPORT_REPORTS";
@@ -27,7 +27,7 @@ public class FeatureFlags {
     public static final String SUBSCRIPTION_MANAGEMENT = "SUBSCRIPTION_MANAGEMENT";
     public static final String USER_MANAGEMENT = "USER_MANAGEMENT";
     public static final String CUSTOM_REPORTS = "CUSTOM_REPORTS";
-    
+
     /**
      * Check if a feature is enabled for a specific role.
      * 
@@ -37,14 +37,14 @@ public class FeatureFlags {
      */
     public static boolean isFeatureEnabled(String featureName, String role) {
         return switch (featureName) {
-            case ADVANCED_ANALYTICS -> role.equals("ADMIN") || role.equals("OWNER");
-            case BULK_OPERATIONS -> role.equals("ADMIN");
-            case EXPORT_REPORTS -> !role.equals("SHOPKEEPER"); // Enabled for ADMIN and OWNER
-            case API_ACCESS -> role.equals("ADMIN");
-            case MULTI_BRANCH_COMPARISON -> role.equals("OWNER") || role.equals("ADMIN");
-            case SUBSCRIPTION_MANAGEMENT -> role.equals("OWNER") || role.equals("ADMIN");
-            case USER_MANAGEMENT -> role.equals("ADMIN");
-            case CUSTOM_REPORTS -> role.equals("ADMIN") || role.equals("OWNER");
+            case ADVANCED_ANALYTICS -> "ADMIN".equals(role) || "OWNER".equals(role);
+            case BULK_OPERATIONS -> "ADMIN".equals(role);
+            case EXPORT_REPORTS -> !"SHOPKEEPER".equals(role); // Enabled for ADMIN and OWNER
+            case API_ACCESS -> "ADMIN".equals(role);
+            case MULTI_BRANCH_COMPARISON -> "OWNER".equals(role) || "ADMIN".equals(role);
+            case SUBSCRIPTION_MANAGEMENT -> "OWNER".equals(role) || "ADMIN".equals(role);
+            case USER_MANAGEMENT -> "ADMIN".equals(role);
+            case CUSTOM_REPORTS -> "ADMIN".equals(role) || "OWNER".equals(role);
             default -> false;
         };
     }
@@ -54,17 +54,25 @@ public class FeatureFlags {
      */
     public static java.util.List<String> getEnabledFeaturesForRole(String role) {
         java.util.List<String> features = new java.util.ArrayList<>();
-        
+
         // Check all features
-        if (isFeatureEnabled(ADVANCED_ANALYTICS, role)) features.add(ADVANCED_ANALYTICS);
-        if (isFeatureEnabled(BULK_OPERATIONS, role)) features.add(BULK_OPERATIONS);
-        if (isFeatureEnabled(EXPORT_REPORTS, role)) features.add(EXPORT_REPORTS);
-        if (isFeatureEnabled(API_ACCESS, role)) features.add(API_ACCESS);
-        if (isFeatureEnabled(MULTI_BRANCH_COMPARISON, role)) features.add(MULTI_BRANCH_COMPARISON);
-        if (isFeatureEnabled(SUBSCRIPTION_MANAGEMENT, role)) features.add(SUBSCRIPTION_MANAGEMENT);
-        if (isFeatureEnabled(USER_MANAGEMENT, role)) features.add(USER_MANAGEMENT);
-        if (isFeatureEnabled(CUSTOM_REPORTS, role)) features.add(CUSTOM_REPORTS);
-        
+        if (isFeatureEnabled(ADVANCED_ANALYTICS, role))
+            features.add(ADVANCED_ANALYTICS);
+        if (isFeatureEnabled(BULK_OPERATIONS, role))
+            features.add(BULK_OPERATIONS);
+        if (isFeatureEnabled(EXPORT_REPORTS, role))
+            features.add(EXPORT_REPORTS);
+        if (isFeatureEnabled(API_ACCESS, role))
+            features.add(API_ACCESS);
+        if (isFeatureEnabled(MULTI_BRANCH_COMPARISON, role))
+            features.add(MULTI_BRANCH_COMPARISON);
+        if (isFeatureEnabled(SUBSCRIPTION_MANAGEMENT, role))
+            features.add(SUBSCRIPTION_MANAGEMENT);
+        if (isFeatureEnabled(USER_MANAGEMENT, role))
+            features.add(USER_MANAGEMENT);
+        if (isFeatureEnabled(CUSTOM_REPORTS, role))
+            features.add(CUSTOM_REPORTS);
+
         return features;
     }
 }

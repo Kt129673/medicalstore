@@ -164,7 +164,7 @@ public class PurchaseService {
 
     private String generateOrderNumber() {
         String prefix = "PO-" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")) + "-";
-        String uniqueSuffix = java.util.UUID.randomUUID().toString().substring(0, 6).toUpperCase();
+        String uniqueSuffix = java.util.UUID.randomUUID().toString().substring(0, 6).toUpperCase(java.util.Locale.ROOT);
         return prefix + uniqueSuffix;
     }
 }
