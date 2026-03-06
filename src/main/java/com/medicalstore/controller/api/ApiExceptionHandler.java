@@ -16,13 +16,17 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 /**
- * JSON exception handler for all REST API controllers in the {@code controller.api} package.
+ * JSON exception handler for all REST API controllers in the
+ * {@code controller.api} package.
  * All responses follow the {@link ErrorResponse} schema.
  *
- * <p>This handler is deliberately scoped to the {@code api} sub-package so that
- * Thymeleaf controllers handled by {@code GlobalExceptionHandler} are unaffected.</p>
+ * <p>
+ * This handler is deliberately scoped to the {@code api} sub-package so that
+ * Thymeleaf controllers handled by {@code GlobalExceptionHandler} are
+ * unaffected.
+ * </p>
  */
-@RestControllerAdvice(basePackageClasses = {PosApiController.class, DashboardApiController.class})
+@RestControllerAdvice(basePackages = "com.medicalstore.controller.api")
 public class ApiExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(ApiExceptionHandler.class);
@@ -67,10 +71,11 @@ public class ApiExceptionHandler {
     // ── 409 Conflict ────────────────────────────────────────────────────────
 
     /**
-     * Handles concurrent stock conflicts — {@code @Version} optimistic lock or explicit
+     * Handles concurrent stock conflicts — {@code @Version} optimistic lock or
+     * explicit
      * {@link StockConflictException}. Returns 409 so clients can retry.
      */
-    @ExceptionHandler({StockConflictException.class, OptimisticLockException.class})
+    @ExceptionHandler({ StockConflictException.class, OptimisticLockException.class })
     public ResponseEntity<ErrorResponse> handleStockConflict(RuntimeException ex) {
         log.warn("API optimistic lock conflict: {}", ex.getMessage());
         return ResponseEntity

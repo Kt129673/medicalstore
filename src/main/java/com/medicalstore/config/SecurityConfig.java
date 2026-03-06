@@ -47,9 +47,9 @@ public class SecurityConfig {
     // /owner/** routes (view-as-owner drill-down). OWNER does NOT inherit
     // SHOPKEEPER so that OWNER users cannot access or modify operational
     // endpoints. This enforces the 3-layer SaaS separation:
-    //   ADMIN   → Platform governance (/admin/**)
-    //   OWNER   → Portfolio management (/owner/**)
-    //   SHOPKEEPER → Store operations (/medicines/**, /sales/**, etc.)
+    // ADMIN → Platform governance (/admin/**)
+    // OWNER → Portfolio management (/owner/**)
+    // SHOPKEEPER → Store operations (/medicines/**, /sales/**, etc.)
     @Bean
     public RoleHierarchy roleHierarchy() {
         return RoleHierarchyImpl.withDefaultRolePrefix()
@@ -57,7 +57,8 @@ public class SecurityConfig {
                 .build();
     }
 
-    // Apply role hierarchy and custom permission evaluator to method-level security (@PreAuthorize annotations)
+    // Apply role hierarchy and custom permission evaluator to method-level security
+    // (@PreAuthorize annotations)
     @Bean
     static MethodSecurityExpressionHandler methodSecurityExpressionHandler(
             RoleHierarchy roleHierarchy,
@@ -83,10 +84,15 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, TenantFilter tenantFilter, RateLimitFilter rateLimitFilter) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, TenantFilter tenantFilter,
+            RateLimitFilter rateLimitFilter) throws Exception {
         http
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/login", "/css/**", "/js/**", "/images/**", "/error").permitAll()
+                        // Actuator & Swagger/OpenAPI — accessible without login
+                        .requestMatchers("/actuator/**", "/swagger-ui/**", "/swagger-ui.html",
+                                "/v3/api-docs/**", "/swagger-resources/**")
+                        .permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         // ADMIN explicitly granted for impersonation (view-as-owner drill-down)
                         .requestMatchers("/owner/**").hasAnyRole("OWNER", "ADMIN")
@@ -94,8 +100,10 @@ public class SecurityConfig {
                         .requestMatchers("/analytics/**").hasAnyRole("ADMIN", "OWNER", "SHOPKEEPER")
                         // Reports — all authenticated roles can view
                         .requestMatchers("/reports/**").hasAnyRole("ADMIN", "OWNER", "SHOPKEEPER")
-                        // Operational endpoints — ADMIN (read-only monitoring) and SHOPKEEPER (full operations)
-                        // Write operations are further blocked at method level via @PreAuthorize("hasRole('SHOPKEEPER')")
+                        // Operational endpoints — ADMIN (read-only monitoring) and SHOPKEEPER (full
+                        // operations)
+                        // Write operations are further blocked at method level via
+                        // @PreAuthorize("hasRole('SHOPKEEPER')")
                         .requestMatchers("/medicines/**", "/sales/**", "/customers/**", "/returns/**",
                                 "/suppliers/**", "/purchases/**")
                         .hasAnyRole("ADMIN", "SHOPKEEPER")
@@ -109,8 +117,8 @@ public class SecurityConfig {
                     // Tomcat's 8 KB response buffer (e.g. login.html with 640 lines of CSS),
                     // the response is already committed by the time th:action triggers
                     // token resolution, causing:
-                    //   IllegalStateException: Cannot create a session after the
-                    //   response has been committed
+                    // IllegalStateException: Cannot create a session after the
+                    // response has been committed
                     csrf.csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler());
                     csrf.ignoringRequestMatchers("/api/**");
                 })
@@ -127,10 +135,11 @@ public class SecurityConfig {
                         .deleteCookies("JSESSIONID", "remember-me")
                         .clearAuthentication(true)
                         .permitAll())
-                .requestCache(cache -> cache.requestCache(new org.springframework.security.web.savedrequest.NullRequestCache()))
+                .requestCache(cache -> cache
+                        .requestCache(new org.springframework.security.web.savedrequest.NullRequestCache()))
                 .rememberMe(rm -> rm
                         .key(rememberMeKey)
-                        .tokenValiditySeconds(60 * 60 * 24 * 7)  // 7 days
+                        .tokenValiditySeconds(60 * 60 * 24 * 7) // 7 days
                         .userDetailsService(userDetailsService)
                         .rememberMeParameter("remember-me"))
                 .exceptionHandling(ex -> ex
