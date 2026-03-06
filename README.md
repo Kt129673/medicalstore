@@ -80,19 +80,19 @@ flowchart TD
     A -->|"HTML (Thymeleaf)"| B
     A -->|"JSON (REST API)"| B
 
-    B["🔒 Spring Security Filter Chain\nTenantFilter → RateLimitFilter → CsrfCookieFilter → Auth"]
+    B["🔒 Spring Security Filter Chain<br/>TenantFilter → RateLimitFilter → CsrfCookieFilter → Auth"]
     B --> C
 
-    C["🎮 Controller Layer\nHomeController · MedicineController · SaleController\nAPI: DashboardApiController · PosApiController"]
+    C["🎮 Controller Layer<br/>HomeController · MedicineController · SaleController<br/>API: DashboardApiController · PosApiController"]
     C --> D
 
-    D["⚙️ Service Layer\nMedicineService · SaleService · ReportService · PdfService\nAnalyticsService · ScheduledJobService · WhatsAppService"]
+    D["⚙️ Service Layer<br/>MedicineService · SaleService · ReportService · PdfService<br/>AnalyticsService · ScheduledJobService · WhatsAppService"]
     D --> E
 
-    E["📂 Repository Layer\nSpring Data JPA Repositories — 14 repositories"]
+    E["📂 Repository Layer<br/>Spring Data JPA Repositories — 14 repositories"]
     E --> F
 
-    F["🗄️ MySQL 8.x / H2 Database\n16 entity tables + user_roles join table"]
+    F["🗄️ MySQL 8.x / H2 Database<br/>16 entity tables + user_roles join table"]
 
     style A fill:#4A90D9,stroke:#2C5F8A,color:#fff
     style B fill:#E74C3C,stroke:#C0392B,color:#fff
