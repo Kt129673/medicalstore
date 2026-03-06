@@ -1,0 +1,13 @@
+{
+    "mcpServers": {
+        "medicalstore-test": {
+            "command": "node",
+            "args": [
+                "e:/projects/medicalstore/mcp-server/index.js"
+            ],
+            "env": {
+                "MEDICALSTORE_URL": "http://localhost:8081"
+            }
+        }
+    }
+}
