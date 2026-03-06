@@ -1,4 +1,4 @@
-<![CDATA[# 💊 MedicalStore — Pharmacy Inventory & Sales Management System
+# 💊 MedicalStore — Pharmacy Inventory & Sales Management System
 
 [![Java](https://img.shields.io/badge/Java-17-orange?logo=openjdk)](https://openjdk.org/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.7-brightgreen?logo=springboot)](https://spring.io/projects/spring-boot)
@@ -473,4 +473,4 @@ This project is licensed under the **MIT License** — see the [LICENSE](LICENSE
 <p align="center">
   Built with ❤️ using <strong>Spring Boot</strong>
 </p>
-]]>
+
