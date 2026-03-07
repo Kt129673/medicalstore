@@ -93,6 +93,11 @@ jobs:
                       User=ec2-user
                       WorkingDirectory=/opt/medicalstore
 
+                      # Database credentials — sourced from GitHub Secrets
+                      Environment="DB_URL=${{ secrets.DB_URL }}"
+                      Environment="DB_USERNAME=${{ secrets.DB_USERNAME }}"
+                      Environment="DB_PASSWORD=${{ secrets.DB_PASSWORD }}"
+
                       # Kafka and JVM settings are in the drop-in:
                       # /etc/systemd/system/medicalstore-backend.service.d/kafka.conf
                       ExecStart=/bin/bash -c 'exec java $JAVA_OPTS -jar /opt/medicalstore/app.war'

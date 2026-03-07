@@ -22,6 +22,9 @@ class MedicineServiceTest {
     @Mock
     private MedicineRepository medicineRepository;
 
+    @Mock
+    private com.medicalstore.kafka.EventPublisher eventPublisher;
+
     @InjectMocks
     private MedicineService medicineService;
 
