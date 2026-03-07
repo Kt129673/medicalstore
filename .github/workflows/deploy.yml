@@ -75,14 +75,47 @@ jobs:
                       echo "Updating Medicalstore App..."
                       sudo systemctl stop medicalstore-backend || true
 
+                      sudo mkdir -p /opt/medicalstore
                       sudo rm -rf /opt/medicalstore/app.war
                       sudo cp /tmp/medicalstore-deploy/medicalstore-0.0.1-SNAPSHOT.war /opt/medicalstore/app.war
 
-                      # ── Step 4: Start app (Kafka env vars set by setup script)
-                      echo "Starting Medicalstore..."
-                      sudo systemctl start medicalstore-backend || true
+                      # ── Step 4: Create medicalstore-backend systemd service (idempotent)
+                      echo "Creating medicalstore-backend systemd service..."
+                      sudo tee /etc/systemd/system/medicalstore-backend.service > /dev/null <<'EOF'
+                      [Unit]
+                      Description=MedicalStore Backend
+                      Documentation=https://github.com/Kt129673/medicalstore
+                      After=network.target kafka.service
+                      Wants=kafka.service
 
-                      # ── Step 5: Cleanup
+                      [Service]
+                      Type=simple
+                      User=ec2-user
+                      WorkingDirectory=/opt/medicalstore
+
+                      # Kafka and JVM settings are in the drop-in:
+                      # /etc/systemd/system/medicalstore-backend.service.d/kafka.conf
+                      ExecStart=/bin/bash -c 'exec java $JAVA_OPTS -jar /opt/medicalstore/app.war'
+                      SuccessExitStatus=143
+
+                      Restart=on-failure
+                      RestartSec=15
+                      StandardOutput=journal
+                      StandardError=journal
+                      SyslogIdentifier=medicalstore-backend
+
+                      [Install]
+                      WantedBy=multi-user.target
+                      EOF
+
+                      sudo systemctl daemon-reload
+                      sudo systemctl enable medicalstore-backend
+
+                      # ── Step 5: Start app (Kafka env vars set by setup script)
+                      echo "Starting Medicalstore..."
+                      sudo systemctl start medicalstore-backend
+
+                      # ── Step 6: Cleanup
                       rm -rf /tmp/medicalstore-deploy
 
                       echo ""
