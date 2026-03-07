@@ -67,9 +67,9 @@ fi
 if [ ! -d "${KAFKA_DIR}/bin" ]; then
     echo "[3/6] Downloading Kafka ${KAFKA_VERSION}..."
     cd /tmp
-    curl -sL "https://downloads.apache.org/kafka/${KAFKA_VERSION}/kafka_${SCALA_VERSION}-${KAFKA_VERSION}.tgz" \
+    curl -sfSL "https://downloads.apache.org/kafka/${KAFKA_VERSION}/kafka_${SCALA_VERSION}-${KAFKA_VERSION}.tgz" \
          -o kafka.tgz || \
-    curl -sL "https://archive.apache.org/dist/kafka/${KAFKA_VERSION}/kafka_${SCALA_VERSION}-${KAFKA_VERSION}.tgz" \
+    curl -sfSL "https://archive.apache.org/dist/kafka/${KAFKA_VERSION}/kafka_${SCALA_VERSION}-${KAFKA_VERSION}.tgz" \
          -o kafka.tgz
 
     echo "Extracting..."
