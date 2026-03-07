@@ -32,6 +32,9 @@ class SaleServiceTest {
     @Mock
     private CustomerRepository customerRepository;
 
+    @Mock
+    private com.medicalstore.kafka.EventPublisher eventPublisher;
+
     @InjectMocks
     private SaleService saleService;
 
