@@ -747,6 +747,26 @@ export KAFKA_BOOTSTRAP_SERVERS=localhost:9092
 | `EC2_USER` | SSH username (e.g. `ec2-user`) |
 | `EC2_SSH_KEY` | Private SSH key for EC2 |
 
+### ⚠️ AWS Security Group — Required Inbound Rules
+
+> **If you cannot access the application at `<EC2-PUBLIC-IP>:8081`, the most common cause is a missing Security Group inbound rule.**
+
+Open the following ports in your EC2 instance's **Security Group** (AWS Console → EC2 → Security Groups → Inbound rules → Edit inbound rules):
+
+| Type | Protocol | Port | Source | Purpose |
+|---|---|---|---|---|
+| Custom TCP | TCP | **8081** | `0.0.0.0/0` (or your IP) | MedicalStore application |
+| SSH | TCP | 22 | Your IP | GitHub Actions deployment |
+
+Steps to add the rule:
+1. Go to **AWS Console → EC2 → Instances** and select your instance.
+2. Click the **Security** tab → click the Security Group link.
+3. Click **Edit inbound rules** → **Add rule**.
+4. Set **Type** = `Custom TCP`, **Port range** = `8081`, **Source** = `Anywhere-IPv4` (`0.0.0.0/0`).
+5. Click **Save rules**.
+
+After saving, access the app at `http://<EC2-PUBLIC-IP>:8081/login`.
+
 > **Note:** Kafka environment variables (`KAFKA_ENABLED`, `KAFKA_BOOTSTRAP_SERVERS`) are
 > automatically configured by the `scripts/setup-kafka-ec2.sh` script during deployment.
 > No Kafka-related GitHub Secrets are needed.

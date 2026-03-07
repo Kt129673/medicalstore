@@ -111,17 +111,48 @@ jobs:
                       sudo systemctl daemon-reload
                       sudo systemctl enable medicalstore-backend
 
-                      # ── Step 5: Start app (Kafka env vars set by setup script)
+                      # ── Step 5: Open port 8081 on OS firewall (idempotent)
+                      echo "Opening port 8081 on OS firewall..."
+                      sudo firewall-cmd --zone=public --add-port=8081/tcp --permanent 2>/dev/null && sudo firewall-cmd --reload 2>/dev/null || true
+                      sudo ufw allow 8081/tcp 2>/dev/null || true
+
+                      # ── Step 6: Start app (Kafka env vars set by setup script)
                       echo "Starting Medicalstore..."
                       sudo systemctl start medicalstore-backend
 
-                      # ── Step 6: Cleanup
+                      # ── Step 7: Health check — wait up to 90 s for the app to be ready
+                      echo "Waiting for application to start..."
+                      RETRIES=18
+                      WAIT=5
+                      for i in $(seq 1 $RETRIES); do
+                        STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8081/actuator/health || true)
+                        if [ "$STATUS" = "200" ]; then
+                          echo "  ✅ Health check passed (attempt $i)"
+                          break
+                        fi
+                        if [ "$i" -eq "$RETRIES" ]; then
+                          echo "  ❌ Application did not start in time. Last HTTP status: $STATUS"
+                          echo "--- Last 50 log lines ---"
+                          sudo journalctl -u medicalstore-backend -n 50 --no-pager || true
+                          exit 1
+                        fi
+                        echo "  Attempt $i/$RETRIES — status $STATUS, retrying in ${WAIT}s..."
+                        sleep $WAIT
+                      done
+
+                      # ── Step 8: Cleanup
                       rm -rf /tmp/medicalstore-deploy
+
+                      # Fetch public IP via IMDSv2 for the success banner
+                      IMDS_TOKEN=$(curl -X PUT -H 'X-aws-ec2-metadata-token-ttl-seconds: 21600' \
+                        -s http://169.254.169.254/latest/api/token 2>/dev/null || true)
+                      PUBLIC_IP=$(curl -H "X-aws-ec2-metadata-token: ${IMDS_TOKEN}" \
+                        -s http://169.254.169.254/latest/meta-data/public-ipv4 2>/dev/null || echo '<EC2-PUBLIC-IP>')
 
                       echo ""
                       echo "════════════════════════════════════════════"
                       echo "  ✅ Deployment Success!"
                       echo "  Kafka:  localhost:9092 (KRaft mode)"
-                      echo "  App:    port 8081"
-                      echo "  Cost:   $0 (Free Tier)"
+                      echo "  App:    http://${PUBLIC_IP}:8081"
+                      echo "  Cost:   \$0 (Free Tier)"
                       echo "════════════════════════════════════════════"
