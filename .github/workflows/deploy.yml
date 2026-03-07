@@ -93,12 +93,8 @@ jobs:
                       User=ec2-user
                       WorkingDirectory=/opt/medicalstore
 
-                      # Database credentials — sourced from GitHub Secrets
-                      Environment="DB_URL=${{ secrets.DB_URL }}"
-                      Environment="DB_USERNAME=${{ secrets.DB_USERNAME }}"
-                      Environment="DB_PASSWORD=${{ secrets.DB_PASSWORD }}"
-
-                      # Kafka and JVM settings are in the drop-in:
+                      # Database credentials and Kafka/JVM settings are in systemd drop-ins:
+                      # /etc/systemd/system/medicalstore-backend.service.d/db.conf
                       # /etc/systemd/system/medicalstore-backend.service.d/kafka.conf
                       ExecStart=/bin/bash -c 'exec java $JAVA_OPTS -jar /opt/medicalstore/app.war'
                       SuccessExitStatus=143
@@ -112,6 +108,18 @@ jobs:
                       [Install]
                       WantedBy=multi-user.target
                       EOF
+
+                      # Write DB credentials drop-in only when secrets are provided
+                      # (avoids setting empty env vars that override Spring Boot defaults)
+                      DB_URL_VAL='${{ secrets.DB_URL }}'
+                      if [ -n "$DB_URL_VAL" ]; then
+                        sudo mkdir -p /etc/systemd/system/medicalstore-backend.service.d
+                        printf '[Service]\nEnvironment="DB_URL=%s"\nEnvironment="DB_USERNAME=%s"\nEnvironment="DB_PASSWORD=%s"\n' \
+                          '${{ secrets.DB_URL }}' '${{ secrets.DB_USERNAME }}' '${{ secrets.DB_PASSWORD }}' \
+                          | sudo tee /etc/systemd/system/medicalstore-backend.service.d/db.conf > /dev/null
+                      else
+                        echo "  ⚠️  DB_URL secret not set — app will use Spring Boot default datasource URL"
+                      fi
 
                       sudo systemctl daemon-reload
                       sudo systemctl enable medicalstore-backend
