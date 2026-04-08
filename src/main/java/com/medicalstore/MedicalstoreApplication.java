@@ -20,4 +20,5 @@ public class MedicalstoreApplication {
 		SpringApplication.run(MedicalstoreApplication.class, args);
 	}
 
+	
 }

@@ -44,39 +44,71 @@ jobs:
                   username: ${{ secrets.EC2_USER }}
                   key: ${{ secrets.EC2_SSH_KEY }}
                   script: |
-                      echo "Starting Deployment..."
+                      # --- ENTERPRISE DEPLOYMENT ---
+                      echo "Starting Enterprise Deployment..."
 
-                      # Stop previous application
-                      echo "Stopping existing application..."
-                      PID=$(ps -ef | grep 'java -jar app.war' | grep -v grep | awk '{print $2}')
-                      if [ -n "$PID" ]; then
-                        echo "Killing process $PID..."
-                        sudo kill -9 $PID || true
+                      APP_DIR="/opt/medicalstore"
+                      SERVICE_FILE="/etc/systemd/system/medicalstore-backend.service"
+
+                      # 1. Ensure directory exists
+                      sudo mkdir -p $APP_DIR
+
+                      # 2. Stop existing service gracefully
+                      if systemctl list-unit-files | grep -q medicalstore-backend; then
+                          echo "Stopping existing service..."
+                          sudo systemctl stop medicalstore-backend || true
                       fi
-                      sleep 2
 
-                      # Remove previous deployment
-                      echo "Removing previous deployment files..."
-                      sudo rm -rf /opt/medicalstore
-                      sudo mkdir -p /opt/medicalstore
+                      # 3. Backup previous version (Enterprise standard)
+                      if [ -f "$APP_DIR/app.war" ]; then
+                          echo "Backing up previous version..."
+                          sudo mv $APP_DIR/app.war $APP_DIR/app_backup_$(date +%s).war
+                          
+                          # Keep only the last 3 backups to save space
+                          sudo ls -dt $APP_DIR/app_backup_*.war | tail -n +4 | sudo xargs -I {} rm -- {} || true
+                      fi
 
-                      # Update Application
-                      echo "Copying new application file..."
-                      sudo cp /tmp/medicalstore-deploy/medicalstore-0.0.1-SNAPSHOT.war /opt/medicalstore/app.war
+                      # 4. Copy new build & set permissions
+                      echo "Deploying new version..."
+                      sudo cp /tmp/medicalstore-deploy/medicalstore-0.0.1-SNAPSHOT.war $APP_DIR/app.war
+                      sudo chmod 755 $APP_DIR/app.war
 
-                      # Run Application (Simple Nohup Deployment)
-                      echo "Starting services..."
-                      cd /opt/medicalstore
-                      sudo bash -c "nohup java -jar app.war > app.log 2>&1 < /dev/null &"
-                      
-                      # Wait for startup to complete (25 seconds) to catch delayed crashes
-                      sleep 25
+                      # 5. Create SystemD Service File
+                      echo "Configuring SystemD daemon..."
+                      sudo bash -c "cat > $SERVICE_FILE" << 'EOF'
+                      [Unit]
+                      Description=MedicalStore Spring Boot Application
+                      After=syslog.target network.target
 
-                      echo "--- STARTUP LOGS (ALL) ---"
-                      cat /opt/medicalstore/app.log || true
-                      echo "--------------------"
+                      [Service]
+                      User=root
+                      Restart=always
+                      RestartSec=10
+                      WorkingDirectory=/opt/medicalstore
+                      ExecStart=/usr/bin/java -Xms256m -Xmx512m -jar /opt/medicalstore/app.war
+                      SuccessExitStatus=143
+                      StandardOutput=append:/opt/medicalstore/app.log
+                      StandardError=append:/opt/medicalstore/app.log
 
-                      # Cleanup
+                      [Install]
+                      WantedBy=multi-user.target
+                      EOF
+
+                      # 6. Reload SystemD & Start Service
+                      echo "Starting Enterprise Service..."
+                      sudo systemctl daemon-reload
+                      sudo systemctl enable medicalstore-backend
+                      sudo systemctl start medicalstore-backend
+
+                      # 7. Health Check
+                      sleep 15
+                      echo "--- SERVICE STATUS ---"
+                      sudo systemctl status medicalstore-backend --no-pager || true
+
+                      echo "--- STARTUP LOGS (TAIL) ---"
+                      sudo tail -n 50 $APP_DIR/app.log || true
+
+                      # 8. Cleanup Temp Files
                       rm -rf /tmp/medicalstore-deploy
 
                       echo "Deployment Success!"
