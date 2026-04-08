@@ -72,7 +72,7 @@ jobs:
                       # Wait for startup to complete (25 seconds) to catch delayed crashes
                       sleep 25
 
-                      echo "--- STARTUP LOGS (LAST 80 LINES) ---"
+                      echo "--- STARTUP LOGS (ALL) ---"
                       cat /opt/medicalstore/app.log || true
                       echo "--------------------"
 
