@@ -48,7 +48,11 @@ jobs:
 
                       # Stop previous application
                       echo "Stopping existing application..."
-                      sudo pkill -f "app.war" || true
+                      PID=$(ps -ef | grep 'java -jar app.war' | grep -v grep | awk '{print $2}')
+                      if [ -n "$PID" ]; then
+                        echo "Killing process $PID..."
+                        sudo kill -9 $PID || true
+                      fi
                       sleep 2
 
                       # Remove previous deployment
@@ -63,7 +67,7 @@ jobs:
                       # Run Application (Simple Nohup Deployment)
                       echo "Starting services..."
                       cd /opt/medicalstore
-                      sudo nohup java -jar app.war > app.log 2>&1 &
+                      sudo nohup java -jar app.war > app.log 2>&1 < /dev/null &
                       
                       # Wait for startup to begin
                       sleep 5
