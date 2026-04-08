@@ -72,6 +72,10 @@ jobs:
                       # Wait for startup to begin
                       sleep 5
 
+                      echo "--- STARTUP LOGS ---"
+                      cat /opt/medicalstore/app.log || true
+                      echo "--------------------"
+
                       # Cleanup
                       rm -rf /tmp/medicalstore-deploy
 
