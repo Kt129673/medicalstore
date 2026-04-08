@@ -69,10 +69,10 @@ jobs:
                       cd /opt/medicalstore
                       sudo bash -c "nohup java -jar app.war > app.log 2>&1 < /dev/null &"
                       
-                      # Wait for startup to begin
-                      sleep 5
+                      # Wait for startup to complete (25 seconds) to catch delayed crashes
+                      sleep 25
 
-                      echo "--- STARTUP LOGS ---"
+                      echo "--- STARTUP LOGS (LAST 80 LINES) ---"
                       cat /opt/medicalstore/app.log || true
                       echo "--------------------"
 
