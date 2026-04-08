@@ -4,7 +4,6 @@
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.7-brightgreen?logo=springboot)](https://spring.io/projects/spring-boot)
 [![MySQL](https://img.shields.io/badge/MySQL-8.x-blue?logo=mysql&logoColor=white)](https://www.mysql.com/)
 [![Swagger](https://img.shields.io/badge/Swagger-OpenAPI%203-85EA2D?logo=swagger)](http://localhost:8081/swagger-ui.html)
-[![CI](https://github.com/Kt129673/medicalstore/actions/workflows/bug-detection.yml/badge.svg)](https://github.com/Kt129673/medicalstore/actions/workflows/bug-detection.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 A **production-ready**, multi-branch pharmacy management system built with **Spring Boot 3.5**. It covers end-to-end pharmacy operations — from purchase orders and sales billing to analytics dashboards, PDF/Excel reporting, WhatsApp notifications, and subscription-based access control.
@@ -25,7 +24,7 @@ A **production-ready**, multi-branch pharmacy management system built with **Spr
 - [Swagger / OpenAPI](#-swagger--openapi)
 - [Actuator / Monitoring](#-actuator--monitoring)
 - [MCP Testing Server](#-mcp-testing-server)
-- [CI/CD & Bug Detection](#-cicd--automated-bug-detection)
+- [CI/CD pipeline](#-cicd-pipeline)
 - [Scheduled Jobs](#-scheduled-jobs)
 - [Project Structure](#-project-structure)
 - [Building & Testing](#-building--testing)
@@ -59,7 +58,6 @@ A **production-ready**, multi-branch pharmacy management system built with **Spr
 | **Swagger / OpenAPI** | Auto-generated interactive API documentation at `/swagger-ui.html` |
 | **Actuator Monitoring** | Health, info, metrics, caches, and environment endpoints at `/actuator/**` |
 | **MCP Testing Server** | Node.js-based Model Context Protocol server for AI-assisted testing |
-| **CI/CD Bug Detection** | GitHub Actions pipeline with SpotBugs, PMD, and auto-created GitHub Issues |
 
 ---
 
@@ -79,9 +77,8 @@ A **production-ready**, multi-branch pharmacy management system built with **Spr
 | **Notifications** | Twilio SDK 10.0 (WhatsApp) |
 | **API Docs** | SpringDoc OpenAPI 2.8 + Swagger UI |
 | **Monitoring** | Spring Boot Actuator |
-| **Static Analysis** | SpotBugs 4.8 + PMD 3.26 |
 | **MCP Server** | Node.js + `@modelcontextprotocol/sdk` |
-| **CI/CD** | GitHub Actions (build, test, bug detection, deploy) |
+| **CI/CD** | GitHub Actions (build, test, deploy) |
 | **Build Tool** | Maven 3.8+ (with Maven Wrapper included) |
 | **Packaging** | WAR (deployable to external Tomcat or embedded) |
 | **Code Gen** | Lombok |
@@ -389,54 +386,15 @@ See [`mcp-server/README.md`](mcp-server/README.md) for setup and usage.
 
 ---
 
-## 🔍 CI/CD & Automated Bug Detection
+## 🔍 CI/CD pipeline
 
-The project uses **GitHub Actions** for CI/CD with automated bug detection:
+The project uses **GitHub Actions** for automated deployments:
 
 ### Pipelines
 
 | Workflow | Trigger | Description |
 |---|---|---|
-| **Bug Detection & Quality Analysis** | Push, PR, Nightly (2 AM IST) | Build → Test → SpotBugs → PMD → Notify |
-| **Deploy to EC2** | Push to `main` | Build WAR → SCP to EC2 → Restart |
-
-### Bug Detection Tools
-
-| Tool | What It Finds |
-|---|---|
-| **SpotBugs** | Null pointers, resource leaks, concurrency bugs |
-| **PMD** | Unused variables, empty catches, complexity, security |
-| **JUnit Tests** | Regression bugs, broken APIs, failed assertions |
-
-### Notifications
-
-When bugs are found, a **GitHub Issue** is automatically created with labels `bug-detection` and `automated`, listing all detected bugs with their categories and priorities.
-
-### Code Quality Standards
-
-The codebase enforces the following quality rules via SpotBugs and PMD:
-
-| Rule | Standard |
-|---|---|
-| **String checks** | Use `String.isBlank()` instead of `trim().isEmpty()` |
-| **Case conversions** | Always pass `Locale.ROOT` to `toLowerCase()` / `toUpperCase()` |
-| **Comparisons** | Literal-first: `"value".equals(var)` (null-safe) |
-| **Logging** | SLF4J only — no `System.out.println`; guard expensive `log.warn()` calls |
-| **Exception handling** | Catch specific exceptions — never `Throwable` |
-| **Character encoding** | Use `StandardCharsets.UTF_8` explicitly in `getBytes()` |
-| **Switch statements** | Always include a `default` case |
-| **Mutable constants** | Expose `String[]` constants as `List.of(...)` with defensive-copy getters |
-
-### SpotBugs Exclusion Filters
-
-The [`spotbugs-exclude.xml`](spotbugs-exclude.xml) file suppresses known false positives:
-
-| Pattern | Scope | Reason |
-|---|---|---|
-| `EI_EXPOSE_REP2` | Controllers, Services, Config | Lombok `@RequiredArgsConstructor` stores Spring singletons — safe by design |
-| `EI_EXPOSE_REP` / `EI_EXPOSE_REP2` | DTOs | Lombok `@Data`/`@Builder` returns mutable collections — intentional for data transfer |
-| `EQ_UNUSUAL` | Models, DTOs | Lombok-generated `equals()` flagged incorrectly |
-| `URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD` | Config | Spring-injected fields used externally |
+| **Deploy to EC2** | Push to `main` | Build WAR → SCP to EC2 → Stop old process → Run via nohup |
 
 ---
 
@@ -511,10 +469,8 @@ medicalstore/
 │   ├── package.json                            # Dependencies
 │   └── README.md                               # MCP setup guide
 ├── .github/workflows/
-│   ├── bug-detection.yml                       # CI: Build → Test → SpotBugs → PMD → Notify
 │   └── deploy.yml                              # CD: Build → Deploy to EC2
 ├── .gemini/settings.json                       # MCP server configuration
-├── spotbugs-exclude.xml                        # SpotBugs false-positive filters
 ├── docs/                                       # Developer documentation (30 files)
 ├── pom.xml                                     # Maven build configuration
 ├── mvnw / mvnw.cmd                             # Maven Wrapper scripts
@@ -540,17 +496,6 @@ medicalstore/
 
 # Skip tests during build
 ./mvnw package -DskipTests
-
-# Run SpotBugs (bug detection)
-./mvnw compile spotbugs:spotbugs
-# Results → target/spotbugs/spotbugsXml.xml
-
-# Run SpotBugs with GUI viewer
-./mvnw compile spotbugs:gui
-
-# Run PMD (code quality)
-./mvnw compile pmd:pmd
-# Results → target/pmd.xml
 ```
 
 ---
@@ -564,10 +509,10 @@ The application is packaged as a **WAR** file and can be deployed in two ways:
 ./mvnw spring-boot:run
 ```
 
-### External Tomcat (Production)
+### Standalone (Production via GitHub Actions)
 1. Build the WAR: `./mvnw package`
-2. Copy `target/medicalstore-0.0.1-SNAPSHOT.war` to Tomcat's `webapps/` directory
-3. Start Tomcat
+2. Stop the existing process: `pkill -f app.war`
+3. Run as an executable WAR via nohup: `nohup java -jar app.war > app.log 2>&1 &`
 
 ### Environment Variables (recommended for production)
 

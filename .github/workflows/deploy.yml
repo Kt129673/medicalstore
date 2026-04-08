@@ -46,16 +46,27 @@ jobs:
                   script: |
                       echo "Starting Deployment..."
 
-                      # Update Application
-                      echo "Updating Medicalstore App..."
-                      sudo systemctl stop medicalstore-backend || true
+                      # Stop previous application
+                      echo "Stopping existing application..."
+                      sudo pkill -f "app.war" || true
+                      sleep 2
 
-                      sudo rm -rf /opt/medicalstore/app.war
+                      # Remove previous deployment
+                      echo "Removing previous deployment files..."
+                      sudo rm -rf /opt/medicalstore
+                      sudo mkdir -p /opt/medicalstore
+
+                      # Update Application
+                      echo "Copying new application file..."
                       sudo cp /tmp/medicalstore-deploy/medicalstore-0.0.1-SNAPSHOT.war /opt/medicalstore/app.war
 
-                      # Restart
-                      echo "Restarting services..."
-                      sudo systemctl start medicalstore-backend || true
+                      # Run Application (Simple Nohup Deployment)
+                      echo "Starting services..."
+                      cd /opt/medicalstore
+                      sudo nohup java -jar app.war > app.log 2>&1 &
+                      
+                      # Wait for startup to begin
+                      sleep 5
 
                       # Cleanup
                       rm -rf /tmp/medicalstore-deploy
