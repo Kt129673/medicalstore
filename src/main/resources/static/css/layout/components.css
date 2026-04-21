@@ -36,8 +36,8 @@
     position: absolute;
     top: 18px;
     right: 20px;
-    font-size: 2.2rem;
-    opacity: 0.2;
+    font-size: 2.4rem;
+    opacity: 0.32;
     line-height: 1;
 }
 
@@ -189,12 +189,11 @@
     box-shadow: var(--shadow-sm);
     background: var(--bg-primary);
     margin-bottom: var(--space-5);
-    transition: box-shadow var(--transition-base), transform var(--transition-base);
+    transition: box-shadow var(--transition-base);
 }
 
 .card:hover {
     box-shadow: var(--shadow-md);
-    transform: translateY(-1px);
 }
 
 .card-header {
@@ -244,7 +243,7 @@
 }
 
 .table > tbody > tr:hover > td {
-    background: var(--bg-secondary);
+    background: var(--bg-tertiary);
 }
 
 /* ─────────────────────────────────────────────────
@@ -339,7 +338,7 @@
 
 .empty-state i {
     font-size: 56px;
-    opacity: 0.2;
+    opacity: 0.35;
     margin-bottom: 18px;
     display: block;
     color: var(--text-secondary);
@@ -655,4 +654,115 @@
     display: block;
     margin-bottom: 8px;
     opacity: 0.4;
+}
+
+/* ─────────────────────────────────────────────────
+   OUTLINE BUTTONS - Consistent outline variants
+───────────────────────────────────────────────── */
+.btn-outline-primary {
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+    background: transparent;
+}
+.btn-outline-primary:hover:not(:disabled) {
+    background: var(--primary-color);
+    color: #fff;
+    box-shadow: 0 3px 8px rgba(37, 99, 235, 0.25);
+}
+
+.btn-outline-danger {
+    color: var(--danger-color);
+    border-color: var(--danger-color);
+    background: transparent;
+}
+.btn-outline-danger:hover:not(:disabled) {
+    background: var(--danger-color);
+    color: #fff;
+    box-shadow: 0 3px 8px rgba(220, 38, 38, 0.25);
+}
+
+.btn-outline-secondary {
+    color: var(--text-secondary);
+    border-color: var(--border-color);
+    background: transparent;
+}
+.btn-outline-secondary:hover:not(:disabled) {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border-color: #9CA3AF;
+}
+
+/* ─────────────────────────────────────────────────
+   PAGINATION - Disabled & active state polish
+───────────────────────────────────────────────── */
+.pagination .page-item.disabled .page-link {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.pagination .page-link {
+    border-radius: var(--radius-sm) !important;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    border-color: var(--border-color);
+    padding: 6px 12px;
+    transition: all var(--transition-fast);
+}
+
+.pagination .page-link:hover {
+    background: var(--primary-subtle);
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.pagination .page-item.active .page-link {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: #fff;
+    font-weight: 700;
+}
+
+/* ─────────────────────────────────────────────────
+   PAGE HEADER - Icon + title alignment
+───────────────────────────────────────────────── */
+.page-header h2 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.page-header h2 i {
+    font-size: 22px;
+    color: var(--primary-color);
+    flex-shrink: 0;
+    opacity: 0.85;
+}
+
+/* ─────────────────────────────────────────────────
+   CARD HEADER - Consistent styling
+───────────────────────────────────────────────── */
+.card-header {
+    min-height: 52px;
+    display: flex;
+    align-items: center;
+}
+
+/* ─────────────────────────────────────────────────
+   FORM CONTROL - Placeholder contrast
+───────────────────────────────────────────────── */
+.form-control::placeholder,
+.form-select::placeholder {
+    color: var(--text-secondary);
+    opacity: 0.6;
+}
+
+/* ─────────────────────────────────────────────────
+   SKELETON - Respect prefers-reduced-motion
+───────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+    .skeleton {
+        animation: none !important;
+    }
 }

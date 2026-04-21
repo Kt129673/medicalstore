@@ -291,3 +291,50 @@ summary:focus-visible,
     color: var(--text-primary);
     line-height: 1.5;
 }
+
+.table > tbody > tr:last-child > td {
+    border-bottom: none;
+}
+
+/* Skeleton shimmer (global) */
+@keyframes skeleton-shimmer {
+    0%   { background-position: -400px 0; }
+    100% { background-position:  400px 0; }
+}
+
+.skeleton {
+    background: linear-gradient(90deg, #e5e7eb 0%, #f3f4f6 40%, #e5e7eb 80%);
+    background-size: 400px 100%;
+    border-radius: 4px;
+    display: inline-block;
+    min-width: 60px;
+    min-height: 18px;
+    color: transparent !important;
+    vertical-align: middle;
+    animation: skeleton-shimmer 1.4s linear infinite;
+}
+
+/* Smooth page transitions */
+.main-body {
+    animation: fadeIn 0.15s var(--ease-out);
+}
+
+/* Better link defaults */
+a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+a:hover {
+    color: var(--primary-dark);
+}
+
+/* Code / invoice numbers */
+code {
+    font-size: 12px;
+    padding: 2px 6px;
+    border-radius: var(--radius-xs);
+    background: var(--bg-tertiary);
+    color: var(--primary-dark);
+    font-family: 'SF Mono', 'Monaco', 'Courier New', monospace;
+}

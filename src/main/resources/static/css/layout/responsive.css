@@ -266,14 +266,12 @@
     }
 
     .header-search input {
-        width: 140px;
+        width: 130px;
     }
 
     .header-search input:focus {
-        width: 200px;
-        position: absolute;
-        right: 0;
-        z-index: 1000;
+        width: 180px;
+        position: static;
     }
 
     .header-search kbd {
@@ -550,13 +548,13 @@
 @media (max-width: 576px) {
     .notif-dropdown {
         position: fixed;
-        top: 74px; /* matches --header-height (70px) + 4px gap */
+        top: 68px;
         left: 8px;
         right: 8px;
         width: auto;
         min-width: unset;
         border-radius: 12px;
-        z-index: 300;
+        z-index: var(--z-dropdown);
     }
 }
 
@@ -653,8 +651,7 @@
 /* ── Card hover: disable lift on touch devices ───────────────── */
 @media (hover: none) {
     .card:hover {
-        transform: none;
-        box-shadow: var(--shadow-xs);
+        box-shadow: var(--shadow-sm);
     }
 
     .btn:hover:not(:disabled) {
