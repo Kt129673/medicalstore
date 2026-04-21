@@ -276,6 +276,10 @@
     background: linear-gradient(90deg, var(--bg-tertiary) 0%, var(--bg-secondary) 100%);
 }
 
+.table > tbody > tr:last-child > td {
+    border-bottom: none;
+}
+
 /* ─────────────────────────────────────────────────
    BADGES - Status badges
 ───────────────────────────────────────────────── */

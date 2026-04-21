@@ -979,19 +979,27 @@ onDomReady(function () {
 /* ═══════════════════════════════════════════════════════════════
    SCROLL-TO-TOP   Shows the #scrollToTop button after scrolling 400px, hides it
    when back at top.  Clicking smoothly scrolls to the top.
+   NOTE: The scrollable container is .main-body, not window.
 ═══════════════════════════════════════════════════════════════ */
 (function () {
     var btn = document.getElementById('scrollToTop');
     if (!btn) return;
     var THRESHOLD = 400;
-    window.addEventListener('scroll', function () {
-        if (window.scrollY > THRESHOLD) {
+    /* The page content scrolls inside .main-body, not the window */
+    var scrollContainer = document.getElementById('mainBody') || window;
+    scrollContainer.addEventListener('scroll', function () {
+        var scrollTop = scrollContainer === window ? window.scrollY : scrollContainer.scrollTop;
+        if (scrollTop > THRESHOLD) {
             btn.classList.add('visible');
         } else {
             btn.classList.remove('visible');
         }
     }, { passive: true });
     btn.addEventListener('click', function () {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        if (scrollContainer === window) {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else {
+            scrollContainer.scrollTo({ top: 0, behavior: 'smooth' });
+        }
     });
 })();

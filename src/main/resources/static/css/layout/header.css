@@ -140,6 +140,7 @@
 .header-search input:focus {
     outline: none;
     width: 300px;
+    max-width: calc(100vw - 320px); /* prevent overflow on narrow viewports */
     background: #ffffff;
     border-color: var(--primary-color);
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);

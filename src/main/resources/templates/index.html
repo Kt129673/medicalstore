@@ -260,8 +260,8 @@
                 color: var(--primary-color);
             }
 
-            /* Skeleton shimmer for async KPI loading */
-            .skeleton {
+            /* Skeleton shimmer for async KPI loading — uses white shimmer on dark gradient backgrounds */
+            .kpi-skeleton {
                 background: linear-gradient(90deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.38) 40%, rgba(255, 255, 255, 0.18) 80%);
                 background-size: 400px 100%;
                 border-radius: 4px;
@@ -277,17 +277,6 @@
             .kpi-card .kpi-value {
                 font-size: 1.75rem;
                 letter-spacing: -0.8px;
-            }
-
-            /* Skeleton shimmer keyframe (used by .skeleton class below) */
-            @keyframes skeleton-shimmer {
-                0% {
-                    background-position: -400px 0;
-                }
-
-                100% {
-                    background-position: 400px 0;
-                }
             }
 
             /* Payment method badges */
@@ -389,43 +378,43 @@
             <div class="kpi-card kpi-sales">
                 <i class="bi bi-cart-check-fill kpi-icon"></i>
                 <div class="kpi-label">Today's Sales</div>
-                <div class="kpi-value">₹<span id="txtTodaySales" class="skeleton"></span></div>
+                <div class="kpi-value">₹<span id="txtTodaySales" class="kpi-skeleton"></span></div>
                 <div class="kpi-sub">Revenue generated today</div>
             </div>
             <div class="kpi-card kpi-revenue">
                 <i class="bi bi-graph-up-arrow kpi-icon"></i>
                 <div class="kpi-label">Monthly Revenue</div>
-                <div class="kpi-value">₹<span id="txtMonthlyRevenue" class="skeleton"></span></div>
+                <div class="kpi-value">₹<span id="txtMonthlyRevenue" class="kpi-skeleton"></span></div>
                 <div class="kpi-sub">This month so far</div>
             </div>
             <div class="kpi-card kpi-customers">
                 <i class="bi bi-people-fill kpi-icon"></i>
                 <div class="kpi-label">Total Customers</div>
-                <div class="kpi-value"><span id="txtTotalCustomers" class="skeleton"></span></div>
+                <div class="kpi-value"><span id="txtTotalCustomers" class="kpi-skeleton"></span></div>
                 <div class="kpi-sub">Registered customers</div>
             </div>
             <div class="kpi-card kpi-medicines">
                 <i class="bi bi-capsule-pill kpi-icon"></i>
                 <div class="kpi-label">Total Medicines</div>
-                <div class="kpi-value"><span id="txtTotalMedicines" class="skeleton"></span></div>
+                <div class="kpi-value"><span id="txtTotalMedicines" class="kpi-skeleton"></span></div>
                 <div class="kpi-sub">In inventory</div>
             </div>
             <div class="kpi-card kpi-lowstock">
                 <i class="bi bi-exclamation-triangle-fill kpi-icon"></i>
                 <div class="kpi-label">Low Stock</div>
-                <div class="kpi-value"><span id="txtLowStock" class="skeleton"></span></div>
+                <div class="kpi-value"><span id="txtLowStock" class="kpi-skeleton"></span></div>
                 <div class="kpi-sub">Items below threshold</div>
             </div>
             <div class="kpi-card kpi-expiry" id="expiryCardMain">
                 <i class="bi bi-calendar-x-fill kpi-icon"></i>
                 <div class="kpi-label">Expiring (30 days)</div>
-                <div class="kpi-value"><span id="txtExpiring30" class="skeleton"></span></div>
+                <div class="kpi-value"><span id="txtExpiring30" class="kpi-skeleton"></span></div>
                 <div class="kpi-sub">Medicines expiring soon</div>
             </div>
             <div class="kpi-card kpi-transactions" id="kpiTransactionsCard" style="display:none;">
                 <i class="bi bi-receipt kpi-icon"></i>
                 <div class="kpi-label">Today's Transactions</div>
-                <div class="kpi-value"><span id="txtTodayTransactions" class="skeleton"></span></div>
+                <div class="kpi-value"><span id="txtTodayTransactions" class="kpi-skeleton"></span></div>
                 <div class="kpi-sub">Sales transactions today</div>
             </div>
         </div>
@@ -466,19 +455,19 @@
                 <div class="section-heading"><i class="bi bi-clock-history"></i> Expiry Alerts</div>
                 <div class="expiry-grid" id="expiryGridContainer">
                     <div class="expiry-card expiry-expired" id="cardExpired" style="display:none;">
-                        <div class="expiry-count"><span id="txtExpiredCount" class="skeleton"></span></div>
+                        <div class="expiry-count"><span id="txtExpiredCount" class="kpi-skeleton"></span></div>
                         <div class="expiry-label">Expired</div>
                     </div>
                     <div class="expiry-card expiry-30">
-                        <div class="expiry-count"><span id="txtExpiring30Grid" class="skeleton"></span></div>
+                        <div class="expiry-count"><span id="txtExpiring30Grid" class="kpi-skeleton"></span></div>
                         <div class="expiry-label">30 Days</div>
                     </div>
                     <div class="expiry-card expiry-60">
-                        <div class="expiry-count"><span id="txtExpiring60" class="skeleton"></span></div>
+                        <div class="expiry-count"><span id="txtExpiring60" class="kpi-skeleton"></span></div>
                         <div class="expiry-label">60 Days</div>
                     </div>
                     <div class="expiry-card expiry-90">
-                        <div class="expiry-count"><span id="txtExpiring90" class="skeleton"></span></div>
+                        <div class="expiry-count"><span id="txtExpiring90" class="kpi-skeleton"></span></div>
                         <div class="expiry-label">90 Days</div>
                     </div>
                 </div>
@@ -587,7 +576,7 @@
                         }
 
                         // Remove skeleton classes from simple KPIs
-                        document.querySelectorAll('.kpi-value .skeleton, .expiry-count .skeleton').forEach(el => el.classList.remove('skeleton'));
+                        document.querySelectorAll('.kpi-value .kpi-skeleton, .expiry-count .kpi-skeleton').forEach(el => el.classList.remove('kpi-skeleton'));
 
                         // Populate Critical Stock
                         const stockContainer = document.getElementById('criticalStockContainer');
