@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 @RequiredArgsConstructor
 @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'SHOPKEEPER')")
-public class ShopkeeperDashboardController {
+public class DashboardController {
 
     /** Redirect legacy root URL to canonical /dashboard. */
     @GetMapping("/")

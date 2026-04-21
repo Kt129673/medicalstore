@@ -96,7 +96,7 @@ flowchart TD
     B["🔒 Spring Security Filter Chain<br/>TenantFilter → RateLimitFilter → CsrfCookieFilter → Auth"]
     B --> C
 
-    C["🎮 Controller Layer<br/>HomeController · MedicineController · SaleController<br/>API: DashboardApiController · PosApiController"]
+    C["🎮 Controller Layer<br/>DashboardController · MedicineController · SaleController<br/>API: DashboardApiController"]
     C --> D
 
     D["⚙️ Service Layer<br/>MedicineService · SaleService · ReportService · PdfService<br/>AnalyticsService · ScheduledJobService · WhatsAppService"]
@@ -315,7 +315,7 @@ Full platform control — user CRUD, branch setup, subscription plan management,
 
 | Route | Controller | Role(s) |
 |---|---|---|
-| `/` | `HomeController` | All |
+| `/` | `DashboardController` | All |
 | `/login` | `LoginController` | Public |
 | `/medicines/**` | `MedicineController` | Shopkeeper, Admin |
 | `/sales/**` | `SaleController` | Shopkeeper, Admin |
@@ -329,7 +329,6 @@ Full platform control — user CRUD, branch setup, subscription plan management,
 | `/admin/**` | `AdminController` | Admin |
 | `/subscription/**` | `SubscriptionController` | Owner, Admin |
 | `/profile/**` | `ProfileController` | All |
-| `/pdf/**` | `PdfController` | Owner, Admin |
 
 > See [`docs/API_PERMISSIONS_MATRIX.md`](docs/API_PERMISSIONS_MATRIX.md) for the full permissions matrix.
 
@@ -443,7 +442,6 @@ medicalstore/
 │   │   │   │   │   ├── AnalyticsApiController.java  # Profit, dead stock, GST
 │   │   │   │   │   ├── AppInfoController.java       # App version/runtime info
 │   │   │   │   │   ├── DashboardApiController.java  # Dashboard KPIs
-│   │   │   │   │   ├── PosApiController.java        # Point-of-Sale operations
 │   │   │   │   │   └── ApiExceptionHandler.java     # JSON error responses
 │   │   │   │   ├── MedicineController.java
 │   │   │   │   ├── SaleController.java

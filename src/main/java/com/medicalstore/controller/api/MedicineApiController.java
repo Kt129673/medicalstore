@@ -86,4 +86,18 @@ public class MedicineApiController {
             @Parameter(description = "Category name") @RequestParam String category) {
         return ResponseEntity.ok(medicineService.getMedicinesByCategory(category));
     }
+
+    @GetMapping("/search")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SHOPKEEPER')")
+    @Operation(summary = "Search medicines for POS")
+    public ResponseEntity<List<com.medicalstore.dto.MedicineDTO>> searchMedicines(
+            @RequestParam(name = "q", defaultValue = "") String query) {
+
+        if (query.isBlank()) {
+            return ResponseEntity.ok(List.of());
+        }
+
+        List<com.medicalstore.dto.MedicineDTO> results = medicineService.searchMedicinesForPos(query);
+        return ResponseEntity.ok(results);
+    }
 }
