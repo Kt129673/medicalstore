@@ -9,76 +9,78 @@
     --primary-dark:     #1E3A8A;
     --primary-light:    #3B82F6;
     --primary-glow:     rgba(37, 99, 235, 0.18);
-    --primary-subtle:   #DBEAFE;
+    --primary-subtle:   #EFF6FF;
     --primary-gradient: linear-gradient(135deg, #1E3A8A 0%, #2563EB 60%, #3B82F6 100%);
-    --focus-ring:       0 0 0 4px rgba(37, 99, 235, 0.18), 0 0 0 1px rgba(37, 99, 235, 0.4);
+    --focus-ring:       0 0 0 3px rgba(37, 99, 235, 0.22);
 
     /* ── Layout dimensions ── */
-    --sidebar-width:            264px;
-    --sidebar-collapsed-width:   68px;
-    --header-height:             70px;
+    --sidebar-width:            240px;
+    --sidebar-collapsed-width:   60px;
+    --header-height:             60px;
 
     /* ── Neutral palette ── */
-    --border-color:   #E2E8F0;
+    --border-color:   #E5E7EB;
     --text-primary:   #111827;
-    --text-secondary: #64748B;
+    --text-secondary: #6B7280;
     --bg-primary:     #ffffff;
-    --bg-secondary:   #F8FAFC;
-    --bg-tertiary:    #F1F5F9;
+    --bg-secondary:   #F9FAFB;
+    --bg-tertiary:    #F3F4F6;
     --hover-bg:       #F3F4F6;
 
     /* ── Status / semantic colors ── */
-    --success-color:  #16A34A;
-    --warning-color:  #F59E0B;
+    --success-color:  #059669;
+    --warning-color:  #D97706;
     --danger-color:   #DC2626;
-    --info-color:     #0891B2;
+    --info-color:     #0284C7;
 
-    /* ── Sidebar nav ── */
-    --sidebar-group-indent: 12px;
+    /* ── Sidebar (dark) ── */
+    --sidebar-bg:          #0F172A;
+    --sidebar-border:      rgba(255,255,255,0.06);
+    --sidebar-text:        #94A3B8;
+    --sidebar-text-hover:  #E2E8F0;
+    --sidebar-text-active: #FFFFFF;
+    --sidebar-active-bg:   rgba(37, 99, 235, 0.18);
+    --sidebar-hover-bg:    rgba(255,255,255,0.06);
+    --sidebar-group-indent: 10px;
     --nav-badge-bg:   #DC2626;
     --nav-badge-text: #fff;
     --breadcrumb-sep: #9ca3af;
 
     /* ── Surface elevations ── */
     --surface-0: #ffffff;
-    --surface-1: #F8FAFC;
-    --surface-2: #F1F5F9;
-    --surface-3: #E2E8F0;
-
-    /* ── Glass morphism ── */
-    --glass-bg:     rgba(255,255,255,0.78);
-    --glass-border: rgba(255,255,255,0.6);
-    --glass-shadow: 0 4px 24px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);
+    --surface-1: #F9FAFB;
+    --surface-2: #F3F4F6;
+    --surface-3: #E5E7EB;
 
     /* ── Shadow scale ── */
-    --shadow-xs: 0 1px 2px 0 rgba(0,0,0,.05);
-    --shadow-sm: 0 1px 3px 0 rgba(0,0,0,.07), 0 1px 2px -1px rgba(0,0,0,.07);
-    --shadow-md: 0 4px 6px -1px rgba(0,0,0,.07), 0 2px 4px -2px rgba(0,0,0,.07);
+    --shadow-xs: 0 1px 2px 0 rgba(0,0,0,.04);
+    --shadow-sm: 0 1px 3px 0 rgba(0,0,0,.06), 0 1px 2px -1px rgba(0,0,0,.06);
+    --shadow-md: 0 4px 6px -1px rgba(0,0,0,.06), 0 2px 4px -2px rgba(0,0,0,.06);
     --shadow-lg: 0 10px 15px -3px rgba(0,0,0,.07), 0 4px 6px -4px rgba(0,0,0,.07);
     --shadow-xl: 0 20px 25px -5px rgba(0,0,0,.08), 0 8px 10px -6px rgba(0,0,0,.08);
 
     /* ── Semantic status colors ── */
-    --status-active-bg:     #dcfce7;
-    --status-active-text:   #15803d;
-    --status-inactive-bg:   #f3f4f6;
-    --status-inactive-text: #6b7280;
-    --status-pending-bg:    #fef3c7;
-    --status-pending-text:  #92400e;
-    --status-expired-bg:    #fee2e2;
-    --status-expired-text:  #DC2626;
+    --status-active-bg:     #D1FAE5;
+    --status-active-text:   #065F46;
+    --status-inactive-bg:   #F3F4F6;
+    --status-inactive-text: #6B7280;
+    --status-pending-bg:    #FEF3C7;
+    --status-pending-text:  #92400E;
+    --status-expired-bg:    #FEE2E2;
+    --status-expired-text:  #991B1B;
     --status-info-bg:       #DBEAFE;
-    --status-info-text:     #1d4ed8;
-    --status-critical-bg:   #fef2f2;
+    --status-info-text:     #1D4ED8;
+    --status-critical-bg:   #FEF2F2;
     --status-critical-text: #DC2626;
-    --status-warning-bg:    #fffbeb;
-    --status-warning-text:  #d97706;
+    --status-warning-bg:    #FFFBEB;
+    --status-warning-text:  #D97706;
 
     /* ── Border radius scale ── */
-    --radius-xs:   4px;
+    --radius-xs:   3px;
     --radius-sm:   6px;
-    --radius-md:  10px;
-    --radius-lg:  14px;
-    --radius-xl:  18px;
+    --radius-md:   8px;
+    --radius-lg:  12px;
+    --radius-xl:  16px;
     --radius-full: 9999px;
 
     /* ── Z-index scale ── */
@@ -94,9 +96,9 @@
     --ease-in:     cubic-bezier(0.4, 0, 1, 1);
     --ease-out:    cubic-bezier(0, 0, 0.2, 1);
     --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
-    --transition-fast:  0.15s var(--ease-std);
-    --transition-base:  0.2s  var(--ease-std);
-    --transition-slow:  0.35s var(--ease-std);
+    --transition-fast:  0.12s var(--ease-std);
+    --transition-base:  0.18s var(--ease-std);
+    --transition-slow:  0.3s  var(--ease-std);
 
     /* ── Spacing scale (8px base) ── */
     --space-1:  4px;
@@ -113,69 +115,44 @@
     --text-xs:   0.70rem;
     --text-sm:   0.80rem;
     --text-base: 0.875rem;
-    --text-md:   0.95rem;
+    --text-md:   0.9375rem;
     --text-lg:   1.0625rem;
     --text-xl:   1.25rem;
     --text-2xl:  1.5rem;
 }
 
-
-/* ── Bootstrap Modal z-index safety overrides ──
-   Ensures modals always stack above sidebar (1000), mobile-toggle (1100),
-   and any custom stacking contexts created by layout elements. */
+/* Bootstrap Modal z-index safety */
 .modal-backdrop { z-index: 1040 !important; }
 .modal          { z-index: 1055 !important; }
 .modal-dialog   { z-index: 1056 !important; }
 
-/* Global Smooth Transitions */
+/* Animations */
 @keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
 
-/* .main-body definition lives in header.css (flex:1, overflow-y:auto) */
-/* Kept the fadeInUp animation reference here for other elements */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
 
-/* Premium styled scrollbar for main-body & sidebar */
+/* Scrollbar */
 .main-body::-webkit-scrollbar,
-.sidebar-nav::-webkit-scrollbar {
-    width: 6px;
-}
+.sidebar-nav::-webkit-scrollbar { width: 4px; }
+.main-body::-webkit-scrollbar-track,
+.sidebar-nav::-webkit-scrollbar-track { background: transparent; }
+.main-body::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 4px; }
+.main-body::-webkit-scrollbar-thumb:hover { background: #9CA3AF; }
+.sidebar-nav::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 4px; }
+.sidebar-nav::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
 
-.main-body::-webkit-scrollbar-track {
-    background: transparent;
-}
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
-.main-body::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
-    border-radius: 6px;
-}
-
-.main-body::-webkit-scrollbar-thumb:hover {
-    background: #94a3b8;
-}
-
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
-html,
-body {
-    height: 100%;
-    overflow: hidden;
-}
+html, body { height: 100%; overflow: hidden; }
 
 body {
-    font-family: 'Inter', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     background: var(--bg-secondary);
     font-size: 14px;
     line-height: 1.5;
@@ -183,7 +160,6 @@ body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
-    font-feature-settings: 'cv01','cv02','cv03','ss01';
 }
 
 a:focus-visible,
@@ -198,9 +174,7 @@ summary:focus-visible,
 }
 
 @media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
+    *, *::before, *::after {
         animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
@@ -216,75 +190,63 @@ summary:focus-visible,
     background: var(--primary-color);
     color: #fff;
     padding: 8px 12px;
-    border-radius: 8px;
+    border-radius: 6px;
     text-decoration: none;
     font-weight: 600;
     transition: top 0.2s ease;
 }
+.skip-link:focus { top: 12px; }
 
-.skip-link:focus {
-    top: 12px;
-}
-
-/* Enterprise Layout Container */
+/* Layout Container */
 .app-container {
     display: flex;
     height: 100vh;
     width: 100vw;
     overflow: hidden;
-    /*
-     * NOTE: Do NOT use contain:strict or contain:paint here.
-     * Both create a new CSS stacking context (same effect as will-change:transform).
-     * Bootstrap appends .modal-backdrop directly to <body> with z-index:1040.
-     * If .app-container forms a stacking context at z-index:auto, the backdrop
-     * renders ABOVE the container in the root stacking order, meaning the modal
-     * (z-index:1055 trapped inside the container's context) is beneath the backdrop
-     * — visible through the 50% opacity overlay but completely unclickable.
-     * .app-container does not need contain at all; overflow:hidden + explicit
-     * height/width already prevent content escape without a stacking side-effect.
-     */
 }
 
-/* Premium Global UI Elements */
+/* Form Controls */
 .form-control,
 .form-select {
-    border-radius: 10px;
+    border-radius: var(--radius-md);
     border: 1.5px solid var(--border-color);
-    padding: 10px 14px;
+    padding: 9px 12px;
     font-size: 13.5px;
     color: var(--text-primary);
     background-color: var(--bg-primary);
-    transition: border-color 0.18s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.18s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: var(--shadow-xs);
+    transition: border-color var(--transition-base), box-shadow var(--transition-base);
+    box-shadow: none;
     font-family: inherit;
-    min-height: 42px;
+    min-height: 40px;
     line-height: 1.5;
 }
 
 .form-control:focus,
 .form-select:focus {
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.14), var(--shadow-xs);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
     background-color: var(--bg-primary);
     color: var(--text-primary);
     outline: none;
 }
 
 .btn {
-    border-radius: 10px;
+    border-radius: var(--radius-md);
     font-weight: 500;
-    padding: 10px 20px;
-    transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
-    min-height: 38px;
+    padding: 9px 18px;
+    transition: all var(--transition-base);
+    min-height: 36px;
+    font-size: 13.5px;
 }
 
 .btn:hover:not(:disabled) {
     transform: translateY(-1px);
-    box-shadow: 0 4px 8px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
 }
 
 .btn:active:not(:disabled) {
     transform: translateY(0);
+    box-shadow: none;
 }
 
 .card {
@@ -292,36 +254,40 @@ summary:focus-visible,
     border: 1px solid var(--border-color);
     box-shadow: var(--shadow-sm);
     background: var(--bg-primary);
-    margin-bottom: var(--space-6);
-    transition: transform 0.2s cubic-bezier(0.4,0,0.2,1), box-shadow 0.2s cubic-bezier(0.4,0,0.2,1);
+    margin-bottom: var(--space-5);
+    transition: box-shadow var(--transition-base);
+}
+
+.card:hover {
+    box-shadow: var(--shadow-md);
 }
 
 .table {
     --bs-table-color: var(--text-primary);
     --bs-table-bg: transparent;
     margin-bottom: 0;
+    font-size: 13.5px;
 }
 
-.table>thead {
+.table > thead {
     text-transform: uppercase;
-    font-size: 0.75rem;
-    letter-spacing: 0.05em;
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
     color: var(--text-secondary);
 }
 
-.table>thead>tr>th {
-    border-bottom-width: 2px;
+.table > thead > tr > th {
+    border-bottom-width: 1px;
     font-weight: 700;
-    padding: 14px 16px;
+    padding: 12px 16px;
     background-color: var(--bg-secondary);
+    border-color: var(--border-color);
 }
 
-.table>tbody>tr>td {
-    padding: 14px 16px;
+.table > tbody > tr > td {
+    padding: 12px 16px;
     vertical-align: middle;
     border-bottom: 1px solid var(--border-color);
     color: var(--text-primary);
     line-height: 1.5;
 }
-
-
