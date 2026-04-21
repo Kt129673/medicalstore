@@ -7,36 +7,20 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 /**
- * Dedicated dashboard controller for SHOPKEEPER role (Operational Level).
- * Provides the POS / Billing Dashboard and Daily Operations View.
+ * Dashboard controller for SHOPKEEPER and OWNER roles (Operational Level).
+ * Provides the main dashboard and POS entry point.
  *
- * Architecture note (Section 6 – Dashboard Separation Strategy):
- *   Each role has a separate controller:
- *     - AdminController      → /admin
- *     - OwnerController      → /owner
- *     - ShopkeeperDashboardController → /  (this class)
+ * Routes:
+ *   GET /          → redirect to /dashboard
+ *   GET /dashboard → renders index.html (KPIs loaded async via DashboardApiController)
  *
- * SHOPKEEPER responsibilities:
- *   - Perform sales / billing / POS
- *   - Update limited stock
- *   - View daily sales summary
- *
- * SHOPKEEPER restrictions:
- *   - Cannot create users
- *   - Cannot view financial analytics
- *   - Cannot access admin or owner features
+ * Role access: ADMIN (read-only monitoring), OWNER (view-as-shopkeeper), SHOPKEEPER (full access)
  */
 @Controller
 @RequiredArgsConstructor
-// OWNER included to support view-as-shopkeeper impersonation drill-down from OwnerController.
-// ADMIN included for read-only operational monitoring (writes are blocked at method level on SaleController etc.)
 @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'SHOPKEEPER')")
 public class ShopkeeperDashboardController {
 
-    /**
-     * Renders the shopkeeper's operational dashboard.
-     * Dashboard data is loaded asynchronously via {@link com.medicalstore.controller.api.DashboardApiController}.
-     */
     /** Redirect legacy root URL to canonical /dashboard. */
     @GetMapping("/")
     public String rootRedirect() {
@@ -49,3 +33,4 @@ public class ShopkeeperDashboardController {
         return "index";
     }
 }
+

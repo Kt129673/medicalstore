@@ -26,6 +26,12 @@ public class ProfileController {
     private final PasswordEncoder passwordEncoder;
     private final SecurityUtils securityUtils;
 
+    /** Redirect bare /profile to the change-password page (only profile action available). */
+    @GetMapping
+    public String profileHome() {
+        return "redirect:/profile/change-password";
+    }
+
     @GetMapping("/change-password")
     public String changePasswordForm(Model model) {
         model.addAttribute("title", "Change Password");

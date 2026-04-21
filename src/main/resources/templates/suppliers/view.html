@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+    th:replace="~{layout :: layout(title='Supplier Details', page='suppliers', content=~{::#content}, pageIcon='bi bi-truck')}">
+
+<body>
+    <div id="content">
+        <!-- Page Header -->
+        <div class="page-header mb-4 d-flex justify-content-between align-items-start">
+            <div>
+                <h2>
+                    <i class="bi bi-truck text-primary"></i> Supplier Details
+                </h2>
+                <p class="text-muted mb-0">View supplier profile and contact information</p>
+            </div>
+            <div class="d-flex gap-2 flex-wrap">
+                <a th:href="@{/suppliers/edit/{id}(id=${supplier.id})}" class="btn btn-outline-primary btn-sm">
+                    <i class="bi bi-pencil"></i> Edit
+                </a>
+                <a href="/suppliers" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-arrow-left"></i> Back
+                </a>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- Supplier Profile Card -->
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body text-center pt-4">
+                        <!-- Avatar -->
+                        <div class="mb-3" style="width:90px;height:90px;font-size:36px;margin:0 auto;background:linear-gradient(135deg,#2563eb,#7c3aed);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;">
+                            <span th:text="${!#strings.isEmpty(supplier.name) ? supplier.name.substring(0,1).toUpperCase() : 'S'}">S</span>
+                        </div>
+                        <h4 class="fw-bold mb-1" th:text="${supplier.name}">Supplier Name</h4>
+                        <p class="text-muted small mb-1" th:text="${supplier.contactPerson}">Contact Person</p>
+                        <p class="text-muted small mb-3" th:text="'ID: #' + ${supplier.id}">ID: #1</p>
+
+                        <span th:if="${supplier.branch != null}" class="badge bg-primary bg-opacity-10 text-primary mb-3"
+                              th:text="${supplier.branch.name}">Branch</span>
+
+                        <hr>
+
+                        <!-- Contact Info -->
+                        <div class="text-start px-2">
+                            <div class="mb-2 d-flex align-items-center gap-2">
+                                <i class="bi bi-telephone-fill text-primary fs-5"></i>
+                                <span th:text="${supplier.phone}">9999999999</span>
+                            </div>
+                            <div th:if="${supplier.email}" class="mb-2 d-flex align-items-center gap-2">
+                                <i class="bi bi-envelope-fill text-primary fs-5"></i>
+                                <span th:text="${supplier.email}">email@supplier.com</span>
+                            </div>
+                            <div th:if="${supplier.address}" class="mb-2 d-flex align-items-start gap-2">
+                                <i class="bi bi-geo-alt-fill text-primary fs-5 mt-1"></i>
+                                <span th:text="${supplier.address}">Address</span>
+                            </div>
+                            <div th:if="${supplier.gstNumber}" class="mb-2 d-flex align-items-center gap-2">
+                                <i class="bi bi-file-earmark-ruled text-primary fs-5"></i>
+                                <span><strong>GST:</strong> <span th:text="${supplier.gstNumber}">GSTIN</span></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="card-footer bg-transparent border-top pt-3 pb-3">
+                        <div class="d-grid gap-2">
+                            <a th:href="@{/purchases/new}" class="btn btn-success btn-sm">
+                                <i class="bi bi-plus-circle me-1"></i> Create Purchase Order
+                            </a>
+                            <a href="/suppliers/credits/new" class="btn btn-outline-warning btn-sm" sec:authorize="hasAnyRole('ADMIN','SHOPKEEPER')">
+                                <i class="bi bi-credit-card me-1"></i> Record Credit
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Supplier Info Details -->
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-info-circle text-primary me-2"></i>Supplier Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="text-muted small fw-semibold text-uppercase">Supplier Name</label>
+                                <p class="fw-semibold mb-0" th:text="${supplier.name}">Name</p>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="text-muted small fw-semibold text-uppercase">Contact Person</label>
+                                <p class="fw-semibold mb-0" th:text="${supplier.contactPerson}">Contact</p>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="text-muted small fw-semibold text-uppercase">Phone</label>
+                                <p class="fw-semibold mb-0">
+                                    <a th:href="'tel:' + ${supplier.phone}" th:text="${supplier.phone}">Phone</a>
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="text-muted small fw-semibold text-uppercase">Email</label>
+                                <p class="fw-semibold mb-0" th:if="${supplier.email}">
+                                    <a th:href="'mailto:' + ${supplier.email}" th:text="${supplier.email}">Email</a>
+                                </p>
+                                <p class="text-muted mb-0" th:unless="${supplier.email}">—</p>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="text-muted small fw-semibold text-uppercase">GST Number</label>
+                                <p class="fw-semibold mb-0" th:text="${supplier.gstNumber ?: '—'}">GSTIN</p>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="text-muted small fw-semibold text-uppercase">Branch</label>
+                                <p class="fw-semibold mb-0" th:text="${supplier.branch != null ? supplier.branch.name : '—'}">Branch</p>
+                            </div>
+                            <div class="col-12">
+                                <label class="text-muted small fw-semibold text-uppercase">Address</label>
+                                <p class="fw-semibold mb-0" th:text="${supplier.address}">Address</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigate to related purchases -->
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-bag-check text-success me-2"></i>Related Actions</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex flex-wrap gap-3">
+                            <a href="/purchases" class="btn btn-outline-primary">
+                                <i class="bi bi-bag-check me-1"></i> View All Purchases
+                            </a>
+                            <a href="/suppliers/credits" class="btn btn-outline-warning">
+                                <i class="bi bi-credit-card me-1"></i> Supplier Credits
+                            </a>
+                            <a th:href="@{/suppliers/edit/{id}(id=${supplier.id})}" class="btn btn-outline-secondary">
+                                <i class="bi bi-pencil me-1"></i> Edit Supplier
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

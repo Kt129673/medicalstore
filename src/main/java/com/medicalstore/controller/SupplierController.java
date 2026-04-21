@@ -32,6 +32,14 @@ public class SupplierController {
         return "suppliers/list";
     }
     
+    @GetMapping("/{id}")
+    public String viewSupplier(@PathVariable Long id, Model model) {
+        Supplier supplier = supplierService.getSupplierById(id)
+                .orElseThrow(() -> new RuntimeException("Supplier not found"));
+        model.addAttribute("supplier", supplier);
+        return "suppliers/view";
+    }
+
     @GetMapping("/new")
     public String showAddForm(Model model) {
         model.addAttribute("supplier", new Supplier());

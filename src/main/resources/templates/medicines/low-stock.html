@@ -1,42 +1,85 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-    th:replace="~{layout :: layout(title='Low Stock', page='medicines', content=~{::#content}, pageIcon='bi bi-exclamation-triangle')}">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+    th:replace="~{layout :: layout(title='Low Stock Medicines', page='medicines', content=~{::#content}, pageIcon='bi bi-exclamation-triangle')}">
 
 <body>
     <div id="content">
-        <div class="page-header mb-4">
-            <h2><i class="bi bi-exclamation-triangle text-warning"></i> Low Stock Medicines</h2>
-            <a href="/medicines" class="btn btn-secondary">
-                <i class="bi bi-arrow-left"></i> Back
-            </a>
+        <div class="page-header mb-4 d-flex justify-content-between align-items-start">
+            <div>
+                <h2><i class="bi bi-exclamation-triangle text-warning"></i> Low Stock Medicines</h2>
+                <p class="text-muted mb-0">Medicines with stock at or below the reorder threshold (10 units)</p>
+            </div>
+            <div class="d-flex gap-2 flex-wrap">
+                <a href="/purchases/new" class="btn btn-success btn-sm" sec:authorize="hasRole('SHOPKEEPER')">
+                    <i class="bi bi-bag-plus me-1"></i> New Purchase Order
+                </a>
+                <a href="/medicines" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-arrow-left me-1"></i> All Medicines
+                </a>
+            </div>
         </div>
 
-        <div class="card">
+        <div class="card modern-card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-exclamation-diamond-fill text-danger me-2"></i>Critical Stock Items</h5>
+                <span class="badge bg-danger" th:unless="${medicines.isEmpty()}"
+                      th:text="${medicines.size()} + ' Items'">0 Items</span>
+            </div>
             <div class="card-body">
-                <div th:if="${medicines.isEmpty()}" class="text-center text-success py-4">
-                    <i class="bi bi-check-circle" style="font-size: 3rem;"></i>
-                    <p class="mt-2">All medicines are well stocked!</p>
+                <div th:if="${medicines.isEmpty()}" class="text-center text-success py-5">
+                    <i class="bi bi-check-circle-fill" style="font-size: 3.5rem;"></i>
+                    <h5 class="mt-3 fw-bold">All Stock Levels Healthy!</h5>
+                    <p class="text-muted">No medicines are below the low-stock threshold.</p>
+                    <a href="/medicines" class="btn btn-outline-success mt-2">View All Medicines</a>
                 </div>
                 <div th:unless="${medicines.isEmpty()}" class="table-responsive">
-                    <table class="modern-table table table-hover">
+                    <table class="modern-table table table-hover align-middle">
                         <thead>
                             <tr>
-                                <th>Name</th>
+                                <th>Medicine</th>
                                 <th>Category</th>
-                                <th>Stock</th>
-                                <th>Action</th>
+                                <th>Current Stock</th>
+                                <th>Threshold</th>
+                                <th>Status</th>
+                                <th class="text-end">Action</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr th:each="medicine : ${medicines}">
-                                <td th:text="${medicine.name}"></td>
-                                <td><span class="badge bg-info" th:text="${medicine.category}"></span></td>
-                                <td><span class="badge bg-danger" th:text="${medicine.quantity}"></span></td>
                                 <td>
-                                    <a th:href="@{/medicines/edit/{id}(id=${medicine.id})}"
-                                        class="btn btn-sm btn-primary">
-                                        <i class="bi bi-plus-circle"></i> Restock
-                                    </a>
+                                    <span class="fw-semibold" th:text="${medicine.name}">Medicine</span>
+                                    <small class="text-muted d-block" th:if="${medicine.supplier != null}"
+                                           th:text="${medicine.supplier.name}"></small>
+                                </td>
+                                <td>
+                                    <span class="badge bg-info bg-opacity-15 text-info"
+                                          th:text="${medicine.category ?: 'General'}">Category</span>
+                                </td>
+                                <td>
+                                    <span class="badge fs-6 px-3 py-2"
+                                          th:classappend="${medicine.quantity == 0} ? 'bg-danger' : 'bg-warning text-dark'"
+                                          th:text="${medicine.quantity} + ' units'">0 units</span>
+                                </td>
+                                <td>
+                                    <span class="text-muted small">≤ 10 units</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-danger" th:if="${medicine.quantity == 0}">Out of Stock</span>
+                                    <span class="badge bg-warning text-dark" th:unless="${medicine.quantity == 0}">Low Stock</span>
+                                </td>
+                                <td class="text-end">
+                                    <div class="btn-group btn-group-sm">
+                                        <a th:href="@{/medicines/edit/{id}(id=${medicine.id})}"
+                                           class="btn btn-sm btn-primary" title="Edit / Restock"
+                                           sec:authorize="hasRole('SHOPKEEPER')">
+                                            <i class="bi bi-plus-circle me-1"></i>Restock
+                                        </a>
+                                        <a href="/purchases/new"
+                                           class="btn btn-sm btn-outline-success" title="Create Purchase Order"
+                                           sec:authorize="hasRole('SHOPKEEPER')">
+                                            <i class="bi bi-bag-plus"></i>
+                                        </a>
+                                    </div>
                                 </td>
                             </tr>
                         </tbody>
