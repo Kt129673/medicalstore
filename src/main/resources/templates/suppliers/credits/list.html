@@ -47,10 +47,9 @@
                         </div>
                     </div>
                     <div class="col-4 col-md">
-                        <div class="p-3 bg-light rounded shadow-sm border border-orange border-opacity-25"
-                            style="border-color:#fd7e14 !important;">
+                        <div class="p-3 bg-light rounded shadow-sm border border-warning border-opacity-50">
                             <div class="text-muted small fw-bold">31-60 Days</div>
-                            <h5 class="mb-0" style="color:#fd7e14;"
+                            <h5 class="mb-0 text-warning"
                                 th:text="'₹' + ${#numbers.formatDecimal(agingReport['31-60 Days'] ?: 0, 1, 'COMMA', 2, 'POINT')}">
                             </h5>
                         </div>

@@ -126,7 +126,7 @@
                                         class="btn btn-outline-secondary" title="Edit" sec:authorize="hasRole('SHOPKEEPER')">
                                         <i class="bi bi-pencil"></i>
                                     </a>
-                                    <form th:if="${order.status == 'DRAFT'}" method="post" th:action="@{/purchases/delete/{id}(id=${order.id})}" style="display:inline"
+                                    <form th:if="${order.status == 'DRAFT'}" method="post" th:action="@{/purchases/delete/{id}(id=${order.id})}" class="form-inline-block"
                                           data-confirm-delete="This purchase order will be permanently deleted."
                                           sec:authorize="hasAnyRole('ADMIN','OWNER')">
                                         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>

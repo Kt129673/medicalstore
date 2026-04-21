@@ -692,6 +692,147 @@
     border-color: #9CA3AF;
 }
 
+.btn-outline-success {
+    color: var(--success-color);
+    border-color: var(--success-color);
+    background: transparent;
+}
+.btn-outline-success:hover:not(:disabled) {
+    background: var(--success-color);
+    color: #fff;
+    box-shadow: 0 3px 8px rgba(5, 150, 105, 0.25);
+}
+
+.btn-outline-warning {
+    color: var(--warning-color);
+    border-color: var(--warning-color);
+    background: transparent;
+}
+.btn-outline-warning:hover:not(:disabled) {
+    background: var(--warning-color);
+    color: #fff;
+    box-shadow: 0 3px 8px rgba(217, 119, 6, 0.25);
+}
+
+.btn-outline-info {
+    color: var(--info-color);
+    border-color: var(--info-color);
+    background: transparent;
+}
+.btn-outline-info:hover:not(:disabled) {
+    background: var(--info-color);
+    color: #fff;
+    box-shadow: 0 3px 8px rgba(2, 132, 199, 0.25);
+}
+
+/* ─────────────────────────────────────────────────
+   LOYALTY BADGE - Customer loyalty points
+───────────────────────────────────────────────── */
+.loyalty-badge {
+    background: linear-gradient(135deg, #fef3c7, #fde68a);
+    color: #92400e;
+    border: 1px solid #fcd34d;
+    font-weight: 700;
+    font-size: 11px;
+    padding: 3px 9px;
+    border-radius: var(--radius-full);
+}
+
+/* ─────────────────────────────────────────────────
+   SALE AMOUNT - Highlighted sale value
+───────────────────────────────────────────────── */
+.sale-amount {
+    font-weight: 700;
+    color: var(--text-primary);
+    font-variant-numeric: tabular-nums;
+}
+
+/* ─────────────────────────────────────────────────
+   TRANSACTION ICON - Sale row icon
+───────────────────────────────────────────────── */
+.transaction-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-md);
+    background: var(--primary-subtle);
+    color: var(--primary-color);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+    margin-right: 10px;
+}
+
+/* ─────────────────────────────────────────────────
+   CUSTOMER INFO - Customer cell layout
+───────────────────────────────────────────────── */
+.customer-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.customer-avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--primary-gradient);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 13px;
+    flex-shrink: 0;
+}
+
+.customer-details {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.customer-name {
+    font-weight: 600;
+    font-size: 13.5px;
+    color: var(--text-primary);
+}
+
+.customer-id {
+    font-size: 11px;
+    color: var(--text-secondary);
+}
+
+.contact-info {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    font-size: 13px;
+}
+
+.contact-icon {
+    color: var(--text-secondary);
+    margin-right: 4px;
+    font-size: 11px;
+}
+
+/* ─────────────────────────────────────────────────
+   CUSTOMER TYPE - Walk-in indicator
+───────────────────────────────────────────────── */
+.customer-type {
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-style: italic;
+}
+
+/* ─────────────────────────────────────────────────
+   INLINE FORM - Delete form inline display
+───────────────────────────────────────────────── */
+.form-inline-block {
+    display: inline;
+}
+
 /* ─────────────────────────────────────────────────
    PAGINATION - Disabled & active state polish
 ───────────────────────────────────────────────── */
@@ -765,4 +906,31 @@
     .skeleton {
         animation: none !important;
     }
+}
+
+/* ─────────────────────────────────────────────────
+   BILL SUMMARY - POS bill value colors
+───────────────────────────────────────────────── */
+.bill-discount {
+    color: var(--warning-color);
+}
+
+.bill-gst {
+    color: var(--success-color);
+}
+
+/* ─────────────────────────────────────────────────
+   MODAL MED ICON - Medicine detail modal icon
+───────────────────────────────────────────────── */
+.modal-med-icon {
+    width: 80px;
+    height: 80px;
+}
+
+/* ─────────────────────────────────────────────────
+   PAGE SIZE SELECT - Pagination row count selector
+───────────────────────────────────────────────── */
+.page-size-select {
+    width: 70px;
+    border-radius: var(--radius-md) !important;
 }

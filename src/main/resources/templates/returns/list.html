@@ -82,7 +82,7 @@
                                 <td class="text-end">
                                     <div sec:authorize="hasRole('ADMIN')">
                                         <form th:action="@{/returns/delete/{id}(id=${returnItem.id})}" method="post"
-                                            style="display:inline"
+                                            class="form-inline-block"
                                             data-confirm-delete="Cancel this return? The stock adjustment will be reversed.">
                                             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                                             <button type="submit" class="btn btn-sm btn-outline-danger" title="Cancel Return">
