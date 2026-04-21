@@ -212,11 +212,10 @@ public class PdfService {
      * Convert HTML content to enterprise-level PDF with metadata and branding.
      */
     private byte[] convertHtmlToPdf(String htmlContent, String documentTitle) {
-        try {
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-
-            PdfWriter writer = new PdfWriter(outputStream);
-            PdfDocument pdfDoc = new PdfDocument(writer);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        
+        try (PdfWriter writer = new PdfWriter(outputStream);
+             PdfDocument pdfDoc = new PdfDocument(writer)) {
 
             PdfDocumentInfo info = pdfDoc.getDocumentInfo();
             info.setTitle(documentTitle);
@@ -232,7 +231,6 @@ public class PdfService {
 
             HtmlConverter.convertToPdf(htmlContent, pdfDoc, converterProperties);
 
-            pdfDoc.close();
             return outputStream.toByteArray();
         } catch (Exception e) {
             throw new RuntimeException("Failed to convert HTML to PDF: " + e.getMessage(), e);
@@ -243,11 +241,11 @@ public class PdfService {
      * Generate a simple text-based PDF (for testing or fallback).
      */
     public byte[] generateSimplePdf(String title, String content) {
-        try {
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            PdfWriter writer = new PdfWriter(outputStream);
-            PdfDocument pdfDoc = new PdfDocument(writer);
-            Document document = new Document(pdfDoc, PageSize.A4);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        
+        try (PdfWriter writer = new PdfWriter(outputStream);
+             PdfDocument pdfDoc = new PdfDocument(writer);
+             Document document = new Document(pdfDoc, PageSize.A4)) {
 
             Paragraph titleParagraph = new Paragraph(title)
                     .setFontSize(20)
@@ -260,7 +258,6 @@ public class PdfService {
                     .setFontSize(12);
             document.add(contentParagraph);
 
-            document.close();
             return outputStream.toByteArray();
         } catch (Exception e) {
             throw new RuntimeException("Failed to generate simple PDF: " + e.getMessage(), e);

@@ -112,7 +112,9 @@ public class SaleService {
                 jakarta.persistence.criteria.Join<?, ?> customerJoin = root.join("customer",
                         jakarta.persistence.criteria.JoinType.LEFT);
                 predicates.add(cb.like(cb.lower(customerJoin.get("name")), like));
-                query.distinct(true);
+                if (query != null) {
+                    query.distinct(true);
+                }
             }
 
             // Date range
@@ -129,7 +131,7 @@ public class SaleService {
             }
 
             // Only add ORDER BY for the select query (not the count query)
-            if (query.getResultType() != Long.class && query.getResultType() != long.class) {
+            if (query != null && query.getResultType() != Long.class && query.getResultType() != long.class) {
                 query.orderBy(cb.desc(root.get("saleDate")));
             }
 

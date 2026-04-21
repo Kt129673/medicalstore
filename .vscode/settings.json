@@ -3,5 +3,8 @@
     "java.dependency.packagePresentation": "hierarchical",
     "git.ignoreLimitWarning": true,
     "java.compile.nullAnalysis.mode": "disabled",
-    "java.configuration.updateBuildConfiguration": "interactive"
+    "java.configuration.updateBuildConfiguration": "interactive",
+    "python.autoComplete.extraPaths": [
+        "c:\\Users\\kiran\\.kiro\\extensions\\continue.continue-0.0.412-win32-x64"
+    ]
 }

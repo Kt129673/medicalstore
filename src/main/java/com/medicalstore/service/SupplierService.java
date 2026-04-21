@@ -31,24 +31,30 @@ public class SupplierService {
 
     public Optional<Supplier> getSupplierById(Long id) {
         Optional<Supplier> supplier = supplierRepository.findById(id);
-        if (supplier.isPresent()) {
-            Long tenantId = TenantContext.getTenantId();
-            if (tenantId != null && supplier.get().getBranch() != null
-                    && !tenantId.equals(supplier.get().getBranch().getId())) {
-                roleAuditService.logEscalationAttempt("/suppliers/" + id, "SHOPKEEPER",
-                        "Attempted to access supplier from different branch (branchId="
-                                + supplier.get().getBranch().getId() + ")");
-                throw new AccessDeniedException("Access denied: supplier belongs to a different branch");
-            }
-            Long ownerId = TenantContext.getOwnerId();
-            if (ownerId != null && supplier.get().getBranch() != null
-                    && supplier.get().getBranch().getOwner() != null
-                    && !ownerId.equals(supplier.get().getBranch().getOwner().getId())) {
-                roleAuditService.logEscalationAttempt("/suppliers/" + id, "OWNER",
-                        "Attempted to access supplier belonging to different owner");
-                throw new AccessDeniedException("Access denied: supplier belongs to a different owner");
-            }
+        if (supplier.isEmpty()) {
+            return supplier;
         }
+        
+        Supplier supplierEntity = supplier.get();
+        Long tenantId = TenantContext.getTenantId();
+        
+        if (tenantId != null && supplierEntity.getBranch() != null
+                && !tenantId.equals(supplierEntity.getBranch().getId())) {
+            roleAuditService.logEscalationAttempt("/suppliers/" + id, "SHOPKEEPER",
+                    "Attempted to access supplier from different branch (branchId="
+                            + supplierEntity.getBranch().getId() + ")");
+            throw new AccessDeniedException("Access denied: supplier belongs to a different branch");
+        }
+        
+        Long ownerId = TenantContext.getOwnerId();
+        if (ownerId != null && supplierEntity.getBranch() != null
+                && supplierEntity.getBranch().getOwner() != null
+                && !ownerId.equals(supplierEntity.getBranch().getOwner().getId())) {
+            roleAuditService.logEscalationAttempt("/suppliers/" + id, "OWNER",
+                    "Attempted to access supplier belonging to different owner");
+            throw new AccessDeniedException("Access denied: supplier belongs to a different owner");
+        }
+        
         return supplier;
     }
 

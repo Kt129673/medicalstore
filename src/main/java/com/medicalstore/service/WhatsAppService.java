@@ -31,8 +31,8 @@ public class WhatsAppService {
 
         try {
             Customer customer = sale.getCustomer();
-            if (customer == null || customer.getPhone() == null) {
-                log.error("Customer or phone number is missing");
+            if (customer == null || customer.getPhone() == null || customer.getPhone().isBlank()) {
+                log.error("Customer or phone number is missing for sale ID: {}", sale.getId());
                 return false;
             }
 
@@ -47,13 +47,18 @@ public class WhatsAppService {
             log.info("WhatsApp invoice sent to: {}", customerPhone);
             return true;
         } catch (Exception e) {
-            log.error("Failed to send WhatsApp message: {}", e.getMessage());
+            log.error("Failed to send WhatsApp message for sale ID: {}: {}", sale.getId(), e.getMessage(), e);
             return false;
         }
     }
 
     public boolean sendExpiryAlert(String medicineName, String expiryDate, String adminPhone) {
         if (!isWhatsAppEnabled()) {
+            return false;
+        }
+
+        if (adminPhone == null || adminPhone.isBlank()) {
+            log.error("Admin phone number is missing for expiry alert");
             return false;
         }
 
@@ -76,13 +81,18 @@ public class WhatsAppService {
             log.info("Expiry alert sent to: {}", phone);
             return true;
         } catch (Exception e) {
-            log.error("Failed to send expiry alert: {}", e.getMessage());
+            log.error("Failed to send expiry alert for medicine {}: {}", medicineName, e.getMessage(), e);
             return false;
         }
     }
 
     public boolean sendLowStockAlert(String medicineName, int currentStock, String adminPhone) {
         if (!isWhatsAppEnabled()) {
+            return false;
+        }
+
+        if (adminPhone == null || adminPhone.isBlank()) {
+            log.error("Admin phone number is missing for low stock alert");
             return false;
         }
 
@@ -105,7 +115,7 @@ public class WhatsAppService {
             log.info("Low stock alert sent to: {}", phone);
             return true;
         } catch (Exception e) {
-            log.error("Failed to send low stock alert: {}", e.getMessage());
+            log.error("Failed to send low stock alert for medicine {}: {}", medicineName, e.getMessage(), e);
             return false;
         }
     }
@@ -134,16 +144,21 @@ public class WhatsAppService {
             message.append("-----------------\n");
         }
 
-        message.append("Subtotal: ₹").append(String.format("%.2f", sale.getTotalAmount())).append("\n");
+        Double totalAmount = sale.getTotalAmount() != null ? sale.getTotalAmount() : 0.0;
+        message.append("Subtotal: ₹").append(String.format("%.2f", totalAmount)).append("\n");
 
-        if (sale.getDiscountPercentage() != null && sale.getDiscountPercentage() > 0) {
-            message.append("Discount (").append(sale.getDiscountPercentage()).append("%): -₹")
-                    .append(String.format("%.2f", sale.getDiscountAmount())).append("\n");
+        Double discountPercentage = sale.getDiscountPercentage();
+        Double discountAmount = sale.getDiscountAmount();
+        if (discountPercentage != null && discountPercentage > 0 && discountAmount != null) {
+            message.append("Discount (").append(discountPercentage).append("%): -₹")
+                    .append(String.format("%.2f", discountAmount)).append("\n");
         }
 
-        if (sale.getGstPercentage() != null && sale.getGstPercentage() > 0) {
-            message.append("GST (").append(sale.getGstPercentage()).append("%): +₹")
-                    .append(String.format("%.2f", sale.getGstAmount())).append("\n");
+        Double gstPercentage = sale.getGstPercentage();
+        Double gstAmount = sale.getGstAmount();
+        if (gstPercentage != null && gstPercentage > 0 && gstAmount != null) {
+            message.append("GST (").append(gstPercentage).append("%): +₹")
+                    .append(String.format("%.2f", gstAmount)).append("\n");
         }
 
         message.append("━━━━━━━━━━━━━━━━━\n");
