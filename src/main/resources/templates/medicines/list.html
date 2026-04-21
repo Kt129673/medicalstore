@@ -242,7 +242,15 @@
                             <td class="text-center">
                                 <div class="d-flex gap-1 justify-content-center">
                                     <button type="button" class="action-btn text-info" title="View Details"
-                                        th:onclick="viewMedicine([[${medicine.name}]], [[${medicine.category}]], [[${medicine.manufacturer}]], [[${medicine.price}]], [[${medicine.quantity}]], [[${medicine.expiryDate}]], [[${medicine.batchNumber}]], [[${medicine.barcode}]])">
+                                        th:data-name="${medicine.name}"
+                                        th:data-category="${medicine.category}"
+                                        th:data-mfg="${medicine.manufacturer}"
+                                        th:data-price="${medicine.price}"
+                                        th:data-stock="${medicine.quantity}"
+                                        th:data-expiry="${medicine.expiryDate}"
+                                        th:data-batch="${medicine.batchNumber}"
+                                        th:data-barcode="${medicine.barcode}"
+                                        onclick="viewMedicineFromBtn(this)">
                                         <i class="bi bi-eye"></i>
                                     </button>
                                     <a th:href="@{/medicines/edit/{id}(id=${medicine.id})}" class="action-btn"
@@ -376,6 +384,15 @@
 
         <!-- Client-side Interactivity -->
         <script>
+            // Safe wrapper: reads data from data-* attributes (no inline JS interpolation)
+            function viewMedicineFromBtn(btn) {
+                viewMedicine(
+                    btn.dataset.name, btn.dataset.category, btn.dataset.mfg,
+                    btn.dataset.price, btn.dataset.stock, btn.dataset.expiry,
+                    btn.dataset.batch, btn.dataset.barcode
+                );
+            }
+
             function viewMedicine(name, category, mfg, price, stock, expiry, batch, barcode) {
                 document.getElementById('m_name').textContent = name || 'N/A';
                 document.getElementById('m_category').textContent = category || 'N/A';

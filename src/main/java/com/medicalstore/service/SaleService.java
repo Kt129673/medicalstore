@@ -179,7 +179,9 @@ public class SaleService {
             if (updatedRows == 0) {
                 throw new StockConflictException(medicine.getName());
             }
-            medicine.setQuantity(medicine.getQuantity() - item.getQuantity());
+            // Note: do NOT update the in-memory quantity here — the DB was already
+            // updated atomically above. The in-memory object is only used for item
+            // assignment below and is not persisted again.
 
             // Re-assign accurate entity
             item.setMedicine(medicine);

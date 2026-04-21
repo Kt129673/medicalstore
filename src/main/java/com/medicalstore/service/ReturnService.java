@@ -2,7 +2,6 @@ package com.medicalstore.service;
 
 import com.medicalstore.common.TenantContext;
 import com.medicalstore.model.Return;
-import com.medicalstore.model.Sale;
 import com.medicalstore.model.SaleItem;
 import com.medicalstore.model.Medicine;
 import com.medicalstore.repository.ReturnRepository;
@@ -110,8 +109,15 @@ public class ReturnService {
             if (medicine != null) {
                 int currentQty = medicine.getQuantity();
                 int returnedQty = returnItem.getReturnQuantity();
-                // Deduct the previously restored quantity (undo the return)
-                medicine.setQuantity(Math.max(0, currentQty - returnedQty));
+                // Deduct the previously restored quantity (undo the return).
+                // Throw if stock is inconsistent rather than silently capping at 0.
+                if (currentQty < returnedQty) {
+                    throw new IllegalStateException(
+                            "Cannot undo return: current stock (" + currentQty +
+                            ") is less than the returned quantity (" + returnedQty +
+                            ") for medicine id=" + medicine.getId());
+                }
+                medicine.setQuantity(currentQty - returnedQty);
                 medicineRepository.save(medicine);
             }
         }
