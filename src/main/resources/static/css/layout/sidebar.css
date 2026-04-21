@@ -8,8 +8,9 @@
     height: 100vh;
     overflow: hidden;
     flex-shrink: 0;
-    transition: width 0.22s var(--ease-std);
-    position: relative;
+    transition: width 0.22s var(--ease-std), transform 0.28s var(--ease-std);
+    position: sticky;
+    top: 0;
     z-index: var(--z-sidebar, 1000);
 }
 
@@ -266,7 +267,7 @@
     pointer-events: none;
     opacity: 0;
     transition: opacity 0.15s var(--ease-std);
-    z-index: 1100;
+    z-index: calc(var(--z-sidebar) + 50);
     box-shadow: 0 4px 12px rgba(0,0,0,0.25);
 }
 

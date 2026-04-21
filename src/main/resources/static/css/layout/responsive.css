@@ -1,727 +1,222 @@
-/* Sidebar close btn (mobile only) */
-.sidebar-close-btn {
-    display: none; /* shown as flex via JS / media query below */
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: #f1f5f9;
-    border: 1.5px solid #e2e8f0;
-    color: #64748b;
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE  –  Mobile / tablet layout overrides
+═══════════════════════════════════════════════════════════════ */
+
+/* ─────────────────────────────────────────────────
+   MOBILE TOGGLE BUTTON  (hamburger, top-left)
+───────────────────────────────────────────────── */
+.mobile-toggle {
+    display: none; /* hidden on desktop */
+    position: fixed;
+    top: 14px;
+    left: 14px;
+    z-index: calc(var(--z-sidebar) + 10);
+    width: 36px;
+    height: 36px;
     border-radius: 8px;
-    width: 32px;
-    height: 32px;
-    font-size: 16px;
-    cursor: pointer;
+    border: none;
+    background: var(--primary-color);
+    color: #fff;
+    font-size: 18px;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.35);
+    transition: background var(--transition-fast), transform var(--transition-fast);
+    padding: 0;
+}
+
+.mobile-toggle:hover {
+    background: var(--primary-dark);
+    transform: scale(1.05);
+}
+
+.mobile-toggle.open {
+    background: var(--primary-dark);
+}
+
+/* ─────────────────────────────────────────────────
+   SIDEBAR CLOSE BUTTON  (× inside sidebar, mobile)
+───────────────────────────────────────────────── */
+.sidebar-close-btn {
+    display: none; /* hidden on desktop */
+    position: absolute;
+    top: 14px;
+    right: 12px;
+    z-index: 10;
+    width: 30px;
+    height: 30px;
+    border-radius: 6px;
+    border: none;
+    background: rgba(255, 255, 255, 0.08);
+    color: #94A3B8;
+    font-size: 14px;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background var(--transition-fast), color var(--transition-fast);
+    padding: 0;
 }
 
 .sidebar-close-btn:hover {
-    background: #fee2e2;
-    color: #dc2626;
-    border-color: #fecaca;
+    background: rgba(255, 255, 255, 0.15);
+    color: #E2E8F0;
 }
 
-/* Desktop mini-collapse */
-@media (min-width: 993px) {
-    .mobile-toggle {
-        display: block;
-        position: fixed;
-        top: 17px;
-        left: 14px;
-        z-index: 1100;
-        background: transparent;
-        color: #94a3b8;
-        border: 1px solid #E2E8F0;
-        border-radius: 8px;
-        width: 36px;
-        height: 36px;
-        font-size: 19px;
-        cursor: pointer;
-        transition: all 0.2s;
-        padding: 0;
-        line-height: 36px;
-        text-align: center;
-    }
-
-    .mobile-toggle:hover {
-        background: #EFF6FF;
-        color: #2563EB;
-        border-color: #BFDBFE;
-    }
-
-    .sidebar-overlay {
-        display: none !important;
-    }
-
-    .app-container {
-        transition: padding-left 0.3s ease;
-    }
-
-    .sidebar {
-        transition: width 0.3s ease;
-        overflow: hidden;
-    }
-
-    .main-header {
-        padding-left: 64px;
-    }
+/* ─────────────────────────────────────────────────
+   SIDEBAR OVERLAY  (dim backdrop on mobile)
+───────────────────────────────────────────────── */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: calc(var(--z-sidebar) - 1);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+    opacity: 0;
+    transition: opacity 0.25s var(--ease-std);
 }
 
-/* Responsive mobile */
+.sidebar-overlay.active {
+    display: block;
+    opacity: 1;
+}
+
+/* ─────────────────────────────────────────────────
+   MOBILE BREAKPOINT  (≤ 992px)
+───────────────────────────────────────────────── */
 @media (max-width: 992px) {
-    .sidebar-close-btn {
-        display: flex; /* override the default display:none so flex properties apply */
+    /* Show the hamburger toggle */
+    .mobile-toggle {
+        display: flex;
     }
 
+    /* Show the close button inside sidebar */
+    .sidebar-close-btn {
+        display: flex;
+    }
+
+    /* Sidebar slides in from the left */
     .sidebar {
         position: fixed;
-        left: 0;
         top: 0;
+        left: 0;
         height: 100vh;
-        overflow-y: auto;
-        overflow-x: hidden;
-        /* Stay above Bootstrap sticky-top (z-index:1020) and dropdowns */
-        z-index: 1030;
+        z-index: var(--z-sidebar);
         transform: translateX(-100%);
-        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        /* Promote to its own layer so slide-in is compositor-only */
-        will-change: transform;
+        transition: transform 0.28s var(--ease-std);
+        /* Override the width transition — not needed on mobile */
+        width: var(--sidebar-width) !important;
     }
 
     .sidebar.active {
         transform: translateX(0);
-        box-shadow: 8px 0 32px rgba(0, 0, 0, 0.4);
+        box-shadow: 4px 0 24px rgba(0, 0, 0, 0.35);
     }
 
-    .sidebar-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.5);
-        /* Must sit above sticky elements (z-index:1020) but below the sidebar (1030) */
-        z-index: 1025;
-        display: none;
-        backdrop-filter: blur(2px);
-        -webkit-backdrop-filter: blur(2px);
+    /* Main content takes full width */
+    .main-content {
+        width: 100%;
+        margin-left: 0;
     }
 
-    .sidebar-overlay.active {
-        display: block;
-    }
-
-    .mobile-toggle {
-        display: block;
-        position: fixed;
-        top: 12px;
-        left: 12px;
-        z-index: 1100;
-        background: var(--primary-color);
-        color: white;
-        border: none;
-        border-radius: 8px;
-        width: 40px;
-        height: 40px;
-        font-size: 20px;
-        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
-        cursor: pointer;
-        transition: background 0.2s, transform 0.2s;
-        line-height: 40px;
-        text-align: center;
-        padding: 0;
-    }
-
-    .mobile-toggle:hover {
-        background: var(--primary-dark, #1E3A8A);
-    }
-
-    .mobile-toggle.open {
-        background: var(--danger-color, #DC2626);
-    }
-
+    /* Push header content right to avoid overlap with toggle button */
     .main-header {
-        padding-left: 62px;
-        /* ensure right side never goes under toggle btn */
-        padding-right: 12px;
-        /* on very small screens, hide role badge */
+        padding-left: 60px;
     }
 
-    .main-header .header-role-badge {
-        display: none;
+    /* Shrink search on mobile */
+    .header-search input {
+        width: 160px;
     }
 
-    .main-header .plan-pill {
-        display: none;
+    .header-search input:focus {
+        width: 200px;
+        max-width: calc(100vw - 200px);
     }
 
-    /* Back button: slightly smaller on mobile */
-    .header-back-btn {
-        width: 34px;
-        height: 34px;
-        font-size: 16px;
+    /* Hide breadcrumb home icon text on small screens */
+    .header-breadcrumb .bc-current {
+        max-width: 120px;
     }
 }
 
-@media (max-width: 768px) {
+/* ─────────────────────────────────────────────────
+   TABLET  (577px – 992px)
+───────────────────────────────────────────────── */
+@media (min-width: 577px) and (max-width: 992px) {
+    .header-search input {
+        width: 200px;
+    }
+
+    .header-search input:focus {
+        width: 260px;
+    }
+}
+
+/* ─────────────────────────────────────────────────
+   SMALL MOBILE  (≤ 576px)
+───────────────────────────────────────────────── */
+@media (max-width: 576px) {
+    .main-header {
+        padding-left: 58px;
+        padding-right: 10px;
+        gap: 6px;
+    }
+
+    /* Hide search on very small screens — Ctrl+K still works */
+    .header-search {
+        display: none;
+    }
+
+    .header-breadcrumb .bc-current {
+        max-width: 90px;
+        font-size: 12px;
+    }
+
+    /* Tighten up the main body padding */
+    .main-body {
+        padding: 14px 14px;
+    }
+
+    /* Page header stacks vertically */
     .page-header {
         flex-direction: column;
-        gap: var(--space-3);
-        padding: var(--space-5);
-    }
-
-    .page-header .btn {
-        align-self: flex-start;
-    }
-
-    .stat-value {
-        font-size: 24px;
-    }
-
-    .stat-label {
-        font-size: 11px;
-    }
-
-    .stat-card {
-        padding: var(--space-5);
-    }
-
-    .main-body {
-        padding: var(--space-4) var(--space-3);
-    }
-
-    .card-body {
-        padding: var(--space-4);
-    }
-
-    .card-header {
-        padding: var(--space-3) var(--space-4);
-        font-size: 13px;
-        min-height: 48px;
-    }
-
-    .btn {
-        font-size: 13px;
-        padding: 8px 16px;
-        min-height: 36px;
-    }
-
-    .btn-lg {
-        font-size: 14px;
-        padding: 10px 20px;
-        min-height: 42px;
-    }
-
-    .page-title {
-        font-size: 16px;
-    }
-
-    .kpi-card {
-        min-height: 120px;
-    }
-
-    /* ── POS / New Sale form (≤768px) ── */
-    .pos-form-body {
-        padding: 16px;
-    }
-
-    .med-search-wrap,
-    .med-search-wrap .form-control {
-        width: 100%;
-    }
-}
-
-@media (max-width: 576px) {
-    .main-body {
-        padding: var(--space-3) var(--space-2);
+        padding: 14px 16px;
+        gap: 10px;
     }
 
     .page-header h2 {
         font-size: 18px;
     }
 
-    .stat-value {
-        font-size: 20px;
-    }
-
-    .d-flex.gap-2.justify-content-between {
-        flex-direction: column;
-        gap: var(--space-3) !important;
-    }
-
-    .d-flex.gap-2.justify-content-between .d-flex.gap-2 {
-        flex-direction: row;
-        width: 100%;
-    }
-
-    .d-flex.gap-2.justify-content-between .d-flex.gap-2 .btn {
-        flex: 1;
-    }
-
-    .header-search {
-        margin-left: auto;
-        margin-right: var(--space-3);
-    }
-
-    .header-search input {
-        width: 130px;
-    }
-
-    .header-search input:focus {
-        width: 180px;
-        position: static;
-    }
-
-    .header-search kbd {
-        display: none;
-    }
-
-    .kpi-card {
-        min-height: 110px;
-        padding: var(--space-4);
-    }
-
-    .card-body {
-        padding: var(--space-3);
-    }
-
-    /* ── POS / New Sale form (≤576px) ── */
-    .pos-form-body {
-        padding: 12px;
-    }
-
-    .pos-form-header {
-        padding: 12px 16px;
-    }
-
-    .payment-options {
-        flex-wrap: wrap;
-    }
-
-    .payment-btn {
-        min-width: calc(50% - 4px);
-    }
-}
-
-/* Table-responsive scrollbar & sticky header — see components.css */
-
-.table tbody tr:nth-child(even) {
-    background: rgba(148, 163, 184, 0.04);
-}
-
-.empty-state-icon {
-    display: inline-block;
-    font-size: 4rem;
-    animation: floatUpDown 3s ease-in-out infinite;
-    margin-bottom: 1.5rem;
-    background: linear-gradient(135deg, rgba(0, 0, 0, 0.05) 0%, rgba(0, 0, 0, 0) 100%);
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    line-height: 120px;
-}
-
-.search-inline-max {
-    max-width: 500px;
-}
-
-@keyframes floatUpDown {
-    0% {
-        transform: translateY(0);
-    }
-
-    50% {
-        transform: translateY(-10px);
-    }
-
-    100% {
-        transform: translateY(0);
-    }
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   ENTERPRISE COMPONENT RESPONSIVE RULES
-═══════════════════════════════════════════════════════════════ */
-
-/* Tablet & below – stack action row */
-@media (max-width: 768px) {
-    .ent-action-row {
-        flex-direction: column;
-        align-items: stretch;
-        padding: var(--space-4);
-    }
-    .ent-action-row__left  { width: 100%; }
-    .ent-action-row__right { justify-content: flex-end; margin-top: var(--space-2); }
-    .ent-search { max-width: 100%; }
-
-    .ent-table-toolbar {
-        flex-direction: column;
-        align-items: flex-start;
-        padding: var(--space-3);
-    }
-    .ent-table-toolbar__actions { width: 100%; justify-content: flex-start; margin-top: var(--space-2); }
-
-    .ent-pagination {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: var(--space-2);
-    }
-
-    /* KPI grid: 2 cols on tablet */
-    .ent-kpi-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    /* Row hover actions visible on mobile (no hover) */
-    .ent-row-actions { opacity: 1; }
-}
-
-/* Mobile – single column KPI, full-width shortcuts dialog */
-@media (max-width: 480px) {
-    .ent-kpi-grid {
+    /* KPI grid single column */
+    .kpi-grid {
         grid-template-columns: 1fr;
     }
-    .ent-kpi__value { font-size: 1.5rem; }
-    .ent-bulk-bar { flex-wrap: wrap; }
-    .ent-shortcuts-dialog__box { padding: 20px 16px; }
-    .ent-filter-bar { padding: 8px 12px; }
-    .ent-action-row { padding: 12px; }
 }
 
-/* KPI grid base (desktop: auto-fill, minimum 200px) */
-.ent-kpi-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 16px;
-}
-
-/* Print – strip UI chrome, show content only */
+/* ─────────────────────────────────────────────────
+   PRINT  (hide chrome)
+───────────────────────────────────────────────── */
 @media print {
-    .ent-action-row,
-    .ent-table-toolbar,
-    .ent-bulk-bar,
-    .ent-filter-bar,
-    .ent-pagination,
-    .ent-export-btn,
-    .ent-row-actions,
-    .ent-shortcuts-dialog { display: none !important; }
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   ADDITIONAL MOBILE IMPROVEMENTS
-═══════════════════════════════════════════════════════════════ */
-
-/* Ensure card-header action rows wrap on small screens */
-@media (max-width: 768px) {
-    .card-header.d-flex {
-        flex-wrap: wrap;
-        gap: var(--space-2);
+    .sidebar,
+    .mobile-toggle,
+    .sidebar-overlay,
+    .main-header,
+    .scroll-to-top,
+    #nprogress {
+        display: none !important;
     }
 
-    /* Form filter rows wrap on mobile */
-    .row.g-3 .col-md-2,
-    .row.g-3 .col-md-3,
-    .row.g-3 .col-md-4 {
-        margin-bottom: 0;
+    .main-content {
+        height: auto;
+        overflow: visible;
     }
 
-    /* Ensure btn-group doesn't overflow on small screens */
-    .btn-group.btn-group-sm {
-        flex-wrap: nowrap;
-    }
-
-    /* Table cells: reduce padding on mobile for more usable space */
-    .table > tbody > tr > td,
-    .table > thead > tr > th {
-        padding: 10px 12px;
-    }
-}
-
-@media (max-width: 576px) {
-    /* Table cells: further reduce padding on very small screens */
-    .table > tbody > tr > td,
-    .table > thead > tr > th {
-        padding: 8px 10px;
-        font-size: 13px;
-    }
-
-    /* Stack card header on very small screens */
-    .card-header.d-flex.justify-content-between {
-        flex-direction: column;
-        align-items: flex-start !important;
-    }
-
-    /* Ensure pagination wraps nicely on mobile */
-    .pagination {
-        flex-wrap: wrap;
-        gap: 2px;
-    }
-
-    /* Make form selects full-width in filter rows on mobile */
-    .card-header .form-select {
-        width: 100% !important;
-        min-width: unset;
-    }
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   CHART RESPONSIVE IMPROVEMENTS
-═══════════════════════════════════════════════════════════════ */
-
-/* Ensure Chart.js canvas containers are position:relative for responsive resize.
-   Targets both .chart-body (dashboard) and any .card-body containing a canvas. */
-.chart-body,
-.card-body:has(canvas) {
-    position: relative;
-}
-
-@media (max-width: 576px) {
-    /* Reduce chart height on very small screens to save vertical space */
-    .chart-body canvas {
-        max-height: 220px;
-    }
-
-    /* Payment buttons: 2 per row on very small screens */
-    .payment-btn {
-        min-width: calc(50% - 4px);
-    }
-
-    /* Shortcuts bar: wrap keyboard shortcuts on mobile */
-    .shortcuts-bar {
-        font-size: 12px;
-        padding: 8px 12px;
-    }
-
-    /* Bill card adjustments */
-    .bill-total {
-        font-size: 1.5rem !important;
-    }
-
-    /* Analytics/report page header action buttons: full-width stacking */
-    .page-header .d-flex.gap-2 {
-        flex-wrap: wrap;
-    }
-
-    /* Quick actions: stack title and buttons cleanly */
-    .dashboard-quick-actions .d-flex.gap-2.flex-wrap .btn {
-        flex: 1 1 calc(50% - 4px);
-        text-align: center;
-    }
-}
-
-@media (max-width: 768px) {
-    /* Report header buttons: left-align on mobile */
-    .report-header .col-md-4.text-end {
-        text-align: left !important;
-        margin-top: 12px;
-    }
-
-    /* Report header btn-group: wrap buttons */
-    .report-header .btn-group {
-        flex-wrap: wrap;
-        gap: 6px;
-    }
-
-    .report-header .btn-group .btn {
-        flex: 1 1 auto;
-    }
-
-    /* Subscription banner: smaller text on mobile */
-    .subscription-banner {
-        font-size: 12px;
-        padding: 6px 12px;
-    }
-
-    /* inv-table-card header: wrap on tablet */
-    .inv-table-header {
-        gap: var(--space-2);
-    }
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   MOBILE POLISH — additional improvements for small screens
-═══════════════════════════════════════════════════════════════ */
-
-/* ── Notification dropdown: full-width on small screens ──────── */
-@media (max-width: 576px) {
-    .notif-dropdown {
-        position: fixed;
-        top: 68px;
-        left: 8px;
-        right: 8px;
-        width: auto;
-        min-width: unset;
-        border-radius: 12px;
-        z-index: var(--z-dropdown);
-    }
-}
-
-/* ── Scroll-to-top: respect iOS safe-area at bottom ─────────── */
-@media (max-width: 992px) {
-    .scroll-to-top {
-        bottom: calc(env(safe-area-inset-bottom, 0px) + 20px);
-        right: 16px;
-        width: 38px;
-        height: 38px;
-        font-size: 16px;
-    }
-}
-
-/* ── KPI cards: reduce value font-size at 576px ─────────────── */
-@media (max-width: 576px) {
-    .kpi-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
-    }
-
-    .kpi-card .kpi-value {
-        font-size: 1.65rem;
-        letter-spacing: -0.5px;
-    }
-
-    .kpi-card .kpi-label {
-        font-size: 0.68rem;
-    }
-}
-
-@media (max-width: 380px) {
-    .kpi-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-/* ── Page title: prevent overflow on narrow headers ─────────── */
-@media (max-width: 576px) {
-    .page-title {
-        font-size: 14px;
-        max-width: 140px;
-    }
-
-    .bc-current {
-        font-size: 13px;
-        max-width: 120px; /* limit but keep readable on narrow headers */
-    }
-}
-
-/* ── Form action row: stack on very small screens ────────────── */
-@media (max-width: 480px) {
-    .form-actions-bottom {
-        flex-direction: column !important;
-        align-items: stretch !important;
-        gap: var(--space-3) !important;
-    }
-
-    .form-actions-bottom .btn {
-        width: 100%;
-        justify-content: center;
-    }
-
-    .form-actions-bottom small.text-muted {
-        text-align: center;
-    }
-}
-
-/* ── Purchase form: improve line-items table on mobile ────────── */
-@media (max-width: 576px) {
-    /* Make medicine-select full width inside table cell */
-    .medicine-select {
-        min-width: 120px;
-    }
-
-    /* Shrink item-qty and item-price inputs on very small screens */
-    .item-qty,
-    .item-price {
-        min-width: 50px;
-    }
-}
-
-/* ── Inv filter-bar: single-column on small screens ──────────── */
-@media (max-width: 480px) {
-    .inv-filter-bar {
-        padding: 14px 16px;
-    }
-
-    .inv-filter-bar .filter-group {
-        min-width: 100%;
-    }
-}
-
-/* ── Card hover: disable lift on touch devices ───────────────── */
-@media (hover: none) {
-    .card:hover {
-        box-shadow: var(--shadow-sm);
-    }
-
-    .btn:hover:not(:disabled) {
-        transform: none;
-        box-shadow: none;
-    }
-
-    .kpi-card:hover {
-        transform: none;
-    }
-
-    .nav-link:hover {
-        transform: none;
-    }
-}
-
-/* ── Touch target sizing: buttons at minimum 44×44px ─────────── */
-@media (max-width: 992px) {
-    .btn-group-sm > .btn,
-    .btn-sm {
-        min-height: 40px;
-        min-width: 40px;
-    }
-
-    /* Header icon buttons: ensure 44×44 tap target */
-    .header-notif-btn,
-    .header-back-btn,
-    .nav-profile-btn {
-        min-width: 44px;
-        min-height: 44px;
-    }
-}
-
-/* ── Sidebar nav links: larger tap targets on touch ─────────── */
-@media (max-width: 992px) {
-    .sidebar .nav-link {
-        padding: 13px 16px;
-        min-height: 48px;
-    }
-}
-
-/* ── Subscription expired alert: prevent icon+text from squishing ─ */
-@media (max-width: 576px) {
-    .subscription-expired-banner {
-        flex-wrap: wrap;
-        font-size: 0.8rem;
-    }
-
-    .subscription-expired-banner .btn-close {
-        margin-top: 4px;
-    }
-}
-
-/* ── Dashboard quick actions: full-width buttons on 360px ─────── */
-@media (max-width: 400px) {
-    .dashboard-quick-actions .d-flex.gap-2.flex-wrap .btn {
-        flex: 1 1 100%;
-    }
-}
-
-/* ── Empty state icon: smaller on mobile ────────────────────── */
-@media (max-width: 576px) {
-    .empty-state-icon {
-        font-size: 3rem;
-        width: 90px;
-        height: 90px;
-        line-height: 90px;
-    }
-
-    .empty-state {
-        padding: var(--space-8) var(--space-4);
+    .main-body {
+        overflow: visible;
+        padding: 0;
     }
 }

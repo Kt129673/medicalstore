@@ -42,6 +42,7 @@
     --sidebar-active-bg:   rgba(37, 99, 235, 0.18);
     --sidebar-hover-bg:    rgba(255,255,255,0.06);
     --sidebar-group-indent: 10px;
+    --sidebar-close-btn-size: 32px;
     --nav-badge-bg:   #DC2626;
     --nav-badge-text: #fff;
     --breadcrumb-sep: #9ca3af;
