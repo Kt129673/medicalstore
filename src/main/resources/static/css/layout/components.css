@@ -25,11 +25,33 @@
     flex-direction: column;
     justify-content: space-between;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    cursor: pointer;
+}
+
+.kpi-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity var(--transition-base);
+    pointer-events: none;
 }
 
 .kpi-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.16);
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.18);
+}
+
+.kpi-card:hover::before {
+    opacity: 1;
+}
+
+.kpi-card:active {
+    transform: translateY(-2px) scale(1.01);
 }
 
 .kpi-card .kpi-icon {
@@ -37,8 +59,14 @@
     top: 18px;
     right: 20px;
     font-size: 2.4rem;
-    opacity: 0.32;
+    opacity: 0.28;
     line-height: 1;
+    transition: transform var(--transition-base), opacity var(--transition-base);
+}
+
+.kpi-card:hover .kpi-icon {
+    transform: scale(1.1) rotate(5deg);
+    opacity: 0.35;
 }
 
 .kpi-card .kpi-label {
@@ -58,6 +86,7 @@
     margin-bottom: 4px;
     font-variant-numeric: tabular-nums;
     letter-spacing: -0.8px;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
 
 .kpi-card .kpi-sub {
@@ -240,10 +269,11 @@
     border-bottom: 1px solid var(--border-color);
     color: var(--text-primary);
     line-height: 1.5;
+    transition: background var(--transition-fast);
 }
 
 .table > tbody > tr:hover > td {
-    background: var(--bg-tertiary);
+    background: linear-gradient(90deg, var(--bg-tertiary) 0%, var(--bg-secondary) 100%);
 }
 
 /* ─────────────────────────────────────────────────
@@ -419,8 +449,8 @@
 
 .scroll-to-top:hover {
     background: var(--primary-dark);
-    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.45);
-    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.50);
+    transform: translateY(-3px) scale(1.05);
 }
 
 /* ─────────────────────────────────────────────────
@@ -630,8 +660,8 @@
     background: var(--primary-color, #2563eb);
     border-color: var(--primary-color, #2563eb);
     color: #fff;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 4px 8px rgba(37, 99, 235, 0.35);
 }
 
 /* ─────────────────────────────────────────────────

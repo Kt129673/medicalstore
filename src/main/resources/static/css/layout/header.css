@@ -69,6 +69,7 @@
 .header-back-btn:hover {
     color: var(--text-primary);
     background: var(--bg-tertiary);
+    transform: translateX(-2px);
 }
 
 /* ── Breadcrumb ── */
@@ -211,6 +212,7 @@
 .header-notif-btn:hover {
     color: var(--text-primary);
     background: var(--bg-tertiary);
+    transform: scale(1.05);
 }
 
 .header-notif-btn .notif-dot {
@@ -310,6 +312,8 @@
     border-color: var(--primary-color);
     color: var(--primary-color);
     background: var(--primary-subtle);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.15);
 }
 
 .plan-pill i {
@@ -515,7 +519,11 @@
     transition: color var(--transition-fast);
 }
 
-.npd-item:hover { background: var(--bg-secondary); color: #111827; }
+.npd-item:hover { 
+    background: var(--bg-secondary); 
+    color: #111827;
+    transform: translateX(2px);
+}
 .npd-item:hover i { color: var(--primary-color); }
 
 .npd-item--logout {
