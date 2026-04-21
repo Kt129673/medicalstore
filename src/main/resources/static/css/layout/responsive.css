@@ -55,77 +55,6 @@
         display: none !important;
     }
 
-    /* Mini / collapsed sidebar */
-    .sidebar.mini {
-        width: var(--sidebar-collapsed-width);
-    }
-
-    .sidebar.mini .sidebar-brand h4 span,
-    .sidebar.mini .sidebar-nav .nav-link span,
-    .sidebar.mini .nav-group summary,
-    .sidebar.mini .nav-badge,
-    .sidebar.mini .nav-link.top-level span {
-        display: none;
-    }
-
-    .sidebar.mini .nav-group {
-        border-bottom: none;
-        padding-bottom: 0;
-        margin-bottom: 0;
-    }
-
-    /* Force all groups open in mini mode so icons stay visible */
-    .sidebar.mini .nav-group .nav-link {
-        display: flex;
-    }
-
-    .sidebar.mini .sidebar-brand h4 {
-        justify-content: center;
-        font-size: 22px;
-    }
-
-    .sidebar.mini .nav-link,
-    .sidebar.mini .nav-group .nav-link {
-        justify-content: center;
-        padding: 12px 0;
-        border-left-width: 0;
-    }
-
-    .sidebar.mini .nav-link i.nav-icon {
-        margin-right: 0;
-        font-size: 20px;
-    }
-
-    /* CSS Tooltip on hover (mini mode) */
-    .sidebar.mini .nav-link {
-        position: relative;
-    }
-
-    .sidebar.mini .nav-link::after {
-        content: attr(data-label);
-        position: absolute;
-        left: calc(var(--sidebar-collapsed-width) + 6px);
-        top: 50%;
-        transform: translateY(-50%);
-        background: #1e293b;
-        color: #e2e8f0;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        padding: 5px 12px;
-        border-radius: 8px;
-        font-size: 12px;
-        font-weight: 600;
-        white-space: nowrap;
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 0.15s;
-        z-index: 100;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-    }
-
-    .sidebar.mini .nav-link:hover::after {
-        opacity: 1;
-    }
-
     .app-container {
         transition: padding-left 0.3s ease;
     }
@@ -225,14 +154,6 @@
     }
 
     .main-header .plan-pill {
-        display: none;
-    }
-
-    .header-clock .clock-time {
-        font-size: 13px;
-    }
-
-    .header-clock .clock-date {
         display: none;
     }
 
@@ -337,11 +258,6 @@
 
     .d-flex.gap-2.justify-content-between .d-flex.gap-2 .btn {
         flex: 1;
-    }
-
-    /* Hide clock on very small screens to give breadcrumb/search more room */
-    .header-clock {
-        display: none;
     }
 
     .header-search {
