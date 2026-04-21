@@ -107,6 +107,7 @@ public class UserManagementService {
 
         User user = new User();
         user.setUsername(username);
+        validatePasswordStrength(password);
         user.setPassword(passwordEncoder.encode(password));
         user.setFullName(fullName);
         user.setEmail(email);
@@ -158,17 +159,44 @@ public class UserManagementService {
     }
 
     /**
-     * Encodes and sets a new password. Requires minimum 6 characters.
+     * Encodes and sets a new password. 
+     * Requires minimum 8 characters with at least one uppercase, one lowercase, one digit, and one special character.
      */
     @Transactional
     public void resetPassword(Long id, String newPassword) {
-        if (newPassword == null || newPassword.length() < 6) {
-            throw new BusinessException("WEAK_PASSWORD", "Password must be at least 6 characters.");
-        }
+        validatePasswordStrength(newPassword);
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User", id));
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
+    }
+    
+    /**
+     * Validates password strength according to security policy.
+     * @throws BusinessException if password doesn't meet requirements
+     */
+    private void validatePasswordStrength(String password) {
+        if (password == null || password.length() < 8) {
+            throw new BusinessException("WEAK_PASSWORD", "Password must be at least 8 characters long.");
+        }
+        
+        boolean hasUppercase = password.chars().anyMatch(Character::isUpperCase);
+        boolean hasLowercase = password.chars().anyMatch(Character::isLowerCase);
+        boolean hasDigit = password.chars().anyMatch(Character::isDigit);
+        boolean hasSpecial = password.chars().anyMatch(ch -> "!@#$%^&*()_+-=[]{}|;:,.<>?".indexOf(ch) >= 0);
+        
+        if (!hasUppercase) {
+            throw new BusinessException("WEAK_PASSWORD", "Password must contain at least one uppercase letter.");
+        }
+        if (!hasLowercase) {
+            throw new BusinessException("WEAK_PASSWORD", "Password must contain at least one lowercase letter.");
+        }
+        if (!hasDigit) {
+            throw new BusinessException("WEAK_PASSWORD", "Password must contain at least one digit.");
+        }
+        if (!hasSpecial) {
+            throw new BusinessException("WEAK_PASSWORD", "Password must contain at least one special character (!@#$%^&*()_+-=[]{}|;:,.<>?).");
+        }
     }
 
     /**

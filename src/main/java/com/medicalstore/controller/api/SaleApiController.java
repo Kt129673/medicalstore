@@ -1,10 +1,15 @@
 package com.medicalstore.controller.api;
 
+import com.medicalstore.dto.SaleRequestDTO;
 import com.medicalstore.model.Sale;
+import com.medicalstore.model.SaleItem;
+import com.medicalstore.model.Medicine;
+import com.medicalstore.model.Customer;
 import com.medicalstore.service.SaleService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -12,9 +17,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * REST API for sales data — list, detail, recent, and today's sales.
@@ -67,5 +74,39 @@ public class SaleApiController {
     public ResponseEntity<List<Sale>> salesByCustomer(
             @Parameter(description = "Customer ID") @PathVariable Long customerId) {
         return ResponseEntity.ok(saleService.getSalesByCustomer(customerId));
+    }
+
+    @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'SHOPKEEPER')")
+    @Operation(summary = "Create a new sale", description = "Creates a sale, deducts stock, and awards loyalty points")
+    public ResponseEntity<Sale> createSale(@Valid @RequestBody SaleRequestDTO dto) {
+        Sale sale = new Sale();
+
+        if (dto.getCustomerId() != null) {
+            Customer customer = new Customer();
+            customer.setId(dto.getCustomerId());
+            sale.setCustomer(customer);
+        }
+
+        sale.setPaymentMethod(dto.getPaymentMethod());
+        sale.setDiscountPercentage(dto.getDiscountPercentage() != null ? dto.getDiscountPercentage() : 0.0);
+        sale.setGstPercentage(dto.getGstPercentage() != null ? dto.getGstPercentage() : 0.0);
+
+        List<SaleItem> items = dto.getItems().stream().map(itemDto -> {
+            SaleItem item = new SaleItem();
+            Medicine medicine = new Medicine();
+            medicine.setId(itemDto.getMedicineId());
+            item.setMedicine(medicine);
+            item.setQuantity(itemDto.getQuantity());
+            item.setUnitPrice(itemDto.getUnitPrice());
+            return item;
+        }).collect(Collectors.toList());
+
+        sale.setItems(items);
+
+        Sale saved = saleService.createSale(sale);
+        var location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}").buildAndExpand(saved.getId()).toUri();
+        return ResponseEntity.created(location).body(saved);
     }
 }

@@ -5,10 +5,12 @@ import com.medicalstore.service.MedicineService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.List;
 import java.util.Map;
@@ -99,5 +101,41 @@ public class MedicineApiController {
 
         List<com.medicalstore.dto.MedicineDTO> results = medicineService.searchMedicinesForPos(query);
         return ResponseEntity.ok(results);
+    }
+
+    @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'SHOPKEEPER')")
+    @Operation(summary = "Create a new medicine")
+    public ResponseEntity<Medicine> createMedicine(@Valid @RequestBody Medicine medicine) {
+        Medicine saved = medicineService.saveMedicine(medicine);
+        var location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}").buildAndExpand(saved.getId()).toUri();
+        return ResponseEntity.created(location).body(saved);
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SHOPKEEPER')")
+    @Operation(summary = "Update an existing medicine")
+    public ResponseEntity<Medicine> updateMedicine(
+            @Parameter(description = "Medicine ID") @PathVariable Long id,
+            @Valid @RequestBody Medicine medicine) {
+        return medicineService.getMedicineById(id)
+                .map(existing -> {
+                    medicine.setId(id);
+                    return ResponseEntity.ok(medicineService.saveMedicine(medicine));
+                })
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Delete a medicine")
+    public ResponseEntity<Void> deleteMedicine(
+            @Parameter(description = "Medicine ID") @PathVariable Long id) {
+        if (medicineService.getMedicineById(id).isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        medicineService.deleteMedicine(id);
+        return ResponseEntity.noContent().build();
     }
 }

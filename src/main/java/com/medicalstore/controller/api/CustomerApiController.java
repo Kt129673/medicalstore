@@ -5,10 +5,12 @@ import com.medicalstore.service.CustomerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.List;
 import java.util.Map;
@@ -64,5 +66,41 @@ public class CustomerApiController {
         return customerService.getCustomerByPhone(phone)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'SHOPKEEPER')")
+    @Operation(summary = "Create a new customer")
+    public ResponseEntity<Customer> createCustomer(@Valid @RequestBody Customer customer) {
+        Customer saved = customerService.saveCustomer(customer);
+        var location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}").buildAndExpand(saved.getId()).toUri();
+        return ResponseEntity.created(location).body(saved);
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SHOPKEEPER')")
+    @Operation(summary = "Update an existing customer")
+    public ResponseEntity<Customer> updateCustomer(
+            @Parameter(description = "Customer ID") @PathVariable Long id,
+            @Valid @RequestBody Customer customer) {
+        return customerService.getCustomerById(id)
+                .map(existing -> {
+                    customer.setId(id);
+                    return ResponseEntity.ok(customerService.saveCustomer(customer));
+                })
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Delete a customer")
+    public ResponseEntity<Void> deleteCustomer(
+            @Parameter(description = "Customer ID") @PathVariable Long id) {
+        if (customerService.getCustomerById(id).isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        customerService.deleteCustomer(id);
+        return ResponseEntity.noContent().build();
     }
 }
