@@ -105,7 +105,7 @@ function syncSidebarActiveState() {
 /* ---- Check Flash Messages ---- */
 onDomReady(() => {
     const successAlert = document.querySelector('.alert-success');
-    const errorAlert = document.querySelector('.alert-danger');
+    const errorAlert = document.querySelector('.alert-danger:not(.subscription-expired-banner)');
     const activeNavLink = syncSidebarActiveState() || document.querySelector('.sidebar .nav-link.active');
 
     if (successAlert) {

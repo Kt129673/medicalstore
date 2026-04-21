@@ -112,12 +112,15 @@
     overflow: hidden;
     text-overflow: ellipsis;
     font-size: 13.5px;
+    max-width: 200px;
 }
 
 /* ── Global Search ── */
 .header-search {
     position: relative;
     flex: 0 1 auto;
+    display: flex;
+    align-items: center;
 }
 
 .header-search input {
@@ -145,6 +148,8 @@
     border-color: var(--primary-color);
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
 }
+
+/* Icon is placed BEFORE the input in DOM — use absolute positioning anchored to container */
 .header-search .search-icon {
     position: absolute;
     left: 11px;
@@ -154,10 +159,11 @@
     font-size: 13px;
     pointer-events: none;
     opacity: 0.6;
+    z-index: 1;
 }
 
-.header-search input:focus + .search-icon,
-.header-search input:focus ~ .search-icon {
+/* Focus state: highlight icon when input is focused — use :focus-within on container */
+.header-search:focus-within .search-icon {
     color: var(--primary-color);
     opacity: 1;
 }
