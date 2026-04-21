@@ -506,3 +506,153 @@
         padding: 16px 20px;
     }
 }
+
+/* ─────────────────────────────────────────────────
+   ENT-KPI CARD VARIANTS - Admin / Enterprise colors
+───────────────────────────────────────────────── */
+.ent-kpi--blue {
+    background: linear-gradient(135deg, #1e3a8a, #2563eb 60%, #3b82f6);
+}
+
+.ent-kpi--rose {
+    background: linear-gradient(135deg, #9f1239, #e11d48 60%, #fb7185);
+}
+
+.ent-kpi--cyan {
+    background: linear-gradient(135deg, #0e7490, #0891b2 60%, #22d3ee);
+}
+
+.ent-kpi--green {
+    background: linear-gradient(135deg, #166534, #16a34a 60%, #22c55e);
+}
+
+.ent-kpi--amber {
+    background: linear-gradient(135deg, #b45309, #d97706 60%, #fbbf24);
+}
+
+.ent-kpi--purple {
+    background: linear-gradient(135deg, #6d28d9, #7c3aed 60%, #a78bfa);
+}
+
+.ent-kpi--red {
+    background: linear-gradient(135deg, #991b1b, #dc2626 60%, #f87171);
+}
+
+.ent-kpi--teal {
+    background: linear-gradient(135deg, #0d9488, #14b8a6 60%, #2dd4bf);
+}
+
+.ent-kpi--indigo {
+    background: linear-gradient(135deg, #3730a3, #4f46e5 60%, #818cf8);
+}
+
+/* ─────────────────────────────────────────────────
+   ENT-BADGE - Status indicator badges
+───────────────────────────────────────────────── */
+.ent-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 9px;
+    border-radius: var(--radius-full, 9999px);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+}
+
+.ent-badge i {
+    font-size: 7px;
+}
+
+.ent-badge--active {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+.ent-badge--inactive {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.ent-badge--pending {
+    background: #fef9c3;
+    color: #a16207;
+}
+
+.ent-badge--expired {
+    background: #f3f4f6;
+    color: #6b7280;
+}
+
+/* ─────────────────────────────────────────────────
+   QUICK LINK CARDS - Admin dashboard shortcuts
+───────────────────────────────────────────────── */
+.quick-link-card {
+    transition: transform var(--transition-base, 0.2s), box-shadow var(--transition-base, 0.2s);
+    cursor: pointer;
+}
+
+.quick-link-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+.quick-link-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-md, 8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+/* ─────────────────────────────────────────────────
+   ACTION BUTTONS - Inline table action buttons
+───────────────────────────────────────────────── */
+.action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: var(--radius-sm, 6px);
+    border: 1px solid var(--border-color, #e2e8f0);
+    background: var(--bg-primary, #fff);
+    color: var(--text-secondary, #64748b);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-decoration: none;
+}
+
+.action-btn:hover {
+    background: var(--primary-color, #2563eb);
+    border-color: var(--primary-color, #2563eb);
+    color: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
+}
+
+/* ─────────────────────────────────────────────────
+   MODERN TABLE - Enhanced table rows
+───────────────────────────────────────────────── */
+.modern-table .col-actions {
+    width: 100px;
+    text-align: right;
+}
+
+.modern-table .tr-empty td {
+    text-align: center;
+    padding: 32px 16px;
+    color: var(--text-secondary, #94a3b8);
+    font-size: 13px;
+}
+
+.modern-table .tr-empty i {
+    font-size: 24px;
+    display: block;
+    margin-bottom: 8px;
+    opacity: 0.4;
+}
