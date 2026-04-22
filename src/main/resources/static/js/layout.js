@@ -121,10 +121,13 @@ onDomReady(() => {
         activeNavLink.scrollIntoView({ block: 'nearest' });
     }
 
-    const savedQuery = localStorage.getItem('globalSearchQuery');
+    const urlParams = new URLSearchParams(window.location.search);
+    const searchQuery = urlParams.get('search');
     const globalSearchInput = document.getElementById('globalSearch');
-    if (globalSearchInput && savedQuery) {
-        globalSearchInput.value = savedQuery;
+    if (globalSearchInput && searchQuery) {
+        globalSearchInput.value = searchQuery;
+    } else if (globalSearchInput) {
+        globalSearchInput.value = '';
     }
 
     /* ---- Back button: navigate within app or fall back to home ---- */
@@ -325,23 +328,17 @@ if (globalSearchInput) {
         }
     });
     globalSearchInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' && globalSearchInput.value.trim()) {
+        if (e.key === 'Enter') {
             const query = globalSearchInput.value.trim();
-            localStorage.setItem('globalSearchQuery', query);
-            window.location.href = '/medicines?search=' + encodeURIComponent(query);
+            if (query) {
+                window.location.href = '/medicines?search=' + encodeURIComponent(query);
+            } else {
+                window.location.href = '/medicines';
+            }
         }
         if (e.key === 'Escape') {
             globalSearchInput.blur();
         }
-    });
-
-    /* Debounce localStorage writes — no need to persist on every keystroke */
-    let _searchSaveTimer = null;
-    globalSearchInput.addEventListener('input', () => {
-        clearTimeout(_searchSaveTimer);
-        _searchSaveTimer = setTimeout(() => {
-            localStorage.setItem('globalSearchQuery', globalSearchInput.value);
-        }, 300);
     });
 }
 
