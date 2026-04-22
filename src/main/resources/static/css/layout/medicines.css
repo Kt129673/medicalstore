@@ -1,0 +1,472 @@
+/* ═══════════════════════════════════════════════════════════════
+   MEDICINES INVENTORY  –  medicines.css
+   Styles for the /medicines inventory table, filters, and badges.
+   All classes here are used exclusively by medicines/list.html.
+═══════════════════════════════════════════════════════════════ */
+
+/* ─────────────────────────────────────────────────
+   FILTER BAR
+───────────────────────────────────────────────── */
+.inv-filter-bar {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 16px 20px;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow-xs);
+}
+
+.inv-filter-bar .filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: flex-end;
+}
+
+.inv-filter-bar .filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+    min-width: 140px;
+}
+
+.inv-filter-bar .filter-group label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.inv-filter-bar .filter-actions {
+    display: flex;
+    gap: 8px;
+    align-items: flex-end;
+    flex-shrink: 0;
+}
+
+/* ─────────────────────────────────────────────────
+   TABLE CARD WRAPPER
+───────────────────────────────────────────────── */
+.inv-table-card {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+}
+
+/* ─────────────────────────────────────────────────
+   TABLE HEADER (title + toolbar row)
+───────────────────────────────────────────────── */
+.inv-table-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border-color);
+    background: var(--bg-secondary);
+}
+
+.inv-table-header h6 {
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--text-primary);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* ─────────────────────────────────────────────────
+   ITEM COUNT BADGE
+───────────────────────────────────────────────── */
+.inv-count-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 9px;
+    border-radius: var(--radius-full);
+    font-size: 11px;
+    font-weight: 700;
+    background: var(--bg-tertiary);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+}
+
+/* ─────────────────────────────────────────────────
+   TOOLBAR (right side of table header)
+───────────────────────────────────────────────── */
+.inv-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* ─────────────────────────────────────────────────
+   TABLE WRAPPER (horizontal scroll)
+───────────────────────────────────────────────── */
+.inv-table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* ─────────────────────────────────────────────────
+   INVENTORY TABLE
+───────────────────────────────────────────────── */
+.inv-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+}
+
+.inv-table thead tr {
+    background: var(--bg-tertiary);
+    border-bottom: 2px solid var(--border-color);
+}
+
+.inv-table thead th {
+    padding: 10px 14px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-secondary);
+    white-space: nowrap;
+}
+
+.inv-table tbody td {
+    padding: 11px 14px;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-primary);
+    vertical-align: middle;
+}
+
+.inv-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* ─────────────────────────────────────────────────
+   TABLE ROW HOVER
+───────────────────────────────────────────────── */
+.inv-row {
+    transition: background var(--transition-fast);
+}
+
+.inv-row:hover {
+    background: var(--bg-secondary);
+}
+
+/* ─────────────────────────────────────────────────
+   MEDICINE ICON (circular avatar)
+───────────────────────────────────────────────── */
+.med-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--primary-subtle);
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+/* ─────────────────────────────────────────────────
+   CATEGORY TAG
+───────────────────────────────────────────────── */
+.cat-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 9px;
+    border-radius: var(--radius-full);
+    font-size: 11px;
+    font-weight: 700;
+    background: var(--primary-subtle);
+    color: var(--primary-color);
+    white-space: nowrap;
+}
+
+/* ─────────────────────────────────────────────────
+   STOCK PILL  (.critical / .low / .ok)
+───────────────────────────────────────────────── */
+.stock-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px;
+    border-radius: var(--radius-full);
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.stock-pill .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+/* Critical ≤ 5 */
+.stock-pill.critical {
+    background: var(--status-critical-bg);
+    color: var(--status-critical-text);
+}
+.stock-pill.critical .dot {
+    background: var(--danger-color);
+}
+
+/* Low ≤ 10 */
+.stock-pill.low {
+    background: var(--status-warning-bg);
+    color: var(--status-warning-text);
+}
+.stock-pill.low .dot {
+    background: var(--warning-color);
+}
+
+/* OK > 10 */
+.stock-pill.ok {
+    background: #D1FAE5;
+    color: #065F46;
+}
+.stock-pill.ok .dot {
+    background: var(--success-color);
+}
+
+/* ─────────────────────────────────────────────────
+   EXPIRY BADGE  (.expiry-expired / .expiry-soon / .expiry-normal)
+───────────────────────────────────────────────── */
+.expiry-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.expiry-badge.expiry-expired {
+    background: var(--status-expired-bg);
+    color: var(--status-expired-text);
+}
+
+.expiry-badge.expiry-soon {
+    background: var(--status-warning-bg);
+    color: var(--status-warning-text);
+}
+
+.expiry-badge.expiry-normal {
+    background: #D1FAE5;
+    color: #065F46;
+}
+
+/* ─────────────────────────────────────────────────
+   EMPTY STATE
+───────────────────────────────────────────────── */
+.inv-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 24px;
+    text-align: center;
+    color: var(--text-secondary);
+}
+
+.inv-empty i {
+    font-size: 56px;
+    opacity: 0.35;
+    margin-bottom: 16px;
+    color: var(--primary-color);
+}
+
+.inv-empty h5 {
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+
+.inv-empty p {
+    font-size: 13px;
+    max-width: 320px;
+}
+
+/* ─────────────────────────────────────────────────
+   PAGINATION BAR
+───────────────────────────────────────────────── */
+.inv-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 12px 20px;
+    border-top: 1px solid var(--border-color);
+    background: var(--bg-secondary);
+}
+
+.inv-pagination .page-info {
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.inv-pagination .page-btns {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+}
+
+.inv-pagination .page-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px;
+    height: 32px;
+    padding: 0 8px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    text-decoration: none;
+    transition: background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.inv-pagination .page-btn:hover {
+    background: var(--primary-subtle);
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.inv-pagination .page-btn.active {
+    background: var(--primary-color);
+    color: #fff;
+    border-color: var(--primary-color);
+}
+
+.inv-pagination .page-size-select {
+    width: auto;
+    min-width: 70px;
+    font-size: 12px;
+}
+
+/* ─────────────────────────────────────────────────
+   ACTION BUTTONS (eye / edit / delete in table)
+───────────────────────────────────────────────── */
+.action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-color);
+    background: var(--bg-primary);
+    color: var(--text-secondary);
+    font-size: 14px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
+    padding: 0;
+}
+
+.action-btn:hover {
+    background: var(--primary-subtle);
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.action-btn.danger:hover {
+    background: var(--status-expired-bg);
+    color: var(--danger-color);
+    border-color: var(--danger-color);
+}
+
+.action-btn.text-info {
+    color: var(--info-color);
+}
+
+/* ─────────────────────────────────────────────────
+   FORM INLINE BLOCK (delete form in table cell)
+───────────────────────────────────────────────── */
+.form-inline-block {
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+}
+
+/* ─────────────────────────────────────────────────
+   MODAL MEDICINE ICON
+───────────────────────────────────────────────── */
+.modal-med-icon {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+}
+
+/* ─────────────────────────────────────────────────
+   RESPONSIVE ADJUSTMENTS
+───────────────────────────────────────────────── */
+@media (max-width: 768px) {
+    .inv-filter-bar .filter-row {
+        flex-direction: column;
+    }
+
+    .inv-filter-bar .filter-group {
+        min-width: 100%;
+    }
+
+    .inv-filter-bar .filter-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+
+    .inv-table-header {
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 12px 16px;
+    }
+
+    .inv-pagination {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+}
+
+/* ─────────────────────────────────────────────────
+   SKELETON / REAL ROW TOGGLE
+   JS removes inv-rows-hidden to reveal real rows;
+   noscript fallback overrides this via <noscript> tag
+───────────────────────────────────────────────── */
+.inv-rows-hidden {
+    display: none;
+}
+
+/* ─────────────────────────────────────────────────
+   REQUIRED FIELD MARKER
+───────────────────────────────────────────────── */
+.ent-required::after {
+    content: ' *';
+    color: var(--danger-color, #dc2626);
+    font-weight: 700;
+}
+
+/* ─────────────────────────────────────────────────
+   EXPIRY BADGE - consistent icon alignment
+───────────────────────────────────────────────── */
+.expiry-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+}

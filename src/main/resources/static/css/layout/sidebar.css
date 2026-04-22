@@ -166,7 +166,7 @@
     cursor: pointer;
     user-select: none;
     list-style: none;
-    outline: none;
+    outline: none; /* replaced by :focus-visible rule below */
     transition: color var(--transition-fast);
 }
 
@@ -204,6 +204,14 @@
 .nav-link:focus-visible {
     outline: 2px solid rgba(59, 130, 246, 0.5);
     outline-offset: 1px;
+}
+
+/* Restore focus ring on collapsible group headers — outline:none removed keyboard visibility */
+.nav-group summary:focus-visible {
+    outline: 2px solid rgba(59, 130, 246, 0.5);
+    outline-offset: 1px;
+    border-radius: 4px;
+    color: rgba(148, 163, 184, 0.8);
 }
 
 /* ── Sidebar footer ── */

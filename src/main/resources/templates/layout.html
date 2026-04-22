@@ -121,7 +121,7 @@
                     <a class="nav-link top-level" data-label="Dashboard"
                         th:classappend="${page == 'home'} ? 'active' : ''" href="/dashboard"
                         th:attr="aria-current=${page == 'home'} ? 'page' : null">
-                        <i class="bi bi-house-door-fill nav-icon"></i><span>Dashboard</span>
+                        <i class="bi bi-house-door-fill nav-icon" aria-hidden="true"></i><span>Dashboard</span>
                     </a>
                 </div>
 
@@ -133,19 +133,19 @@
                         <a class="nav-link" data-label="Medicines"
                             th:classappend="${page == 'medicines'} ? 'active' : ''" href="/medicines"
                             th:attr="aria-current=${page == 'medicines'} ? 'page' : null">
-                            <i class="bi bi-capsule-pill nav-icon"></i><span>Medicines</span>
+                            <i class="bi bi-capsule-pill nav-icon" aria-hidden="true"></i><span>Medicines</span>
                             <span class="nav-badge" th:if="${lowStockCount > 0}" th:text="${lowStockCount}"
-                                title="Low stock items">0</span>
+                                th:attr="aria-label='Low stock: ' + ${lowStockCount} + ' items'">0</span>
                         </a>
                         <a class="nav-link" data-label="Purchases"
                             th:classappend="${page == 'purchases'} ? 'active' : ''" href="/purchases"
                             th:attr="aria-current=${page == 'purchases'} ? 'page' : null">
-                            <i class="bi bi-bag-check-fill nav-icon"></i><span>Purchases</span>
+                            <i class="bi bi-bag-check-fill nav-icon" aria-hidden="true"></i><span>Purchases</span>
                         </a>
                         <a class="nav-link" data-label="Suppliers"
                             th:classappend="${page == 'suppliers'} ? 'active' : ''" href="/suppliers"
                             th:attr="aria-current=${page == 'suppliers'} ? 'page' : null">
-                            <i class="bi bi-truck nav-icon"></i><span>Suppliers</span>
+                            <i class="bi bi-truck nav-icon" aria-hidden="true"></i><span>Suppliers</span>
                         </a>
                     </details>
                 </div>
@@ -156,22 +156,22 @@
                         th:attr="open=${#lists.contains({'sales','returns','customers'}, page)} ? 'open' : null">
                         <summary>Sales &amp; Billing</summary>
                         <a class="nav-link" data-label="New Sale" href="/sales/new">
-                            <i class="bi bi-plus-circle-fill nav-icon nav-icon--sale"></i><span
+                            <i class="bi bi-plus-circle-fill nav-icon nav-icon--sale" aria-hidden="true"></i><span
                                 class="nav-link-text--emphasis">New Sale</span>
                         </a>
                         <a class="nav-link" data-label="Sales History"
                             th:classappend="${page == 'sales'} ? 'active' : ''" href="/sales"
                             th:attr="aria-current=${page == 'sales'} ? 'page' : null">
-                            <i class="bi bi-receipt nav-icon"></i><span>Sales History</span>
+                            <i class="bi bi-receipt nav-icon" aria-hidden="true"></i><span>Sales History</span>
                         </a>
                         <a class="nav-link" data-label="Returns" th:classappend="${page == 'returns'} ? 'active' : ''"
                             href="/returns" th:attr="aria-current=${page == 'returns'} ? 'page' : null">
-                            <i class="bi bi-arrow-return-left nav-icon"></i><span>Returns</span>
+                            <i class="bi bi-arrow-return-left nav-icon" aria-hidden="true"></i><span>Returns</span>
                         </a>
                         <a class="nav-link" data-label="Customers"
                             th:classappend="${page == 'customers'} ? 'active' : ''" href="/customers"
                             th:attr="aria-current=${page == 'customers'} ? 'page' : null">
-                            <i class="bi bi-people-fill nav-icon"></i><span>Customers</span>
+                            <i class="bi bi-people-fill nav-icon" aria-hidden="true"></i><span>Customers</span>
                         </a>
                     </details>
                 </div>
@@ -184,17 +184,17 @@
                         <a class="nav-link" data-label="Standard Reports"
                             th:classappend="${page == 'reports'} ? 'active' : ''" href="/reports"
                             th:attr="aria-current=${page == 'reports'} ? 'page' : null">
-                            <i class="bi bi-graph-up-arrow nav-icon"></i><span>Standard Reports</span>
+                            <i class="bi bi-graph-up-arrow nav-icon" aria-hidden="true"></i><span>Standard Reports</span>
                         </a>
                         <!-- Advanced Analytics — all roles can view analytics (export restricted by permission) -->
                         <a class="nav-link" data-label="Advanced Analytics"
                             th:classappend="${page == 'analytics'} ? 'active' : ''" href="/analytics"
                             th:attr="aria-current=${page == 'analytics'} ? 'page' : null">
-                            <i class="bi bi-bar-chart-fill nav-icon"></i><span>Advanced Analytics</span>
+                            <i class="bi bi-bar-chart-fill nav-icon" aria-hidden="true"></i><span>Advanced Analytics</span>
                         </a>
                         <a class="nav-link" data-label="GST / Tax" th:classappend="${page == 'gst'} ? 'active' : ''"
                             href="/reports/gst" th:attr="aria-current=${page == 'gst'} ? 'page' : null">
-                            <i class="bi bi-file-earmark-ruled nav-icon"></i><span>GST / Tax</span>
+                            <i class="bi bi-file-earmark-ruled nav-icon" aria-hidden="true"></i><span>GST / Tax</span>
                         </a>
                     </details>
                 </div>
@@ -207,8 +207,9 @@
         <main class="main-content">
             <!-- Subscription Warning Banner -->
             <div th:if="${subscriptionWarning != null}" class="subscription-banner"
-                th:classappend="${#strings.contains(subscriptionWarning, 'expired')} ? 'expired' : ''">
-                <i class="bi bi-exclamation-circle-fill"></i>
+                th:classappend="${#strings.contains(subscriptionWarning, 'expired')} ? 'expired' : ''"
+                role="alert">
+                <i class="bi bi-exclamation-circle-fill" aria-hidden="true"></i>
                 <span th:text="${subscriptionWarning}"></span>
             </div>
 
@@ -216,7 +217,7 @@
             <div th:if="${subscriptionExpired}"
                 class="alert alert-danger alert-dismissible d-flex align-items-center gap-2 mb-0 rounded-0 border-0 subscription-expired-banner"
                 role="alert" style="border-radius:0!important;font-size:.9rem;">
-                <i class="bi bi-lock-fill fs-5"></i>
+                <i class="bi bi-lock-fill fs-5" aria-hidden="true"></i>
                 <div>
                     <strong>Read-only mode.</strong>
                     Your subscription has expired — you can view data but cannot make any changes.
@@ -227,50 +228,51 @@
 
             <header class="main-header">
                 <!-- Back button -->
-                <button class="header-back-btn" id="headerBackBtn" title="Go back"
-                    aria-label="Go back">
-                    <i class="bi bi-arrow-left"></i>
+                <button class="header-back-btn" id="headerBackBtn" aria-label="Go back">
+                    <i class="bi bi-arrow-left" aria-hidden="true"></i>
                 </button>
 
                 <!-- Breadcrumb home: OWNER → /owner, others → / -->
                 <nav class="header-breadcrumb" aria-label="Breadcrumb">
-                    <a href="/owner/dashboard" sec:authorize="hasRole('OWNER')"><i class="bi bi-house-door"></i></a>
-                    <a href="/admin/dashboard" sec:authorize="!hasRole('OWNER') and hasRole('ADMIN')"><i
-                            class="bi bi-house-door"></i></a>
+                    <a href="/owner/dashboard" sec:authorize="hasRole('OWNER')" aria-label="Home"><i class="bi bi-house-door" aria-hidden="true"></i></a>
+                    <a href="/admin/dashboard" sec:authorize="!hasRole('OWNER') and hasRole('ADMIN')" aria-label="Home"><i
+                            class="bi bi-house-door" aria-hidden="true"></i></a>
                     <a href="/dashboard"
-                        sec:authorize="!hasRole('OWNER') and !hasRole('ADMIN') and hasRole('SHOPKEEPER')"><i
-                            class="bi bi-house-door"></i></a>
-                    <i class="bi bi-chevron-right bc-sep"></i>
+                        sec:authorize="!hasRole('OWNER') and !hasRole('ADMIN') and hasRole('SHOPKEEPER')" aria-label="Home"><i
+                            class="bi bi-house-door" aria-hidden="true"></i></a>
+                    <i class="bi bi-chevron-right bc-sep" aria-hidden="true"></i>
                     <span class="bc-current" th:text="${title}">Page</span>
                 </nav>
 
                 <!-- Center: Global Search -->
                 <div class="header-search">
-                    <i class="bi bi-search search-icon"></i>
+                    <i class="bi bi-search search-icon" aria-hidden="true"></i>
                     <input type="text" id="globalSearch" placeholder="Search medicines, pages..." autocomplete="off"
                         aria-label="Global search" />
-                    <kbd>Ctrl K</kbd>
+                    <kbd aria-hidden="true">Ctrl K</kbd>
                 </div>
 
                 <!-- Right: controls -->
                 <div class="header-right">
                     <!-- Notification Bell -->
                     <div class="header-notif" id="notifContainer" sec:authorize="hasRole('SHOPKEEPER')">
-                        <button class="header-notif-btn" id="notifBtn" title="Notifications" aria-label="Notifications"
-                            aria-expanded="false">
-                            <i class="bi bi-bell"></i>
+                        <button class="header-notif-btn" id="notifBtn" aria-label="Notifications"
+                            aria-expanded="false" aria-haspopup="true">
+                            <i class="bi bi-bell" aria-hidden="true"></i>
                             <span class="notif-dot"
-                                th:if="${(lowStockCount != null and lowStockCount > 0) or (expiringCount != null and expiringCount > 0)}"></span>
+                                th:if="${(lowStockCount != null and lowStockCount > 0) or (expiringCount != null and expiringCount > 0)}"
+                                role="status"
+                                th:attr="aria-label='Alerts: ' + ${(lowStockCount ?: 0) + (expiringCount ?: 0)} + ' items need attention'"></span>
                         </button>
-                        <div class="notif-dropdown" id="notifDropdown" role="menu">
+                        <div class="notif-dropdown" id="notifDropdown" role="menu" aria-label="Alerts">
                             <div class="notif-header">Alerts</div>
                             <a class="notif-item" href="/medicines?filter=lowstock" role="menuitem">
-                                <i class="bi bi-exclamation-triangle notif-icon-danger"></i>
+                                <i class="bi bi-exclamation-triangle notif-icon-danger" aria-hidden="true"></i>
                                 <span>Low Stock Items</span>
                                 <span class="notif-count danger" th:text="${lowStockCount}">0</span>
                             </a>
                             <a class="notif-item" href="/medicines?filter=expiring" role="menuitem">
-                                <i class="bi bi-calendar-x notif-icon-warning"></i>
+                                <i class="bi bi-calendar-x notif-icon-warning" aria-hidden="true"></i>
                                 <span>Expiring Soon (30d)</span>
                                 <span class="notif-count warning" th:text="${expiringCount}">0</span>
                             </a>
@@ -281,7 +283,7 @@
                     <!-- Subscription plan badge (compact) -->
                     <a th:if="${planBadge != null}" href="/subscription/billing" class="plan-pill"
                         th:classappend="${planBadge.expired ? ' plan-expired' : ' plan-' + #strings.toLowerCase(planBadge.planType)}">
-                        <i class="bi bi-stars"></i>
+                        <i class="bi bi-stars" aria-hidden="true"></i>
                         <span class="plan-pill-label" th:text="${planBadge.expired ? 'Expired' : planBadge.planType}">PRO</span>
                     </a>
 
@@ -289,7 +291,7 @@
                     <div class="nav-profile" id="navProfileContainer">
                         <button class="nav-profile-btn" id="navProfileBtn" aria-label="User profile menu"
                             aria-expanded="false" aria-haspopup="true">
-                            <div class="nav-avatar">
+                            <div class="nav-avatar" aria-hidden="true">
                                 <i class="bi bi-person-fill"></i>
                             </div>
                             <span class="nav-username" sec:authentication="name">User</span>
@@ -297,23 +299,23 @@
                             <span class="nav-profile-role role-owner" sec:authorize="hasRole('OWNER')">OWNER</span>
                             <span class="nav-profile-role role-shopkeeper"
                                 sec:authorize="hasRole('SHOPKEEPER')">SHOPKEEPER</span>
-                            <i class="bi bi-chevron-down nav-caret"></i>
+                            <i class="bi bi-chevron-down nav-caret" aria-hidden="true"></i>
                         </button>
 
                         <div class="nav-profile-dropdown" id="navProfileDropdown" role="menu">
                             <!-- Dropdown header: avatar + identity -->
                             <div class="npd-header">
-                                <div class="npd-avatar">
+                                <div class="npd-avatar" aria-hidden="true">
                                     <i class="bi bi-person-fill"></i>
                                 </div>
                                 <div class="npd-identity">
                                     <span class="npd-name" sec:authentication="name">User</span>
                                     <span class="npd-role role-admin" sec:authorize="hasRole('ADMIN')"><i
-                                            class="bi bi-shield-fill"></i> ADMIN</span>
+                                            class="bi bi-shield-fill" aria-hidden="true"></i> ADMIN</span>
                                     <span class="npd-role role-owner" sec:authorize="hasRole('OWNER')"><i
-                                            class="bi bi-person-badge-fill"></i> OWNER</span>
+                                            class="bi bi-person-badge-fill" aria-hidden="true"></i> OWNER</span>
                                     <span class="npd-role role-shopkeeper" sec:authorize="hasRole('SHOPKEEPER')"><i
-                                            class="bi bi-shop"></i> SHOPKEEPER</span>
+                                            class="bi bi-shop" aria-hidden="true"></i> SHOPKEEPER</span>
                                 </div>
                             </div>
 
@@ -321,11 +323,11 @@
 
                             <!-- Menu items -->
                             <a href="/profile" class="npd-item" role="menuitem">
-                                <i class="bi bi-person-circle"></i>
+                                <i class="bi bi-person-circle" aria-hidden="true"></i>
                                 <span>My Profile</span>
                             </a>
                             <a href="/profile/change-password" class="npd-item" role="menuitem">
-                                <i class="bi bi-key-fill"></i>
+                                <i class="bi bi-key-fill" aria-hidden="true"></i>
                                 <span>Change Password</span>
                             </a>
 
@@ -335,7 +337,7 @@
                             <form th:action="@{/logout}" method="post" class="npd-logout-form">
                                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                                 <button type="submit" class="npd-item npd-item--logout" role="menuitem">
-                                    <i class="bi bi-box-arrow-right"></i>
+                                    <i class="bi bi-box-arrow-right" aria-hidden="true"></i>
                                     <span>Logout</span>
                                 </button>
                             </form>
@@ -351,17 +353,17 @@
             <div class="main-body" id="mainBody" tabindex="-1">
                 <!-- Alert Messages -->
                 <div th:if="${param.denied}" class="alert alert-warning alert-dismissible fade show" role="alert">
-                    <i class="bi bi-shield-exclamation me-2"></i>
+                    <i class="bi bi-shield-exclamation me-2" aria-hidden="true"></i>
                     You don't have permission to access that page.
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
                 <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
-                    <i class="bi bi-check-circle-fill me-2"></i><span th:text="${success}"></span>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    <i class="bi bi-check-circle-fill me-2" aria-hidden="true"></i><span th:text="${success}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
                 <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <i class="bi bi-exclamation-triangle-fill me-2"></i><span th:text="${error}"></span>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    <i class="bi bi-exclamation-triangle-fill me-2" aria-hidden="true"></i><span th:text="${error}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
 
                 <!-- Page Content -->
@@ -374,8 +376,8 @@
     <div th:insert="~{fragments :: ent-confirm-modal}"></div>
 
     <!-- Scroll-to-top -->
-    <button class="scroll-to-top" id="scrollToTop" aria-label="Scroll to top" title="Back to top">
-        <i class="bi bi-arrow-up"></i>
+    <button class="scroll-to-top" id="scrollToTop" aria-label="Scroll to top">
+        <i class="bi bi-arrow-up" aria-hidden="true"></i>
     </button>
 
     <!-- Bootstrap JS API -->
