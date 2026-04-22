@@ -10,20 +10,20 @@
 }
 
 .main-header {
-    height: var(--header-height);
-    background: rgba(255, 255, 255, 0.98);
-    border-bottom: 1px solid var(--border-color);
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+    height: 72px; /* Matching the sidebar brand height */
+    background: rgba(255, 255, 255, 0.85);
+    border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.03);
     display: flex;
     align-items: center;
-    padding: 0 20px;
+    padding: 0 24px;
     flex-shrink: 0;
-    gap: 12px;
+    gap: 16px;
     z-index: 20;
     position: sticky;
     top: 0;
-    -webkit-backdrop-filter: blur(12px);
-    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
 }
 
 /* ── Subscription banners ── */
@@ -126,41 +126,42 @@
 }
 
 .header-search input {
-    width: 240px;
-    padding: 7px 36px 7px 34px;
-    border: 1.5px solid var(--border-color);
-    border-radius: 8px;
-    font-size: 13px;
-    background: var(--bg-secondary);
+    width: 280px;
+    padding: 10px 36px 10px 42px;
+    border: 1px solid transparent;
+    border-radius: 9999px;
+    font-size: 13.5px;
+    background: #F1F5F9;
     color: var(--text-primary);
-    transition: all 0.2s var(--ease-std);
+    transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
     font-family: inherit;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
 }
 
 .header-search input::placeholder {
-    color: var(--text-secondary);
-    opacity: 0.7;
+    color: #94A3B8;
+    opacity: 1;
 }
 
 .header-search input:focus {
     outline: none;
-    width: 300px;
-    max-width: calc(100vw - 320px); /* prevent overflow on narrow viewports */
+    width: 360px;
+    max-width: calc(100vw - 320px);
     background: #ffffff;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+    border-color: rgba(59, 130, 246, 0.4);
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1), 0 4px 16px rgba(0,0,0,0.06);
 }
 
 /* Icon is placed BEFORE the input in DOM — use absolute positioning anchored to container */
 .header-search .search-icon {
     position: absolute;
-    left: 11px;
+    left: 16px;
     top: 50%;
     transform: translateY(-50%);
-    color: var(--text-secondary);
-    font-size: 13px;
+    color: #94A3B8;
+    font-size: 15px;
     pointer-events: none;
-    opacity: 0.6;
+    transition: all 0.2s ease;
     z-index: 1;
 }
 
@@ -361,24 +362,27 @@
 .nav-profile-btn {
     display: flex;
     align-items: center;
-    gap: 7px;
-    background: transparent;
-    border: none;
-    border-radius: 8px;
-    padding: 4px 8px 4px 4px;
+    gap: 10px;
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    border-radius: 9999px;
+    padding: 4px 14px 4px 4px;
     cursor: pointer;
     font-family: inherit;
-    font-size: 13px;
+    font-size: 13.5px;
     font-weight: 600;
     color: var(--text-primary);
-    transition: all var(--transition-fast);
+    transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
     white-space: nowrap;
     min-height: 44px;
 }
 
 .nav-profile-btn:hover,
 .nav-profile-btn.open {
-    background: var(--bg-tertiary);
+    background: #ffffff;
+    border-color: #CBD5E1;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transform: translateY(-1px);
 }
 
 .nav-avatar {
@@ -421,10 +425,11 @@
 .nav-profile-role.role-shopkeeper { background: #F0FDF4; color: #15803D; border: 1px solid #BBF7D0; }
 
 .nav-caret {
-    font-size: 10px;
-    color: #9CA3AF;
-    transition: transform var(--transition-fast);
+    font-size: 11px;
+    color: #94A3B8;
+    transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
     flex-shrink: 0;
+    margin-left: 4px;
 }
 
 .nav-profile-btn.open .nav-caret { transform: rotate(180deg); }
