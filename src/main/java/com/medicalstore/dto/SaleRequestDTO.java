@@ -8,11 +8,11 @@ import java.util.List;
 @Data
 public class SaleRequestDTO {
     
-    @NotNull(message = "Customer ID is required")
+    // Customer is optional for walk-in customers
     private Long customerId;
     
     @NotBlank(message = "Payment method is required")
-    @Pattern(regexp = "CASH|CARD|UPI|CREDIT", message = "Invalid payment method")
+    @Pattern(regexp = "Cash|Card|UPI|Credit|CASH|CARD|UPI|CREDIT", message = "Invalid payment method")
     private String paymentMethod;
     
     @Min(value = 0, message = "Discount percentage cannot be negative")

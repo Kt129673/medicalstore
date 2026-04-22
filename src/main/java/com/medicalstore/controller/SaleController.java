@@ -81,7 +81,7 @@ public class SaleController {
         try {
             Sale sale = new Sale();
 
-            // Map Customer
+            // Map Customer (optional for walk-in customers)
             if (saleDto.getCustomerId() != null) {
                 Customer customer = customerService.getCustomerById(saleDto.getCustomerId()).orElse(null);
                 sale.setCustomer(customer);
@@ -112,11 +112,25 @@ public class SaleController {
                     "success", true,
                     "message", "Sale completed successfully!",
                     "saleId", createdSale.getId()));
-        } catch (Exception e) {
-            String msg = e.getMessage() != null ? e.getMessage() : "An unexpected error occurred. Please try again.";
+        } catch (com.medicalstore.exception.StockConflictException e) {
+            log.warn("Stock conflict during sale: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(java.util.Map.of(
+                    "success", false,
+                    "message", "Stock conflict: " + e.getMessage() + ". Please refresh and try again.",
+                    "errorCode", "STOCK_CONFLICT"));
+        } catch (com.medicalstore.exception.BusinessException e) {
+            log.warn("Business validation failed: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(java.util.Map.of(
                     "success", false,
-                    "message", msg));
+                    "message", e.getMessage(),
+                    "errorCode", e.getCode() != null ? e.getCode() : "BUSINESS_ERROR"));
+        } catch (Exception e) {
+            log.error("Unexpected error during sale creation", e);
+            String msg = e.getMessage() != null ? e.getMessage() : "An unexpected error occurred. Please try again.";
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(java.util.Map.of(
+                    "success", false,
+                    "message", msg,
+                    "errorCode", "INTERNAL_ERROR"));
         }
     }
 
