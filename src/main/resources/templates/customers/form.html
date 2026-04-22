@@ -28,6 +28,7 @@
                     </div>
                     <div class="card-body">
                         <form id="customerForm" th:action="@{/customers/save}" th:object="${customer}" method="post">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                             <input type="hidden" th:field="*{id}">
                             <input type="hidden" th:field="*{registeredDate}">
 
@@ -72,7 +73,7 @@
                                                 <i class="bi bi-telephone-fill"></i>
                                             </span>
                                             <input type="tel" class="form-control" th:field="*{phone}" required
-                                                placeholder="10-digit number">
+                                                pattern="[0-9]{10}" placeholder="10-digit number">
                                         </div>
                                         <small class="text-muted">Primary contact number</small>
                                     </div>

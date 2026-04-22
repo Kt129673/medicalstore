@@ -19,6 +19,7 @@
         </div>
 
         <form th:action="@{/purchases/save}" method="post" id="poForm">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
             <input type="hidden" name="orderId" th:value="${order.id}">
 
             <!-- Order Details -->
@@ -94,7 +95,7 @@
                                         </select>
                                     </td>
                                     <td><input type="number" class="form-control form-control-sm item-qty"
-                                            name="itemQty" min="1" required th:value="${item.quantity}"></td>
+                                            name="itemQty" min="1" step="1" required th:value="${item.quantity}"></td>
                                     <td><input type="number" class="form-control form-control-sm item-price"
                                             name="itemPrice" step="0.01" min="0" required th:value="${item.unitPrice}">
                                     </td>
@@ -215,7 +216,13 @@
                 addBtn.addEventListener('click', addRow);
 
                 // Loading state on form submit
-                document.getElementById('poForm').addEventListener('submit', function () {
+                document.getElementById('poForm').addEventListener('submit', function (e) {
+                    const rows = itemsBody.querySelectorAll('.item-row');
+                    if (rows.length === 0) {
+                        e.preventDefault();
+                        alert('Please add at least one item to the purchase order.');
+                        return false;
+                    }
                     const btn = document.getElementById('saveOrderBtn');
                     btn.disabled = true;
                     btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Saving...';

@@ -27,9 +27,10 @@
                         <div class="col-md-7">
                             <label class="form-label">Search Medicine <kbd class="ms-2">F2</kbd></label>
                             <div class="med-search-wrap">
-                                <i class="bi bi-search search-icon"></i>
+                                <i class="bi bi-search search-icon" aria-hidden="true"></i>
                                 <input type="text" class="form-control" id="medicineSearchInput"
-                                    placeholder="Search name, barcode, or batch..." autocomplete="off" autofocus>
+                                    placeholder="Search name, barcode, or batch..." autocomplete="off" autofocus
+                                    aria-label="Search medicines by name, barcode, or batch number">
                                 <div id="typeaheadDropdown" class="list-group position-absolute w-100 shadow-sm"
                                     style="display:none; z-index:1050; max-height: 250px; overflow-y: auto; background:#fff;">
                                 </div>
