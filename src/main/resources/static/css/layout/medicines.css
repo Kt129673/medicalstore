@@ -428,7 +428,8 @@
 
     .inv-filter-bar .filter-actions {
         width: 100%;
-        justify-content: flex-end;
+        justify-content: flex-start;
+        flex-wrap: wrap;
     }
 
     .inv-table-header {
@@ -441,6 +442,12 @@
         flex-direction: column;
         align-items: flex-start;
         gap: 8px;
+    }
+
+    .action-btn {
+        width: 36px;
+        height: 36px;
+        font-size: 13px;
     }
 }
 

@@ -587,7 +587,7 @@
     .nav-username, .nav-profile-role { display: none; }
     .nav-profile-btn { padding: 4px; gap: 0; }
     .nav-caret { display: none; }
-    .header-right { gap: 4px; }
+    .header-right { gap: 12px; }
     .nav-profile-dropdown {
         position: fixed;
         top: 64px;

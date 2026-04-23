@@ -160,9 +160,9 @@
 ───────────────────────────────────────────────── */
 @media (max-width: 576px) {
     .main-header {
-        padding-left: 58px;
-        padding-right: 10px;
-        gap: 6px;
+        padding-left: 64px;
+        padding-right: 16px;
+        gap: 12px;
     }
 
     /* Hide search on very small screens — Ctrl+K still works */
@@ -189,6 +189,18 @@
 
     .page-header h2 {
         font-size: 18px;
+    }
+
+    .page-header .d-flex.gap-2 {
+        width: 100%;
+        display: grid !important;
+        grid-template-columns: 1fr;
+        gap: 8px !important;
+    }
+
+    .page-header .d-flex.gap-2 .btn {
+        width: 100%;
+        justify-content: center;
     }
 
     /* KPI grid single column */
