@@ -2,6 +2,7 @@ package com.medicalstore.controller;
 
 import com.medicalstore.model.User;
 import com.medicalstore.repository.UserRepository;
+import com.medicalstore.common.RoutePaths;
 import com.medicalstore.common.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -29,7 +30,7 @@ public class ProfileController {
     /** Redirect bare /profile to the change-password page (only profile action available). */
     @GetMapping
     public String profileHome() {
-        return "redirect:/profile/change-password";
+        return RoutePaths.redirectTo(RoutePaths.PROFILE_CHANGE_PASSWORD);
     }
 
     @GetMapping("/change-password")
@@ -48,38 +49,38 @@ public class ProfileController {
         Long userId = securityUtils.getCurrentUserId();
         if (userId == null) {
             redirectAttrs.addFlashAttribute("errorMessage", "Session expired. Please log in again.");
-            return "redirect:/login";
+            return RoutePaths.redirectTo(RoutePaths.LOGIN);
         }
         User user = userRepository.findById(userId)
                 .orElse(null);
 
         if (user == null) {
             redirectAttrs.addFlashAttribute("errorMessage", "User not found.");
-            return "redirect:/profile/change-password";
+            return RoutePaths.redirectTo(RoutePaths.PROFILE_CHANGE_PASSWORD);
         }
 
         // Verify current password
         if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
             redirectAttrs.addFlashAttribute("errorMessage", "Current password is incorrect.");
-            return "redirect:/profile/change-password";
+            return RoutePaths.redirectTo(RoutePaths.PROFILE_CHANGE_PASSWORD);
         }
 
         // Confirm new password match
         if (!newPassword.equals(confirmPassword)) {
             redirectAttrs.addFlashAttribute("errorMessage", "New passwords do not match.");
-            return "redirect:/profile/change-password";
+            return RoutePaths.redirectTo(RoutePaths.PROFILE_CHANGE_PASSWORD);
         }
 
         // Minimum length check
         if (newPassword.length() < 6) {
             redirectAttrs.addFlashAttribute("errorMessage", "New password must be at least 6 characters.");
-            return "redirect:/profile/change-password";
+            return RoutePaths.redirectTo(RoutePaths.PROFILE_CHANGE_PASSWORD);
         }
 
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
 
         redirectAttrs.addFlashAttribute("successMessage", "Password changed successfully. Please log in again if needed.");
-        return "redirect:/profile/change-password";
+        return RoutePaths.redirectTo(RoutePaths.PROFILE_CHANGE_PASSWORD);
     }
 }

@@ -1,5 +1,6 @@
 package com.medicalstore.controller;
 
+import com.medicalstore.common.RoutePaths;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -24,7 +25,7 @@ public class DashboardController {
     /** Redirect legacy root URL to canonical /dashboard. */
     @GetMapping("/")
     public String rootRedirect() {
-        return "redirect:/dashboard";
+        return RoutePaths.redirectTo(RoutePaths.SHOPKEEPER_DASHBOARD);
     }
 
     @GetMapping("/dashboard")

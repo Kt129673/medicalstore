@@ -48,7 +48,7 @@ public class AdminController {
     /** Canonical dashboard URL — redirect legacy /admin to /admin/dashboard. */
     @GetMapping
     public String dashboardRedirect() {
-        return "redirect:/admin/dashboard";
+        return RoutePaths.redirectTo(RoutePaths.ADMIN_DASHBOARD);
     }
 
     @GetMapping("/dashboard")

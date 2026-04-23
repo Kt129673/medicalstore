@@ -30,7 +30,19 @@ public final class RoutePaths {
     public static final String ADMIN_SUBSCRIPTIONS = "/admin/subscriptions";
 
     public static final String OWNER_DASHBOARD = "/owner/dashboard";
+    public static final String OWNER = "/owner";
+    public static final String OWNER_SHOPKEEPERS = "/owner/shopkeepers";
+    public static final String OWNER_COMPARE = "/owner/compare";
     public static final String SHOPKEEPER_DASHBOARD = "/dashboard";
+
+    public static final String PURCHASES = "/purchases";
+    public static final String RETURNS = "/returns";
+    public static final String PROFILE = "/profile";
+    public static final String PROFILE_CHANGE_PASSWORD = "/profile/change-password";
+    public static final String SALES = "/sales";
+    public static final String SUPPLIERS_CREDITS = "/suppliers/credits";
+    public static final String REPORTS = "/reports";
+    public static final String ANALYTICS = "/analytics";
 
     public static final String REDIRECT_PREFIX = "redirect:";
 

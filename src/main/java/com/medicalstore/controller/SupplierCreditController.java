@@ -4,6 +4,7 @@ import com.medicalstore.model.SupplierCredit;
 import com.medicalstore.service.BranchService;
 import com.medicalstore.service.SupplierCreditService;
 import com.medicalstore.service.SupplierService;
+import com.medicalstore.common.RoutePaths;
 import com.medicalstore.common.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -51,7 +52,7 @@ public class SupplierCreditController {
         } catch (Exception e) {
             ra.addFlashAttribute("errorMessage", "Error saving credit: " + e.getMessage());
         }
-        return "redirect:/suppliers/credits";
+        return RoutePaths.redirectTo(RoutePaths.SUPPLIERS_CREDITS);
     }
 
     @PostMapping("/{id}/pay")
@@ -65,7 +66,7 @@ public class SupplierCreditController {
         } catch (Exception e) {
             ra.addFlashAttribute("errorMessage", "An error occurred while recording payment.");
         }
-        return "redirect:/suppliers/credits";
+        return RoutePaths.redirectTo(RoutePaths.SUPPLIERS_CREDITS);
     }
 
     @GetMapping("/overdue")

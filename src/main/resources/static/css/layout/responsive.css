@@ -140,6 +140,15 @@
     .header-breadcrumb .bc-current {
         max-width: 120px;
     }
+
+    /* Dashboard charts stack vertically on tablet */
+    .row.g-4 > .col-lg-8,
+    .row.g-4 > .col-lg-7,
+    .row.g-4 > .col-lg-5,
+    .row.g-4 > .col-lg-4 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
 }
 
 /* ─────────────────────────────────────────────────
@@ -152,6 +161,11 @@
 
     .header-search input:focus {
         width: 260px;
+    }
+
+    /* KPI grid: 2 columns on tablet */
+    .kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
     }
 }
 
@@ -203,9 +217,270 @@
         justify-content: center;
     }
 
-    /* KPI grid single column */
+    /* KPI grid single column on mobile */
     .kpi-grid {
         grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    /* KPI card adjustments for mobile */
+    .kpi-card {
+        padding: 18px 20px;
+        min-height: 110px;
+    }
+
+    .kpi-card .kpi-value {
+        font-size: 1.5rem;
+    }
+
+    .kpi-card .kpi-icon {
+        font-size: 2.2rem;
+        top: 16px;
+        right: 18px;
+    }
+
+    /* Dashboard quick actions: stack vertically */
+    .dashboard-quick-actions {
+        flex-direction: column !important;
+        text-align: center;
+        padding: 16px !important;
+    }
+
+    .dashboard-quick-actions > div:first-child {
+        margin-bottom: 12px;
+    }
+
+    .dashboard-quick-actions .d-flex.gap-2 {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px !important;
+        width: 100%;
+    }
+
+    .dashboard-quick-actions .btn {
+        width: 100%;
+        justify-content: center;
+        padding: 10px 8px;
+        font-size: 13px;
+    }
+
+    /* Expiry grid: 2 columns on mobile */
+    .expiry-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .expiry-card {
+        padding: 12px 14px;
+    }
+
+    .expiry-card .expiry-count {
+        font-size: 1.5rem;
+    }
+
+    /* Chart cards: tighter padding */
+    .chart-card .chart-header,
+    .alert-section .alert-header,
+    .txn-card .txn-header {
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 12px 16px;
+    }
+
+    .chart-card .chart-body {
+        padding: 12px 16px 16px;
+    }
+
+    /* Transaction table: scrollable with min-width */
+    .txn-table {
+        min-width: 500px;
+    }
+
+    /* Section headings: smaller on mobile */
+    .section-heading {
+        font-size: 1rem;
+        margin-bottom: 12px;
+    }
+
+    /* Cards: reduced margin */
+    .card {
+        margin-bottom: 16px;
+    }
+
+    .card-body {
+        padding: 16px;
+    }
+
+    .card-header {
+        padding: 12px 16px;
+    }
+
+    /* Stock items: tighter spacing */
+    .stock-item {
+        padding: 8px 16px;
+    }
+
+    /* Activity history items */
+    #activityHistoryContainer .d-flex {
+        padding: 10px 12px !important;
+    }
+
+    /* Owner/Admin dashboard: KPI cards in Bootstrap grid */
+    .row.g-3 > .col-6 {
+        flex: 0 0 50%;
+        max-width: 50%;
+        padding-left: 8px;
+        padding-right: 8px;
+    }
+
+    /* Quick link cards: full width on mobile */
+    .row.g-3 > .col-6.col-md-3 {
+        flex: 0 0 50%;
+        max-width: 50%;
+        margin-bottom: 8px;
+    }
+
+    /* Branch cards: full width */
+    .row.g-3 > .col-sm-6.col-lg-4.col-xl-3 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+}
+
+/* ─────────────────────────────────────────────────
+   EXTRA SMALL MOBILE  (≤ 375px)
+───────────────────────────────────────────────── */
+@media (max-width: 375px) {
+    .main-body {
+        padding: 10px 10px;
+    }
+
+    .kpi-card {
+        padding: 14px 16px;
+        min-height: 100px;
+    }
+
+    .kpi-card .kpi-value {
+        font-size: 1.35rem;
+    }
+
+    .kpi-card .kpi-label {
+        font-size: 0.65rem;
+    }
+
+    .kpi-card .kpi-sub {
+        font-size: 0.65rem;
+    }
+
+    /* Quick actions: single column on very small screens */
+    .dashboard-quick-actions .d-flex.gap-2 {
+        grid-template-columns: 1fr;
+    }
+
+    /* Expiry grid: single column */
+    .expiry-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* KPI Bootstrap grid: single column */
+    .row.g-3 > .col-6 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+
+    .row.g-3 > .col-6.col-md-3 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+
+    /* Page header */
+    .page-header h2 {
+        font-size: 16px;
+    }
+
+    .page-header p {
+        font-size: 12px;
+    }
+
+    /* Buttons: smaller */
+    .btn {
+        padding: 8px 14px;
+        font-size: 13px;
+        min-height: 36px;
+    }
+
+    .btn-sm {
+        padding: 6px 10px;
+        font-size: 12px;
+        min-height: 32px;
+    }
+}
+
+/* ─────────────────────────────────────────────────
+   OWNER DASHBOARD SPECIFIC
+───────────────────────────────────────────────── */
+@media (max-width: 768px) {
+    /* Owner dashboard page header */
+    .page-header .d-flex.gap-2.flex-wrap {
+        width: 100%;
+        display: grid !important;
+        grid-template-columns: 1fr;
+        gap: 8px !important;
+    }
+
+    .page-header .d-flex.gap-2.flex-wrap .btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    /* Branch cards: 2 columns on tablet, 1 on mobile */
+    .row.g-3 > .col-sm-6.col-lg-4.col-xl-3 {
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+}
+
+@media (max-width: 576px) {
+    .row.g-3 > .col-sm-6.col-lg-4.col-xl-3 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+
+    /* Portfolio overview */
+    .portfolio-row {
+        padding: 10px 16px !important;
+    }
+}
+
+/* ─────────────────────────────────────────────────
+   ADMIN DASHBOARD SPECIFIC
+───────────────────────────────────────────────── */
+@media (max-width: 768px) {
+    /* Quick link cards: 2 columns */
+    .row.g-3 > .col-6.col-md-3 {
+        flex: 0 0 50%;
+        max-width: 50%;
+        margin-bottom: 12px;
+    }
+
+    .quick-link-card {
+        padding: 12px !important;
+    }
+
+    .quick-link-icon {
+        width: 38px;
+        height: 38px;
+    }
+
+    .quick-link-icon i {
+        font-size: 1.1rem !important;
+    }
+}
+
+@media (max-width: 576px) {
+    .row.g-3 > .col-6.col-md-3 {
+        flex: 0 0 100%;
+        max-width: 100%;
     }
 }
 

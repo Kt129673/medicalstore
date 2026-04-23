@@ -6,6 +6,7 @@ import com.medicalstore.service.SaleService;
 import com.medicalstore.service.CustomerService;
 import com.medicalstore.service.WhatsAppService;
 import com.medicalstore.service.PdfService;
+import com.medicalstore.common.RoutePaths;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -220,6 +221,6 @@ public class SaleController {
         } catch (Exception e) {
             ra.addFlashAttribute("errorMessage", "Failed to delete sale: " + e.getMessage());
         }
-        return "redirect:/sales";
+        return RoutePaths.redirectTo(RoutePaths.SALES);
     }
 }

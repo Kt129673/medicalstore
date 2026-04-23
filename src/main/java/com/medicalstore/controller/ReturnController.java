@@ -3,6 +3,7 @@ package com.medicalstore.controller;
 import com.medicalstore.model.Return;
 import com.medicalstore.service.ReturnService;
 import com.medicalstore.service.SaleService;
+import com.medicalstore.common.RoutePaths;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -45,7 +46,7 @@ public class ReturnController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         }
-        return "redirect:/returns";
+        return RoutePaths.redirectTo(RoutePaths.RETURNS);
     }
 
     @PostMapping("/delete/{id}")
@@ -57,6 +58,6 @@ public class ReturnController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Cannot delete return: " + e.getMessage());
         }
-        return "redirect:/returns";
+        return RoutePaths.redirectTo(RoutePaths.RETURNS);
     }
 }

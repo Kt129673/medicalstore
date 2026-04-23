@@ -7,6 +7,7 @@ import com.medicalstore.service.BranchService;
 import com.medicalstore.service.MedicineService;
 import com.medicalstore.service.PurchaseService;
 import com.medicalstore.service.SupplierService;
+import com.medicalstore.common.RoutePaths;
 import com.medicalstore.common.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -65,7 +66,7 @@ public class PurchaseController {
         PurchaseOrder order = purchaseService.getOrderById(id)
                 .orElseThrow(() -> new com.medicalstore.exception.ResourceNotFoundException("PurchaseOrder", id));
         if (!"DRAFT".equals(order.getStatus())) {
-            return "redirect:/purchases/" + id;
+            return RoutePaths.redirectTo(RoutePaths.PURCHASES + "/" + id);
         }
         model.addAttribute("order", order);
         populateFormModel(model);
@@ -120,10 +121,10 @@ public class PurchaseController {
 
             PurchaseOrder saved = purchaseService.saveOrder(order);
             ra.addFlashAttribute("successMessage", "Purchase order " + saved.getOrderNumber() + " saved successfully!");
-            return "redirect:/purchases/" + saved.getId();
+            return RoutePaths.redirectTo(RoutePaths.PURCHASES + "/" + saved.getId());
         } catch (Exception e) {
             ra.addFlashAttribute("errorMessage", "Failed to save order: " + e.getMessage());
-            return "redirect:/purchases/new";
+            return RoutePaths.redirectTo(RoutePaths.PURCHASES + "/new");
         }
     }
 
@@ -135,10 +136,10 @@ public class PurchaseController {
         try {
             purchaseService.receiveOrder(id, receivedQuantities);
             ra.addFlashAttribute("successMessage", "Goods received successfully! Stock has been updated.");
-            return "redirect:/purchases/" + id;
+            return RoutePaths.redirectTo(RoutePaths.PURCHASES + "/" + id);
         } catch (Exception e) {
             ra.addFlashAttribute("errorMessage", "Failed to receive goods: " + e.getMessage());
-            return "redirect:/purchases/" + id;
+            return RoutePaths.redirectTo(RoutePaths.PURCHASES + "/" + id);
         }
     }
 
@@ -151,7 +152,7 @@ public class PurchaseController {
         } catch (Exception e) {
             ra.addFlashAttribute("errorMessage", "Cannot delete purchase order: " + e.getMessage());
         }
-        return "redirect:/purchases";
+        return RoutePaths.redirectTo(RoutePaths.PURCHASES);
     }
 
     @PostMapping("/{id}/cancel")
@@ -159,7 +160,7 @@ public class PurchaseController {
     public String cancelOrder(@PathVariable Long id, RedirectAttributes ra) {
         purchaseService.cancelOrder(id);
         ra.addFlashAttribute("successMessage", "Purchase order cancelled.");
-        return "redirect:/purchases/" + id;
+        return RoutePaths.redirectTo(RoutePaths.PURCHASES + "/" + id);
     }
 
     private void populateFormModel(Model model) {

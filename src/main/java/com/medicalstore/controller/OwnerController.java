@@ -8,6 +8,7 @@ import com.medicalstore.service.DashboardService;
 import com.medicalstore.service.MedicineService;
 import com.medicalstore.service.SubscriptionService;
 import com.medicalstore.service.UserManagementService;
+import com.medicalstore.common.RoutePaths;
 import com.medicalstore.common.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -94,7 +95,7 @@ public class OwnerController {
         public String compareBranches(Model model) {
                 Long ownerId = securityUtils.getCurrentUserId();
                 if (ownerId == null) {
-                        return "redirect:/login";
+                        return RoutePaths.redirectTo(RoutePaths.LOGIN);
                 }
 
                 // Use optimized batch query method (avoids N+1)
@@ -189,7 +190,7 @@ public class OwnerController {
                 } catch (Exception e) {
                         ra.addFlashAttribute("errorMessage", "Failed to create shopkeeper: " + e.getMessage());
                 }
-                return "redirect:/owner/shopkeepers";
+                return RoutePaths.redirectTo(RoutePaths.OWNER_SHOPKEEPERS);
         }
 
         @PostMapping("/shopkeepers/toggle/{id}")
@@ -203,7 +204,7 @@ public class OwnerController {
                 } catch (Exception e) {
                         ra.addFlashAttribute("errorMessage", "Failed to update shopkeeper status: " + e.getMessage());
                 }
-                return "redirect:/owner/shopkeepers";
+                return RoutePaths.redirectTo(RoutePaths.OWNER_SHOPKEEPERS);
         }
 
         // ─── Subscription Status ───────────────────────────────────────────────
@@ -250,7 +251,7 @@ public class OwnerController {
                                 || shopkeeper.getBranch() == null
                                 || !myBranchIds.contains(shopkeeper.getBranch().getId())) {
                         ra.addFlashAttribute("errorMessage", "Shopkeeper not found or not in your branches.");
-                        return "redirect:/owner/shopkeepers";
+                        return RoutePaths.redirectTo(RoutePaths.OWNER_SHOPKEEPERS);
                 }
 
                 Branch branch = shopkeeper.getBranch();

@@ -355,6 +355,44 @@
                     min-width: 560px;
                 }
             }
+
+            @media (max-width: 576px) {
+                .dashboard-quick-actions {
+                    padding: 16px !important;
+                }
+
+                .dashboard-quick-actions .d-flex.gap-2 {
+                    grid-template-columns: 1fr;
+                    gap: 10px !important;
+                }
+
+                .expiry-grid {
+                    grid-template-columns: repeat(2, 1fr);
+                    gap: 10px;
+                }
+
+                .expiry-card {
+                    padding: 12px 14px;
+                }
+
+                .expiry-card .expiry-count {
+                    font-size: 1.5rem;
+                }
+
+                .txn-table {
+                    min-width: 500px;
+                }
+            }
+
+            @media (max-width: 375px) {
+                .expiry-grid {
+                    grid-template-columns: 1fr;
+                }
+
+                .kpi-card .kpi-value {
+                    font-size: 1.35rem;
+                }
+            }
         </style>
 
         <!-- ═══════════ PAGE HEADER ═══════════ -->
