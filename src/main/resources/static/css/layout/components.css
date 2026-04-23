@@ -1636,3 +1636,141 @@
     color: var(--text-secondary);
     margin-top: 4px;
 }
+
+/* ─────────────────────────────────────────────────
+   SUPPLIER AVATAR LARGE - Profile page avatar
+───────────────────────────────────────────────── */
+.supplier-avatar-lg {
+    width: 90px;
+    height: 90px;
+    font-size: 36px;
+    margin: 0 auto;
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: 800;
+}
+
+/* ─────────────────────────────────────────────────
+   PLAN SECTION TITLE - Subscription billing
+───────────────────────────────────────────────── */
+.plan-section-title {
+    font-size: 0.72rem;
+    letter-spacing: 0.8px;
+}
+
+/* ─────────────────────────────────────────────────
+   GST BADGE - Supplier GST number display
+───────────────────────────────────────────────── */
+.gst-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 8px;
+    background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+    border: 1px solid #bae6fd;
+    border-radius: var(--radius-sm);
+    font-size: 11px;
+    font-weight: 600;
+    color: #0369a1;
+    font-family: 'SF Mono', 'Monaco', 'Courier New', monospace;
+}
+
+/* ─────────────────────────────────────────────────
+   STOCK PILL - Medicine stock indicator
+───────────────────────────────────────────────── */
+.stock-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 10px;
+    border-radius: var(--radius-full);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.stock-pill .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.stock-pill.ok {
+    background: #dcfce7;
+    color: #166534;
+}
+.stock-pill.ok .dot { background: #22c55e; }
+
+.stock-pill.low {
+    background: #fef9c3;
+    color: #854d0e;
+}
+.stock-pill.low .dot { background: #eab308; }
+
+.stock-pill.critical {
+    background: #fee2e2;
+    color: #991b1b;
+}
+.stock-pill.critical .dot { background: #ef4444; }
+
+/* ─────────────────────────────────────────────────
+   CATEGORY TAG - Medicine category badge
+───────────────────────────────────────────────── */
+.cat-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+/* ─────────────────────────────────────────────────
+   EXPIRY BADGE - Medicine expiry status
+───────────────────────────────────────────────── */
+.expiry-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.expiry-badge.expiry-expired {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.expiry-badge.expiry-soon {
+    background: #fef9c3;
+    color: #854d0e;
+}
+
+.expiry-badge.expiry-normal {
+    background: #f0fdf4;
+    color: #166534;
+}
+
+/* ─────────────────────────────────────────────────
+   MED ICON - Medicine icon in table
+───────────────────────────────────────────────── */
+.med-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-md);
+    background: linear-gradient(135deg, #eff6ff, #dbeafe);
+    color: var(--primary-color);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+}

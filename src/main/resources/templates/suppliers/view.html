@@ -28,7 +28,7 @@
                 <div class="card border-0 shadow-sm h-100">
                     <div class="card-body text-center pt-4">
                         <!-- Avatar -->
-                        <div class="mb-3" style="width:90px;height:90px;font-size:36px;margin:0 auto;background:linear-gradient(135deg,#2563eb,#7c3aed);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;">
+                        <div class="supplier-avatar-lg mb-3">
                             <span th:text="${!#strings.isEmpty(supplier.name) ? supplier.name.substring(0,1).toUpperCase() : 'S'}">S</span>
                         </div>
                         <h4 class="fw-bold mb-1" th:text="${supplier.name}">Supplier Name</h4>

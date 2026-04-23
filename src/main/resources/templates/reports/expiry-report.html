@@ -102,6 +102,12 @@
                 font-weight: 700;
             }
 
+            /* Stat card gradient variants */
+            .stat-card--expired { background: linear-gradient(135deg, #dc2626, #ef4444); }
+            .stat-card--exp30 { background: linear-gradient(135deg, #f59e0b, #fbbf24); }
+            .stat-card--exp60 { background: linear-gradient(135deg, #6366f1, #818cf8); }
+            .stat-card--exp90 { background: linear-gradient(135deg, #0ea5e9, #38bdf8); }
+
             .modern-card {
                 border: none;
                 border-radius: 12px;
@@ -161,7 +167,7 @@
         <!-- Summary Cards -->
         <div class="row g-3 mb-4">
             <div class="col-6 col-md-3">
-                <div class="stat-card" style="background:linear-gradient(135deg,#dc2626,#ef4444);">
+                <div class="stat-card stat-card--expired">
                     <div class="stat-label">Expired</div>
                     <div class="stat-value" th:text="${#lists.size(expired)}">0</div>
                     <div style="font-size:12px;margin-top:6px;opacity:0.9;">
@@ -170,7 +176,7 @@
                 </div>
             </div>
             <div class="col-6 col-md-3">
-                <div class="stat-card" style="background:linear-gradient(135deg,#f59e0b,#fbbf24);">
+                <div class="stat-card stat-card--exp30">
                     <div class="stat-label">Expiring in 30 Days</div>
                     <div class="stat-value" th:text="${#lists.size(expiring30)}">0</div>
                     <div style="font-size:12px;margin-top:6px;opacity:0.9;">
@@ -179,7 +185,7 @@
                 </div>
             </div>
             <div class="col-6 col-md-3">
-                <div class="stat-card" style="background:linear-gradient(135deg,#6366f1,#818cf8);">
+                <div class="stat-card stat-card--exp60">
                     <div class="stat-label">Expiring in 60 Days</div>
                     <div class="stat-value" th:text="${#lists.size(expiring60)}">0</div>
                     <div style="font-size:12px;margin-top:6px;opacity:0.9;">
@@ -188,7 +194,7 @@
                 </div>
             </div>
             <div class="col-6 col-md-3">
-                <div class="stat-card" style="background:linear-gradient(135deg,#0ea5e9,#38bdf8);">
+                <div class="stat-card stat-card--exp90">
                     <div class="stat-label">Expiring in 90 Days</div>
                     <div class="stat-value" th:text="${#lists.size(expiring90)}">0</div>
                     <div style="font-size:12px;margin-top:6px;opacity:0.9;">

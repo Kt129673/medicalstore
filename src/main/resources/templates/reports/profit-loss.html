@@ -86,6 +86,22 @@
                 font-weight: 700;
             }
 
+            .stat-value--sm {
+                font-size: 22px;
+            }
+
+            /* Stat card gradient variants */
+            .stat-card--revenue { background: linear-gradient(135deg, #10b981, #34d399); }
+            .stat-card--cost { background: linear-gradient(135deg, #ef4444, #f87171); }
+            .stat-card--profit { background: linear-gradient(135deg, #2563eb, #3b82f6); }
+            .stat-card--margin { background: linear-gradient(135deg, #1e3a8a, #2563eb); }
+            .stat-card--discount { background: linear-gradient(135deg, #f59e0b, #fbbf24); }
+            .stat-card--net { background: linear-gradient(135deg, #0ea5e9, #38bdf8); }
+
+            /* Table row styles */
+            .row-highlight { background: var(--bg-secondary); }
+            .row-success { background: #f0fdf4; border-top: 2px solid var(--border-color); }
+
             .card {
                 border: none;
                 border-radius: 12px;
@@ -129,44 +145,44 @@
         <!-- P&L Summary Cards -->
         <div class="row g-3 mb-4">
             <div class="col-6 col-md-4 col-lg-2">
-                <div class="stat-card" style="background:linear-gradient(135deg,#10b981,#34d399);">
+                <div class="stat-card stat-card--revenue">
                     <div class="stat-label">Revenue</div>
-                    <div class="stat-value" style="font-size:22px;"
+                    <div class="stat-value stat-value--sm"
                         th:text="'₹' + ${#numbers.formatDecimal(plData['totalRevenue'], 1, 0)}">₹0</div>
                 </div>
             </div>
             <div class="col-6 col-md-4 col-lg-2">
-                <div class="stat-card" style="background:linear-gradient(135deg,#ef4444,#f87171);">
+                <div class="stat-card stat-card--cost">
                     <div class="stat-label">Cost</div>
-                    <div class="stat-value" style="font-size:22px;"
+                    <div class="stat-value stat-value--sm"
                         th:text="'₹' + ${#numbers.formatDecimal(plData['totalCost'], 1, 0)}">₹0</div>
                 </div>
             </div>
             <div class="col-6 col-md-4 col-lg-2">
-                <div class="stat-card" style="background:linear-gradient(135deg,#2563eb,#3b82f6);">
+                <div class="stat-card stat-card--profit">
                     <div class="stat-label">Gross Profit</div>
-                    <div class="stat-value" style="font-size:22px;"
+                    <div class="stat-value stat-value--sm"
                         th:text="'₹' + ${#numbers.formatDecimal(plData['grossProfit'], 1, 0)}">₹0</div>
                 </div>
             </div>
             <div class="col-6 col-md-4 col-lg-2">
-                <div class="stat-card" style="background:linear-gradient(135deg,#1e3a8a,#2563eb);">
+                <div class="stat-card stat-card--margin">
                     <div class="stat-label">Gross Margin</div>
-                    <div class="stat-value" style="font-size:22px;"
+                    <div class="stat-value stat-value--sm"
                         th:text="${#numbers.formatDecimal(plData['grossMargin'], 1, 1)} + '%'">0%</div>
                 </div>
             </div>
             <div class="col-6 col-md-4 col-lg-2">
-                <div class="stat-card" style="background:linear-gradient(135deg,#f59e0b,#fbbf24);">
+                <div class="stat-card stat-card--discount">
                     <div class="stat-label">Discounts</div>
-                    <div class="stat-value" style="font-size:22px;"
+                    <div class="stat-value stat-value--sm"
                         th:text="'₹' + ${#numbers.formatDecimal(plData['totalDiscount'], 1, 0)}">₹0</div>
                 </div>
             </div>
             <div class="col-6 col-md-4 col-lg-2">
-                <div class="stat-card" style="background:linear-gradient(135deg,#0ea5e9,#38bdf8);">
+                <div class="stat-card stat-card--net">
                     <div class="stat-label">Net Profit</div>
-                    <div class="stat-value" style="font-size:22px;"
+                    <div class="stat-value stat-value--sm"
                         th:text="'₹' + ${#numbers.formatDecimal(plData['netProfit'], 1, 0)}">₹0</div>
                 </div>
             </div>
@@ -201,7 +217,7 @@
                             <td class="text-end text-danger"
                                 th:text="'(₹' + ${#numbers.formatDecimal(plData['totalCost'], 1, 2)} + ')'">₹0</td>
                         </tr>
-                        <tr style="background:var(--bg-secondary);">
+                        <tr class="row-highlight">
                             <td class="fw-bold" style="padding-left:24px;">Gross Profit</td>
                             <td class="text-end fw-bold"
                                 th:text="'₹' + ${#numbers.formatDecimal(plData['grossProfit'], 1, 2)}">₹0</td>
@@ -211,7 +227,7 @@
                             <td class="text-end text-danger"
                                 th:text="'(₹' + ${#numbers.formatDecimal(plData['totalDiscount'], 1, 2)} + ')'">₹0</td>
                         </tr>
-                        <tr style="background:#f0fdf4; border-top:2px solid var(--border-color);">
+                        <tr class="row-success">
                             <td class="fw-bold" style="padding-left:24px; font-size:15px;">Net Profit</td>
                             <td class="text-end fw-bold text-success" style="font-size:15px;"
                                 th:text="'₹' + ${#numbers.formatDecimal(plData['netProfit'], 1, 2)}">₹0</td>
