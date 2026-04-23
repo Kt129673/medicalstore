@@ -5,6 +5,7 @@ import com.medicalstore.repository.UserRepository;
 import com.medicalstore.common.RoutePaths;
 import com.medicalstore.common.SecurityUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,8 +20,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
  * Allows every user to change their own password.
  */
 @Controller
-@RequestMapping("/profile")
+@RequestMapping(RoutePaths.PROFILE)
 @RequiredArgsConstructor
+@PreAuthorize("isAuthenticated()")
 public class ProfileController {
 
     private final UserRepository userRepository;

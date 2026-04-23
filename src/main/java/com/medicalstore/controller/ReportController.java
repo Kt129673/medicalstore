@@ -3,6 +3,7 @@ package com.medicalstore.controller;
 import com.medicalstore.dto.DailyReportData;
 import com.medicalstore.dto.GstReportData;
 import com.medicalstore.dto.MonthlyReportData;
+import com.medicalstore.common.RoutePaths;
 import com.medicalstore.service.ReportService;
 import com.medicalstore.service.SaleService;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +18,7 @@ import java.time.YearMonth;
 import java.util.Map;
 
 @Controller
-@RequestMapping("/reports")
+@RequestMapping(RoutePaths.REPORTS)
 @RequiredArgsConstructor
 @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'SHOPKEEPER')")
 public class ReportController {

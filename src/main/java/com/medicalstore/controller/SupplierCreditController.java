@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
-@RequestMapping("/suppliers/credits")
+@RequestMapping(RoutePaths.SUPPLIERS_CREDITS)
 @RequiredArgsConstructor
 @PreAuthorize("hasAnyRole('ADMIN', 'SHOPKEEPER')")
 public class SupplierCreditController {

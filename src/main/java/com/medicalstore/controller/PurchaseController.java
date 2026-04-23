@@ -21,7 +21,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.List;
 
 @Controller
-@RequestMapping("/purchases")
+@RequestMapping(RoutePaths.PURCHASES)
 @RequiredArgsConstructor
 @PreAuthorize("hasAnyRole('ADMIN', 'SHOPKEEPER')")
 public class PurchaseController {

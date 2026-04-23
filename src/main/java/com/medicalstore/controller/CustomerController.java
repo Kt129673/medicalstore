@@ -91,13 +91,13 @@ public class CustomerController {
             String returnPath = customer.getId() != null
                     ? RoutePaths.CUSTOMERS + "/edit/" + customer.getId()
                     : RoutePaths.CUSTOMERS + "/new";
-            return "redirect:" + returnPath;
+            return RoutePaths.redirectTo(returnPath);
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Failed to save customer: " + e.getMessage());
             String returnPath = customer.getId() != null
                     ? RoutePaths.CUSTOMERS + "/edit/" + customer.getId()
                     : RoutePaths.CUSTOMERS + "/new";
-            return "redirect:" + returnPath;
+            return RoutePaths.redirectTo(returnPath);
         }
         return RoutePaths.redirectTo(RoutePaths.CUSTOMERS);
     }

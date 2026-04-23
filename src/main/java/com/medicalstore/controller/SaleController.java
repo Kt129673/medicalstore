@@ -21,7 +21,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import lombok.extern.slf4j.Slf4j;
 
 @Controller
-@RequestMapping("/sales")
+@RequestMapping(RoutePaths.SALES)
 @RequiredArgsConstructor
 @PreAuthorize("hasAnyRole('ADMIN', 'SHOPKEEPER')")
 @Slf4j
