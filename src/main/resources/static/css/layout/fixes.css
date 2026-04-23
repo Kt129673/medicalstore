@@ -1,0 +1,847 @@
+/* ═══════════════════════════════════════════════════════════════
+   UI BUG FIXES & UNIFORMITY IMPROVEMENTS
+   Fixes inconsistencies and ensures uniform styling across all pages
+═══════════════════════════════════════════════════════════════ */
+
+/* ─────────────────────────────────────────────────
+   BUTTON CONSISTENCY FIXES
+───────────────────────────────────────────────── */
+
+/* Ensure all buttons have consistent sizing */
+.btn-sm {
+    min-height: 32px;
+    padding: 6px 14px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.btn-lg {
+    min-height: 48px;
+    padding: 12px 24px;
+    font-size: 16px;
+}
+
+/* Fix button group alignment */
+.btn-group {
+    display: inline-flex;
+    gap: 0;
+}
+
+.btn-group .btn {
+    border-radius: 0;
+    margin-left: -1px;
+}
+
+.btn-group .btn:first-child {
+    border-top-left-radius: var(--radius-md);
+    border-bottom-left-radius: var(--radius-md);
+    margin-left: 0;
+}
+
+.btn-group .btn:last-child {
+    border-top-right-radius: var(--radius-md);
+    border-bottom-right-radius: var(--radius-md);
+}
+
+/* Fix outline button hover states */
+.btn-outline-info:hover {
+    background: var(--info-color);
+    border-color: var(--info-color);
+    color: white;
+}
+
+/* ─────────────────────────────────────────────────
+   CARD CONSISTENCY FIXES
+───────────────────────────────────────────────── */
+
+/* Standardize all card styles */
+.card,
+.modern-card,
+.inv-table-card,
+.txn-card,
+.chart-card,
+.alert-section {
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+    background: var(--bg-primary);
+    margin-bottom: 24px;
+    transition: box-shadow var(--transition-base), transform var(--transition-base);
+}
+
+.card:hover,
+.modern-card:hover,
+.inv-table-card:hover,
+.chart-card:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+}
+
+/* Standardize card headers */
+.card-header,
+.inv-table-header,
+.txn-header,
+.chart-header,
+.alert-header {
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border-color);
+    background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+    font-weight: 700;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.card-header h5,
+.card-header h6,
+.inv-table-header h6,
+.txn-header h6,
+.chart-header h6 {
+    margin: 0;
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Standardize card body padding */
+.card-body {
+    padding: 24px;
+}
+
+/* ─────────────────────────────────────────────────
+   TABLE CONSISTENCY FIXES
+───────────────────────────────────────────────── */
+
+/* Standardize all table styles */
+.table,
+.modern-table,
+.inv-table,
+.txn-table {
+    width: 100%;
+    margin-bottom: 0;
+    font-size: 14px;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+/* Standardize table headers */
+.table thead th,
+.modern-table thead th,
+.inv-table thead th,
+.txn-table thead th {
+    padding: 14px 18px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-secondary);
+    background-color: var(--bg-secondary);
+    border-bottom: 2px solid var(--border-color);
+    position: relative;
+}
+
+/* Standardize table cells */
+.table tbody td,
+.modern-table tbody td,
+.inv-table tbody td,
+.txn-table tbody td {
+    padding: 14px 18px;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-primary);
+    line-height: 1.5;
+    transition: all var(--transition-fast);
+}
+
+/* Standardize table row hover */
+.table tbody tr:hover,
+.modern-table tbody tr:hover,
+.inv-table tbody tr:hover,
+.txn-table tbody tr:hover {
+    background: linear-gradient(90deg, rgba(59, 130, 246, 0.04) 0%, transparent 100%);
+    transform: scale(1.005);
+}
+
+.table tbody tr:last-child td,
+.modern-table tbody tr:last-child td,
+.inv-table tbody tr:last-child td,
+.txn-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Fix table responsive wrapper */
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: var(--radius-md);
+}
+
+/* ─────────────────────────────────────────────────
+   BADGE CONSISTENCY FIXES
+───────────────────────────────────────────────── */
+
+/* Standardize all badges */
+.badge {
+    padding: 4px 10px;
+    border-radius: var(--radius-full);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Fix badge colors */
+.badge.bg-primary {
+    background: var(--primary-color) !important;
+    color: white;
+}
+
+.badge.bg-success {
+    background: var(--success-color) !important;
+    color: white;
+}
+
+.badge.bg-danger {
+    background: var(--danger-color) !important;
+    color: white;
+}
+
+.badge.bg-warning {
+    background: var(--warning-color) !important;
+    color: white;
+}
+
+.badge.bg-info {
+    background: var(--info-color) !important;
+    color: white;
+}
+
+.badge.bg-secondary {
+    background: var(--text-secondary) !important;
+    color: white;
+}
+
+/* ─────────────────────────────────────────────────
+   FORM CONSISTENCY FIXES
+───────────────────────────────────────────────── */
+
+/* Standardize form labels */
+.form-label,
+label {
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+    display: block;
+}
+
+/* Fix form control sizing */
+.form-control,
+.form-select {
+    min-height: 42px;
+    padding: 10px 14px;
+    font-size: 14px;
+}
+
+.form-control-sm,
+.form-select-sm {
+    min-height: 32px;
+    padding: 6px 10px;
+    font-size: 13px;
+}
+
+.form-control-lg,
+.form-select-lg {
+    min-height: 48px;
+    padding: 12px 16px;
+    font-size: 16px;
+}
+
+/* Fix textarea */
+textarea.form-control {
+    min-height: 100px;
+    resize: vertical;
+}
+
+/* ─────────────────────────────────────────────────
+   ALERT CONSISTENCY FIXES
+───────────────────────────────────────────────── */
+
+/* Standardize all alerts */
+.alert {
+    border-radius: var(--radius-md);
+    padding: 14px 18px;
+    font-size: 14px;
+    margin-bottom: 20px;
+    border: 1px solid;
+    border-left-width: 4px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.alert i:first-child {
+    font-size: 18px;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+/* Fix alert colors */
+.alert-success {
+    background: #f0fdf4;
+    color: #065f46;
+    border-color: #86efac;
+}
+
+.alert-danger {
+    background: #fef2f2;
+    color: #991b1b;
+    border-color: #fca5a5;
+}
+
+.alert-warning {
+    background: #fffbeb;
+    color: #92400e;
+    border-color: #fde68a;
+}
+
+.alert-info {
+    background: #eff6ff;
+    color: #1e40af;
+    border-color: #93c5fd;
+}
+
+/* ─────────────────────────────────────────────────
+   PAGINATION CONSISTENCY FIXES
+───────────────────────────────────────────────── */
+
+/* Standardize pagination */
+.pagination,
+.inv-pagination,
+.ent-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 24px;
+    border-top: 1px solid var(--border-color);
+    background: var(--bg-primary);
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.pagination .page-link,
+.page-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    height: 36px;
+    padding: 0 12px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: all var(--transition-fast);
+    background: var(--bg-primary);
+}
+
+.pagination .page-link:hover,
+.page-btn:hover {
+    background: var(--primary-subtle);
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.pagination .page-item.active .page-link,
+.page-btn.active {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+    font-weight: 700;
+}
+
+.pagination .page-item.disabled .page-link,
+.page-btn.disabled {
+    opacity: 0.4;
+    pointer-events: none;
+    cursor: not-allowed;
+}
+
+/* ─────────────────────────────────────────────────
+   ACTION BUTTON CONSISTENCY FIXES
+───────────────────────────────────────────────── */
+
+/* Standardize action buttons */
+.action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+    background: var(--bg-primary);
+    color: var(--text-secondary);
+    font-size: 14px;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    text-decoration: none;
+}
+
+.action-btn:hover {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.action-btn.danger:hover {
+    background: var(--danger-color);
+    border-color: var(--danger-color);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.action-btn.text-info:hover {
+    background: var(--info-color);
+    border-color: var(--info-color);
+    color: white;
+}
+
+/* ─────────────────────────────────────────────────
+   MODAL CONSISTENCY FIXES
+───────────────────────────────────────────────── */
+
+/* Standardize modals */
+.modal-content {
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-2xl);
+}
+
+.modal-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border-color);
+    background: var(--bg-secondary);
+}
+
+.modal-title {
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.modal-body {
+    padding: 24px;
+}
+
+.modal-footer {
+    padding: 16px 24px;
+    border-top: 1px solid var(--border-color);
+    background: var(--bg-secondary);
+    gap: 8px;
+}
+
+/* ─────────────────────────────────────────────────
+   SPACING CONSISTENCY FIXES
+───────────────────────────────────────────────── */
+
+/* Standardize margins */
+.mb-3 {
+    margin-bottom: 16px !important;
+}
+
+.mb-4 {
+    margin-bottom: 24px !important;
+}
+
+.mb-5 {
+    margin-bottom: 32px !important;
+}
+
+.mt-3 {
+    margin-top: 16px !important;
+}
+
+.mt-4 {
+    margin-top: 24px !important;
+}
+
+.mt-5 {
+    margin-top: 32px !important;
+}
+
+/* Standardize padding */
+.p-3 {
+    padding: 16px !important;
+}
+
+.p-4 {
+    padding: 24px !important;
+}
+
+.p-5 {
+    padding: 32px !important;
+}
+
+/* Standardize gaps */
+.gap-2 {
+    gap: 8px !important;
+}
+
+.gap-3 {
+    gap: 16px !important;
+}
+
+.gap-4 {
+    gap: 24px !important;
+}
+
+/* ─────────────────────────────────────────────────
+   TEXT CONSISTENCY FIXES
+───────────────────────────────────────────────── */
+
+/* Standardize text colors */
+.text-muted {
+    color: var(--text-secondary) !important;
+}
+
+.text-primary {
+    color: var(--primary-color) !important;
+}
+
+.text-success {
+    color: var(--success-color) !important;
+}
+
+.text-danger {
+    color: var(--danger-color) !important;
+}
+
+.text-warning {
+    color: var(--warning-color) !important;
+}
+
+.text-info {
+    color: var(--info-color) !important;
+}
+
+/* Standardize font weights */
+.fw-semibold {
+    font-weight: 600 !important;
+}
+
+.fw-bold {
+    font-weight: 700 !important;
+}
+
+/* Standardize font sizes */
+.small {
+    font-size: 13px !important;
+}
+
+.fs-5 {
+    font-size: 18px !important;
+}
+
+.fs-4 {
+    font-size: 20px !important;
+}
+
+.fs-3 {
+    font-size: 24px !important;
+}
+
+.fs-2 {
+    font-size: 32px !important;
+}
+
+.fs-1 {
+    font-size: 40px !important;
+}
+
+/* ─────────────────────────────────────────────────
+   ICON CONSISTENCY FIXES
+───────────────────────────────────────────────── */
+
+/* Standardize icon sizing */
+.bi {
+    line-height: 1;
+    vertical-align: middle;
+}
+
+/* Fix icon spacing in buttons */
+.btn i {
+    margin-right: 0;
+}
+
+.btn i + span,
+.btn span + i {
+    margin-left: 6px;
+}
+
+/* ─────────────────────────────────────────────────
+   BORDER RADIUS CONSISTENCY
+───────────────────────────────────────────────── */
+
+.rounded {
+    border-radius: var(--radius-md) !important;
+}
+
+.rounded-3 {
+    border-radius: var(--radius-lg) !important;
+}
+
+.rounded-pill {
+    border-radius: var(--radius-full) !important;
+}
+
+/* ─────────────────────────────────────────────────
+   SHADOW CONSISTENCY
+───────────────────────────────────────────────── */
+
+.shadow-sm {
+    box-shadow: var(--shadow-sm) !important;
+}
+
+.shadow {
+    box-shadow: var(--shadow-md) !important;
+}
+
+.shadow-lg {
+    box-shadow: var(--shadow-lg) !important;
+}
+
+/* ─────────────────────────────────────────────────
+   RESPONSIVE FIXES
+───────────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+    /* Fix card padding on mobile */
+    .card-body {
+        padding: 16px;
+    }
+    
+    .card-header,
+    .inv-table-header,
+    .txn-header {
+        padding: 12px 16px;
+        flex-wrap: wrap;
+    }
+    
+    /* Fix button sizing on mobile */
+    .btn {
+        min-height: 38px;
+        padding: 8px 16px;
+        font-size: 13px;
+    }
+    
+    .btn-sm {
+        min-height: 30px;
+        padding: 5px 12px;
+        font-size: 12px;
+    }
+    
+    /* Fix table on mobile */
+    .table thead th,
+    .modern-table thead th {
+        padding: 10px 12px;
+        font-size: 0.7rem;
+    }
+    
+    .table tbody td,
+    .modern-table tbody td {
+        padding: 10px 12px;
+        font-size: 13px;
+    }
+    
+    /* Fix pagination on mobile */
+    .pagination,
+    .inv-pagination {
+        padding: 12px 16px;
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .page-btns {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+}
+
+/* ─────────────────────────────────────────────────
+   PRINT FIXES
+───────────────────────────────────────────────── */
+
+@media print {
+    .no-print,
+    .btn,
+    .action-btn,
+    .sidebar,
+    .main-header,
+    .pagination {
+        display: none !important;
+    }
+    
+    .card,
+    .table {
+        box-shadow: none !important;
+        border: 1px solid #ddd !important;
+    }
+    
+    .main-body {
+        padding: 0 !important;
+    }
+}
+
+/* ─────────────────────────────────────────────────
+   ACCESSIBILITY FIXES
+───────────────────────────────────────────────── */
+
+/* Ensure sufficient color contrast */
+.text-muted {
+    color: #64748B !important; /* WCAG AA compliant */
+}
+
+/* Fix focus states */
+*:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+/* Fix skip link */
+.skip-link:focus {
+    top: 12px;
+    z-index: 9999;
+}
+
+/* ─────────────────────────────────────────────────
+   ANIMATION PERFORMANCE FIXES
+───────────────────────────────────────────────── */
+
+/* Use transform for better performance */
+.hover-lift,
+.card:hover,
+.kpi-card:hover {
+    will-change: transform;
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* ─────────────────────────────────────────────────
+   Z-INDEX FIXES
+───────────────────────────────────────────────── */
+
+.modal-backdrop {
+    z-index: 1040 !important;
+}
+
+.modal {
+    z-index: 1050 !important;
+}
+
+.modal-dialog {
+    z-index: 1051 !important;
+}
+
+.sidebar {
+    z-index: 1000 !important;
+}
+
+.main-header {
+    z-index: 999 !important;
+}
+
+/* ─────────────────────────────────────────────────
+   OVERFLOW FIXES
+───────────────────────────────────────────────── */
+
+/* Fix text overflow */
+.text-truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Fix container overflow */
+.overflow-hidden {
+    overflow: hidden !important;
+}
+
+.overflow-auto {
+    overflow: auto !important;
+}
+
+/* ─────────────────────────────────────────────────
+   FLEXBOX FIXES
+───────────────────────────────────────────────── */
+
+.d-flex {
+    display: flex !important;
+}
+
+.flex-wrap {
+    flex-wrap: wrap !important;
+}
+
+.align-items-center {
+    align-items: center !important;
+}
+
+.justify-content-between {
+    justify-content: space-between !important;
+}
+
+.justify-content-center {
+    justify-content: center !important;
+}
+
+.justify-content-end {
+    justify-content: flex-end !important;
+}
+
+/* ─────────────────────────────────────────────────
+   GRID FIXES
+───────────────────────────────────────────────── */
+
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-right: -12px;
+    margin-left: -12px;
+}
+
+.row > * {
+    padding-right: 12px;
+    padding-left: 12px;
+}
+
+.g-3 {
+    gap: 16px !important;
+}
+
+.g-4 {
+    gap: 24px !important;
+}
