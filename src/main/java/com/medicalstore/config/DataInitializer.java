@@ -481,6 +481,38 @@ public class DataInitializer implements CommandLineRunner {
             }
         }
 
+        // --- Current-month sales top-up (ensures Category Sales chart always has data) ---
+        {
+            LocalDateTime startOfMonth = java.time.LocalDate.now().withDayOfMonth(1).atStartOfDay();
+            LocalDateTime endOfDay = java.time.LocalDate.now().atTime(23, 59, 59);
+            long currentMonthSales = saleRepository.countByBranchIdAndSaleDateBetween(branch.getId(), startOfMonth, endOfDay);
+            if (currentMonthSales < 5) {
+                Medicine med1 = medicineRepository.findByBarcode(prefix + "-BC-001").orElse(null);
+                Medicine med3 = medicineRepository.findByBarcode(prefix + "-BC-003").orElse(null);
+                Medicine med4 = medicineRepository.findByBarcode(prefix + "-BC-004").orElse(null);
+                if (med1 != null && med3 != null) {
+                    createSampleSaleAt(branch, c1, "Cash", 0.0, 5.0,
+                            List.of(new SaleItemData(med1, 3, 10.0, 7.0), new SaleItemData(med3, 2, 8.0, 5.0)),
+                            LocalDateTime.now().minusDays(2));
+                    createSampleSaleAt(branch, c2, "UPI", 5.0, 12.0,
+                            List.of(new SaleItemData(med1, 5, 10.0, 7.0), new SaleItemData(med3, 3, 8.0, 5.0)),
+                            LocalDateTime.now().minusDays(1));
+                    createSampleSaleAt(branch, null, "Cash", 0.0, 5.0,
+                            List.of(new SaleItemData(med1, 8, 10.0, 7.0)),
+                            LocalDateTime.now().minusHours(2));
+                }
+                if (med4 != null) {
+                    createSampleSaleAt(branch, c2, "UPI", 0.0, 12.0,
+                            List.of(new SaleItemData(med4, 1, 25.0, 18.0)),
+                            LocalDateTime.now().minusHours(5));
+                    createSampleSaleAt(branch, c1, "Card", 0.0, 12.0,
+                            List.of(new SaleItemData(med4, 2, 25.0, 18.0)),
+                            LocalDateTime.now().minusDays(3));
+                }
+                log.info("Current-month sales top-up seeded for branch '{}'", branch.getName());
+            }
+        }
+
         // --- Supplier Credits ---
         if (supplierCreditRepository.findByBranchId(branch.getId()).isEmpty()) {
             SupplierCredit sc = new SupplierCredit();
@@ -658,6 +690,57 @@ public class DataInitializer implements CommandLineRunner {
                         LocalDateTime.now().minusHours(3));
             }
             log.info("Historical sales seeded for branch '{}'", branch.getName());
+        }
+
+        // --- Current-month sales top-up (ensures Category Sales chart always has data) ---
+        {
+            LocalDateTime startOfMonth = java.time.LocalDate.now().withDayOfMonth(1).atStartOfDay();
+            LocalDateTime endOfDay = java.time.LocalDate.now().atTime(23, 59, 59);
+            long currentMonthSales = saleRepository.countByBranchIdAndSaleDateBetween(
+                    branch.getId(), startOfMonth, endOfDay);
+            if (currentMonthSales < 10) {
+                Medicine med1  = medicineRepository.findByBarcode("MED-BC-001").orElse(null);
+                Medicine med2  = medicineRepository.findByBarcode("MED-BC-002").orElse(null);
+                Medicine med3  = medicineRepository.findByBarcode("MED-BC-003").orElse(null);
+                Medicine med4  = medicineRepository.findByBarcode("MED-BC-004").orElse(null);
+                Medicine med5  = medicineRepository.findByBarcode("MED-BC-005").orElse(null);
+                Medicine med6  = medicineRepository.findByBarcode("MED-BC-006").orElse(null);
+                Medicine med11 = medicineRepository.findByBarcode("MED-BC-011").orElse(null);
+                Medicine med12 = medicineRepository.findByBarcode("MED-BC-012").orElse(null);
+                Medicine med13 = medicineRepository.findByBarcode("MED-BC-013").orElse(null);
+                Medicine med14 = medicineRepository.findByBarcode("MED-BC-014").orElse(null);
+
+                if (med1 != null && med3 != null && med5 != null) {
+                    createSampleSaleAt(branch, c1, "Cash", 0.0, 5.0,
+                            List.of(new SaleItemData(med1, 5, 10.0, 7.0), new SaleItemData(med3, 3, 8.0, 5.0)),
+                            LocalDateTime.now().minusDays(20));
+                    createSampleSaleAt(branch, c2, "UPI", 5.0, 12.0,
+                            List.of(new SaleItemData(med2, 2, 45.0, 35.0), new SaleItemData(med4, 1, 25.0, 18.0)),
+                            LocalDateTime.now().minusDays(17));
+                    createSampleSaleAt(branch, null, "Cash", 0.0, 5.0,
+                            List.of(new SaleItemData(med11, 4, 18.0, 12.0), new SaleItemData(med1, 6, 10.0, 7.0)),
+                            LocalDateTime.now().minusDays(14));
+                    createSampleSaleAt(branch, c3, "Card", 0.0, 12.0,
+                            List.of(new SaleItemData(med5, 2, 30.0, 22.0), new SaleItemData(med6, 1, 55.0, 40.0)),
+                            LocalDateTime.now().minusDays(10));
+                    createSampleSaleAt(branch, c1, "UPI", 0.0, 5.0,
+                            List.of(new SaleItemData(med14, 1, 120.0, 85.0), new SaleItemData(med3, 4, 8.0, 5.0)),
+                            LocalDateTime.now().minusDays(7));
+                    createSampleSaleAt(branch, c2, "Cash", 0.0, 12.0,
+                            List.of(new SaleItemData(med12, 1, 35.0, 25.0), new SaleItemData(med13, 1, 65.0, 48.0)),
+                            LocalDateTime.now().minusDays(4));
+                    createSampleSaleAt(branch, null, "UPI", 0.0, 5.0,
+                            List.of(new SaleItemData(med1, 8, 10.0, 7.0), new SaleItemData(med4, 2, 25.0, 18.0)),
+                            LocalDateTime.now().minusDays(2));
+                    createSampleSaleAt(branch, c3, "Card", 5.0, 12.0,
+                            List.of(new SaleItemData(med5, 3, 30.0, 22.0), new SaleItemData(med11, 2, 18.0, 12.0)),
+                            LocalDateTime.now().minusDays(1));
+                    createSampleSaleAt(branch, c1, "Cash", 0.0, 5.0,
+                            List.of(new SaleItemData(med2, 1, 45.0, 35.0), new SaleItemData(med3, 5, 8.0, 5.0)),
+                            LocalDateTime.now().minusHours(5));
+                    log.info("Current-month sales top-up seeded for branch '{}'", branch.getName());
+                }
+            }
         }
 
         // --- Purchase Orders (RECEIVED, ORDERED, DRAFT states) ---

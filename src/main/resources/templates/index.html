@@ -786,47 +786,52 @@
                 // ── Category Pie/Doughnut Chart ──────────────────────────────────
                 const catCtx = document.getElementById('categoryChart');
                 if (catCtx) {
-                    const colors = [
-                        '#2563eb', '#38ef7d', '#fa709a', '#38bdf8', '#a18cd1',
-                        '#fbc2eb', '#f5576c', '#fee140'
-                    ];
-                    new Chart(catCtx, {
-                        type: 'doughnut',
-                        data: {
-                            labels: categoryData.labels,
-                            datasets: [{
-                                data: categoryData.data,
-                                backgroundColor: colors.slice(0, categoryData.labels.length),
-                                borderWidth: 2,
-                                borderColor: '#fff',
-                                hoverOffset: 6
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            cutout: '60%',
-                            plugins: {
-                                legend: {
-                                    position: 'bottom',
-                                    labels: {
-                                        padding: 12,
-                                        usePointStyle: true,
-                                        pointStyle: 'circle',
-                                        font: { size: 11 }
-                                    }
-                                },
-                                tooltip: {
-                                    backgroundColor: '#1e293b',
-                                    padding: 10,
-                                    callbacks: {
-                                        label: function (ctx) {
-                                            return ctx.label + ': ₹' + Number(ctx.parsed).toLocaleString('en-IN');
+                    if (!categoryData.labels || categoryData.labels.length === 0) {
+                        const parent = catCtx.parentElement;
+                        parent.innerHTML = '<div class="d-flex flex-column align-items-center justify-content-center h-100 text-muted" style="min-height: 200px;"><i class="bi bi-pie-chart text-secondary opacity-50 mb-2" style="font-size: 2.5rem;"></i><span class="small fw-semibold">No sales data this month</span></div>';
+                    } else {
+                        const colors = [
+                            '#2563eb', '#38ef7d', '#fa709a', '#38bdf8', '#a18cd1',
+                            '#fbc2eb', '#f5576c', '#fee140'
+                        ];
+                        new Chart(catCtx, {
+                            type: 'doughnut',
+                            data: {
+                                labels: categoryData.labels,
+                                datasets: [{
+                                    data: categoryData.data,
+                                    backgroundColor: colors.slice(0, categoryData.labels.length),
+                                    borderWidth: 2,
+                                    borderColor: '#fff',
+                                    hoverOffset: 6
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                cutout: '60%',
+                                plugins: {
+                                    legend: {
+                                        position: 'bottom',
+                                        labels: {
+                                            padding: 12,
+                                            usePointStyle: true,
+                                            pointStyle: 'circle',
+                                            font: { size: 11 }
+                                        }
+                                    },
+                                    tooltip: {
+                                        backgroundColor: '#1e293b',
+                                        padding: 10,
+                                        callbacks: {
+                                            label: function (ctx) {
+                                                return ctx.label + ': ₹' + Number(ctx.parsed).toLocaleString('en-IN');
+                                            }
                                         }
                                     }
                                 }
                             }
-                        }
-                    });
+                        });
+                    }
                 }
             }
         </script>

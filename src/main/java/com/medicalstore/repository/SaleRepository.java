@@ -54,6 +54,9 @@ public interface SaleRepository extends JpaRepository<Sale, Long>, JpaSpecificat
 
         long countByBranchId(Long branchId);
 
+        @Query("SELECT COUNT(s) FROM Sale s WHERE s.branch.id = ?1 AND s.saleDate BETWEEN ?2 AND ?3")
+        long countByBranchIdAndSaleDateBetween(Long branchId, LocalDateTime start, LocalDateTime end);
+
         // --- owner-scoped (OWNER sees all branches belonging to them) ---
         @Query("SELECT s FROM Sale s LEFT JOIN FETCH s.customer " +
                         "WHERE s.branch.owner.id = ?1 ORDER BY s.saleDate DESC")

@@ -174,17 +174,21 @@ public class OwnerController {
 
                 Long ownerId = securityUtils.getCurrentUserId();
 
-                // Verify branch belongs to this owner (tenant validation in controller is
-                // acceptable here since it's about ownership of the branch resource)
-                Branch branch = branchService.getBranchById(branchId)
-                                .filter(b -> b.getOwner().getId().equals(ownerId))
-                                .orElseThrow(() -> new RuntimeException("Branch not found or access denied"));
+                try {
+                        // Verify branch belongs to this owner (tenant validation in controller is
+                        // acceptable here since it's about ownership of the branch resource)
+                        Branch branch = branchService.getBranchById(branchId)
+                                        .filter(b -> b.getOwner().getId().equals(ownerId))
+                                        .orElseThrow(() -> new RuntimeException("Branch not found or access denied"));
 
-                // All uniqueness checks + encoding + save handled by UserManagementService
-                userManagementService.createUser(username, password, fullName, email, "SHOPKEEPER", branch);
+                        // All uniqueness checks + encoding + save handled by UserManagementService
+                        userManagementService.createUser(username, password, fullName, email, "SHOPKEEPER", branch);
 
-                ra.addFlashAttribute("successMessage",
-                                "Shopkeeper '" + username + "' created and assigned to " + branch.getName());
+                        ra.addFlashAttribute("successMessage",
+                                        "Shopkeeper '" + username + "' created and assigned to " + branch.getName());
+                } catch (Exception e) {
+                        ra.addFlashAttribute("errorMessage", "Failed to create shopkeeper: " + e.getMessage());
+                }
                 return "redirect:/owner/shopkeepers";
         }
 
@@ -193,8 +197,12 @@ public class OwnerController {
                 Long ownerId = securityUtils.getCurrentUserId();
                 var myBranchIds = branchService.getBranchesByOwner(ownerId)
                                 .stream().map(Branch::getId).collect(java.util.stream.Collectors.toSet());
-                userManagementService.toggleShopkeeper(id, myBranchIds);
-                ra.addFlashAttribute("successMessage", "Shopkeeper status updated.");
+                try {
+                        userManagementService.toggleShopkeeper(id, myBranchIds);
+                        ra.addFlashAttribute("successMessage", "Shopkeeper status updated.");
+                } catch (Exception e) {
+                        ra.addFlashAttribute("errorMessage", "Failed to update shopkeeper status: " + e.getMessage());
+                }
                 return "redirect:/owner/shopkeepers";
         }
 

@@ -20,8 +20,8 @@
                         <form th:action="@{/suppliers/credits/save}" method="post" th:object="${credit}">
                             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                             <!-- Error Message -->
-                            <div th:if="${error}" class="alert alert-danger shadow-sm border-0">
-                                <i class="bi bi-exclamation-triangle-fill me-2"></i><span th:text="${error}"></span>
+                            <div th:if="${errorMessage}" class="alert alert-danger shadow-sm border-0">
+                                <i class="bi bi-exclamation-triangle-fill me-2"></i><span th:text="${errorMessage}"></span>
                             </div>
 
                             <div class="row g-4">
