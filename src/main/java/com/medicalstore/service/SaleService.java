@@ -145,6 +145,7 @@ public class SaleService {
     @Caching(evict = {
             @CacheEvict(value = "medicines_search", allEntries = true),
             @CacheEvict(value = "dashboard_kpis", allEntries = true),
+            @CacheEvict(value = "dashboard_charts", allEntries = true),
             @CacheEvict(value = "analytics_profit", allEntries = true),
             @CacheEvict(value = "analytics_fastmoving", allEntries = true),
             @CacheEvict(value = "analytics_deadstock", allEntries = true)
@@ -233,7 +234,8 @@ public class SaleService {
     @Transactional
     @Caching(evict = {
             @CacheEvict(value = "medicines_search", allEntries = true),
-            @CacheEvict(value = "dashboard_kpis", allEntries = true)
+            @CacheEvict(value = "dashboard_kpis", allEntries = true),
+            @CacheEvict(value = "dashboard_charts", allEntries = true)
     })
     public void deleteSale(Long id) {
         Sale sale = saleRepository.findByIdWithDetails(id)

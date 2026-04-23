@@ -53,13 +53,12 @@ public class SubscriptionInterceptor implements HandlerInterceptor {
                     }
                     var plan = subscriptionService.getPlanForOwner(ownerId);
                     if (plan.isEmpty() || plan.get().isExpired()) {
-                        if (WRITE_METHODS.contains(request.getMethod().toUpperCase(java.util.Locale.ROOT))) {
-                            // Block all mutation requests when subscription is expired
+                        // Block ALL requests (read and write) when subscription is expired
+                        // Only allow access to subscription billing page itself
+                        if (!uri.startsWith(RoutePaths.SUBSCRIPTION_BILLING)) {
                             response.sendRedirect(RoutePaths.SUBSCRIPTION_BILLING + "?expired=true");
                             return false;
                         }
-                        // For read-only (GET/HEAD) requests, allow through but flag the template
-                        request.setAttribute(ATTR_SUBSCRIPTION_EXPIRED, Boolean.TRUE);
                     }
                 }
             } catch (Exception e) {

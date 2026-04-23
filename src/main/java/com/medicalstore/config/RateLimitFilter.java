@@ -127,7 +127,9 @@ public class RateLimitFilter extends OncePerRequestFilter {
     }
 
     /**
-     * Skip rate limiting for static resources and login pages.
+     * Skip rate limiting for static resources, login pages, and API endpoints.
+     * API endpoints have separate rate limiting considerations and may use
+     * token-based authentication with different limits.
      */
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
@@ -136,6 +138,10 @@ public class RateLimitFilter extends OncePerRequestFilter {
                 path.startsWith("/js/") ||
                 path.startsWith("/images/") ||
                 path.startsWith("/login") ||
-                path.startsWith("/error");
+                path.startsWith("/error") ||
+                path.startsWith("/api/") ||
+                path.startsWith("/actuator/") ||
+                path.startsWith("/swagger-ui") ||
+                path.startsWith("/v3/api-docs");
     }
 }
