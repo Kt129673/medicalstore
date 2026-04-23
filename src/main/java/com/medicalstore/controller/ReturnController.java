@@ -41,9 +41,9 @@ public class ReturnController {
     public String saveReturn(@ModelAttribute Return returnItem, RedirectAttributes redirectAttributes) {
         try {
             returnService.createReturn(returnItem);
-            redirectAttributes.addFlashAttribute("success", "Return processed successfully and stock updated!");
+            redirectAttributes.addFlashAttribute("successMessage", "Return processed successfully and stock updated!");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         }
         return "redirect:/returns";
     }
@@ -53,9 +53,9 @@ public class ReturnController {
     public String deleteReturn(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
             returnService.deleteReturn(id);
-            redirectAttributes.addFlashAttribute("success", "Return cancelled and stock adjustment reversed.");
+            redirectAttributes.addFlashAttribute("successMessage", "Return cancelled and stock adjustment reversed.");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Cannot delete return: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", "Cannot delete return: " + e.getMessage());
         }
         return "redirect:/returns";
     }

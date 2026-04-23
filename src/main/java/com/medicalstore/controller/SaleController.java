@@ -216,9 +216,9 @@ public class SaleController {
     public String deleteSale(@PathVariable Long id, RedirectAttributes ra) {
         try {
             saleService.deleteSale(id);
-            ra.addFlashAttribute("success", "Sale deleted and stock restored successfully.");
+            ra.addFlashAttribute("successMessage", "Sale deleted and stock restored successfully.");
         } catch (Exception e) {
-            ra.addFlashAttribute("error", "Failed to delete sale: " + e.getMessage());
+            ra.addFlashAttribute("errorMessage", "Failed to delete sale: " + e.getMessage());
         }
         return "redirect:/sales";
     }

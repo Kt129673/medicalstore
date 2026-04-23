@@ -66,8 +66,7 @@ public class MedicineController {
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable Long id, Model model) {
         Medicine medicine = medicineService.getMedicineById(id)
-                .orElseThrow(() -> new org.springframework.security.access.AccessDeniedException(
-                        "Medicine not found or access denied"));
+                .orElseThrow(() -> new com.medicalstore.exception.ResourceNotFoundException("Medicine", id));
         model.addAttribute("medicine", medicine);
         model.addAttribute("categories", medicineService.getAllCategories());
         model.addAttribute("suppliers", supplierService.getAllSuppliers());
@@ -93,10 +92,10 @@ public class MedicineController {
                 }
             }
             medicineService.saveMedicine(medicine);
-            ra.addFlashAttribute("success", "Medicine saved successfully!");
+            ra.addFlashAttribute("successMessage", "Medicine saved successfully!");
             return RoutePaths.redirectTo(RoutePaths.MEDICINES);
         } catch (IllegalArgumentException e) {
-            model.addAttribute("error", e.getMessage());
+            model.addAttribute("errorMessage", e.getMessage());
             model.addAttribute("medicine", medicine);
             if (securityUtils.isAdmin()) {
                 model.addAttribute("branches", branchService.getAllBranches());
@@ -105,7 +104,7 @@ public class MedicineController {
             model.addAttribute("suppliers", supplierService.getAllSuppliers());
             return "medicines/form";
         } catch (Exception e) {
-            model.addAttribute("error", "Failed to save medicine: " + e.getMessage());
+            model.addAttribute("errorMessage", "Failed to save medicine: " + e.getMessage());
             model.addAttribute("medicine", medicine);
             if (securityUtils.isAdmin()) {
                 model.addAttribute("branches", branchService.getAllBranches());
@@ -121,9 +120,9 @@ public class MedicineController {
     public String deleteMedicine(@PathVariable Long id, RedirectAttributes ra) {
         try {
             medicineService.deleteMedicine(id);
-            ra.addFlashAttribute("success", "Medicine deleted successfully!");
+            ra.addFlashAttribute("successMessage", "Medicine deleted successfully!");
         } catch (Exception e) {
-            ra.addFlashAttribute("error", "Cannot delete medicine: it may be linked to sales or purchases.");
+            ra.addFlashAttribute("errorMessage", "Cannot delete medicine: it may be linked to sales or purchases.");
         }
         return RoutePaths.redirectTo(RoutePaths.MEDICINES);
     }
@@ -138,7 +137,7 @@ public class MedicineController {
                 count++;
             }
         }
-        ra.addFlashAttribute("success", count + " medicines deleted successfully!");
+        ra.addFlashAttribute("successMessage", count + " medicines deleted successfully!");
         return RoutePaths.redirectTo(RoutePaths.MEDICINES);
     }
 

@@ -107,17 +107,17 @@ public class PurchaseService {
     })
     public PurchaseOrder receiveOrder(Long orderId, List<Integer> receivedQuantities) {
         PurchaseOrder order = purchaseOrderRepository.findById(orderId)
-                .orElseThrow(() -> new RuntimeException("Purchase order not found"));
+                .orElseThrow(() -> new com.medicalstore.exception.ResourceNotFoundException("PurchaseOrder", orderId));
 
         // Tenant check — only the owning branch or admin can receive
         Long tenantId = com.medicalstore.common.TenantContext.getTenantId();
         if (tenantId != null && (order.getBranch() == null || !tenantId.equals(order.getBranch().getId()))) {
-            throw new RuntimeException("Access denied: order does not belong to your branch.");
+            throw new com.medicalstore.exception.TenantAccessException("PurchaseOrder", tenantId);
         }
         Long ownerId = com.medicalstore.common.TenantContext.getOwnerId();
         if (ownerId != null && order.getBranch() != null && order.getBranch().getOwner() != null
                 && !ownerId.equals(order.getBranch().getOwner().getId())) {
-            throw new RuntimeException("Access denied: order does not belong to your organisation.");
+            throw new com.medicalstore.exception.TenantAccessException("PurchaseOrder", ownerId);
         }
 
         List<PurchaseOrderItem> items = order.getItems();
@@ -140,17 +140,17 @@ public class PurchaseService {
     @Transactional
     public void cancelOrder(Long orderId) {
         PurchaseOrder order = purchaseOrderRepository.findById(orderId)
-                .orElseThrow(() -> new RuntimeException("Purchase order not found"));
+                .orElseThrow(() -> new com.medicalstore.exception.ResourceNotFoundException("PurchaseOrder", orderId));
 
         // Tenant check
         Long tenantId = com.medicalstore.common.TenantContext.getTenantId();
         if (tenantId != null && (order.getBranch() == null || !tenantId.equals(order.getBranch().getId()))) {
-            throw new RuntimeException("Access denied: order does not belong to your branch.");
+            throw new com.medicalstore.exception.TenantAccessException("PurchaseOrder", tenantId);
         }
         Long ownerId = com.medicalstore.common.TenantContext.getOwnerId();
         if (ownerId != null && order.getBranch() != null && order.getBranch().getOwner() != null
                 && !ownerId.equals(order.getBranch().getOwner().getId())) {
-            throw new RuntimeException("Access denied: order does not belong to your organisation.");
+            throw new com.medicalstore.exception.TenantAccessException("PurchaseOrder", ownerId);
         }
 
         order.setStatus("CANCELLED");

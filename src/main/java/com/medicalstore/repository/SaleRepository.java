@@ -206,6 +206,12 @@ public interface SaleRepository extends JpaRepository<Sale, Long>, JpaSpecificat
                         "WHERE s.branch.owner.id = ?1 AND s.saleDate BETWEEN ?2 AND ?3 ORDER BY s.saleDate DESC")
         List<Sale> findWithItemsByOwnerBetween(Long ownerId, LocalDateTime start, LocalDateTime end);
 
+        /** Backdates a sale's timestamp — used only by DataInitializer for demo data. */
+        @org.springframework.data.jpa.repository.Modifying
+        @org.springframework.transaction.annotation.Transactional
+        @Query("UPDATE Sale s SET s.saleDate = ?2 WHERE s.id = ?1")
+        void updateSaleDate(Long id, LocalDateTime saleDate);
+
         /**
          * Top-selling medicines with SQL LIMIT pushed via Pageable — avoids fetching
          * ALL rows into Java and breaking in a loop.

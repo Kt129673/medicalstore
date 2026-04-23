@@ -37,7 +37,7 @@ public class CustomerController {
     @GetMapping("/{id}")
     public String viewCustomer(@PathVariable Long id, Model model) {
         Customer customer = customerService.getCustomerById(id)
-                .orElseThrow(() -> new RuntimeException("Customer not found"));
+                .orElseThrow(() -> new com.medicalstore.exception.ResourceNotFoundException("Customer", id));
         model.addAttribute("customer", customer);
         model.addAttribute("purchases", saleService.getSalesByCustomer(id));
         return "customers/view";
@@ -52,7 +52,7 @@ public class CustomerController {
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable Long id, Model model) {
         Customer customer = customerService.getCustomerById(id)
-                .orElseThrow(() -> new RuntimeException("Customer not found"));
+                .orElseThrow(() -> new com.medicalstore.exception.ResourceNotFoundException("Customer", id));
         model.addAttribute("customer", customer);
         return "customers/form";
     }
@@ -85,15 +85,15 @@ public class CustomerController {
             }
 
             customerService.saveCustomer(customer);
-            redirectAttributes.addFlashAttribute("success", "Customer saved successfully!");
+            redirectAttributes.addFlashAttribute("successMessage", "Customer saved successfully!");
         } catch (org.springframework.dao.DataIntegrityViolationException e) {
-            redirectAttributes.addFlashAttribute("error", "A customer with this phone number or email already exists.");
+            redirectAttributes.addFlashAttribute("errorMessage", "A customer with this phone number or email already exists.");
             String returnPath = customer.getId() != null
                     ? RoutePaths.CUSTOMERS + "/edit/" + customer.getId()
                     : RoutePaths.CUSTOMERS + "/new";
             return "redirect:" + returnPath;
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Failed to save customer: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to save customer: " + e.getMessage());
             String returnPath = customer.getId() != null
                     ? RoutePaths.CUSTOMERS + "/edit/" + customer.getId()
                     : RoutePaths.CUSTOMERS + "/new";
@@ -107,9 +107,9 @@ public class CustomerController {
     public String deleteCustomer(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
             customerService.deleteCustomer(id);
-            redirectAttributes.addFlashAttribute("success", "Customer deleted successfully!");
+            redirectAttributes.addFlashAttribute("successMessage", "Customer deleted successfully!");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Cannot delete customer: it may be linked to sales records.");
+            redirectAttributes.addFlashAttribute("errorMessage", "Cannot delete customer: it may be linked to sales records.");
         }
         return RoutePaths.redirectTo(RoutePaths.CUSTOMERS);
     }

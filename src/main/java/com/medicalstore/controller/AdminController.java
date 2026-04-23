@@ -133,7 +133,7 @@ public class AdminController {
     public String showEditUserForm(@PathVariable Long id, Model model, RedirectAttributes ra) {
         User user = userManagementService.findById(id).orElse(null);
         if (user == null) {
-            ra.addFlashAttribute("error", "User not found.");
+            ra.addFlashAttribute("errorMessage", "User not found.");
             return RoutePaths.redirectTo(RoutePaths.ADMIN_USERS);
         }
         model.addAttribute("title", "Edit User");
@@ -154,7 +154,7 @@ public class AdminController {
             RedirectAttributes ra) {
         Branch branch = (branchId != null) ? branchService.getBranchById(branchId).orElse(null) : null;
         userManagementService.updateUser(id, fullName, email, enabled, accountNonLocked, branch);
-        ra.addFlashAttribute("success", "User updated successfully.");
+        ra.addFlashAttribute("successMessage", "User updated successfully.");
         return RoutePaths.redirectTo(RoutePaths.ADMIN_USERS);
     }
 
@@ -166,7 +166,7 @@ public class AdminController {
         userManagementService.resetPassword(id, newPassword);
         userManagementService.findById(id).ifPresent(u ->
                 roleAuditService.logPasswordReset(u.getUsername()));
-        ra.addFlashAttribute("success", "Password reset successfully.");
+        ra.addFlashAttribute("successMessage", "Password reset successfully.");
         return RoutePaths.redirectTo(RoutePaths.ADMIN_USERS);
     }
 
@@ -181,14 +181,14 @@ public class AdminController {
             RedirectAttributes ra) {
         Branch branch = (branchId != null) ? branchService.getBranchById(branchId).orElse(null) : null;
         User saved = userManagementService.createUser(username, password, fullName, email, role, branch);
-        ra.addFlashAttribute("success", "User '" + saved.getUsername() + "' created with role " + role);
+        ra.addFlashAttribute("successMessage", "User '" + saved.getUsername() + "' created with role " + role);
         return RoutePaths.redirectTo(RoutePaths.ADMIN_USERS);
     }
 
     @PostMapping("/users/toggle/{id}")
     public String toggleUser(@PathVariable Long id, RedirectAttributes ra) {
         userManagementService.toggleEnabled(id);
-        ra.addFlashAttribute("success", "User status updated.");
+        ra.addFlashAttribute("successMessage", "User status updated.");
         return RoutePaths.redirectTo(RoutePaths.ADMIN_USERS);
     }
 
@@ -198,7 +198,7 @@ public class AdminController {
         Long currentId = securityUtils.getCurrentUserId();
         userManagementService.deleteUser(id, currentId);
         roleAuditService.logAction("USER_DELETED", "Soft-deleted user ID: " + id);
-        ra.addFlashAttribute("success", "User deleted (soft delete — restorable).");
+        ra.addFlashAttribute("successMessage", "User deleted (soft delete — restorable).");
         return RoutePaths.redirectTo(RoutePaths.ADMIN_USERS);
     }
 
@@ -217,7 +217,7 @@ public class AdminController {
         userManagementService.restoreUser(id);
         roleAuditService.logAction("USER_RESTORED",
                 "Restored soft-deleted user ID: " + id);
-        ra.addFlashAttribute("success", "User restored successfully.");
+        ra.addFlashAttribute("successMessage", "User restored successfully.");
         return RoutePaths.redirectTo(RoutePaths.ADMIN_USERS);
     }
 
@@ -235,7 +235,7 @@ public class AdminController {
     public String showEditBranchForm(@PathVariable Long id, Model model, RedirectAttributes ra) {
         Branch branch = branchService.getBranchById(id).orElse(null);
         if (branch == null) {
-            ra.addFlashAttribute("error", "Branch not found.");
+            ra.addFlashAttribute("errorMessage", "Branch not found.");
             return RoutePaths.redirectTo(RoutePaths.ADMIN_BRANCHES);
         }
         model.addAttribute("title", "Edit Branch");
@@ -264,7 +264,7 @@ public class AdminController {
             userManagementService.findById(ownerId).ifPresent(branch::setOwner);
             branchService.saveBranch(branch);
         });
-        ra.addFlashAttribute("success", "Branch updated successfully.");
+        ra.addFlashAttribute("successMessage", "Branch updated successfully.");
         return RoutePaths.redirectTo(RoutePaths.ADMIN_BRANCHES);
     }
 
@@ -291,14 +291,14 @@ public class AdminController {
         branch.setIsActive(true);
         branchService.saveBranch(branch);
 
-        ra.addFlashAttribute("success", "Branch '" + name + "' created successfully.");
+        ra.addFlashAttribute("successMessage", "Branch '" + name + "' created successfully.");
         return RoutePaths.redirectTo(RoutePaths.ADMIN_BRANCHES);
     }
 
     @PostMapping("/branches/toggle/{id}")
     public String toggleBranch(@PathVariable Long id, RedirectAttributes ra) {
         branchService.toggleActive(id);
-        ra.addFlashAttribute("success", "Branch status updated.");
+        ra.addFlashAttribute("successMessage", "Branch status updated.");
         return RoutePaths.redirectTo(RoutePaths.ADMIN_BRANCHES);
     }
 
@@ -330,16 +330,16 @@ public class AdminController {
             RedirectAttributes ra) {
         try {
             if (expiryDate == null || expiryDate.isBlank()) {
-                ra.addFlashAttribute("error", "Expiry date is required.");
+                ra.addFlashAttribute("errorMessage", "Expiry date is required.");
                 return RoutePaths.redirectTo(RoutePaths.ADMIN_SUBSCRIPTIONS);
             }
             LocalDate parsedDate = LocalDate.parse(expiryDate);
             subscriptionService.createOrUpdatePlan(ownerId, planType, parsedDate, maxUsers, maxBranches);
             String ownerName = userManagementService.findById(ownerId)
                     .map(User::getUsername).orElse("Unknown");
-            ra.addFlashAttribute("success", "Subscription updated for owner: " + ownerName);
+            ra.addFlashAttribute("successMessage", "Subscription updated for owner: " + ownerName);
         } catch (Exception e) {
-            ra.addFlashAttribute("error", "Failed to update subscription: " + e.getMessage());
+            ra.addFlashAttribute("errorMessage", "Failed to update subscription: " + e.getMessage());
         }
         return RoutePaths.redirectTo(RoutePaths.ADMIN_SUBSCRIPTIONS);
     }
@@ -362,7 +362,7 @@ public class AdminController {
     public String viewAsOwner(@PathVariable Long ownerId, Model model, RedirectAttributes ra) {
         User owner = userManagementService.findById(ownerId).orElse(null);
         if (owner == null || !owner.getRoles().contains("OWNER")) {
-            ra.addFlashAttribute("error", "Owner not found.");
+            ra.addFlashAttribute("errorMessage", "Owner not found.");
             return RoutePaths.redirectTo(RoutePaths.ADMIN);
         }
 

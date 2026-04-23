@@ -55,7 +55,7 @@ public class PurchaseController {
     @GetMapping("/{id}")
     public String viewOrder(@PathVariable Long id, Model model) {
         PurchaseOrder order = purchaseService.getOrderById(id)
-                .orElseThrow(() -> new RuntimeException("Order not found"));
+                .orElseThrow(() -> new com.medicalstore.exception.ResourceNotFoundException("PurchaseOrder", id));
         model.addAttribute("order", order);
         return "purchase/view";
     }
@@ -63,7 +63,7 @@ public class PurchaseController {
     @GetMapping("/edit/{id}")
     public String editOrder(@PathVariable Long id, Model model) {
         PurchaseOrder order = purchaseService.getOrderById(id)
-                .orElseThrow(() -> new RuntimeException("Order not found"));
+                .orElseThrow(() -> new com.medicalstore.exception.ResourceNotFoundException("PurchaseOrder", id));
         if (!"DRAFT".equals(order.getStatus())) {
             return "redirect:/purchases/" + id;
         }
@@ -119,10 +119,10 @@ public class PurchaseController {
             }
 
             PurchaseOrder saved = purchaseService.saveOrder(order);
-            ra.addFlashAttribute("success", "Purchase order " + saved.getOrderNumber() + " saved successfully!");
+            ra.addFlashAttribute("successMessage", "Purchase order " + saved.getOrderNumber() + " saved successfully!");
             return "redirect:/purchases/" + saved.getId();
         } catch (Exception e) {
-            ra.addFlashAttribute("error", "Failed to save order: " + e.getMessage());
+            ra.addFlashAttribute("errorMessage", "Failed to save order: " + e.getMessage());
             return "redirect:/purchases/new";
         }
     }
@@ -134,10 +134,10 @@ public class PurchaseController {
             RedirectAttributes ra) {
         try {
             purchaseService.receiveOrder(id, receivedQuantities);
-            ra.addFlashAttribute("success", "Goods received successfully! Stock has been updated.");
+            ra.addFlashAttribute("successMessage", "Goods received successfully! Stock has been updated.");
             return "redirect:/purchases/" + id;
         } catch (Exception e) {
-            ra.addFlashAttribute("error", "Failed to receive goods: " + e.getMessage());
+            ra.addFlashAttribute("errorMessage", "Failed to receive goods: " + e.getMessage());
             return "redirect:/purchases/" + id;
         }
     }
@@ -147,9 +147,9 @@ public class PurchaseController {
     public String deleteOrder(@PathVariable Long id, RedirectAttributes ra) {
         try {
             purchaseService.deleteOrder(id);
-            ra.addFlashAttribute("success", "Purchase order deleted.");
+            ra.addFlashAttribute("successMessage", "Purchase order deleted.");
         } catch (Exception e) {
-            ra.addFlashAttribute("error", "Cannot delete purchase order: " + e.getMessage());
+            ra.addFlashAttribute("errorMessage", "Cannot delete purchase order: " + e.getMessage());
         }
         return "redirect:/purchases";
     }
@@ -158,7 +158,7 @@ public class PurchaseController {
     @PreAuthorize("hasRole('SHOPKEEPER')")
     public String cancelOrder(@PathVariable Long id, RedirectAttributes ra) {
         purchaseService.cancelOrder(id);
-        ra.addFlashAttribute("success", "Purchase order cancelled.");
+        ra.addFlashAttribute("successMessage", "Purchase order cancelled.");
         return "redirect:/purchases/" + id;
     }
 

@@ -35,7 +35,7 @@ public class SupplierController {
     @GetMapping("/{id}")
     public String viewSupplier(@PathVariable Long id, Model model) {
         Supplier supplier = supplierService.getSupplierById(id)
-                .orElseThrow(() -> new RuntimeException("Supplier not found"));
+                .orElseThrow(() -> new com.medicalstore.exception.ResourceNotFoundException("Supplier", id));
         model.addAttribute("supplier", supplier);
         return "suppliers/view";
     }
@@ -49,7 +49,7 @@ public class SupplierController {
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable Long id, Model model) {
         Supplier supplier = supplierService.getSupplierById(id)
-                .orElseThrow(() -> new RuntimeException("Supplier not found"));
+                .orElseThrow(() -> new com.medicalstore.exception.ResourceNotFoundException("Supplier", id));
         model.addAttribute("supplier", supplier);
         return "suppliers/form";
     }
@@ -66,11 +66,11 @@ public class SupplierController {
                 }
             }
             supplierService.saveSupplier(supplier);
-            redirectAttributes.addFlashAttribute("success", "Supplier saved successfully!");
+            redirectAttributes.addFlashAttribute("successMessage", "Supplier saved successfully!");
         } catch (org.springframework.dao.DataIntegrityViolationException e) {
-            redirectAttributes.addFlashAttribute("error", "A supplier with this phone number or email already exists.");
+            redirectAttributes.addFlashAttribute("errorMessage", "A supplier with this phone number or email already exists.");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Failed to save supplier: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to save supplier: " + e.getMessage());
         }
         return RoutePaths.redirectTo(RoutePaths.SUPPLIERS);
     }
@@ -80,9 +80,9 @@ public class SupplierController {
     public String deleteSupplier(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
             supplierService.deleteSupplier(id);
-            redirectAttributes.addFlashAttribute("success", "Supplier deleted successfully!");
+            redirectAttributes.addFlashAttribute("successMessage", "Supplier deleted successfully!");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Cannot delete supplier: it may be linked to purchase records.");
+            redirectAttributes.addFlashAttribute("errorMessage", "Cannot delete supplier: it may be linked to purchase records.");
         }
         return RoutePaths.redirectTo(RoutePaths.SUPPLIERS);
     }

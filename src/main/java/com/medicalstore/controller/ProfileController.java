@@ -46,36 +46,40 @@ public class ProfileController {
             RedirectAttributes redirectAttrs) {
 
         Long userId = securityUtils.getCurrentUserId();
+        if (userId == null) {
+            redirectAttrs.addFlashAttribute("errorMessage", "Session expired. Please log in again.");
+            return "redirect:/login";
+        }
         User user = userRepository.findById(userId)
                 .orElse(null);
 
         if (user == null) {
-            redirectAttrs.addFlashAttribute("error", "User not found.");
+            redirectAttrs.addFlashAttribute("errorMessage", "User not found.");
             return "redirect:/profile/change-password";
         }
 
         // Verify current password
         if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
-            redirectAttrs.addFlashAttribute("error", "Current password is incorrect.");
+            redirectAttrs.addFlashAttribute("errorMessage", "Current password is incorrect.");
             return "redirect:/profile/change-password";
         }
 
         // Confirm new password match
         if (!newPassword.equals(confirmPassword)) {
-            redirectAttrs.addFlashAttribute("error", "New passwords do not match.");
+            redirectAttrs.addFlashAttribute("errorMessage", "New passwords do not match.");
             return "redirect:/profile/change-password";
         }
 
         // Minimum length check
         if (newPassword.length() < 6) {
-            redirectAttrs.addFlashAttribute("error", "New password must be at least 6 characters.");
+            redirectAttrs.addFlashAttribute("errorMessage", "New password must be at least 6 characters.");
             return "redirect:/profile/change-password";
         }
 
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
 
-        redirectAttrs.addFlashAttribute("success", "Password changed successfully. Please log in again if needed.");
+        redirectAttrs.addFlashAttribute("successMessage", "Password changed successfully. Please log in again if needed.");
         return "redirect:/profile/change-password";
     }
 }

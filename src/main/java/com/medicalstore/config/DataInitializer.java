@@ -4,10 +4,14 @@ import com.medicalstore.model.Branch;
 import com.medicalstore.model.Customer;
 import com.medicalstore.model.Medicine;
 import com.medicalstore.model.Permission;
+import com.medicalstore.model.PurchaseOrder;
+import com.medicalstore.model.PurchaseOrderItem;
+import com.medicalstore.model.Return;
 import com.medicalstore.model.Sale;
 import com.medicalstore.model.SaleItem;
 import com.medicalstore.model.SubscriptionFeature;
 import com.medicalstore.model.Supplier;
+import com.medicalstore.model.SupplierCredit;
 import com.medicalstore.model.SubscriptionPlan;
 import com.medicalstore.model.User;
 import com.medicalstore.repository.*;
@@ -20,6 +24,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -49,6 +54,9 @@ public class DataInitializer implements CommandLineRunner {
     private final SubscriptionPlanRepository subscriptionPlanRepository;
     private final PermissionRepository permissionRepository;
     private final SubscriptionFeatureRepository subscriptionFeatureRepository;
+    private final PurchaseOrderRepository purchaseOrderRepository;
+    private final ReturnRepository returnRepository;
+    private final SupplierCreditRepository supplierCreditRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Override
@@ -436,15 +444,50 @@ public class DataInitializer implements CommandLineRunner {
             Medicine med3 = medicineRepository.findByBarcode(prefix + "-BC-003").orElse(null);
             Medicine med4 = medicineRepository.findByBarcode(prefix + "-BC-004").orElse(null);
             if (med1 != null && med3 != null) {
-                createSampleSale(branch, c1, "Cash", 0.0, 5.0,
+                createSampleSaleAt(branch, c1, "Cash", 0.0, 5.0,
                         List.of(new SaleItemData(med1, 3, 10.0, 7.0),
-                                new SaleItemData(med3, 2, 8.0, 5.0)));
+                                new SaleItemData(med3, 2, 8.0, 5.0)),
+                        LocalDateTime.now().minusDays(45));
+                createSampleSaleAt(branch, c2, "UPI", 0.0, 5.0,
+                        List.of(new SaleItemData(med1, 5, 10.0, 7.0),
+                                new SaleItemData(med3, 3, 8.0, 5.0)),
+                        LocalDateTime.now().minusDays(20));
+                createSampleSaleAt(branch, null, "Cash", 0.0, 5.0,
+                        List.of(new SaleItemData(med1, 8, 10.0, 7.0)),
+                        LocalDateTime.now().minusDays(5));
             }
             if (med4 != null) {
-                createSampleSale(branch, c2, "UPI", 5.0, 12.0,
-                        List.of(new SaleItemData(med4, 1, 25.0, 18.0)));
+                createSampleSaleAt(branch, c2, "UPI", 5.0, 12.0,
+                        List.of(new SaleItemData(med4, 1, 25.0, 18.0)),
+                        LocalDateTime.now().minusDays(30));
+                createSampleSaleAt(branch, c1, "Card", 0.0, 12.0,
+                        List.of(new SaleItemData(med4, 2, 25.0, 18.0)),
+                        LocalDateTime.now().minusDays(10));
             }
             log.info("Sample sales created for branch '{}'", branch.getName());
+        }
+
+        // --- Purchase Orders ---
+        if (purchaseOrderRepository.findByBranchIdOrderByOrderDateDesc(branch.getId()).isEmpty()) {
+            Medicine med1 = medicineRepository.findByBarcode(prefix + "-BC-001").orElse(null);
+            Medicine med3 = medicineRepository.findByBarcode(prefix + "-BC-003").orElse(null);
+            if (med1 != null && med3 != null) {
+                createSamplePurchaseOrder(branch, sup1, prefix + "-PO-001", "RECEIVED",
+                        LocalDate.now().minusDays(40), LocalDate.now().minusDays(36),
+                        List.of(new PoItemData(med1, 100, 7.0), new PoItemData(med3, 80, 5.0)));
+                createSamplePurchaseOrder(branch, sup2, prefix + "-PO-002", "ORDERED",
+                        LocalDate.now().minusDays(3), null,
+                        List.of(new PoItemData(med3, 50, 5.0)));
+            }
+        }
+
+        // --- Supplier Credits ---
+        if (supplierCreditRepository.findByBranchId(branch.getId()).isEmpty()) {
+            SupplierCredit sc = new SupplierCredit();
+            sc.setSupplier(sup1); sc.setBranch(branch);
+            sc.setTotalDue(7000.0); sc.setPaidAmount(3500.0);
+            sc.setDueDate(LocalDate.now().plusDays(10)); sc.setStatus("PARTIAL");
+            supplierCreditRepository.save(sc);
         }
 
         log.info("Branch sample data seed complete for '{}'", branch.getName());
@@ -459,9 +502,9 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     /**
-     * Seeds sample suppliers, medicines, customers, and sales for the Default
-     * Branch
-     * so that all application features can be exercised and bugs discovered.
+     * Seeds rich, realistic sample data for the Default Branch covering all
+     * application features: medicines (various states), customers, historical
+     * sales spread over 90 days, purchase orders, returns, and supplier credits.
      * All operations are idempotent — existing records are never duplicated.
      */
     private void seedSampleData(Branch branch) {
@@ -474,80 +517,239 @@ public class DataInitializer implements CommandLineRunner {
         Supplier drReddy = seedSupplier(branch, "Dr. Reddy's Labs", "Suresh Reddy",
                 "9001000003", "drreddy@example.com", "Hyderabad, Telangana", "GST36DRRDY0001");
 
-        // --- Medicines: normal stock ---
+        // --- Medicines: normal stock (fast-moving, good for analytics) ---
         seedMedicine(branch, sunPharma, "Paracetamol 500mg", "Analgesics",
-                "Sun Pharma", 10.0, 200, LocalDate.now().plusYears(2),
+                "Sun Pharma", 10.0, 500, LocalDate.now().plusYears(2),
                 "BATCH-P001", "MED-BC-001", "30049099", "Paracetamol", 7.0, 12.0, 5.0, "OTC");
         seedMedicine(branch, sunPharma, "Amoxicillin 250mg", "Antibiotics",
-                "Sun Pharma", 45.0, 150, LocalDate.now().plusYears(1),
+                "Sun Pharma", 45.0, 300, LocalDate.now().plusYears(1),
                 "BATCH-A001", "MED-BC-002", "30041000", "Amoxicillin Trihydrate", 35.0, 55.0, 12.0, "H");
         seedMedicine(branch, cipla, "Cetirizine 10mg", "Antihistamines",
-                "Cipla Ltd", 8.0, 300, LocalDate.now().plusYears(2),
+                "Cipla Ltd", 8.0, 400, LocalDate.now().plusYears(2),
                 "BATCH-C001", "MED-BC-003", "30045090", "Cetirizine Hydrochloride", 5.0, 10.0, 5.0, "OTC");
         seedMedicine(branch, cipla, "Metformin 500mg", "Antidiabetic",
-                "Cipla Ltd", 25.0, 180, LocalDate.now().plusYears(2),
+                "Cipla Ltd", 25.0, 250, LocalDate.now().plusYears(2),
                 "BATCH-M001", "MED-BC-004", "30046000", "Metformin Hydrochloride", 18.0, 30.0, 5.0, "H");
         seedMedicine(branch, drReddy, "Omeprazole 20mg", "Antacids",
-                "Dr. Reddy's Labs", 30.0, 120, LocalDate.now().plusMonths(18),
+                "Dr. Reddy's Labs", 30.0, 200, LocalDate.now().plusMonths(18),
                 "BATCH-O001", "MED-BC-005", "30049099", "Omeprazole", 22.0, 38.0, 12.0, "H");
         seedMedicine(branch, drReddy, "Atorvastatin 10mg", "Statins",
-                "Dr. Reddy's Labs", 55.0, 90, LocalDate.now().plusMonths(20),
+                "Dr. Reddy's Labs", 55.0, 180, LocalDate.now().plusMonths(20),
                 "BATCH-AT001", "MED-BC-006", "30046000", "Atorvastatin Calcium", 40.0, 65.0, 12.0, "H");
+        seedMedicine(branch, cipla, "Ibuprofen 400mg", "Analgesics",
+                "Cipla Ltd", 18.0, 350, LocalDate.now().plusYears(2),
+                "BATCH-IB001", "MED-BC-011", "30049099", "Ibuprofen", 12.0, 22.0, 12.0, "OTC");
+        seedMedicine(branch, sunPharma, "Amlodipine 5mg", "Antihypertensive",
+                "Sun Pharma", 35.0, 220, LocalDate.now().plusMonths(22),
+                "BATCH-AM001", "MED-BC-012", "30049099", "Amlodipine Besylate", 25.0, 42.0, 12.0, "H");
+        seedMedicine(branch, drReddy, "Montelukast 10mg", "Antiasthmatic",
+                "Dr. Reddy's Labs", 65.0, 160, LocalDate.now().plusMonths(24),
+                "BATCH-MN001", "MED-BC-013", "30049099", "Montelukast Sodium", 48.0, 78.0, 12.0, "H");
+        seedMedicine(branch, cipla, "Multivitamin Tablet", "Vitamins",
+                "Cipla Ltd", 120.0, 280, LocalDate.now().plusYears(2),
+                "BATCH-MV001", "MED-BC-014", "30049099", "Multivitamin Complex", 85.0, 145.0, 5.0, "OTC");
 
-        // --- Medicines: low stock (to exercise low-stock alerts) ---
+        // --- Medicines: low stock (triggers low-stock alerts) ---
         seedMedicine(branch, sunPharma, "Azithromycin 500mg", "Antibiotics",
-                "Sun Pharma", 85.0, 5, LocalDate.now().plusYears(1),
+                "Sun Pharma", 85.0, 4, LocalDate.now().plusYears(1),
                 "BATCH-AZ001", "MED-BC-007", "30041000", "Azithromycin", 60.0, 100.0, 12.0, "H");
         seedMedicine(branch, cipla, "Pantoprazole 40mg", "Antacids",
                 "Cipla Ltd", 35.0, 3, LocalDate.now().plusMonths(16),
                 "BATCH-PAN001", "MED-BC-008", "30049099", "Pantoprazole Sodium", 25.0, 42.0, 12.0, "H");
+        seedMedicine(branch, drReddy, "Insulin Glargine 100IU", "Antidiabetic",
+                "Dr. Reddy's Labs", 850.0, 2, LocalDate.now().plusMonths(8),
+                "BATCH-INS001", "MED-BC-015", "30046000", "Insulin Glargine", 700.0, 980.0, 12.0, "H");
 
-        // --- Medicine: near-expiry (to exercise expiry alerts) ---
+        // --- Medicine: near-expiry (triggers expiry alerts) ---
         seedMedicine(branch, drReddy, "Vitamin C 500mg", "Vitamins",
                 "Dr. Reddy's Labs", 15.0, 50, LocalDate.now().plusDays(20),
                 "BATCH-VTC001", "MED-BC-009", "30049099", "Ascorbic Acid", 10.0, 18.0, 5.0, "OTC");
+        seedMedicine(branch, cipla, "Ranitidine 150mg", "Antacids",
+                "Cipla Ltd", 12.0, 30, LocalDate.now().plusDays(10),
+                "BATCH-RAN001", "MED-BC-016", "30049099", "Ranitidine Hydrochloride", 8.0, 15.0, 5.0, "H");
 
-        // --- Medicine: out-of-stock ---
+        // --- Medicine: out-of-stock (dead stock scenario) ---
         seedMedicine(branch, sunPharma, "Dolo 650", "Analgesics",
                 "Sun Pharma", 12.0, 0, LocalDate.now().plusYears(2),
                 "BATCH-DL001", "MED-BC-010", "30049099", "Paracetamol 650mg", 8.0, 15.0, 5.0, "OTC");
 
-        // --- Customers ---
+        // --- Customers (diverse profiles for loyalty/credit analytics) ---
         Customer c1 = seedCustomer(branch, "Ramesh Patel", "ramesh.patel@example.com",
                 "9100000001", "12 MG Road, Bangalore", LocalDate.of(1985, 6, 15));
         Customer c2 = seedCustomer(branch, "Priya Singh", "priya.singh@example.com",
                 "9100000002", "45 Park Street, Kolkata", LocalDate.of(1990, 3, 22));
         Customer c3 = seedCustomer(branch, "Suresh Kumar", null,
                 "9100000003", "78 Anna Salai, Chennai", LocalDate.of(1975, 11, 8));
+        Customer c4 = seedCustomer(branch, "Meena Iyer", "meena.iyer@example.com",
+                "9100000004", "23 Juhu Beach Road, Mumbai", LocalDate.of(1968, 4, 30));
+        Customer c5 = seedCustomer(branch, "Arjun Nair", "arjun.nair@example.com",
+                "9100000005", "56 Residency Road, Bangalore", LocalDate.of(1995, 9, 12));
+        Customer c6 = seedCustomer(branch, "Kavitha Reddy", null,
+                "9100000006", "34 Banjara Hills, Hyderabad", LocalDate.of(1980, 7, 18));
 
-        // --- Sales (only when the branch has no existing sales) ---
+        // --- Historical sales spread over 90 days (powers dashboard charts & analytics) ---
         if (saleRepository.countByBranchId(branch.getId()) == 0) {
+            Medicine med1  = medicineRepository.findByBarcode("MED-BC-001").orElse(null);
+            Medicine med2  = medicineRepository.findByBarcode("MED-BC-002").orElse(null);
+            Medicine med3  = medicineRepository.findByBarcode("MED-BC-003").orElse(null);
+            Medicine med4  = medicineRepository.findByBarcode("MED-BC-004").orElse(null);
+            Medicine med5  = medicineRepository.findByBarcode("MED-BC-005").orElse(null);
+            Medicine med6  = medicineRepository.findByBarcode("MED-BC-006").orElse(null);
+            Medicine med11 = medicineRepository.findByBarcode("MED-BC-011").orElse(null);
+            Medicine med12 = medicineRepository.findByBarcode("MED-BC-012").orElse(null);
+            Medicine med13 = medicineRepository.findByBarcode("MED-BC-013").orElse(null);
+            Medicine med14 = medicineRepository.findByBarcode("MED-BC-014").orElse(null);
+
+            if (med1 != null && med3 != null && med5 != null) {
+                // 90 days ago
+                createSampleSaleAt(branch, c1, "Cash", 0.0, 5.0,
+                        List.of(new SaleItemData(med1, 5, 10.0, 7.0), new SaleItemData(med3, 3, 8.0, 5.0)),
+                        LocalDateTime.now().minusDays(88));
+                createSampleSaleAt(branch, c2, "UPI", 5.0, 12.0,
+                        List.of(new SaleItemData(med2, 2, 45.0, 35.0), new SaleItemData(med4, 1, 25.0, 18.0)),
+                        LocalDateTime.now().minusDays(85));
+                createSampleSaleAt(branch, null, "Cash", 0.0, 5.0,
+                        List.of(new SaleItemData(med1, 10, 10.0, 7.0), new SaleItemData(med11, 4, 18.0, 12.0)),
+                        LocalDateTime.now().minusDays(82));
+                // 60 days ago
+                createSampleSaleAt(branch, c3, "Card", 0.0, 12.0,
+                        List.of(new SaleItemData(med5, 2, 30.0, 22.0), new SaleItemData(med6, 1, 55.0, 40.0)),
+                        LocalDateTime.now().minusDays(60));
+                createSampleSaleAt(branch, c4, "UPI", 10.0, 5.0,
+                        List.of(new SaleItemData(med1, 8, 10.0, 7.0), new SaleItemData(med3, 5, 8.0, 5.0)),
+                        LocalDateTime.now().minusDays(57));
+                createSampleSaleAt(branch, c1, "Cash", 0.0, 12.0,
+                        List.of(new SaleItemData(med12, 1, 35.0, 25.0), new SaleItemData(med4, 2, 25.0, 18.0)),
+                        LocalDateTime.now().minusDays(54));
+                createSampleSaleAt(branch, c5, "Card", 5.0, 5.0,
+                        List.of(new SaleItemData(med14, 1, 120.0, 85.0), new SaleItemData(med3, 4, 8.0, 5.0)),
+                        LocalDateTime.now().minusDays(50));
+                // 30 days ago
+                createSampleSaleAt(branch, c2, "UPI", 0.0, 12.0,
+                        List.of(new SaleItemData(med2, 3, 45.0, 35.0), new SaleItemData(med13, 1, 65.0, 48.0)),
+                        LocalDateTime.now().minusDays(30));
+                createSampleSaleAt(branch, c6, "Cash", 0.0, 5.0,
+                        List.of(new SaleItemData(med1, 6, 10.0, 7.0), new SaleItemData(med5, 2, 30.0, 22.0)),
+                        LocalDateTime.now().minusDays(27));
+                createSampleSaleAt(branch, null, "Cash", 0.0, 5.0,
+                        List.of(new SaleItemData(med11, 3, 18.0, 12.0), new SaleItemData(med3, 6, 8.0, 5.0)),
+                        LocalDateTime.now().minusDays(24));
+                createSampleSaleAt(branch, c3, "Card", 10.0, 12.0,
+                        List.of(new SaleItemData(med6, 2, 55.0, 40.0), new SaleItemData(med12, 1, 35.0, 25.0)),
+                        LocalDateTime.now().minusDays(20));
+                createSampleSaleAt(branch, c4, "UPI", 0.0, 5.0,
+                        List.of(new SaleItemData(med14, 2, 120.0, 85.0)),
+                        LocalDateTime.now().minusDays(15));
+                // Last 7 days (recent activity for dashboard)
+                createSampleSaleAt(branch, c1, "Cash", 0.0, 5.0,
+                        List.of(new SaleItemData(med1, 4, 10.0, 7.0), new SaleItemData(med4, 2, 25.0, 18.0)),
+                        LocalDateTime.now().minusDays(6));
+                createSampleSaleAt(branch, c5, "UPI", 5.0, 12.0,
+                        List.of(new SaleItemData(med2, 1, 45.0, 35.0), new SaleItemData(med13, 1, 65.0, 48.0)),
+                        LocalDateTime.now().minusDays(4));
+                createSampleSaleAt(branch, c2, "Card", 0.0, 12.0,
+                        List.of(new SaleItemData(med5, 3, 30.0, 22.0), new SaleItemData(med11, 2, 18.0, 12.0)),
+                        LocalDateTime.now().minusDays(2));
+                createSampleSaleAt(branch, null, "Cash", 0.0, 5.0,
+                        List.of(new SaleItemData(med1, 7, 10.0, 7.0), new SaleItemData(med3, 4, 8.0, 5.0)),
+                        LocalDateTime.now().minusDays(1));
+                createSampleSaleAt(branch, c6, "UPI", 0.0, 5.0,
+                        List.of(new SaleItemData(med14, 1, 120.0, 85.0), new SaleItemData(med12, 1, 35.0, 25.0)),
+                        LocalDateTime.now().minusHours(3));
+            }
+            log.info("Historical sales seeded for branch '{}'", branch.getName());
+        }
+
+        // --- Purchase Orders (RECEIVED, ORDERED, DRAFT states) ---
+        if (purchaseOrderRepository.findByBranchIdOrderByOrderDateDesc(branch.getId()).isEmpty()) {
             Medicine med1 = medicineRepository.findByBarcode("MED-BC-001").orElse(null);
             Medicine med2 = medicineRepository.findByBarcode("MED-BC-002").orElse(null);
             Medicine med3 = medicineRepository.findByBarcode("MED-BC-003").orElse(null);
             Medicine med4 = medicineRepository.findByBarcode("MED-BC-004").orElse(null);
             Medicine med5 = medicineRepository.findByBarcode("MED-BC-005").orElse(null);
+            Medicine med7 = medicineRepository.findByBarcode("MED-BC-007").orElse(null);
+            Medicine med8 = medicineRepository.findByBarcode("MED-BC-008").orElse(null);
 
             if (med1 != null && med3 != null) {
-                createSampleSale(branch, c1, "Cash", 0.0, 5.0,
-                        List.of(new SaleItemData(med1, 3, 10.0, 7.0),
-                                new SaleItemData(med3, 2, 8.0, 5.0)));
+                // Received 60 days ago
+                createSamplePurchaseOrder(branch, sunPharma, "PO-DEF-001", "RECEIVED",
+                        LocalDate.now().minusDays(62), LocalDate.now().minusDays(58),
+                        List.of(new PoItemData(med1, 200, 7.0), new PoItemData(med2, 100, 35.0)));
+                // Received 30 days ago
+                createSamplePurchaseOrder(branch, cipla, "PO-DEF-002", "RECEIVED",
+                        LocalDate.now().minusDays(32), LocalDate.now().minusDays(28),
+                        List.of(new PoItemData(med3, 150, 5.0), new PoItemData(med4, 80, 18.0)));
+                // Ordered (in transit)
+                createSamplePurchaseOrder(branch, drReddy, "PO-DEF-003", "ORDERED",
+                        LocalDate.now().minusDays(5), null,
+                        List.of(new PoItemData(med5, 100, 22.0)));
+                // Draft (pending approval)
+                createSamplePurchaseOrder(branch, sunPharma, "PO-DEF-004", "DRAFT",
+                        LocalDate.now(), null,
+                        List.of(new PoItemData(med7, 50, 60.0), new PoItemData(med8, 30, 25.0)));
             }
-            if (med2 != null && med4 != null) {
-                createSampleSale(branch, c2, "Card", 5.0, 12.0,
-                        List.of(new SaleItemData(med2, 2, 45.0, 35.0),
-                                new SaleItemData(med4, 1, 25.0, 18.0)));
+            log.info("Purchase orders seeded for branch '{}'", branch.getName());
+        }
+
+        // --- Returns (linked to existing sales) ---
+        List<Sale> branchSales = saleRepository.findByBranchId(branch.getId());
+        if (!branchSales.isEmpty() && returnRepository.findByBranchId(branch.getId()).isEmpty()) {
+            Sale firstSale = branchSales.get(0);
+            if (!firstSale.getItems().isEmpty()) {
+                SaleItem itemToReturn = firstSale.getItems().get(0);
+                Return ret = new Return();
+                ret.setSale(firstSale);
+                ret.setSaleItem(itemToReturn);
+                ret.setReturnQuantity(1);
+                ret.setRefundAmount(itemToReturn.getUnitPrice());
+                ret.setReason("Damaged packaging");
+                ret.setNotes("Customer reported damaged box on delivery");
+                returnRepository.save(ret);
+                log.info("Sample return seeded for branch '{}'", branch.getName());
             }
-            if (med5 != null) {
-                createSampleSale(branch, c3, "UPI", 0.0, 12.0,
-                        List.of(new SaleItemData(med5, 1, 30.0, 22.0)));
+        }
+
+        // --- Supplier Credits (PENDING, PARTIAL, PAID, OVERDUE) ---
+        if (supplierCreditRepository.findByBranchId(branch.getId()).isEmpty()) {
+            Supplier sup1 = supplierRepository.findByBranchId(branch.getId()).stream()
+                    .filter(s -> s.getName().equalsIgnoreCase("Sun Pharma")).findFirst().orElse(null);
+            Supplier sup2 = supplierRepository.findByBranchId(branch.getId()).stream()
+                    .filter(s -> s.getName().equalsIgnoreCase("Cipla Ltd")).findFirst().orElse(null);
+            Supplier sup3 = supplierRepository.findByBranchId(branch.getId()).stream()
+                    .filter(s -> s.getName().equalsIgnoreCase("Dr. Reddy's Labs")).findFirst().orElse(null);
+
+            if (sup1 != null) {
+                // Paid credit
+                SupplierCredit sc1 = new SupplierCredit();
+                sc1.setSupplier(sup1); sc1.setBranch(branch);
+                sc1.setTotalDue(14000.0); sc1.setPaidAmount(14000.0);
+                sc1.setDueDate(LocalDate.now().minusDays(30)); sc1.setStatus("PAID");
+                supplierCreditRepository.save(sc1);
+
+                // Partial credit
+                SupplierCredit sc2 = new SupplierCredit();
+                sc2.setSupplier(sup1); sc2.setBranch(branch);
+                sc2.setTotalDue(8500.0); sc2.setPaidAmount(4000.0);
+                sc2.setDueDate(LocalDate.now().plusDays(15)); sc2.setStatus("PARTIAL");
+                supplierCreditRepository.save(sc2);
             }
-            if (med1 != null && med5 != null) {
-                createSampleSale(branch, null, "Cash", 10.0, 5.0,
-                        List.of(new SaleItemData(med1, 5, 10.0, 7.0),
-                                new SaleItemData(med5, 2, 30.0, 22.0)));
+            if (sup2 != null) {
+                // Pending credit
+                SupplierCredit sc3 = new SupplierCredit();
+                sc3.setSupplier(sup2); sc3.setBranch(branch);
+                sc3.setTotalDue(6200.0); sc3.setPaidAmount(0.0);
+                sc3.setDueDate(LocalDate.now().plusDays(20)); sc3.setStatus("PENDING");
+                supplierCreditRepository.save(sc3);
             }
-            log.info("Sample sales created for Default Branch");
+            if (sup3 != null) {
+                // Overdue credit
+                SupplierCredit sc4 = new SupplierCredit();
+                sc4.setSupplier(sup3); sc4.setBranch(branch);
+                sc4.setTotalDue(11000.0); sc4.setPaidAmount(2000.0);
+                sc4.setDueDate(LocalDate.now().minusDays(10)); sc4.setStatus("OVERDUE");
+                supplierCreditRepository.save(sc4);
+            }
+            log.info("Supplier credits seeded for branch '{}'", branch.getName());
         }
 
         log.info("Sample data seed complete for branch '{}'", branch.getName());
@@ -617,8 +819,13 @@ public class DataInitializer implements CommandLineRunner {
     private record SaleItemData(Medicine medicine, int quantity, double unitPrice, double costPrice) {
     }
 
-    private void createSampleSale(Branch branch, Customer customer, String paymentMethod,
-            Double discountPercentage, Double gstPercentage, List<SaleItemData> itemData) {
+    /**
+     * Creates a sale with a specific historical timestamp so dashboard charts
+     * and analytics have meaningful data spread across time.
+     */
+    private void createSampleSaleAt(Branch branch, Customer customer, String paymentMethod,
+            Double discountPercentage, Double gstPercentage, List<SaleItemData> itemData,
+            LocalDateTime saleDate) {
         Sale sale = new Sale();
         sale.setBranch(branch);
         sale.setCustomer(customer);
@@ -633,7 +840,35 @@ public class DataInitializer implements CommandLineRunner {
             si.setCostPrice(row.costPrice());
             sale.addItem(si);
         }
-        saleRepository.save(sale);
+        Sale saved = saleRepository.save(sale);
+        // Override the @PrePersist timestamp with the historical date
+        saleRepository.updateSaleDate(saved.getId(), saleDate);
+    }
+
+    /** Holds data for a single line-item in a sample purchase order. */
+    private record PoItemData(Medicine medicine, int quantity, double unitPrice) {}
+
+    private void createSamplePurchaseOrder(Branch branch, Supplier supplier, String orderNumber,
+            String status, LocalDate orderDate, LocalDate receivedDate, List<PoItemData> items) {
+        if (purchaseOrderRepository.findByOrderNumber(orderNumber).isPresent()) return;
+        PurchaseOrder po = new PurchaseOrder();
+        po.setOrderNumber(orderNumber);
+        po.setSupplier(supplier);
+        po.setBranch(branch);
+        po.setOrderDate(orderDate);
+        po.setStatus(status);
+        po.setReceivedDate(receivedDate);
+        for (PoItemData row : items) {
+            PurchaseOrderItem poi = new PurchaseOrderItem();
+            poi.setPurchaseOrder(po);
+            poi.setMedicine(row.medicine());
+            poi.setQuantity(row.quantity());
+            poi.setUnitPrice(row.unitPrice());
+            poi.setReceivedQuantity("RECEIVED".equals(status) ? row.quantity() : 0);
+            po.getItems().add(poi);
+        }
+        po.recalculateTotal();
+        purchaseOrderRepository.save(po);
     }
 
     /**
@@ -648,6 +883,7 @@ public class DataInitializer implements CommandLineRunner {
         // permission code → roles that are directly granted it
         Map<String, Set<String>> matrix = Map.ofEntries(
                 Map.entry("MEDICINE_DELETE", Set.of("ADMIN", "OWNER")),
+                Map.entry("MEDICINE_BULK_DELETE", Set.of("ADMIN", "OWNER")),
                 Map.entry("MEDICINE_BULK_IMPORT", Set.of("ADMIN", "OWNER")),
                 Map.entry("USER_DELETE", Set.of("ADMIN")),
                 Map.entry("USER_RESTORE", Set.of("ADMIN")),

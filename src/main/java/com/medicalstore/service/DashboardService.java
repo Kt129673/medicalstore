@@ -30,7 +30,7 @@ public class DashboardService {
     // ═══════════════════════════════════════════════════════════════════
 
     /** Global dashboard (ADMIN) */
-    @Cacheable("dashboard_kpis")
+    @Cacheable(value = "dashboard_kpis", key = "'admin'")
     public Map<String, Object> buildAdminDashboard() {
         Map<String, Object> data = new LinkedHashMap<>();
 
@@ -69,7 +69,7 @@ public class DashboardService {
 
         // Recent transactions (top 10)
         List<Sale> recent = saleRepository.findTop10WithDetails();
-        data.put("recentSales", recent.stream().limit(10).collect(Collectors.toList()));
+        data.put("recentSales", serializeSales(recent.stream().limit(10).collect(Collectors.toList())));
 
         // Activity History
         data.put("recentMedicines", medicineRepository.findTop5ByOrderByCreatedDateDesc());
@@ -113,7 +113,7 @@ public class DashboardService {
                 buildCategoryJson(saleRepository.getSalesByCategoryByBranch(branchId, startOfMonth, endOfDay)));
 
         List<Sale> recent = saleRepository.findTop10WithDetailsByBranch(branchId);
-        data.put("recentSales", recent.stream().limit(10).collect(Collectors.toList()));
+        data.put("recentSales", serializeSales(recent.stream().limit(10).collect(Collectors.toList())));
 
         // Activity History
         data.put("recentMedicines", medicineRepository.findTop5ByBranchIdOrderByCreatedDateDesc(branchId));
@@ -154,7 +154,7 @@ public class DashboardService {
                 buildCategoryJson(saleRepository.getSalesByCategoryByOwner(ownerId, startOfMonth, endOfDay)));
 
         List<Sale> recent = saleRepository.findTop10WithDetailsByOwner(ownerId);
-        data.put("recentSales", recent.stream().limit(10).collect(Collectors.toList()));
+        data.put("recentSales", serializeSales(recent.stream().limit(10).collect(Collectors.toList())));
 
         org.springframework.data.domain.Pageable top5 = org.springframework.data.domain.PageRequest.of(0, 5);
         data.put("recentMedicines", medicineRepository.findTop5ByOwnerIdOrderByCreatedDateDesc(ownerId, top5));
@@ -164,6 +164,51 @@ public class DashboardService {
     }
 
     // ═══════════════════════════════════════════════════════════════════
+
+    /**
+     * Converts Sale entities to plain maps so the cached dashboard data
+     * contains no Hibernate proxies (avoids LazyInitializationException
+     * when Jackson serializes the response outside a transaction).
+     */
+    private List<Map<String, Object>> serializeSales(List<Sale> sales) {
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (Sale s : sales) {
+            Map<String, Object> m = new LinkedHashMap<>();
+            m.put("id", s.getId());
+            m.put("totalAmount", s.getTotalAmount());
+            m.put("finalAmount", s.getFinalAmount());
+            m.put("saleDate", s.getSaleDate());
+            m.put("paymentMethod", s.getPaymentMethod());
+            // customer (already JOIN FETCHed)
+            if (s.getCustomer() != null) {
+                Map<String, Object> cust = new LinkedHashMap<>();
+                cust.put("id", s.getCustomer().getId());
+                cust.put("name", s.getCustomer().getName());
+                m.put("customer", cust);
+            } else {
+                m.put("customer", null);
+            }
+            // items — eagerly loaded via @OneToMany default EAGER
+            List<Map<String, Object>> items = new ArrayList<>();
+            for (com.medicalstore.model.SaleItem si : s.getItems()) {
+                Map<String, Object> item = new LinkedHashMap<>();
+                item.put("quantity", si.getQuantity());
+                item.put("unitPrice", si.getUnitPrice());
+                item.put("totalPrice", si.getTotalPrice());
+                if (si.getMedicine() != null) {
+                    Map<String, Object> med = new LinkedHashMap<>();
+                    med.put("id", si.getMedicine().getId());
+                    med.put("name", si.getMedicine().getName());
+                    med.put("category", si.getMedicine().getCategory());
+                    item.put("medicine", med);
+                }
+                items.add(item);
+            }
+            m.put("items", items);
+            result.add(m);
+        }
+        return result;
+    }
 
     private String buildSalesTrendJson(List<Object[]> rows) {
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd MMM");

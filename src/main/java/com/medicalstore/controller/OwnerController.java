@@ -4,10 +4,8 @@ import com.medicalstore.model.Branch;
 import com.medicalstore.model.SubscriptionPlan;
 import com.medicalstore.model.User;
 import com.medicalstore.service.BranchService;
-import com.medicalstore.service.CustomerService;
 import com.medicalstore.service.DashboardService;
 import com.medicalstore.service.MedicineService;
-import com.medicalstore.service.SaleService;
 import com.medicalstore.service.SubscriptionService;
 import com.medicalstore.service.UserManagementService;
 import com.medicalstore.common.SecurityUtils;
@@ -35,8 +33,6 @@ public class OwnerController {
 
         private final BranchService branchService;
         private final MedicineService medicineService;
-        private final SaleService saleService;
-        private final CustomerService customerService;
         private final UserManagementService userManagementService;
         private final SecurityUtils securityUtils;
         private final DashboardService dashboardService;
@@ -187,7 +183,7 @@ public class OwnerController {
                 // All uniqueness checks + encoding + save handled by UserManagementService
                 userManagementService.createUser(username, password, fullName, email, "SHOPKEEPER", branch);
 
-                ra.addFlashAttribute("success",
+                ra.addFlashAttribute("successMessage",
                                 "Shopkeeper '" + username + "' created and assigned to " + branch.getName());
                 return "redirect:/owner/shopkeepers";
         }
@@ -198,7 +194,7 @@ public class OwnerController {
                 var myBranchIds = branchService.getBranchesByOwner(ownerId)
                                 .stream().map(Branch::getId).collect(java.util.stream.Collectors.toSet());
                 userManagementService.toggleShopkeeper(id, myBranchIds);
-                ra.addFlashAttribute("success", "Shopkeeper status updated.");
+                ra.addFlashAttribute("successMessage", "Shopkeeper status updated.");
                 return "redirect:/owner/shopkeepers";
         }
 
@@ -245,7 +241,7 @@ public class OwnerController {
                                 || !shopkeeper.getRoles().contains("SHOPKEEPER")
                                 || shopkeeper.getBranch() == null
                                 || !myBranchIds.contains(shopkeeper.getBranch().getId())) {
-                        ra.addFlashAttribute("error", "Shopkeeper not found or not in your branches.");
+                        ra.addFlashAttribute("errorMessage", "Shopkeeper not found or not in your branches.");
                         return "redirect:/owner/shopkeepers";
                 }
 

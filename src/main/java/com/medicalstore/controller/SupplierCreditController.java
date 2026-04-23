@@ -47,9 +47,9 @@ public class SupplierCreditController {
                 branchService.getBranchById(securityUtils.getCurrentBranchId()).ifPresent(credit::setBranch);
             }
             creditService.saveCredit(credit);
-            ra.addFlashAttribute("success", "Credit record saved successfully.");
+            ra.addFlashAttribute("successMessage", "Credit record saved successfully.");
         } catch (Exception e) {
-            ra.addFlashAttribute("error", "Error saving credit: " + e.getMessage());
+            ra.addFlashAttribute("errorMessage", "Error saving credit: " + e.getMessage());
         }
         return "redirect:/suppliers/credits";
     }
@@ -59,11 +59,11 @@ public class SupplierCreditController {
     public String recordPayment(@PathVariable Long id, @RequestParam Double amount, RedirectAttributes ra) {
         try {
             creditService.recordPayment(id, amount);
-            ra.addFlashAttribute("success", "Payment of ₹" + amount + " recorded successfully.");
+            ra.addFlashAttribute("successMessage", "Payment of ₹" + amount + " recorded successfully.");
         } catch (IllegalArgumentException e) {
-            ra.addFlashAttribute("error", e.getMessage());
+            ra.addFlashAttribute("errorMessage", e.getMessage());
         } catch (Exception e) {
-            ra.addFlashAttribute("error", "An error occurred while recording payment.");
+            ra.addFlashAttribute("errorMessage", "An error occurred while recording payment.");
         }
         return "redirect:/suppliers/credits";
     }
