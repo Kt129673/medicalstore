@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -275,8 +276,9 @@ public class DataInitializer implements CommandLineRunner {
         ensureShopkeeper("shop_pro_2", "Shopkeeper Pro 2",
                 "shop.pro2@medicalstore.com", "ShopPro@123", b2b);
 
-        seedBranchSampleData(b2a, "B2A", 200_000_000L);
-        seedBranchSampleData(b2b, "B2B", 200_100_000L);
+        // Seed with varied performance profiles
+        seedBranchSampleDataVaried(b2a, "B2A", 200_000_000L, "HIGH");   // High performer
+        seedBranchSampleDataVaried(b2b, "B2B", 200_100_000L, "LOW");    // Low performer
 
         // ── Owner 3: ENTERPRISE plan, 3 branches ──────────────────────────────────
         User ownerEnt = ensureOwner("owner_enterprise", "Priya Patel",
@@ -303,9 +305,10 @@ public class DataInitializer implements CommandLineRunner {
         ensureShopkeeper("shop_ent_3", "Shopkeeper Ent 3",
                 "shop.ent3@medicalstore.com", "ShopEnt@123", b3c);
 
-        seedBranchSampleData(b3a, "B3A", 300_000_000L);
-        seedBranchSampleData(b3b, "B3B", 300_100_000L);
-        seedBranchSampleData(b3c, "B3C", 300_200_000L);
+        // Seed with varied performance profiles
+        seedBranchSampleDataVaried(b3a, "B3A", 300_000_000L, "HIGH");    // High performer
+        seedBranchSampleDataVaried(b3b, "B3B", 300_100_000L, "MEDIUM");  // Medium performer
+        seedBranchSampleDataVaried(b3c, "B3C", 300_200_000L, "LOW");     // Low performer
     }
 
     /**
@@ -531,6 +534,167 @@ public class DataInitializer implements CommandLineRunner {
      */
     private static String branchPhone(long phoneBase, int offset) {
         return String.format("9%09d", phoneBase + offset);
+    }
+
+    /**
+     * Seeds varied sample data for branch comparison testing.
+     * Creates different performance profiles: HIGH, MEDIUM, LOW
+     * 
+     * @param branch Branch entity
+     * @param prefix Unique prefix for barcodes
+     * @param phoneBase Base phone number
+     * @param profile Performance profile: HIGH, MEDIUM, or LOW
+     */
+    private void seedBranchSampleDataVaried(Branch branch, String prefix, long phoneBase, String profile) {
+        // --- Suppliers ---
+        Supplier sup1 = seedSupplier(branch, "Sun Pharma", "Raj Kumar",
+                "9001000001", "sunpharma@example.com", "Mumbai, Maharashtra", "GST27SUNPH0001");
+        Supplier sup2 = seedSupplier(branch, "Cipla Ltd", "Anita Sharma",
+                "9001000002", "cipla@example.com", "Pune, Maharashtra", "GST27CIPLA0001");
+
+        // Vary medicine count and stock levels based on profile
+        int medicineCount = switch (profile) {
+            case "HIGH" -> 12;
+            case "MEDIUM" -> 8;
+            default -> 6;
+        };
+
+        int baseStock = switch (profile) {
+            case "HIGH" -> 300;
+            case "MEDIUM" -> 150;
+            default -> 80;
+        };
+
+        // --- Core Medicines (all profiles) ---
+        seedMedicine(branch, sup1, "Paracetamol 500mg", "Analgesics",
+                "Sun Pharma", 10.0, baseStock, LocalDate.now().plusYears(2),
+                prefix + "-BATCH-P001", prefix + "-BC-001", "30049099", "Paracetamol", 7.0, 12.0, 5.0, "OTC");
+        seedMedicine(branch, sup1, "Amoxicillin 250mg", "Antibiotics",
+                "Sun Pharma", 45.0, baseStock / 2, LocalDate.now().plusYears(1),
+                prefix + "-BATCH-A001", prefix + "-BC-002", "30041000", "Amoxicillin Trihydrate", 35.0, 55.0, 12.0, "H");
+        seedMedicine(branch, sup2, "Cetirizine 10mg", "Antihistamines",
+                "Cipla Ltd", 8.0, baseStock, LocalDate.now().plusYears(2),
+                prefix + "-BATCH-C001", prefix + "-BC-003", "30045090", "Cetirizine Hydrochloride", 5.0, 10.0, 5.0, "OTC");
+        seedMedicine(branch, sup2, "Metformin 500mg", "Antidiabetic",
+                "Cipla Ltd", 25.0, baseStock / 2, LocalDate.now().plusYears(2),
+                prefix + "-BATCH-M001", prefix + "-BC-004", "30046000", "Metformin Hydrochloride", 18.0, 30.0, 5.0, "H");
+
+        // --- Additional medicines for MEDIUM and HIGH ---
+        if (medicineCount >= 8) {
+            seedMedicine(branch, sup1, "Ibuprofen 400mg", "Analgesics",
+                    "Sun Pharma", 15.0, baseStock, LocalDate.now().plusYears(2),
+                    prefix + "-BATCH-I001", prefix + "-BC-007", "30049099", "Ibuprofen", 10.0, 18.0, 5.0, "OTC");
+            seedMedicine(branch, sup2, "Omeprazole 20mg", "Antacids",
+                    "Cipla Ltd", 30.0, baseStock / 2, LocalDate.now().plusYears(1),
+                    prefix + "-BATCH-O001", prefix + "-BC-008", "30049099", "Omeprazole", 22.0, 35.0, 5.0, "H");
+            seedMedicine(branch, sup1, "Aspirin 75mg", "Cardiovascular",
+                    "Sun Pharma", 12.0, baseStock, LocalDate.now().plusYears(2),
+                    prefix + "-BATCH-AS001", prefix + "-BC-009", "30049099", "Aspirin", 8.0, 15.0, 5.0, "OTC");
+            seedMedicine(branch, sup2, "Atorvastatin 10mg", "Cardiovascular",
+                    "Cipla Ltd", 50.0, baseStock / 3, LocalDate.now().plusYears(1),
+                    prefix + "-BATCH-AT001", prefix + "-BC-010", "30049099", "Atorvastatin", 38.0, 60.0, 12.0, "H");
+        }
+
+        // --- Additional medicines for HIGH only ---
+        if (medicineCount >= 12) {
+            seedMedicine(branch, sup1, "Losartan 50mg", "Cardiovascular",
+                    "Sun Pharma", 40.0, baseStock / 2, LocalDate.now().plusYears(1),
+                    prefix + "-BATCH-L001", prefix + "-BC-011", "30049099", "Losartan", 30.0, 48.0, 12.0, "H");
+            seedMedicine(branch, sup2, "Amlodipine 5mg", "Cardiovascular",
+                    "Cipla Ltd", 35.0, baseStock / 2, LocalDate.now().plusYears(1),
+                    prefix + "-BATCH-AM001", prefix + "-BC-012", "30049099", "Amlodipine", 25.0, 42.0, 12.0, "H");
+            seedMedicine(branch, sup1, "Levothyroxine 50mcg", "Hormones",
+                    "Sun Pharma", 28.0, baseStock / 3, LocalDate.now().plusYears(2),
+                    prefix + "-BATCH-LV001", prefix + "-BC-013", "30049099", "Levothyroxine", 20.0, 35.0, 5.0, "H");
+            seedMedicine(branch, sup2, "Montelukast 10mg", "Respiratory",
+                    "Cipla Ltd", 45.0, baseStock / 3, LocalDate.now().plusYears(1),
+                    prefix + "-BATCH-MT001", prefix + "-BC-014", "30049099", "Montelukast", 35.0, 55.0, 12.0, "H");
+        }
+
+        // --- Low stock items (vary by profile) ---
+        int lowStockCount = switch (profile) {
+            case "HIGH" -> 1;
+            case "MEDIUM" -> 2;
+            default -> 3;
+        };
+        
+        seedMedicine(branch, sup1, "Azithromycin 500mg", "Antibiotics",
+                "Sun Pharma", 85.0, lowStockCount + 2, LocalDate.now().plusYears(1),
+                prefix + "-BATCH-AZ001", prefix + "-BC-005", "30041000", "Azithromycin", 60.0, 100.0, 12.0, "H");
+
+        // --- Near-expiry items ---
+        seedMedicine(branch, sup2, "Vitamin C 500mg", "Vitamins",
+                "Cipla Ltd", 15.0, 50, LocalDate.now().plusDays(25),
+                prefix + "-BATCH-VTC001", prefix + "-BC-006", "30049099", "Ascorbic Acid", 10.0, 18.0, 5.0, "OTC");
+
+        // --- Customers (vary by profile) ---
+        int customerCount = switch (profile) {
+            case "HIGH" -> 5;
+            case "MEDIUM" -> 3;
+            default -> 2;
+        };
+
+        List<Customer> customers = new ArrayList<>();
+        for (int i = 1; i <= customerCount; i++) {
+            customers.add(seedCustomer(branch, "Customer " + i + " " + prefix, null,
+                    branchPhone(phoneBase, i), "Address " + i, LocalDate.of(1985, 1, 1).plusYears(i)));
+        }
+
+        // --- Sales (vary significantly by profile) ---
+        int salesMultiplier = switch (profile) {
+            case "HIGH" -> 15;
+            case "MEDIUM" -> 8;
+            default -> 3;
+        };
+
+        if (saleRepository.countByBranchId(branch.getId()) == 0) {
+            Medicine med1 = medicineRepository.findByBarcode(prefix + "-BC-001").orElse(null);
+            Medicine med3 = medicineRepository.findByBarcode(prefix + "-BC-003").orElse(null);
+            Medicine med4 = medicineRepository.findByBarcode(prefix + "-BC-004").orElse(null);
+
+            // Create varied sales over the past month
+            for (int i = 0; i < salesMultiplier; i++) {
+                Customer customer = customers.get(i % customers.size());
+                int daysAgo = (i * 2) + 1;
+                
+                if (med1 != null && med3 != null) {
+                    createSampleSaleAt(branch, customer, i % 3 == 0 ? "Cash" : "UPI", 0.0, 5.0,
+                            List.of(new SaleItemData(med1, 3 + (i % 5), 10.0, 7.0),
+                                    new SaleItemData(med3, 2 + (i % 3), 8.0, 5.0)),
+                            LocalDateTime.now().minusDays(daysAgo));
+                }
+                
+                if (med4 != null && i % 2 == 0) {
+                    createSampleSaleAt(branch, customer, "Card", 0.0, 12.0,
+                            List.of(new SaleItemData(med4, 1 + (i % 3), 25.0, 18.0)),
+                            LocalDateTime.now().minusDays(daysAgo + 1));
+                }
+            }
+            log.info("Created {} sales for branch '{}' (profile: {})", salesMultiplier, branch.getName(), profile);
+        }
+
+        // --- Purchase Orders ---
+        if (purchaseOrderRepository.findByBranchIdOrderByOrderDateDesc(branch.getId()).isEmpty()) {
+            Medicine med1 = medicineRepository.findByBarcode(prefix + "-BC-001").orElse(null);
+            Medicine med3 = medicineRepository.findByBarcode(prefix + "-BC-003").orElse(null);
+            if (med1 != null && med3 != null) {
+                createSamplePurchaseOrder(branch, sup1, prefix + "-PO-001", "RECEIVED",
+                        LocalDate.now().minusDays(40), LocalDate.now().minusDays(36),
+                        List.of(new PoItemData(med1, 100, 7.0), new PoItemData(med3, 80, 5.0)));
+            }
+        }
+
+        // --- Supplier Credits ---
+        if (supplierCreditRepository.findByBranchId(branch.getId()).isEmpty()) {
+            SupplierCredit sc = new SupplierCredit();
+            sc.setSupplier(sup1); sc.setBranch(branch);
+            sc.setTotalDue(7000.0); sc.setPaidAmount(3500.0);
+            sc.setDueDate(LocalDate.now().plusDays(10)); sc.setStatus("PARTIAL");
+            supplierCreditRepository.save(sc);
+        }
+
+        log.info("Branch varied sample data seed complete for '{}' (profile: {}, medicines: {}, customers: {}, sales: {})", 
+                branch.getName(), profile, medicineCount, customerCount, salesMultiplier);
     }
 
     /**

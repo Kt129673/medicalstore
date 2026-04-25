@@ -194,23 +194,23 @@
                                 <tfoot class="table-light fw-bold">
                                     <tr>
                                         <td class="ps-3">Portfolio Total</td>
-                                        <td class="text-end text-success"
-                                            th:text="'₹' + ${#numbers.formatDecimal(#aggregates.sum(branchStats.![todaySales]), 1, 'COMMA', 0, 'POINT')}">₹0</td>
+                                        <td class="text-end text-success d-none d-sm-table-cell"
+                                            th:text="'₹' + ${#numbers.formatDecimal(#lists.isEmpty(branchStats) ? 0 : #aggregates.sum(branchStats.![todaySales != null ? todaySales : 0]), 1, 'COMMA', 0, 'POINT')}">₹0</td>
                                         <td class="text-end text-primary"
-                                            th:text="'₹' + ${#numbers.formatDecimal(#aggregates.sum(branchStats.![monthlyRevenue]), 1, 'COMMA', 0, 'POINT')}">₹0</td>
-                                        <td class="text-center"
-                                            th:text="${#aggregates.sum(branchStats.![totalMedicines])}">0</td>
-                                        <td class="text-center"
-                                            th:text="${#aggregates.sum(branchStats.![totalShopkeepers])}">0</td>
-                                        <td class="text-center"
-                                            th:text="${#aggregates.sum(branchStats.![totalCustomers])}">0</td>
-                                        <td class="text-center">
+                                            th:text="'₹' + ${#numbers.formatDecimal(#lists.isEmpty(branchStats) ? 0 : #aggregates.sum(branchStats.![monthlyRevenue != null ? monthlyRevenue : 0]), 1, 'COMMA', 0, 'POINT')}">₹0</td>
+                                        <td class="text-center d-none d-md-table-cell"
+                                            th:text="${#lists.isEmpty(branchStats) ? 0 : #aggregates.sum(branchStats.![totalMedicines != null ? totalMedicines : 0])}">0</td>
+                                        <td class="text-center d-none d-lg-table-cell"
+                                            th:text="${#lists.isEmpty(branchStats) ? 0 : #aggregates.sum(branchStats.![totalShopkeepers != null ? totalShopkeepers : 0])}">0</td>
+                                        <td class="text-center d-none d-lg-table-cell"
+                                            th:text="${#lists.isEmpty(branchStats) ? 0 : #aggregates.sum(branchStats.![totalCustomers != null ? totalCustomers : 0])}">0</td>
+                                        <td class="text-center d-none d-md-table-cell">
                                             <span class="badge bg-secondary"
-                                                  th:text="${#aggregates.sum(branchStats.![lowStockCount])}">0</span>
+                                                  th:text="${#lists.isEmpty(branchStats) ? 0 : #aggregates.sum(branchStats.![lowStockCount != null ? lowStockCount : 0])}">0</span>
                                         </td>
-                                        <td class="text-center">
+                                        <td class="text-center d-none d-md-table-cell">
                                             <span class="badge bg-secondary"
-                                                  th:text="${#aggregates.sum(branchStats.![expiringCount])}">0</span>
+                                                  th:text="${#lists.isEmpty(branchStats) ? 0 : #aggregates.sum(branchStats.![expiringCount != null ? expiringCount : 0])}">0</span>
                                         </td>
                                         <td></td>
                                     </tr>
